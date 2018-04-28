@@ -11,7 +11,6 @@ Author: Subin. Gopi (subing85@gmail.com)
 
 Description
     Load (import) Shading Network from custom data format in maya using PyMel
-    input - update the "shadingEngineList" variable (line number 26, 27, 29)    
 '''
 
 
@@ -43,6 +42,7 @@ for eachShaderNetwork in shaderNetworkData:
     
     updateNode = {}
     
+    #create nodes    
     for eachNode in nodes:
         nodeType = nodes[eachNode]        
         #=======================================================================
@@ -62,6 +62,7 @@ for eachShaderNetwork in shaderNetworkData:
             
         updateNode.setdefault(eachNode, currentNode.name())
         
+    #set attribute values        
     for eachNode in attributes:
         for eachAttribute in attributes[eachNode]:
             if not pm.objExists(eachAttribute):
@@ -74,20 +75,19 @@ for eachShaderNetwork in shaderNetworkData:
             except Exception as result:
                 print 'set attribute warning', eachAttribute, '\t-   ', result
                 
+    #connect attribute                 
     for eachNode in connections:
         for eachAttribute in connections[eachNode]:
-            currentSourceAttribute = eachAttribute.replace(eachNode, updateNode[eachNode])
-            pySourceAttribute = pm.PyNode(currentSourceAttribute)            
-            for eachConnection in connections[eachNode][eachAttribute]:
-                
-                targetNode = eachConnection.split('.')[0]
-                currentTargetAttribute = eachConnection.replace(targetNode, updateNode[targetNode])
-                
-                pyTargetAttribute = pm.PyNode(currentTargetAttribute)  
-                try:                
-                    pySourceAttribute.connect(pyTargetAttribute)                
-                except Exception as result:
-                    print 'connection warning', eachAttribute, '\t-   ', result                
+            currentSourceAttribute = eachAttribute.replace(eachNode, updateNode[eachNode])            
+            pySourceAttribute = pm.PyNode(currentSourceAttribute)               
+            for eachConnection in connections[eachNode][eachAttribute]:                
+                try:                 
+                    targetNode = eachConnection.split('.')[0]
+                    currentTargetAttribute = eachConnection.replace(targetNode, updateNode[targetNode])
+                    pyTargetAttribute = pm.PyNode(currentTargetAttribute)      
+                    pySourceAttribute.connect(pyTargetAttribute)
+                except:
+                    print 'connection warning', eachAttribute, '\t-   ', result                                   
         
 print '#Successfully load(import) my shader network data'
 #End###########################################################################################
