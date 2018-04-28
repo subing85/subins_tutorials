@@ -44,7 +44,8 @@ for eachShaderNetwork in shaderNetworkData:
     
     #create nodes    
     for eachNode in nodes:
-        nodeType = nodes[eachNode]        
+        nodeType = nodes[eachNode]   
+             
         #=======================================================================
         # if pm.objExists(eachNode):
         #     pm.delete(eachNode)

@@ -11,7 +11,7 @@ Author: Subin. Gopi (subing85@gmail.com)
 
 Description
     Read and write Shading Network to custom data format in maya using PyMel
-    input - update the "shadingEngineList" variable (line number 26, 27, 29)    
+    input - update the "shadingEngineList" variable (line number 26, 27, 29).  
 '''
 
 #Read and write(export) the shader networks to custom data format
