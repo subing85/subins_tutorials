@@ -44,3 +44,11 @@
 			
 			https://vimeo.com/214389044
 			https://vimeo.com/215479957
+			
+	> Soft Selection To Cluster
+	
+			*softselectionToCluster.py
+			
+	> Lattice To Skincluster
+	
+			*latticeToSkincluster.py		
