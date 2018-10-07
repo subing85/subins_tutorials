@@ -45,10 +45,47 @@
 			https://vimeo.com/214389044
 			https://vimeo.com/215479957
 			
-	> Soft Selection To Cluster
-	
-			*softselectionToCluster.py
 			
-	> Lattice To Skincluster
+	> Pose Library Concept and Development		
+		Subin's Tutorials - Pose Library Concept and Development in Maya 2016 using Python.
+		
+		Pose Library is used in production throughout the world by feature animation, vfx and gamming studios. 
+		
+		Pose library concept and development is used to save, apply, organise and manage different poses. Alone with the corresponding icons 	
+		(images). Based on selection it allows you to export and import the pose, more precisely anything that has keyable channel attributes.	
+
+		Development
+			1.	Export the pose data to custom format.
+			2.	Import the pose data to scene.
+			3.	UI design using QT Designer (PyQt4). 
+			4.	Organize and manage the folder structure.
+			5.	Export module in UI.
+			6.	Organize and manage the pose data with icons.
+			7.	Import module in UI and scene.
+			8.	Blend between the current pose to new pose.
+		
+		Features:		
+			1.	Re-use the pose.
+			2.	Works with referenced/unreferenced.		
 	
-			*latticeToSkincluster.py		
+		https://vimeo.com/221999634
+		https://vimeo.com/223003677
+		https://vimeo.com/223943768
+		https://vimeo.com/224816837
+		https://vimeo.com/225718640
+		https://vimeo.com/226620464
+		https://vimeo.com/227596246
+		https://vimeo.com/228540578
+		https://vimeo.com/229540378
+		https://vimeo.com/231255229
+		https://vimeo.com/232207134
+		https://vimeo.com/233275119
+		https://vimeo.com/234473329
+		https://vimeo.com/235870430
+		https://vimeo.com/237358314
+		https://vimeo.com/239405173
+		https://vimeo.com/241821328
+		https://vimeo.com/244603281
+
+	
+				
