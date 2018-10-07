@@ -109,7 +109,7 @@
 						
 			https://vimeo.com/200579734
 			
-	> 7 Skin Cluster To Cluster
+	> 7 Skincluster To Cluster
 		Subin's Tutorials - Transfer the Skincluster weights to Cluster in Maya 2016. (Autodesk Maya 2016).
 		This script for Transfer the Skincluster weights to Cluster using Maya Python API 2.0. This code is faster than when you
 		perform the same task using MEL and Python scripts.
@@ -117,4 +117,16 @@
 			* skinClusterToCluster/skinClusterToCluster.py
 						
 			https://vimeo.com/203871305
+
+	> 8 PyQt4 in Maya2016
+		This script to develop and customize Maya's user interface using PyQt4 module.
+		The First Part of this video tutorial include How to load (import) PyQt4 Classes in Maya 2016 ?	
 		
+		What is PyQt?
+		PyQt is a Python binding of the cross-platform GUI toolkit Qt. It is one of Python's options for GUI programming.
+		PyQt implements around 500 classes and over 6,000 functions and methods including.
+
+			* PyQt4Maya2016/sample_ui.py
+						
+			https://vimeo.com/201878150
+			https://vimeo.com/202802153
