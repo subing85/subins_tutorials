@@ -1,14 +1,14 @@
 
 # My Tutorials Source Code
 
-	> Shading Network
+	> 1 Shading Network
 		Read, load and write Shading Network to custom data format in maya using PyMel
 		Date : January 10, 2018
 		Last modified: January 12, 2018
 		Author: Subin. Gopi (subing85@gmail.com)
 		
-			* readWrite.py		
-			* load.py
+			* shadingNetwork/readWrite.py		
+			* shadingNetwork/load.py
 			
 			https://vimeo.com/253144333
 			https://vimeo.com/265128835
@@ -17,7 +17,7 @@
 			https://vimeo.com/270935958		
 			
 
-	> smartCopy
+	> 2 smartCopy
 		Smart Copy written in Python and Pymel.
 
 		This tool will help to duplicates the Pose and Animation with simple procedure.
@@ -29,24 +29,24 @@
 			>- Copying pose and animation from one rig to another identical rig.	
 			>- Easy way to copy the pose and animation with two clicks.		
 
-			* mayaPose.py
-			* mayaAnim.py
-			* mayaWrite.py
-			* mayaCopy_ui.ui			
+			* smartCopy/mayaPose.py
+			* smartCopy/mayaAnim.py
+			* smartCopy/mayaWrite.py
+			* smartCopy/mayaCopy_ui.ui			
 			
 			https://vimeo.com/180073258		
 			
 			
-	> Animation PlayBlast Script
+	> 3 Animation PlayBlast Script
 		This Script help to write custom or assuming certain settings Play Blast Script using Maya Python. 
 
-			* playblast.py
+			* animationPlayblast/playblast.py
 			
 			https://vimeo.com/214389044
 			https://vimeo.com/215479957
 			
 			
-	> Pose Library Concept and Development		
+	> 4 Pose Library Concept and Development		
 		Subin's Tutorials - Pose Library Concept and Development in Maya 2016 using Python.
 		
 		Pose Library is used in production throughout the world by feature animation, vfx and gamming studios. 
@@ -68,32 +68,53 @@
 			1.	Re-use the pose.
 			2.	Works with referenced/unreferenced.		
 	
-		*__init__.py
-		* poseLibrary.py
-		*ui/poseLibrary_ui.ui
-		*ui/poseLibrary_ui.py
-		*icons/***.png, etc
-				
-		https://vimeo.com/221999634
-		https://vimeo.com/223003677
-		https://vimeo.com/223943768
-		https://vimeo.com/224816837
-		https://vimeo.com/225718640
-		https://vimeo.com/226620464
-		https://vimeo.com/227596246
-		https://vimeo.com/228540578
-		https://vimeo.com/229540378
-		https://vimeo.com/231255229
-		https://vimeo.com/232207134
-		https://vimeo.com/233275119
-		https://vimeo.com/234473329
-		https://vimeo.com/235870430
-		https://vimeo.com/237358314
-		https://vimeo.com/239405173
-		https://vimeo.com/241821328
-		https://vimeo.com/244603281
+			* poseLibraryConcept/__init__.py
+			* poseLibraryConcept/poseLibrary.py
+			* poseLibraryConcept/ui/poseLibrary_ui.ui
+			* poseLibraryConcept/ui/poseLibrary_ui.py
+			* poseLibraryConcept/icons/***.png, etc
+					
+			https://vimeo.com/221999634
+			https://vimeo.com/223003677
+			https://vimeo.com/223943768
+			https://vimeo.com/224816837
+			https://vimeo.com/225718640
+			https://vimeo.com/226620464
+			https://vimeo.com/227596246
+			https://vimeo.com/228540578
+			https://vimeo.com/229540378
+			https://vimeo.com/231255229
+			https://vimeo.com/232207134
+			https://vimeo.com/233275119
+			https://vimeo.com/234473329
+			https://vimeo.com/235870430
+			https://vimeo.com/237358314
+			https://vimeo.com/239405173
+			https://vimeo.com/241821328
+			https://vimeo.com/244603281
 		
+	> 5	Lattice To Skincluster		
+		Subin's Tutorials - Lattice Deformer Weights to Skincluster Deformer in Maya 2016. 
+		The Transfer the Lattice Deformer Weights to Skincluster using Maya Python API 2.0. This code is faster than when you perform the same 
+		task using MEL and Python scripts.
 
+			* latticeToSkincluster/latticeToSkincluster.py
+			
+			https://vimeo.com/220179508
+			
+	> 6	Soft Selection To Cluster	
+		This script for Convert Soft-Selection to Cluster using Maya Python API 2.0.
 
-	
-				
+			* softSelectionToCluster/softselectionToCluster.py
+						
+			https://vimeo.com/200579734
+			
+	> 7 Skin Cluster To Cluster
+		Subin's Tutorials - Transfer the Skincluster weights to Cluster in Maya 2016. (Autodesk Maya 2016).
+		This script for Transfer the Skincluster weights to Cluster using Maya Python API 2.0. This code is faster than when you
+		perform the same task using MEL and Python scripts.
+		
+			* skinClusterToCluster/skinClusterToCluster.py
+						
+			https://vimeo.com/203871305
+		
