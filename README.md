@@ -130,3 +130,16 @@
 						
 			https://vimeo.com/201878150
 			https://vimeo.com/202802153
+			
+	> 9 Read, Load the Animation Curves, and Write
+		Subin's Tutorials - Read, Load the Animation Curves, and Write to custom data format using Maya Python API 2.0
+		This topic describes How to Read, Load the Animation and Write to animation data as a custom format in Maya 2016.
+		
+			* animationReadWrite/read_and_write.py
+			* animationReadWrite/import.py
+	
+			https://vimeo.com/205665915
+			https://vimeo.com/206069467
+			https://vimeo.com/207417411
+			https://vimeo.com/209857040
+			https://vimeo.com/209860928
