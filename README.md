@@ -143,3 +143,13 @@
 			https://vimeo.com/207417411
 			https://vimeo.com/209857040
 			https://vimeo.com/209860928
+			
+			
+	> 10 Wire Deformer Weights To Cluster Deformer
+		Subin's Tutorials - Wire Deformer Weights to Cluster Deformer in Maya 2016. 
+		This video tutorial for Transfer the Wire Deformer Weights to Cluster using Maya Python API 2.0. 
+		This code is faster than when you perform the same task using MEL and Python scripts.
+
+			* wireDeformerToCluster/wireToCluster.py
+			
+			https://vimeo.com/210275112
