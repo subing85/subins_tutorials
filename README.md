@@ -72,7 +72,7 @@
 		* poseLibrary.py
 		*ui/poseLibrary_ui.ui
 		*ui/poseLibrary_ui.py
-		*icons/***.png
+		*icons/***.png, etc
 				
 		https://vimeo.com/221999634
 		https://vimeo.com/223003677
