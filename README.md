@@ -68,6 +68,12 @@
 			1.	Re-use the pose.
 			2.	Works with referenced/unreferenced.		
 	
+		*__init__.py
+		* poseLibrary.py
+		*ui/poseLibrary_ui.ui
+		*ui/poseLibrary_ui.py
+		*icons/***.png
+				
 		https://vimeo.com/221999634
 		https://vimeo.com/223003677
 		https://vimeo.com/223943768
@@ -86,6 +92,8 @@
 		https://vimeo.com/239405173
 		https://vimeo.com/241821328
 		https://vimeo.com/244603281
+		
+
 
 	
 				
