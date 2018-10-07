@@ -153,3 +153,13 @@
 			* wireDeformerToCluster/wireToCluster.py
 			
 			https://vimeo.com/210275112
+			
+			
+	> 11 Mirror And Flip Symmetrical Polygon Geometry	
+		Subin's Tutorials - Mirror And Flip Symmetrical Polygon Geometry in Maya 2016.
+		This video tutorial help to, how to manage the mirror and flip shape of symmetrical polygon geometry.
+		This concept is written in Maya Python API 2.0 and this code is faster than when you perform the same task using MEL and Python scripts.
+			
+			* mirroAndFlipSymmetricalGeometry/mirror_flip_symmetrical.py
+	
+			https://vimeo.com/213423624
