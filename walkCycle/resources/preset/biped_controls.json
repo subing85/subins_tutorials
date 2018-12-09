@@ -1,0 +1,137 @@
+{
+    "created by": "subin gopi", 
+    "type": "Biped Control Input", 
+    "comment": "This data contain biped controls input keyss", 
+    "description": "This module contain basic information of pipe steps", 
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "date": "December:01:2018 - 09:20:01:PM",
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "last modified": "December:01:2018 - 09:20:01:PM", 
+    "copyright": "(c) 2018, Subin Gopi All rights reserved.",     
+    "valid": true, 
+    "contols": {
+        "left_leg_ik": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Left Leg IK", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 0
+        },         
+        "left_leg_ball_roll": {
+            "control": null, 
+            "axisWorld": true, 
+            "type": "attribute", 
+            "label": "Ball Roll",
+            "order": 1            
+        },
+        "left_leg_toe_roll": {
+            "control": null, 
+            "axisWorld": true, 
+            "type": "attribute", 
+            "label": "Toe Roll",
+            "order": 2            
+        },         
+        "cog": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "COG", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 3            
+        },             
+        "waist": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Waist", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 4     
+        },    
+        "spine1": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Spine 1", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 5       
+        },
+        "spine2": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Spine 2", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 6    
+        },             
+        "chest": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Chest", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 7
+        },
+        "neck": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Neck", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 8   
+        }, 
+        "head": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Head", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 9     
+        }, 
+        "left_clavicle_fk": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Clavicle", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 10
+        }, 
+
+        "left_shoulder_fk": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Shoulder", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 11            
+        }, 
+        "left_elbow_fk": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Elbow", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 12     
+        }, 
+        "left_wrist_fk": {
+            "control": null, 
+            "rotationOrder": [], 
+            "label": "Wrist", 
+            "upVectorr": [], 
+            "aimVector": [], 
+            "type": "transform",
+            "order": 13 
+        }
+    }
+}
