@@ -1,0 +1,36 @@
+softselection
+	cluster		Done
+	skincluster WIP	
+	
+Blendshape
+	cluster		Done
+	skincluster NAS
+	
+Lattice
+	cluster		Done
+	skincluster NASon
+	
+Wire
+	cluster		Done
+	skincluster NAS	
+							
+Cluster
+	skincluster NAS	
+	
+Skincluster
+	cluster		Done
+	
+Mirror		
+	cluster		NAS
+	skincluster NAS
+
+Cluster	
+	Combine		NAS
+	Copy		NAS
+	Export		NAS
+	Import		NAS
+	
+Create Cluster
+
+
+Skin Cluster Hold and unhold option

@@ -10,7 +10,7 @@
     "valid": true,
    	"type": "input_from", 
     "data": {
-	    "skincluster": {
+	    "skinCluster": {
 	        "order": 2, 
 	        "label": "Skincluster",
 	        "tooltip": "Skincluster"        

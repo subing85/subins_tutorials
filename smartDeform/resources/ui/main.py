@@ -16,18 +16,16 @@ import sys
 path = '/venture/subins_tutorials'
 if path not in sys.path:
     sys.path.append(path)
-
+    
 from PySide import QtGui
 from PySide import QtCore
 from functools import partial
 
-from smartDeform.resources.ui import button
 from smartDeform.resources.ui import geometry
 from smartDeform.resources.ui import mirror
 from smartDeform.resources.ui import cluster
 from smartDeform.resources.ui import weights
 
-reload(button)
 reload(geometry)
 reload(mirror)
 reload(cluster)
@@ -39,10 +37,7 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
                 
-        # self.from_button = button.Button(parent=self, input='from')
-        # self.to_button = button.Button(parent=self, input='to')       
-        self.source_geometry = geometry.Geometry(parent=self, input='source_geometry')
-        self.target_geometry = geometry.Geometry(parent=self, input='target_geometry')        
+        self.geometry = geometry.Geometry(parent=self)
         self.my_mirror = mirror.Mirror(parent=self)        
         self.my_cluster = cluster.Cluster(parent=self)        
         self.weights = weights.Weights(parent=self)        
@@ -81,14 +76,7 @@ class MainWindow(QtGui.QMainWindow):
         self.verticallayout_convert.addLayout(self.horizontallayout_convert)                
         self.horizontallayout_convert.setSpacing(0)
         self.horizontallayout_convert.setContentsMargins(0, 0, 0, 0)  
-        self.horizontallayout_convert.addWidget(self.source_geometry)
-        self.horizontallayout_convert.addWidget(self.target_geometry)            
-            
-        self.button = QtGui.QPushButton(self.page_convert)
-        self.button.setObjectName('button')
-        self.button.setText('Convert')
-        self.verticallayout_convert.addWidget(self.button)
-        self.button.clicked.connect(self.convert)         
+        self.horizontallayout_convert.addWidget(self.geometry)
                 
         self.page_cluster = QtGui.QWidget()
         self.page_cluster.setGeometry(QtCore.QRect(0, 0, 599, 314))
@@ -125,12 +113,7 @@ class MainWindow(QtGui.QMainWindow):
         # add moduless
         
     def convert(self):
-        from_item =  self.from_button.current_item
-        to_item = self.to_button.current_item
-        print from_item, to_item
-        
-        print self.source_geometry.current_item
-        print self.target_geometry.current_item
+        print ''
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

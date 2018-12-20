@@ -242,10 +242,55 @@
               </widget>
              </item>
              <item>
-              <widget class="QListWidget" name="listWidget_source">
+              <widget class="QTreeWidget" name="treeWidget_source">
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
                <property name="selectionMode">
                 <enum>QAbstractItemView::ExtendedSelection</enum>
                </property>
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+               <property name="headerHidden">
+                <bool>true</bool>
+               </property>
+               <property name="expandsOnDoubleClick">
+                <bool>false</bool>
+               </property>
+               <attribute name="headerVisible">
+                <bool>false</bool>
+               </attribute>
+               <column>
+                <property name="text">
+                 <string notr="true">1</string>
+                </property>
+               </column>
+               <item>
+                <property name="text">
+                 <string>New Item</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>New Item</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>New Item</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>New Item</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>New Item</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>

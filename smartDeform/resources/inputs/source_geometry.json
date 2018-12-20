@@ -15,10 +15,10 @@
 	        "label": "Wire",
 	        "tooltip": "Wire"
 	    }, 
-	    "skincluster": {
+	    "skinCluster": {
 	        "order": 6, 
 	        "label": "Skincluster",
-	        "tooltip": "Skincluster"        
+	        "tooltip": "Skincluster"
 	    }, 
 	    "cluster": {
 	        "order": 5, 
@@ -30,7 +30,7 @@
 	        "label": "Lattice",
 	        "tooltip": "Lattice"        
 	    }, 
-	    "blendshape": {
+	    "blendShape": {
 	        "order": 2, 
 	        "label": "Blendshape",
 	        "tooltip": "Blendshape"        
