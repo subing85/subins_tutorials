@@ -1,21 +1,21 @@
 softselection
 	cluster		Done
-	skincluster WIP	
+	skincluster Done	
 	
 Blendshape
 	cluster		Done
-	skincluster NAS
+	skincluster Done
 	
 Lattice
 	cluster		Done
-	skincluster NASon
+	skincluster Done
 	
 Wire
 	cluster		Done
-	skincluster NAS	
+	skincluster Done Error in UI multiply the cluster and joints	
 							
 Cluster
-	skincluster NAS	
+	skincluster Done	
 	
 Skincluster
 	cluster		Done
@@ -23,6 +23,8 @@ Skincluster
 Mirror		
 	cluster		NAS
 	skincluster NAS
+	
+	all together convert
 
 Cluster	
 	Combine		NAS

@@ -11,10 +11,10 @@ from PySide import QtCore
 from functools import partial
 
 
-class Cluster(QtGui.QWidget):
+class Deformer(QtGui.QWidget):
 
     def __init__(self, parent=None):
-        super(Cluster, self).__init__(parent=None)
+        super(Deformer, self).__init__(parent=None)
         self.setupUi()
 
     def setupUi(self):
@@ -27,7 +27,7 @@ class Cluster(QtGui.QWidget):
 
         self.groupbox = QtGui.QGroupBox(self)
         self.groupbox.setObjectName('groupbox')
-        self.groupbox.setTitle('Cluster')
+        self.groupbox.setTitle('Deformer')
         self.verticallayout.addWidget(self.groupbox)
         
         self.horizontallayout = QtGui.QHBoxLayout(self.groupbox)
@@ -37,12 +37,12 @@ class Cluster(QtGui.QWidget):
 
         self.button_combine = QtGui.QPushButton(self.groupbox)
         self.button_combine.setObjectName('button_combine')
-        self.button_combine.setText('Combine Cluster')
+        self.button_combine.setText('Combine Deformer')
         self.horizontallayout.addWidget(self.button_combine)
 
         self.button_copy = QtGui.QPushButton(self.groupbox)
         self.button_copy.setObjectName('button_copy')
-        self.button_copy.setText('Copy Cluster')
+        self.button_copy.setText('Copy Deformer')
         self.horizontallayout.addWidget(self.button_copy)
 
     def setCurrentButton(self, item):
@@ -52,6 +52,6 @@ class Cluster(QtGui.QWidget):
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    window = Cluster(parent=None)
+    window = Deformer(parent=None)
     window.show()
     sys.exit(app.exec_())

@@ -24,7 +24,7 @@
     <item>
      <widget class="QToolBox" name="toolBox">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page">
        <property name="geometry">
@@ -32,7 +32,7 @@
          <x>0</x>
          <y>0</y>
          <width>586</width>
-         <height>626</height>
+         <height>366</height>
         </rect>
        </property>
        <attribute name="label">
@@ -507,6 +507,11 @@
              <property name="selectionMode">
               <enum>QAbstractItemView::ExtendedSelection</enum>
              </property>
+             <item>
+              <property name="text">
+               <string>SUbin</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>

@@ -23,12 +23,10 @@ from functools import partial
 
 from smartDeform.resources.ui import geometry
 from smartDeform.resources.ui import mirror
-from smartDeform.resources.ui import cluster
 from smartDeform.resources.ui import weights
 
 reload(geometry)
 reload(mirror)
-reload(cluster)
 reload(weights)
 
 
@@ -39,13 +37,25 @@ class MainWindow(QtGui.QMainWindow):
                 
         self.geometry = geometry.Geometry(parent=self)
         self.my_mirror = mirror.Mirror(parent=self)        
-        self.my_cluster = cluster.Cluster(parent=self)        
         self.weights = weights.Weights(parent=self)        
         self.setupUi()
+        self.setParent(parent)
+        
+    
+    def setParent(self, parent):
+        #from pymel import core
+        pass
+        
+        #if core.dockControl ('Mainwindow_subin', q=1, ex=1) :
+        #    core.deleteUI('Mainwindow_subin', ctl=1)
+        
+        #floating_layout = core.paneLayout (cn='single', w=300, p=parent)        
+        #core.dockControl ('Mainwindow_subin', l='Smart Deformer 0.0.1', area='right', content=floatingLayout, allowedArea=['right', 'left'])        
+        #core.control ('Mainwindow_subin', e=1, p=floatingLayout)
 
     def setupUi(self):
         self.resize(500, 800)
-        self.setObjectName('Mainwindow_controls')
+        self.setObjectName('Mainwindow_subin')
         self.centralwidget = QtGui.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)
@@ -81,12 +91,12 @@ class MainWindow(QtGui.QMainWindow):
         self.page_cluster = QtGui.QWidget()
         self.page_cluster.setGeometry(QtCore.QRect(0, 0, 599, 314))
         self.page_cluster.setObjectName('page_cluster')
-        self.toolbox.addItem(self.page_cluster, 'Cluster')
+        self.toolbox.addItem(self.page_cluster, 'Mirror and ...')
 
         self.verticallayout_cluster = QtGui.QVBoxLayout(self.page_cluster)
         self.verticallayout_cluster.setObjectName('verticalLayout_cluster')
         self.verticallayout_cluster.addWidget(self.my_mirror)
-        self.verticallayout_cluster.addWidget(self.my_cluster)
+        # self.verticallayout_cluster.addWidget(self.my_cluster)
         self.verticallayout_cluster.setSpacing(0)
         self.verticallayout_cluster.setContentsMargins(10, 0, 0, 0)  
                 
@@ -108,7 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         self.page.setGeometry(QtCore.QRect(0, 0, 599, 314))
         self.page.setObjectName('page_cluster')
         self.toolbox.addItem(self.page, 'Credits')
-        self.toolbox.setCurrentIndex(0)
+        self.toolbox.setCurrentIndex(2)
 
         # add moduless
         
