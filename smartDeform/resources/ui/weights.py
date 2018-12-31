@@ -84,10 +84,8 @@ class Weights(QtGui.QWidget):
         self.button_export.clicked.connect(self.exports)
         self.button_import.clicked.connect(self.imports)
         
-        self.load_weigtss()
-        
+        self.load_weigts()        
         self.popMenu(self.listwidget)
-        
 
     def popMenu (self, listwidget) :     
         #custom Context Menu        
@@ -96,26 +94,34 @@ class Weights(QtGui.QWidget):
 
         self.pop_menu    = QtGui.QMenu (self)
         
-        self.action_lock = QtGui.QAction(self)
-        self.action_lock.setText('Lock Weights')        
-        self.pop_menu.addAction (self.action_lock)
+        self.action_rename = QtGui.QAction(self)
+        self.action_rename.setObjectName('action_rename')
+        self.action_rename.setText('Rename')   
+        self.pop_menu.addAction (self.action_rename)
         
-        self.action_unlock = QtGui.QAction(self)
-        self.action_unlock.setText('Unlock Weights')        
-        self.pop_menu.addAction (self.action_unlock)
+        self.action_remove = QtGui.QAction(self)
+        self.action_remove.setObjectName('action_remove')        
+        self.action_remove.setText('Remove')        
+        self.pop_menu.addAction (self.action_remove)
+        
+        self.action_rename.triggered.connect(self.renameItem)
+        self.action_remove.triggered.connect(self.removeItems)
        
-    #Right click menu
-    def contextMenu (self, listwidget, point) :        
+        for each_actions in [self.action_rename, self.action_remove]:            
+            icon_name = str(each_actions.objectName()).split('_')[-1]            
+            current_icon = os.path.join(resources.getIconPath(),
+                                '{}.png'.format(icon_name))            
+            icon = QtGui.QIcon ()
+            icon.addPixmap(QtGui.QPixmap(current_icon), QtGui.QIcon.Normal, QtGui.QIcon.Off)           
+            each_actions.setIcon (icon) 
+    
+    def contextMenu (self, listwidget, point):#Right click menu  
         index = listwidget.indexAt (point)
         if not index.isValid():
-            return        
-        
-        if self.current_deformer!='skinCluster':
-            return
-                
+            return       
         self.pop_menu.exec_ (QtGui.QCursor.pos())
         
-    def load_weigtss(self):
+    def load_weigts(self):
         self.listwidget.clear()
         rw = readWrite.ReadWrite(t='weights')        
         self.bundles = rw.getBundles()        
@@ -140,13 +146,12 @@ class Weights(QtGui.QWidget):
                 continue            
             tag = None
             if self.my_maya.hasJoint(selections[index]):
-                tag = 'joint'        
+                tag = 'skincluster'        
             elif self.my_maya.hasCluster(selections[index]):
                 tag = 'cluster'                            
             drivers.setdefault(tag, []).append(selections[index])
  
         if None in drivers:
-            # raise ValueError('#Unwanted nodes are found in the selection')
             OpenMaya.MGlobal.displayError(
                 '#Unwanted nodes are found in your selection')
             return
@@ -156,8 +161,8 @@ class Weights(QtGui.QWidget):
                 '#You selected differ types of nodes\nselect cluster handless either joints')
             return
         
-        file_name, ok = QtGui.QInputDialog.getText(self, 'Folder Name',
-                            'Enter the folder name:', QtGui.QLineEdit.Normal)
+        file_name, ok = QtGui.QInputDialog.getText(self, 'Weight Export',
+                            'Enter the weight name:', QtGui.QLineEdit.Normal)
          
         if not ok:
             OpenMaya.MGlobal.displayWarning('#Abrot your export!...')
@@ -165,8 +170,11 @@ class Weights(QtGui.QWidget):
         
         weights = {}        
         if drivers.keys()[0]=='cluster':             
-            weights = self.cluster.get_weights(drivers['cluster'])           
-
+            weights = self.cluster.get_weights(drivers['cluster'])
+                        
+        if drivers.keys()[0]=='skincluster':
+            weights = self.skincluster.get_weights(drivers['skincluster'])
+            
         comment = 'smart tool 0.0.1 - weights container'
         created_date = datetime.now().strftime('%B/%d/%Y - %I:%M:%S:%p')
         description = 'This data contain information about maya 2016 deformers weights'
@@ -179,31 +187,94 @@ class Weights(QtGui.QWidget):
                     d=description, t=type, v=valid, data=data, tag=tag)
         rw.create(name=str(file_name))
         print rw.file_path
+        self.load_weigtss()
         
 
-    def imports(self):        
+    def imports(self):            
         if not self.bundles:
             OpenMaya.MGlobal.displayError('No export data')
-            return
-        
+            return        
         if not self.listwidget.selectedItems():
             OpenMaya.MGlobal.displayWarning('\nNo selection')
-            return
+            return                
+        OpenMaya.MGlobal.displayInfo('\nImport weights')
             
         for each_item in self.listwidget.selectedItems():            
             if str(each_item.text()) not in self.bundles:
                 OpenMaya.MGlobal.displayWarning('\nCorresponding weight not found %s' % each_item.text())
-                continue
-            
+                continue 
+                       
             current_weights = self.bundles[str(each_item.text())]
-            
+                        
             if current_weights['tag'] == 'cluster':            
                 print type(current_weights['data'])
-                self.cluster.set_weights(current_weights['data'])
+                self.cluster.set_weights(current_weights['data'])                
+            if current_weights['tag'] == 'skincluster':            
+                self.skincluster.set_weights(current_weights['data'])
                 
-            if current_weights['tag'] == 'skinCluster':            
-                print current_weights
+            OpenMaya.MGlobal.displayInfo('\t{}'.format(each_item.text()))
+                            
+        OpenMaya.MGlobal.displayInfo('{} done!...'.format(current_weights['tag']))
+        
+    
+    def renameItem(self):
+        file_name, ok = QtGui.QInputDialog.getText(self, 'Rename',
+                            'Enter the new name:', QtGui.QLineEdit.Normal)
+        
+        if not ok:
+            OpenMaya.MGlobal.displayWarning('#Abrot your rename!...')
+            return
+        
+        if not self.listwidget.selectedItems():
+            OpenMaya.MGlobal.displayWarning('\nNo selection')
+            return   
+        
+        current_item = self.listwidget.selectedItems()[-1]
+        
+        if str(current_item.text()) not in self.bundles:
+            OpenMaya.MGlobal.displayWarning('\nCorresponding weight not found %s' % current_item.text())
+            return
+                
+        rw = readWrite.ReadWrite(t='weights')        
+        
+        weight_path = self.bundles[str(current_item.text())]['path']        
+        new_weight_path = os.path.join(os.path.dirname(weight_path), '%s.%s' % (file_name, rw.extention))
+        
+        try:
+            os.chmod(weight_path, 0777)
+            os.rename(weight_path, new_weight_path)
+            replay = 1
+        except Exception as error:
+            warnings.warn('\n%s' % str(error), Warning)
+        
+        self.load_weigts()
+    
+    def removeItems(self):        
+        if not self.listwidget.selectedItems():
+            OpenMaya.MGlobal.displayWarning('\nNo selection')
+            return   
+        
+        replay = QtGui.QMessageBox.question(self, 'Question',
+                    'Are you sure, you want to remove the weights?', QtGui.QMessageBox.Yes, QtGui.QMessageBox.No) 
+               
+        if replay == QtGui.QMessageBox.No:
+            OpenMaya.MGlobal.displayWarning('#Abrot your remove!...')
+            return
 
+        for each_item in self.listwidget.selectedItems():            
+            if str(each_item.text()) not in self.bundles:
+                OpenMaya.MGlobal.displayWarning('\nCorresponding weight not found %s' % each_item.text())
+                continue             
+            weight_path = self.bundles[str(each_item.text())]['path']     
+            try:
+                os.chmod(weight_path, 0777)
+                os.remove(weight_path)                
+            except Exception as error:
+                warnings.warn('\n%s' % str(error), Warning)
+
+        self.load_weigts()
+             
+                
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = Weights(parent=None)

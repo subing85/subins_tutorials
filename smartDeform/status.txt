@@ -29,8 +29,8 @@ Mirror
 Cluster	
 	Combine		NAS
 	Copy		NAS
-	Export		NAS
-	Import		NAS
+	Export		Done
+	Import		Done
 	
 Create Cluster
 

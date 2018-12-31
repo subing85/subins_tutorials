@@ -243,9 +243,9 @@ class Maya(object):
 
             mfndependency_node = OpenMaya.MFnDependencyNode(mobject)
             mplug = OpenMaya.MPlug()
-            mselectionList = OpenMaya.MSelectionList()
-            mselectionList.add("%s.weight" % mfndependency_node.name())
-            mselectionList.getPlug(0, mplug)
+            mselection_list = OpenMaya.MSelectionList()
+            mselection_list.add("%s.weight" % mfndependency_node.name())
+            mselection_list.getPlug(0, mplug)
             for x in range(mplug.numElements()):
                 current_element = mplug.elementByLogicalIndex(x)
                 mplug_array.append(current_element)
@@ -551,7 +551,7 @@ class Maya(object):
             dag_path = my.getDagPath()
 
         mfn_transform = OpenMaya.MFnTransform(dag_path)
-        m_vector = mFnTransform.translation(OpenMaya.MSpace.kWorld)
+        m_vector = mfn_transform.translation(OpenMaya.MSpace.kWorld)
 
         return m_vector.x, m_vector.y, m_vector.z
 
