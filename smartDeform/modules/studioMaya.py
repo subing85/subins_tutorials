@@ -510,7 +510,7 @@ class Maya(object):
 
     def hasCluster(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = my.getDagPath()
+            dag_path = self.getDagPath()
 
         mfn_dag_node = OpenMaya.MFnDagNode(dag_path)
         cluster_dag_path = mfn_dag_node.dagPath()
@@ -531,14 +531,14 @@ class Maya(object):
 
     def hasJoint(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = my.getDagPath()
+            dag_path = self.getDagPath(dag_path)
         if not dag_path.hasFn(OpenMaya.MFn.kJoint):
             return False
         return True
 
     def getClusterPosition(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = my.getDagPath()
+            dag_path = self.getDagPath(dag_path)
 
         mfn_transform = OpenMaya.MFnTransform(dag_path)
         m_transformation_matrix = mfn_transform.transformation()
@@ -548,7 +548,7 @@ class Maya(object):
 
     def getJointPosition(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = my.getDagPath()
+            dag_path = self.getDagPath(dag_path)
 
         mfn_transform = OpenMaya.MFnTransform(dag_path)
         m_vector = mfn_transform.translation(OpenMaya.MSpace.kWorld)
@@ -571,3 +571,32 @@ class Maya(object):
             plug_x.setFloat(position[0])
             plug_y.setFloat(position[1])
             plug_z.setFloat(position[2])
+            
+    def getCenterPosition(self, dag_paths):
+        x, y, z = 0, 0, 0        
+        for each_dag_path in dag_paths:
+            position = self.getClusterPosition(each_dag_path)            
+            x += position[0]
+            y += position[1]
+            z += position[2]            
+        center = [x/2, y/2, z/2]
+        
+        return center
+    
+    
+    def createEmptyWeights(self, dag_path):
+        
+        if not isinstance(dag_path, OpenMaya.MDagPath):
+            dag_path = self.getDagPath(dag_path)
+            
+        mmit_mesh_vertex = OpenMaya.MItMeshVertex(dag_path)    
+        
+        weights = OpenMaya.MFloatArray()
+        memberships = OpenMaya.MIntArray()
+    
+        while not mmit_mesh_vertex.isDone ():
+            weights.append(0)
+            memberships.append(False)
+            mmit_mesh_vertex.next()            
+        return weights, memberships
+        

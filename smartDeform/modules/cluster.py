@@ -169,7 +169,6 @@ class Cluster(studioMaya.Maya):
         return weights
 
     def write_weight(self, cluster_mobject, geometry_data):
-
         for each_geometry, each_data, in geometry_data.items():
             # redu
             try:
@@ -189,3 +188,57 @@ class Cluster(studioMaya.Maya):
 
             self.setClusterWeights(dag_path, cluster_mobject, mfloat_array)
             self.setMembership(dag_path, cluster_mobject, memberships)
+
+    def combine_weights(self, cluster_dag_paths):
+        weights_data = {}
+        memberships_data = {}  
+        for each_handle in cluster_dag_paths:      
+            weight_data = self.get_weight(each_handle)
+            
+            for each_geometry, geometry_data in weight_data['geometry'].items():
+                weights = geometry_data['weights']
+                memberships = geometry_data['memberships'] 
+                
+                weights_data.setdefault(each_geometry, []).append(weights)
+                memberships_data.setdefault(each_geometry, []).append(memberships)
+            
+        geometry_data = {}                
+        for index in range (len(weights_data)):            
+            geometry = weights_data.keys()[index]         
+            weights = {'weights': weights_data[geometry]}
+            memberships = {'memberships': memberships_data[geometry]}            
+            geometry_data.setdefault(geometry, weights)
+            geometry_data[geometry].update(memberships)
+            
+        combine_data = {}                
+        for each_geometry, geometry_weights in geometry_data.items():            
+            empty_weights, empty_memberships = self.createEmptyWeights(each_geometry)
+                      
+            for index in range(len(geometry_weights['weights'])):
+                current_weights = geometry_weights['weights'][index]
+                current_memberships = geometry_weights['memberships'][index]      
+                                    
+                for x in range (len(current_weights)):                                        
+                    if current_weights[x]>1:
+                        empty_weights[x] = 1                        
+                    empty_weights[x] += current_weights[x]                    
+                    if current_memberships[x]:                        
+                        empty_memberships[x] = True
+            
+            combine_weights = {'weights': empty_weights}            
+            combine_memberships = {'memberships': empty_memberships}                          
+            combine_data.setdefault(each_geometry, combine_weights)
+            combine_data[each_geometry].update(combine_memberships)              
+        
+        position = self.getCenterPosition(cluster_dag_paths)        
+        cluster, clusterHandle = self.create('combine_cluster')
+        self.setClusterPosition(clusterHandle, position)        
+        m_cluster = self.getMObject(cluster)       
+        self.set_weight(m_cluster, combine_data)
+    
+    def copy_weights(self, source_handle, target_handle):        
+        weight_data = self.get_weight(source_handle)        
+        for index in range (target_handle.length()):
+            m_cluster = self.getDependences(target_handle[index], OpenMaya.MFn.kClusterFilter)            
+            self.set_weight(m_cluster[0], weight_data['geometry'])
+    

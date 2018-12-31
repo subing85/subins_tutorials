@@ -187,7 +187,7 @@ class Weights(QtGui.QWidget):
                     d=description, t=type, v=valid, data=data, tag=tag)
         rw.create(name=str(file_name))
         print rw.file_path
-        self.load_weigtss()
+        self.load_weigts()
         
 
     def imports(self):            

@@ -11,12 +11,28 @@ from PySide import QtGui
 from PySide import QtCore
 from functools import partial
 
+from maya import OpenMaya
+from maya import OpenMayaAnim
+
+from smartDeform.modules import cluster
+from smartDeform.modules import skincluster
+from smartDeform.modules import studioMaya
+
+reload(studioMaya)
+reload(cluster)
+reload(skincluster)
+
+
 
 class Mirror(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(Mirror, self).__init__(parent=None)
         self.setupUi()
+        
+        self.cluster = cluster.Cluster()
+        self.skincluster = skincluster.Skincluster()
+        self.my_maya = studioMaya.Maya()        
 
     def setupUi(self):
         self.setObjectName('mirror')
@@ -61,8 +77,7 @@ class Mirror(QtGui.QWidget):
             self.button_mirror = QtGui.QPushButton(self.groupbox)
             self.button_mirror.setObjectName('button_mirror_%s' % each_mirror)
             self.button_mirror.setText('Mirror')
-            self.horizontallayout.addWidget(self.button_mirror)
-            
+            self.horizontallayout.addWidget(self.button_mirror)            
             
             self.groupbox = QtGui.QGroupBox(self)
             self.groupbox.setObjectName('groupbox_%s' % each_mirror)
@@ -78,11 +93,15 @@ class Mirror(QtGui.QWidget):
             self.button_combine.setObjectName('button_combine_%s' % each_mirror)
             self.button_combine.setText('Combine %s' % each_mirror)
             self.horizontallayout.addWidget(self.button_combine)
+            
+            self.button_combine.clicked.connect(partial (self.combine, each_mirror.lower()))
     
             self.button_copy = QtGui.QPushButton(self.groupbox)
             self.button_copy.setObjectName('button_copy_%s' % each_mirror)
             self.button_copy.setText('Copy %s' % each_mirror)
             self.horizontallayout.addWidget(self.button_copy)   
+            
+            self.button_copy.clicked.connect(partial (self.copy, each_mirror.lower()))
                      
             spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
             self.verticallayout.addItem(spacerItem)            
@@ -90,6 +109,82 @@ class Mirror(QtGui.QWidget):
     def setCurrentButton(self, item):
         self.current_item = item
         return self.current_item
+    
+    
+    def combine(self, tag):
+        
+        from smartDeform.modules import cluster
+        from smartDeform.modules import skincluster
+        from smartDeform.modules import studioMaya
+        
+        reload(studioMaya)
+        reload(cluster)
+        reload(skincluster)
+        
+        self.cluster = cluster.Cluster()
+        self.skincluster = skincluster.Skincluster()
+        self.my_maya = studioMaya.Maya()        
+        
+        
+        selections = self.my_maya.getSelectedDagPaths()
+
+        inputs = {}        
+
+        for index in range(selections.length()):            
+            if not selections[index].isValid():
+                continue            
+            tag = None
+            if self.my_maya.hasJoint(selections[index]):
+                tag = 'skincluster'        
+            elif self.my_maya.hasCluster(selections[index]):
+                tag = 'cluster'                            
+            inputs.setdefault(tag, []).append(selections[index])
+ 
+        if None in inputs:
+            OpenMaya.MGlobal.displayError(
+                '#Unwanted nodes are found in your selection')
+            return
+ 
+        if inputs.keys().count(inputs.keys()[0]) != len(inputs.keys()):
+            OpenMaya.MGlobal.displayError(
+                '#You selected differ types of nodes\nselect cluster handless either joints')
+            return
+                
+        deformer_dag_paths = inputs.values()[0]
+                
+        if tag=='cluster':           
+            self.cluster.combine_weights(deformer_dag_paths)
+        
+        if tag=='skincluster':            
+            self.skincluster.combine_weights(deformer_dag_paths)
+
+
+    
+    def copy(self, tag):
+        from smartDeform.modules import cluster
+        from smartDeform.modules import skincluster
+        from smartDeform.modules import studioMaya
+        
+        reload(studioMaya)
+        reload(cluster)
+        reload(skincluster)
+        
+        self.cluster = cluster.Cluster()
+        self.skincluster = skincluster.Skincluster()
+        self.my_maya = studioMaya.Maya()       
+        
+        selections = self.my_maya.getSelectedDagPaths()
+        
+        targets_deformer = OpenMaya.MDagPathArray()            
+        for index in range (1, selections.length()):
+            targets_deformer.append(selections[index])        
+        
+        
+        if tag=='cluster':     
+            self.cluster.copy_weights(selections[0], targets_deformer)
+
+        if tag=='skincluster':
+            self.skincluster.copy_weights(selections[0], targets_deformer)
 
 
 if __name__ == '__main__':

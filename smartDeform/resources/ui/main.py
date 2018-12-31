@@ -118,7 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         self.page.setGeometry(QtCore.QRect(0, 0, 599, 314))
         self.page.setObjectName('page_cluster')
         self.toolbox.addItem(self.page, 'Credits')
-        self.toolbox.setCurrentIndex(2)
+        self.toolbox.setCurrentIndex(1)
 
         # add moduless
         

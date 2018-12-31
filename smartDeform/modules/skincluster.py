@@ -226,6 +226,12 @@ class Skincluster(studioMaya.Maya):
             self.setSkinclusterWeights(skincluster_mobjects[0], joint_dag_path, geometry_dag_path, vertexs, weights)                
 
 
+
+    def combine_weights(self, joint_dag_paths):
+        pass    
     
     
+    def copy_weights(self, source_handle, target_handle):
+        pass
     
+        
