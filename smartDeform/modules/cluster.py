@@ -230,7 +230,7 @@ class Cluster(studioMaya.Maya):
             combine_data.setdefault(each_geometry, combine_weights)
             combine_data[each_geometry].update(combine_memberships)              
         
-        position = self.getCenterPosition(cluster_dag_paths)        
+        position = self.getCenterPosition(cluster_dag_paths, 'cluster')        
         cluster, clusterHandle = self.create('combine_cluster')
         self.setClusterPosition(clusterHandle, position)        
         m_cluster = self.getMObject(cluster)       

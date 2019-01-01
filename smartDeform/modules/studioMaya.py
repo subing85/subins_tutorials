@@ -10,18 +10,6 @@ class Maya(object):
 
         self.getObjecTypes()
 
-    def create_cluster(self, name, position, parent=None):
-        pass
-
-    def create_Joint(self, name, position, parent=None):
-        pass
-
-    def create_dag_node(self, name, position, parent=None):
-        pass
-
-    def create_dependency_node(self, name, parent=None):
-        pass
-
     def getDagPath(self, node):
         mselection = OpenMaya.MSelectionList()
         mselection.add(node)
@@ -264,7 +252,6 @@ class Maya(object):
             if not skinclusters:
                 continue
             joints = self.getSkinclusterJoints(skinclusters[0])
-            print joints
             if not joints:
                 continue
             joint_data.setdefault(mobjects[index], joints)
@@ -572,10 +559,25 @@ class Maya(object):
             plug_y.setFloat(position[1])
             plug_z.setFloat(position[2])
             
-    def getCenterPosition(self, dag_paths):
+    def setJointPosition(self, dag_path, position):
+        if isinstance(dag_path, OpenMaya.MDagPath):
+            dag_path = dag_path.fullPathName()
+            
+        plug_x = self.getPlug(dag_path, 'translateX')
+        plug_y = self.getPlug(dag_path, 'translateY')
+        plug_z = self.getPlug(dag_path, 'translateZ')
+        plug_x.setFloat(position[0])
+        plug_y.setFloat(position[1])
+        plug_z.setFloat(position[2])        
+            
+            
+    def getCenterPosition(self, dag_paths, type):
         x, y, z = 0, 0, 0        
         for each_dag_path in dag_paths:
-            position = self.getClusterPosition(each_dag_path)            
+            if type=='cluster':
+                position = self.getClusterPosition(each_dag_path) 
+            else:
+                position = self.getJointPosition(each_dag_path)                           
             x += position[0]
             y += position[1]
             z += position[2]            
@@ -599,4 +601,44 @@ class Maya(object):
             memberships.append(False)
             mmit_mesh_vertex.next()            
         return weights, memberships
-        
+    
+    
+    def addInfluence(self, joint, geometrys):
+        if isinstance(joint, OpenMaya.MDagPath):
+            joint = joint.fullPathName()        
+        for each_geometry in geometrys:
+            
+            m_object = self.getMObject(each_geometry)
+            m_skinclusters = self.getDeformerNodes(m_object, OpenMaya.MFn.kSkinClusterFilter)
+
+            if not m_skinclusters.length():
+                OpenMaya.MGlobal.displayWarning('\nCan not find skincluster \"%s\"' % each_geometry.encode())
+                continue
+            
+            skincluster = self.getName(m_skinclusters[0])
+            OpenMaya.MGlobal.executeCommand('skinCluster -e -ug -dr 4 -ps 0 \
+                        -ns 10 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
+            
+            plug = self.getPlug(joint, 'liw') 
+            plug.setBool(False)
+            
+        return True
+    
+    
+    def findxIndexFromSkincluster(self, mfn_skincluster, joint_dag_path):        
+        joints_dag_path_array = OpenMaya.MDagPathArray()
+        mfn_skincluster.influenceObjects(joints_dag_path_array)
+                
+        influence_indexs = {}        
+        for index in range (joints_dag_path_array.length()):
+            current_joint = joints_dag_path_array[index].fullPathName()
+            influence_indexs.setdefault(current_joint, index)
+            
+        if joint_dag_path.fullPathName() not in influence_indexs:
+            OpenMaya.MGlobal.displayWarning('\nCan not find index of \"%s\"' % joint_dag_path.fullPathName())
+            return
+            
+        return influence_indexs[joint_dag_path.fullPathName()]
+            
+
+

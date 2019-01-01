@@ -174,17 +174,16 @@ class Mirror(QtGui.QWidget):
         self.my_maya = studioMaya.Maya()       
         
         selections = self.my_maya.getSelectedDagPaths()
-        
-        targets_deformer = OpenMaya.MDagPathArray()            
-        for index in range (1, selections.length()):
-            targets_deformer.append(selections[index])        
-        
-        
-        if tag=='cluster':     
+
+        if tag=='cluster':           
+            targets_deformer = OpenMaya.MDagPathArray()            
+            for index in range (1, selections.length()):
+                targets_deformer.append(selections[index])        
+
             self.cluster.copy_weights(selections[0], targets_deformer)
 
         if tag=='skincluster':
-            self.skincluster.copy_weights(selections[0], targets_deformer)
+            self.skincluster.copy_weights(selections[0], selections[selections.length()-1])
 
 
 if __name__ == '__main__':

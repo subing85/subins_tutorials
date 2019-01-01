@@ -26,15 +26,20 @@ class Skincluster(studioMaya.Maya):
         if 'target_deformers' in kwargs:
             self.target_deformers = kwargs['target_deformers']
 
-    def create(self, name=None):
-        from maya import cmds
-
-        cluster, clusterHandle = cmds.cluster(ihs)
-        return cluster, clusterHandle
+    def create(self, name):
+        name = name.split('|')[-1]
+        OpenMaya.MGlobal.clearSelectionList()
+        mfn_dag_node = OpenMaya.MFnDagNode()
+        mfn_dag_node.create('joint')
+        mfn_dag_node.setName(name)
+        joint_dag_path = OpenMaya.MDagPath()
+        mfn_dag_node.getPath(joint_dag_path)
+        return joint_dag_path
 
     def get_weight(self, joint_dag_path):        
         m_skinclusters = self.getDependences(joint_dag_path, OpenMaya.MFn.kSkinClusterFilter)        
         skin_cluster_data = {}
+        
         for index in range (m_skinclusters.length()):      
             m_dag_path, weights, memberships = self.read_weight(m_skinclusters[index], joint_dag_path)            
             weight = {}
@@ -53,7 +58,6 @@ class Skincluster(studioMaya.Maya):
         return data            
 
     def get_weights(self, joints):
-
         skincluster_weights = {}        
         for each_dag_path in joints:       
             data  = self.get_weight(each_dag_path)            
@@ -169,15 +173,22 @@ class Skincluster(studioMaya.Maya):
         
         return m_dag_path, m_float_array
         '''
-    
+
         mfn_skincluster = OpenMayaAnim.MFnSkinCluster(m_skincluster)        
         selection_list = OpenMaya.MSelectionList()
-        m_float_array = OpenMaya.MFloatArray()        
-        mfn_skincluster.getPointsAffectedByInfluence(joint_dag_path, selection_list, m_float_array)        
-        m_dag_path = OpenMaya.MDagPath()
-        selection_list.getDagPath(0, m_dag_path)
+        m_float_array = OpenMaya.MFloatArray() 
+        mfn_skincluster.getPointsAffectedByInfluence(joint_dag_path, selection_list, m_float_array)   
+        
+        deformer_set = mfn_skincluster.deformerSet()
+        mfn_set = OpenMaya.MFnSet(deformer_set)
+        mfn_set.getMembers(selection_list, True)
+
+        m_object = OpenMaya.MObject()
+        m_dag_path = OpenMaya.MDagPath()        
+        selection_list.getDagPath(0, m_dag_path, m_object)
         
         joint_index = mfn_skincluster.indexForInfluenceObject(joint_dag_path)
+        # joint_index = self.findxIndexFromSkincluster(mfn_skincluster, joint_dag_path)        
         
         mit_geometry = OpenMaya.MItGeometry(m_dag_path)
         membership_list = []
@@ -185,14 +196,16 @@ class Skincluster(studioMaya.Maya):
         
         while not mit_geometry.isDone():
             component = mit_geometry.currentItem()
-            float_array = OpenMaya.MFloatArray()
-        
+            float_array = OpenMaya.MFloatArray()            
             membership = self.hasMembership(m_skincluster, m_dag_path, component)
-        
-            if membership:
-                mfn_skincluster.getWeights(m_dag_path, component, joint_index, float_array)
-            else:
+                        
+            if not m_float_array:
                 float_array = [0, 0, 0]
+            else:
+                if membership:
+                    mfn_skincluster.getWeights(m_dag_path, component, joint_index, float_array)
+                else:
+                    float_array = [0, 0, 0]
                                 
             membership_list.append(membership)
             weight_list.append(float_array[0])   
@@ -223,15 +236,70 @@ class Skincluster(studioMaya.Maya):
             mit_mesh_vertex = OpenMaya.MItMeshVertex(geometry_dag_path.node())
             vertexs = range (mit_mesh_vertex.count())
                                                   
-            self.setSkinclusterWeights(skincluster_mobjects[0], joint_dag_path, geometry_dag_path, vertexs, weights)                
+            self.setSkinclusterWeights(skincluster_mobjects[0], joint_dag_path, geometry_dag_path, vertexs, weights)
+            # print       joint_dag_path.fullPathName()
 
 
 
     def combine_weights(self, joint_dag_paths):
-        pass    
+        weights_data = {}
+        memberships_data = {}  
+        for each_joint in joint_dag_paths:      
+            weight_data = self.get_weight(each_joint)
+            
+            for each_geometry, geometry_data in weight_data['geometry'].items():
+                weights = geometry_data['weights']
+                memberships = geometry_data['memberships'] 
+                
+                weights_data.setdefault(each_geometry, []).append(weights)
+                memberships_data.setdefault(each_geometry, []).append(memberships)
+
+        geometry_data = {}                
+        for index in range (len(weights_data)):            
+            geometry = weights_data.keys()[index]         
+            weights = {'weights': weights_data[geometry]}
+            memberships = {'memberships': memberships_data[geometry]}            
+            geometry_data.setdefault(geometry, weights)
+            geometry_data[geometry].update(memberships)
+         
+        combine_data = {}                
+        for each_geometry, geometry_weights in geometry_data.items():            
+            empty_weights, empty_memberships = self.createEmptyWeights(each_geometry)
+                      
+            for index in range(len(geometry_weights['weights'])):
+                current_weights = geometry_weights['weights'][index]
+                current_memberships = geometry_weights['memberships'][index]      
+                                    
+                for x in range (len(current_weights)):                                        
+                    if current_weights[x]>1:
+                        empty_weights[x] = 1                        
+                    empty_weights[x] += current_weights[x]                    
+                    if current_memberships[x]:                        
+                        empty_memberships[x] = True
+            
+            combine_weights = {'weights': empty_weights}            
+            combine_memberships = {'memberships': empty_memberships}                          
+            combine_data.setdefault(each_geometry, combine_weights)
+            combine_data[each_geometry].update(combine_memberships)              
+        
+        position = self.getCenterPosition(joint_dag_paths, 'skincluster')        
+        joint_dag_path = self.create('combine_joint')
+        self.setJointPosition(joint_dag_path, position)
+         
+        combine_datas = {}
+        combine_datas['geometry'] = combine_data
+        combine_datas['position'] = position
+        combine_datas['locked'] = False
+
+        self.addInfluence(joint_dag_path, combine_data.keys())
+        
+        self.set_weight(joint_dag_path, combine_datas) 
+
     
+    def copy_weights(self, source_joint, target_joint):
+       
+        weight_data = self.get_weight(source_joint)  
+        self.set_weight(target_joint, weight_data)
     
-    def copy_weights(self, source_handle, target_handle):
-        pass
     
         
