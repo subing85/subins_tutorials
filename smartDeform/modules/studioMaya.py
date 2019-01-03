@@ -641,4 +641,67 @@ class Maya(object):
         return influence_indexs[joint_dag_path.fullPathName()]
             
 
+    def get_symmetry_vertex (self, geometry_dag_path, vertex_id, axis=[-1,1,1]) :
+        mfn_mesh = OpenMaya.MFnMesh(geometry_dag_path)        
+        position_m_point = OpenMaya.MPoint()
+        mfn_mesh.getPoint (vertex_id, position_m_point, OpenMaya.MSpace.kWorld)
+        
+        symmetry_position = OpenMaya.MPoint()
+        symmetry_position.x = position_m_point.x*axis[0]
+        symmetry_position.y = position_m_point.y*axis[1]
+        symmetry_position.z = position_m_point.z*axis[2]
+        
+        closest_m_point = OpenMaya.MPoint()
+        m_script_util = OpenMaya.MScriptUtil()
+        index_ptr = m_script_util.asIntPtr()
+        prev_index = m_script_util.asIntPtr()
+        
+        mfn_mesh.getClosestPoint(symmetry_position, closest_m_point, OpenMaya.MSpace.kWorld, index_ptr)        
+        int_index = m_script_util.getInt(index_ptr)        
+        
+        mit_mesh_polygon = OpenMaya.MItMeshPolygon(geometry_dag_path)        
+        mit_mesh_polygon.setIndex(int_index, prev_index)
+        
+        face_vertex_array = OpenMaya.MIntArray ()
+        mit_mesh_polygon.getVertices(face_vertex_array)
+        
+        vector_lengths = []
+        
+        for each_vertex in face_vertex_array:
+            vertex_symmetry_position = OpenMaya.MPoint()
+            mfn_mesh.getPoint (each_vertex, vertex_symmetry_position, OpenMaya.MSpace.kWorld)
+            
+            vertex_symmetry_vector = OpenMaya.MVector(vertex_symmetry_position)
+            symmetry_vector = OpenMaya.MVector(symmetry_position)
+            
+            mVectorLength = vertex_symmetry_vector-symmetry_vector
+            length = mVectorLength.length()
+            vector_lengths.append(length)
+            
+        closest_vertex = min(vector_lengths)
+        vertexIndex = vector_lengths.index(closest_vertex)
+        symmetry_vertex_id = face_vertex_array[vertexIndex]   
+        
+        return symmetry_vertex_id       
+    
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

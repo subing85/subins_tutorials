@@ -1,3 +1,5 @@
+import copy
+
 from pprint import pprint
 from maya import OpenMaya
 from maya import OpenMayaAnim
@@ -300,6 +302,78 @@ class Skincluster(studioMaya.Maya):
        
         weight_data = self.get_weight(source_joint)  
         self.set_weight(target_joint, weight_data)
+        
+    
+    def create_mirror_flip(self, joint_dag_paths, axis, tag):
+        for index in range (joint_dag_paths.length()):            
+            position = self.getJointPosition(joint_dag_paths[index])            
+            weight_data = self.get_weight(joint_dag_paths[index])
+
+            mirror_position = position[0]*axis[0], position[1]*axis[1],  position[2]*axis[2]
+            symmetry_weights = self.get_flip_weights(weight_data, axis)
+               
+            joint_dag_path = self.create('%s_joint' % tag)            
+            target_position = mirror_position
+            
+            if tag == 'mirror':
+                proxy_position = [1, 1, 1]
+                proxy_position[axis.index(-1)] = 0             
+                target_position = [mirror_position[0]*proxy_position[0], mirror_position[1]*proxy_position[1],
+                                   mirror_position[2]*proxy_position[2]] 
+                
+            self.setJointPosition(joint_dag_path, target_position)
+            
+            target_weights = symmetry_weights
+            if tag == 'mirror':
+                target_weights = self.merge_weights(weight_data['geometry'], symmetry_weights)
+            
+            print target_weights
+            
+            target_datas = {}
+            target_datas['geometry'] = target_weights
+            target_datas['position'] = mirror_position
+            target_datas['locked'] = False
+            
+            
+            self.addInfluence(joint_dag_path, target_weights.keys())
+
+            self.set_weight(joint_dag_path, target_datas)            
+                
+
+    def get_flip_weights(self, geometry_data, axis):
+        symmetry_weights = copy.deepcopy(geometry_data['geometry'])        
+        for each_geometry, weights_data in geometry_data['geometry'].items():            
+            geometry_dag_path = self.getDagPath(each_geometry)          
+            memberships = weights_data['memberships']
+            weights = weights_data['weights']
+            for index in range(len(weights)):               
+                symmetry_vertex_id = self.get_symmetry_vertex(geometry_dag_path, index, axis)
+                symmetry_weights[each_geometry]['weights'][symmetry_vertex_id] = weights[index]
+                symmetry_weights[each_geometry]['memberships'][symmetry_vertex_id] = memberships[index]
+
+        return symmetry_weights
     
     
+    def merge_weights(self, weight_a, weight_b):        
+        merge_weight_data = copy.deepcopy(weight_a)        
+        for each_geometry, geometry_data in weight_a.items():    
+            weights_a = geometry_data['weights']
+            memberships_a = geometry_data['memberships']
+            
+            for index in range (len(weights_a)):       
+                weight_index_b = weight_b[each_geometry]['weights'] 
+                membership_index_b = weight_b[each_geometry]['memberships'] 
+                
+                merge_weight = weights_a[index] + weight_index_b[index]
+                if merge_weight>1:
+                    merge_weight = 1
+                
+                current_memberships = True                    
+                if not memberships_a[index] and not membership_index_b[index]:    
+                    current_memberships = False
+                    
+                merge_weight_data[each_geometry]['weights'][index] = merge_weight     
+                merge_weight_data[each_geometry]['memberships'][index] = current_memberships
+                
+        return merge_weight_data   
         

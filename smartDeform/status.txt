@@ -21,20 +21,20 @@ Skincluster
 	cluster		Done
 	
 Mirror		
-	cluster		NAS
-	skincluster NAS
+	cluster		Done
+	skincluster Done
 	
 	all together convert
 
 Cluster	
 	Combine		Done
-	Copy		Dones
+	Copy		Done
 	Export		Done
 	Import		Done
 	
 Cluster	
-	Combine		NAS
-	Copy		NAS
+	Combine		Done
+	Copy		Done
 	Export		Done
 	Import		Done	
 	
@@ -42,3 +42,9 @@ Create Cluster
 
 
 Skin Cluster Hold and unhold option
+
+QC
+
+Final Testing
+
+release

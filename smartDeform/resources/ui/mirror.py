@@ -77,7 +77,18 @@ class Mirror(QtGui.QWidget):
             self.button_mirror = QtGui.QPushButton(self.groupbox)
             self.button_mirror.setObjectName('button_mirror_%s' % each_mirror)
             self.button_mirror.setText('Mirror')
-            self.horizontallayout.addWidget(self.button_mirror)            
+            self.horizontallayout.addWidget(self.button_mirror)
+            
+            self.button_flip = QtGui.QPushButton(self.groupbox)
+            self.button_flip.setObjectName('button_flip_%s' % each_mirror)
+            self.button_flip.setText('Flip')
+            self.horizontallayout.addWidget(self.button_flip)
+                        
+            radiobuttons = [self.radiobutton_x, self.radiobutton_y, self.radiobutton_z]
+            self.button_mirror.clicked.connect(partial (self.setMirrorFlip, each_mirror.lower(), 'mirror', radiobuttons))
+            self.button_flip.clicked.connect(partial (self.setMirrorFlip, each_mirror.lower(), 'flip', radiobuttons))
+            
+            self.radiobutton_x.setChecked(True)
             
             self.groupbox = QtGui.QGroupBox(self)
             self.groupbox.setObjectName('groupbox_%s' % each_mirror)
@@ -184,6 +195,38 @@ class Mirror(QtGui.QWidget):
 
         if tag=='skincluster':
             self.skincluster.copy_weights(selections[0], selections[selections.length()-1])
+            
+    def setMirrorFlip(self, type, tag, radiobuttons):
+        from smartDeform.modules import cluster
+        from smartDeform.modules import skincluster
+        from smartDeform.modules import studioMaya
+        
+        reload(studioMaya)
+        reload(cluster)
+        reload(skincluster)
+        
+        self.cluster = cluster.Cluster()
+        self.skincluster = skincluster.Skincluster()
+        self.my_maya = studioMaya.Maya()       
+        
+        selections = self.my_maya.getSelectedDagPaths()
+        
+        
+        axis = [1, 1, 1]
+        if radiobuttons[0].isChecked():
+            axis = [-1, 1, 1]   
+        if radiobuttons[1].isChecked():
+            axis = [1, -1, 1]       
+        if radiobuttons[2].isChecked():
+            axis = [1, 1, -1] 
+            
+            
+        if type=='cluster':
+            self.cluster.create_mirror_flip(selections, axis, tag)
+            
+        if type=='skincluster':
+            self.skincluster.create_mirror_flip(selections, axis, tag)
+
 
 
 if __name__ == '__main__':
