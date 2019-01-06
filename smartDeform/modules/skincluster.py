@@ -97,7 +97,7 @@ class Skincluster(studioMaya.Maya):
             # self.target_defomrer = clusterHandle
             pass
 
-        dag_paths, indexs, weights = self.getWeightsFromSelection()        
+        dag_paths, memberships, weights = self.getWeightsFromSelection()        
         if not dag_paths:
             return
                 
@@ -110,7 +110,7 @@ class Skincluster(studioMaya.Maya):
                 each_shape = self.target_geometrys[x]
                 shape_dag_path = self.getDagPath(each_shape)                
                 self.setSkinclusterWeights(m_skinclusters[0], joint_dag_path, 
-                        shape_dag_path, indexs[x], weights[x])
+                        shape_dag_path, memberships[x], weights[x])
 
 
 

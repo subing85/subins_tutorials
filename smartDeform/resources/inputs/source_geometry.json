@@ -15,7 +15,7 @@
 	        "label": "Wire",
 	        "tooltip": "Wire"
 	    }, 
-	    "skinCluster": {
+	    "skincluster": {
 	        "order": 6, 
 	        "label": "Skincluster",
 	        "tooltip": "Skincluster"

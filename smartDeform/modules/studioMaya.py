@@ -10,6 +10,43 @@ class Maya(object):
 
         self.getObjecTypes()
 
+    def hasCluster(self, dag_path):
+        if not isinstance(dag_path, OpenMaya.MDagPath):
+            dag_path = self.getDagPath()
+
+        mfn_dag_node = OpenMaya.MFnDagNode(dag_path)
+        cluster_dag_path = mfn_dag_node.dagPath()
+
+        try:
+            cluster_dag_path.extendToShape()
+        except:
+            cluster_dag_path = None
+        if not dag_path:
+            return False
+        if not cluster_dag_path:
+            return False
+        if not cluster_dag_path.hasFn(OpenMaya.MFn.kCluster):
+            return False
+        return True
+
+    def hasJoint(self, dag_path):
+        if not isinstance(dag_path, OpenMaya.MDagPath):
+            dag_path = self.getDagPath(dag_path)
+        if not dag_path.hasFn(OpenMaya.MFn.kJoint):
+            return False
+        return True
+
+    def hasMembership(self, deformer_mobject, geometry_dag_path, geometry_component):
+        mfn_geometry_filter = OpenMayaAnim.MFnGeometryFilter(deformer_mobject)
+        deformer_set = mfn_geometry_filter.deformerSet()
+        mfn_set = OpenMaya.MFnSet(deformer_set)
+        selectionList = OpenMaya.MSelectionList()
+        mfn_set.getMembers(selectionList, True)
+
+        if not selectionList.hasItem(geometry_dag_path, geometry_component):
+            return False
+        return True
+
     def getDagPath(self, node):
         mselection = OpenMaya.MSelectionList()
         mselection.add(node)
@@ -64,19 +101,7 @@ class Maya(object):
             dag_path = OpenMaya.MDagPath()
             selection_list.getDagPath(index, dag_path)
             dag_path_array.append(dag_path)
-
         return dag_path_array
-
-    def hasMembership(self, deformer_mobject, geometry_dag_path, geometry_component):
-        mfn_geometry_filter = OpenMayaAnim.MFnGeometryFilter(deformer_mobject)
-        deformer_set = mfn_geometry_filter.deformerSet()
-        mfn_set = OpenMaya.MFnSet(deformer_set)
-        selectionList = OpenMaya.MSelectionList()
-        mfn_set.getMembers(selectionList, True)
-
-        if not selectionList.hasItem(geometry_dag_path, geometry_component):
-            return False
-        return True
 
     def getSelectedObjectShapeNode(self, shape_type=None):
         '''
@@ -148,28 +173,8 @@ class Maya(object):
         return result
 
     def getDeformerNodes(self, node, node_type):
-
         result = self.getDependences(
             node, node_type, upstream=True, downstream=False)
-
-        return result
-
-#=========================================================================
-#         mobject = node
-#         if isinstance(node, str):
-#             mobject = self.getMObject(node)
-#
-#         dependency_graph = OpenMaya.MItDependencyGraph(mobject, node_type,
-#                                                        OpenMaya.MItDependencyGraph.kUpstream,
-#                                                        OpenMaya.MItDependencyGraph.kDepthFirst,
-#                                                        OpenMaya.MItDependencyGraph.kNodeLevel)
-#
-#         result = OpenMaya.MObjectArray()
-#         while not dependency_graph.isDone():
-#             current_item = dependency_graph.currentItem()
-#             result.append(current_item)
-#             dependency_graph.next()
-#=========================================================================
         return result
 
     def getConnectedNode(self, node_type, mess=False):
@@ -210,14 +215,14 @@ class Maya(object):
         return result
 
     def getSkinclusterJoints(self, node):
+        result = OpenMaya.MDagPathArray()        
         if not node:
-            return None
+            return result
         if not isinstance(node, OpenMaya.MObject):
             node = self.getMObject(node)
         mfn_skincluster = OpenMayaAnim.MFnSkinCluster(node)
         dag_path_array = OpenMaya.MDagPathArray()
-        mfn_skincluster.influenceObjects(dag_path_array)
-        result = OpenMaya.MDagPathArray()
+        mfn_skincluster.influenceObjects(dag_path_array)        
         for index in range(dag_path_array.length()):
             result.append(dag_path_array[index])
         return result
@@ -237,7 +242,6 @@ class Maya(object):
             for x in range(mplug.numElements()):
                 current_element = mplug.elementByLogicalIndex(x)
                 mplug_array.append(current_element)
-
         return mplug_array
 
     def getDeformerJoints(self, mobjects):
@@ -275,16 +279,12 @@ class Maya(object):
         return cluster_data
 
     def getWireDeformerData(self, mwire_objects):
-
         for index in range(mwire_objects.length()):
             curve_object = self.getDeformerNodes(
                 mwire_objects[index], OpenMaya.MFn.kCurve)
-
             joints = self.getDeformerJoints(curve_object)
-
             for j, v in joints.items():
                 mfn_j = OpenMaya.MFnDependencyNode(j)
-                print mfn_j.name()
 
     def getObjecTypes(self):
         self.object_types = {'mesh': OpenMaya.MFn.kMesh,
@@ -292,13 +292,9 @@ class Maya(object):
                              'wire': OpenMaya.MFn.kWire,
                              'lattice': OpenMaya.MFn.kLattice,
                              'ffd': OpenMaya.MFn.kFFD,
-                             # 'cluster': OpenMaya.MFn.kClusterFilter,
-                             # 'clusterShape': OpenMaya.MFn.kCluster,
-
                              'cluster': OpenMaya.MFn.kCluster,
                              'clusterShape': OpenMaya.MFn.kClusterFilter,
-
-                             'skinCluster': OpenMaya.MFn.kSkinClusterFilter,
+                             'skincluster': OpenMaya.MFn.kSkinClusterFilter,
                              'joint': OpenMaya.MFn.kJoint
                              }
 
@@ -308,10 +304,8 @@ class Maya(object):
         return component_weights <list> example [[maya.OpenMaya.MObject, OpenMaya.MFloatArray],
                                           [maya.OpenMaya.MObject, OpenMaya.MFloatArray]]
         '''
-
         mrich_selection = OpenMaya.MRichSelection()
         OpenMaya.MGlobal.getRichSelection(mrich_selection)
-
         mselection_list = OpenMaya.MSelectionList()
         mrich_selection.getSelection(mselection_list)
         mit_selection_list = OpenMaya.MItSelectionList(mselection_list)
@@ -321,8 +315,7 @@ class Maya(object):
             return None, None, None
 
         dag_paths = OpenMaya.MDagPathArray()
-        # mobjects = OpenMaya.MObjectArray()
-        indexs = []
+        memberships = []
         weights = []
 
         while not mit_selection_list.isDone():
@@ -332,97 +325,28 @@ class Maya(object):
                 OpenMaya.MGlobal.displayError('your some selection wrong!...')
                 return None, None, None
 
+            mit_geometry = OpenMaya.MItGeometry(dag_path)
+            weight_array = OpenMaya.MFloatArray()
+            membership_array = []
+            while not mit_geometry.isDone():
+                index = mit_geometry.index()
+                weight_array.append(0)
+                membership_array.append(False)
+                mit_geometry.next()
+
             mfncomponent = OpenMaya.MFnComponent(mobject)
             index_component = OpenMaya.MFnSingleIndexedComponent(mobject)
-            mfloat_array = OpenMaya.MFloatArray()
-            mint_array = OpenMaya.MIntArray()
-
             for index in range(index_component.elementCount()):
-                mindex = index_component.element(index)
-                mweight = mfncomponent.weight(index)
-                mint_array.append(mindex)
-                mfloat_array.append(mweight.influence())
+                index_id = index_component.element(index)
+                m_weight = mfncomponent.weight(index)
+                weight_array[index_id] = m_weight.influence()
 
+                membership_array[index_id] = True
             dag_paths.append(dag_path)
-            # mobjects.append(mobject)
-            indexs.append(mint_array)
-            weights.append(mfloat_array)
+            memberships.append(membership_array)
+            weights.append(weight_array)
             mit_selection_list.next()
-
-        return dag_paths, indexs, weights
-
-    def setWeightsToSelection(self, deformer, dag_paths, indexs, weights):
-        if not isinstance(deformer, OpenMaya.MObject):
-            deformer = self.getMObject(deformer)
-
-        deformer_mfn_geo_filter = OpenMayaAnim.MFnWeightGeometryFilter(
-            deformer)
-
-        for x in range(dag_paths.length()):
-            current_dag_path = dag_paths[x]
-            current_index = indexs[x]
-            current_weight = weights[x]
-
-            # indexs to components
-            index_component = OpenMaya.MFnSingleIndexedComponent()
-            components = index_component.create(
-                OpenMaya.MFn.kMeshVertComponent)
-            index_component.addElements(current_index)
-
-            # add to deformer set
-            mfn_geo_filter = OpenMayaAnim.MFnGeometryFilter(deformer)
-            deformer_set = mfn_geo_filter.deformerSet()
-            mfn_set = OpenMaya.MFnSet(deformer_set)
-            mfn_set.addMember(current_dag_path, components)
-
-            # set weight values
-            deformer_mfn_geo_filter.setWeight(
-                current_dag_path, components, current_weight)
-
-    def setClusterWeights(self, dag_path, cluster_mobject, weights):
-        if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = self.getDagPath(dag_path)
-
-        if not isinstance(cluster_mobject, OpenMaya.MObject):
-            cluster_mobject = self.getMObject(cluster_mobject)
-
-        components = self.getVertexsMObjects(dag_path)
-
-        mfn_geo_filter = OpenMayaAnim.MFnGeometryFilter(cluster_mobject)
-        deformer_set = mfn_geo_filter.deformerSet()
-        mfn_set = OpenMaya.MFnSet(deformer_set)
-        mfn_set.addMember(dag_path, components)
-
-        weight_geometry_filter = OpenMayaAnim.MFnWeightGeometryFilter(cluster_mobject)
-        weight_geometry_filter.setWeight(dag_path, components, weights)
-
-    def setMembership(self, geomotry_dag_path, deformer_mobject, memberships):
-        
-        mfn_geo_filter = OpenMayaAnim.MFnGeometryFilter(deformer_mobject)
-        deformer_set = mfn_geo_filter.deformerSet()
-        mfn_set = OpenMaya.MFnSet(deformer_set)
-        add_selection_lst = OpenMaya.MSelectionList()
-        remove_selection_lst = OpenMaya.MSelectionList()
-        
-        mit_geometry = OpenMaya.MItGeometry(geomotry_dag_path)
-
-        while not mit_geometry.isDone():
-            index = mit_geometry.index()
-            component = mit_geometry.currentItem()
-            
-            if memberships[index]:
-                add_selection_lst.add(geomotry_dag_path, component)
-            else:
-                remove_selection_lst.add(geomotry_dag_path, component)
-                
-            mit_geometry.next()
-
-        if not add_selection_lst.isEmpty():
-            mfn_set.addMembers(add_selection_lst)
-            
-        if not remove_selection_lst.isEmpty():
-            mfn_set.removeMembers(remove_selection_lst)
-            
+        return dag_paths, memberships, weights
 
     def getWeightsFromEnvelope(self, origin_object, envelope_object, attribute=None):
         if not isinstance(origin_object, OpenMaya.MObject):
@@ -436,8 +360,8 @@ class Maya(object):
 
         if attribute:
             node, attribute = attribute.split('.')
-            mplug = self.getPlug(node, attribute)
-            mplug.setInt(1)
+            mplug = self.u(node, attribute)
+            mplug.setInt(mplug.asInt+1)
 
         mfn_envelope_mesh = OpenMaya.MFnMesh(envelope_object)
         envelope_point_array = OpenMaya.MFloatPointArray()
@@ -445,7 +369,7 @@ class Maya(object):
             envelope_point_array, OpenMaya.MSpace.kObject)
 
         if attribute:
-            mplug.setInt(0)
+            mplug.setInt(mplug.asInt-1)
 
         if envelope_point_array.length() != origin_point_array.length():
             raise Exception('# Target does not match with base.')
@@ -457,28 +381,193 @@ class Maya(object):
             envelope_mvector = OpenMaya.MVector(envelope_point_array[index])
             length = origin_mvector - envelope_mvector
             weights.append(length.length())
-
         return weights
+    
+    def getWeightsFromCurve(self, curve_dag_path, geomerty_dag_path):        
+        if not isinstance(geomerty_dag_path, OpenMaya.MDagPath):    
+            geomerty_dag_path = self.getDagPath(geomerty_dag_path)
+        if not isinstance(curve_dag_path, OpenMaya.MDagPath):    
+            curve_dag_path = self.getDagPath(curve_dag_path)
+            
+        weights = {}                        
+        mfn_nurbs_curve = OpenMaya.MFnNurbsCurve(curve_dag_path)        
+        for cv in range (mfn_nurbs_curve.numCVs()):            
+            mfn_origin_mesh = OpenMaya.MFnMesh(geomerty_dag_path)
+            origin_point_array = OpenMaya.MFloatPointArray()
+            mfn_origin_mesh.getPoints(origin_point_array, OpenMaya.MSpace.kObject)    
+            position = OpenMaya.MPoint()
+            mfn_nurbs_curve.getCV(cv, position) 
+            ing_position = OpenMaya.MPoint(position.x+1, position.y, position.z)    
+            mfn_nurbs_curve.setCV(cv, ing_position)   
+            mfn_envelope_mesh = OpenMaya.MFnMesh(geomerty_dag_path)
+            envelope_point_array = OpenMaya.MFloatPointArray()
+            mfn_envelope_mesh.getPoints(envelope_point_array, OpenMaya.MSpace.kObject)
+            mfn_nurbs_curve.setCV(cv, position)   
+                     
+            cv_weights = OpenMaya.MFloatArray()            
+            for index in range(origin_point_array.length()):
+                origin_mvector = OpenMaya.MVector(origin_point_array[index])
+                envelope_mvector = OpenMaya.MVector(envelope_point_array[index])
+                length = origin_mvector - envelope_mvector
+                cv_weights.append(length.length())
+                
+            weight_data = {}
+            weight_data['position'] = [position.x, position.y, position.z]
+            weight_data['weights'] = cv_weights            
+                
+            weights.setdefault(cv, weight_data)
+        return weights       
 
     def getName(self, maya_object):
-
         if isinstance(maya_object, OpenMaya.MDagPath):
-            # bprint maya_object.fullPathName()
             return maya_object.fullPathName()
-
         if isinstance(maya_object, OpenMaya.MObject):
             mfn_dependency_node = OpenMaya.MFnDependencyNode(maya_object)
-            # print mfn_dependency_node.name()
             return mfn_dependency_node.name()
 
-    def setSkinclusterWeights(self, skincluster, joint, shape, vertexs, weights):
+    def getCenterPosition(self, dag_paths, type):
+        x, y, z = 0, 0, 0
+        for each_dag_path in dag_paths:
+            if type == 'cluster':
+                position = self.getClusterPosition(each_dag_path)
+            else:
+                position = self.getJointPosition(each_dag_path)
+            x += position[0]
+            y += position[1]
+            z += position[2]
+        center = [x / dag_paths.length(), y / dag_paths.length(),
+                  z / dag_paths.length()]
+        return center
 
+    def get_symmetry_vertex(self, geometry_dag_path, vertex_id, axis=[-1, 1, 1]):
+        mfn_mesh = OpenMaya.MFnMesh(geometry_dag_path)
+        position_m_point = OpenMaya.MPoint()
+        mfn_mesh.getPoint(vertex_id, position_m_point, OpenMaya.MSpace.kWorld)
+
+        symmetry_position = OpenMaya.MPoint()
+        symmetry_position.x = position_m_point.x * axis[0]
+        symmetry_position.y = position_m_point.y * axis[1]
+        symmetry_position.z = position_m_point.z * axis[2]
+
+        closest_m_point = OpenMaya.MPoint()
+        m_script_util = OpenMaya.MScriptUtil()
+        index_ptr = m_script_util.asIntPtr()
+        prev_index = m_script_util.asIntPtr()
+
+        mfn_mesh.getClosestPoint(
+            symmetry_position, closest_m_point, OpenMaya.MSpace.kWorld, index_ptr)
+        int_index = m_script_util.getInt(index_ptr)
+
+        mit_mesh_polygon = OpenMaya.MItMeshPolygon(geometry_dag_path)
+        mit_mesh_polygon.setIndex(int_index, prev_index)
+
+        face_vertex_array = OpenMaya.MIntArray()
+        mit_mesh_polygon.getVertices(face_vertex_array)
+        vector_lengths = []
+
+        for each_vertex in face_vertex_array:
+            vertex_symmetry_position = OpenMaya.MPoint()
+            mfn_mesh.getPoint(
+                each_vertex, vertex_symmetry_position, OpenMaya.MSpace.kWorld)
+
+            vertex_symmetry_vector = OpenMaya.MVector(vertex_symmetry_position)
+            symmetry_vector = OpenMaya.MVector(symmetry_position)
+
+            mVectorLength = vertex_symmetry_vector - symmetry_vector
+            length = mVectorLength.length()
+            vector_lengths.append(length)
+
+        closest_vertex = min(vector_lengths)
+        vertexIndex = vector_lengths.index(closest_vertex)
+        symmetry_vertex_id = face_vertex_array[vertexIndex]
+        return symmetry_vertex_id
+
+    def get_center_of_selection(self):
+        mselection_list = OpenMaya.MSelectionList()
+        OpenMaya.MGlobal.getActiveSelectionList(mselection_list)
+        mit_selection_list = OpenMaya.MItSelectionList(mselection_list)
+        x, y, z = 0, 0, 0
+        count = 0
+        while not mit_selection_list.isDone():
+            dag_path, mobject = OpenMaya.MDagPath(), OpenMaya.MObject()
+            mit_selection_list.getDagPath(dag_path, mobject)
+
+            mfncomponent = OpenMaya.MFnComponent(mobject)
+            index_component = OpenMaya.MFnSingleIndexedComponent(mobject)
+            mfn_mesh = OpenMaya.MFnMesh(dag_path)
+            count += index_component.elementCount()
+
+            for index in range(index_component.elementCount()):
+                index_id = index_component.element(index)
+
+                m_point = OpenMaya.MPoint()
+                mfn_mesh.getPoint(index_id, m_point)
+                x += m_point.x
+                y += m_point.y
+                z += m_point.z
+            
+            mit_selection_list.next()
+            
+        return x/count, y/count, z/count
+
+    def get_center_of_weights(self, mobject, weights):
+        mfn_mesh = OpenMaya.MFnMesh(source_mobject)
+        x, y, z = 0, 0, 0
+        count = 0
+        for index in range(weights.length()):    
+            if weights[index]<=0:
+                continue   
+            m_point = OpenMaya.MPoint()
+            mfn_mesh.getPoint(index, m_point)    
+            x += m_point.x
+            y += m_point.y
+            z += m_point.z
+            count +=1
+        return x/count, y/count, z/count    
+
+    def setClusterWeights(self, dag_path, cluster_mobject, weights):
+        if not isinstance(dag_path, OpenMaya.MDagPath):
+            dag_path = self.getDagPath(dag_path)
+        if not isinstance(cluster_mobject, OpenMaya.MObject):
+            cluster_mobject = self.getMObject(cluster_mobject)
+
+        components = self.getVertexsMObjects(dag_path)
+        mfn_geo_filter = OpenMayaAnim.MFnGeometryFilter(cluster_mobject)
+        deformer_set = mfn_geo_filter.deformerSet()
+        mfn_set = OpenMaya.MFnSet(deformer_set)
+        mfn_set.addMember(dag_path, components)
+
+        weight_geometry_filter = OpenMayaAnim.MFnWeightGeometryFilter(
+            cluster_mobject)
+        weight_geometry_filter.setWeight(dag_path, components, weights)
+
+    def setMembership(self, geomotry_dag_path, deformer_mobject, memberships):
+        mfn_geo_filter = OpenMayaAnim.MFnGeometryFilter(deformer_mobject)
+        deformer_set = mfn_geo_filter.deformerSet()
+        mfn_set = OpenMaya.MFnSet(deformer_set)
+        add_selection_lst = OpenMaya.MSelectionList()
+        remove_selection_lst = OpenMaya.MSelectionList()
+
+        mit_geometry = OpenMaya.MItGeometry(geomotry_dag_path)
+        while not mit_geometry.isDone():
+            index = mit_geometry.index()
+            component = mit_geometry.currentItem()
+            if memberships[index]:
+                add_selection_lst.add(geomotry_dag_path, component)
+            else:
+                remove_selection_lst.add(geomotry_dag_path, component)
+            mit_geometry.next()
+
+        if not add_selection_lst.isEmpty():
+            mfn_set.addMembers(add_selection_lst)
+        if not remove_selection_lst.isEmpty():
+            mfn_set.removeMembers(remove_selection_lst)
+
+    def setSkinclusterWeights(self, skincluster, joint, shape, vertexs, weights):
         if not isinstance(skincluster, OpenMaya.MObject):
             skincluster = self.getMObject(skincluster)
-
         if not isinstance(joint, OpenMaya.MDagPath):
             joint = self.getDagPath(joint)
-
         if not isinstance(shape, OpenMaya.MDagPath):
             shape = self.getDagPath(shape)
 
@@ -486,42 +575,12 @@ class Maya(object):
         joint_index = mfn_skincluster.indexForInfluenceObject(joint)
 
         old_values = OpenMaya.MFloatArray()
-
         for index in range(len(vertexs)):
             index_component = OpenMaya.MFnSingleIndexedComponent()
             component = index_component.create(OpenMaya.MFn.kMeshVertComponent)
             index_component.addElement(vertexs[index])
-
             mfn_skincluster.setWeights(shape, component, joint_index,
                                        weights[index], True, old_values)
-
-    def hasCluster(self, dag_path):
-        if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = self.getDagPath()
-
-        mfn_dag_node = OpenMaya.MFnDagNode(dag_path)
-        cluster_dag_path = mfn_dag_node.dagPath()
-
-        try:
-            cluster_dag_path.extendToShape()
-        except:
-            cluster_dag_path = None
-        if not dag_path:
-            return False
-        if not cluster_dag_path:
-            return False
-
-        if not cluster_dag_path.hasFn(OpenMaya.MFn.kCluster):
-            return False
-
-        return True
-
-    def hasJoint(self, dag_path):
-        if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = self.getDagPath(dag_path)
-        if not dag_path.hasFn(OpenMaya.MFn.kJoint):
-            return False
-        return True
 
     def getClusterPosition(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
@@ -530,7 +589,6 @@ class Maya(object):
         mfn_transform = OpenMaya.MFnTransform(dag_path)
         m_transformation_matrix = mfn_transform.transformation()
         m_point = m_transformation_matrix.rotatePivot(OpenMaya.MSpace.kWorld)
-
         return m_point.x, m_point.y, m_point.z
 
     def getJointPosition(self, dag_path):
@@ -539,18 +597,15 @@ class Maya(object):
 
         mfn_transform = OpenMaya.MFnTransform(dag_path)
         m_vector = mfn_transform.translation(OpenMaya.MSpace.kWorld)
-
         return m_vector.x, m_vector.y, m_vector.z
 
     def setClusterPosition(self, dag_path, position):
-
         attributes_x = ['originX', 'rotatePivotX', 'scalePivotX']
         attributes_y = ['originY', 'rotatePivotY', 'scalePivotY']
         attributes_z = ['originZ', 'rotatePivotZ', 'scalePivotZ']
 
         if isinstance(dag_path, OpenMaya.MDagPath):
             dag_path = dag_path.fullPathName()
-
         for index in range(3):
             plug_x = self.getPlug(dag_path, attributes_x[index])
             plug_y = self.getPlug(dag_path, attributes_y[index])
@@ -558,150 +613,62 @@ class Maya(object):
             plug_x.setFloat(position[0])
             plug_y.setFloat(position[1])
             plug_z.setFloat(position[2])
-            
+
     def setJointPosition(self, dag_path, position):
         if isinstance(dag_path, OpenMaya.MDagPath):
             dag_path = dag_path.fullPathName()
-            
         plug_x = self.getPlug(dag_path, 'translateX')
         plug_y = self.getPlug(dag_path, 'translateY')
         plug_z = self.getPlug(dag_path, 'translateZ')
         plug_x.setFloat(position[0])
         plug_y.setFloat(position[1])
-        plug_z.setFloat(position[2])        
-            
-            
-    def getCenterPosition(self, dag_paths, type):
-        x, y, z = 0, 0, 0        
-        for each_dag_path in dag_paths:
-            if type=='cluster':
-                position = self.getClusterPosition(each_dag_path) 
-            else:
-                position = self.getJointPosition(each_dag_path)                           
-            x += position[0]
-            y += position[1]
-            z += position[2]            
-        center = [x/2, y/2, z/2]
-        
-        return center
-    
-    
+        plug_z.setFloat(position[2])
+
     def createEmptyWeights(self, dag_path):
-        
         if not isinstance(dag_path, OpenMaya.MDagPath):
             dag_path = self.getDagPath(dag_path)
-            
-        mmit_mesh_vertex = OpenMaya.MItMeshVertex(dag_path)    
-        
+
+        mmit_mesh_vertex = OpenMaya.MItMeshVertex(dag_path)
         weights = OpenMaya.MFloatArray()
         memberships = OpenMaya.MIntArray()
-    
-        while not mmit_mesh_vertex.isDone ():
+        while not mmit_mesh_vertex.isDone():
             weights.append(0)
             memberships.append(False)
-            mmit_mesh_vertex.next()            
+            mmit_mesh_vertex.next()
         return weights, memberships
-    
-    
+
     def addInfluence(self, joint, geometrys):
         if isinstance(joint, OpenMaya.MDagPath):
-            joint = joint.fullPathName()        
+            joint = joint.fullPathName()
+
         for each_geometry in geometrys:
-            
             m_object = self.getMObject(each_geometry)
-            m_skinclusters = self.getDeformerNodes(m_object, OpenMaya.MFn.kSkinClusterFilter)
+            m_skinclusters = self.getDeformerNodes(
+                m_object, OpenMaya.MFn.kSkinClusterFilter)
 
             if not m_skinclusters.length():
-                OpenMaya.MGlobal.displayWarning('\nCan not find skincluster \"%s\"' % each_geometry.encode())
+                OpenMaya.MGlobal.displayWarning(
+                    '\nCan not find skincluster \"%s\"' % each_geometry.encode())
                 continue
-            
+
             skincluster = self.getName(m_skinclusters[0])
             OpenMaya.MGlobal.executeCommand('skinCluster -e -ug -dr 4 -ps 0 \
                         -ns 10 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
-            
-            plug = self.getPlug(joint, 'liw') 
+            plug = self.getPlug(joint, 'liw')
             plug.setBool(False)
-            
         return True
-    
-    
-    def findxIndexFromSkincluster(self, mfn_skincluster, joint_dag_path):        
+
+    def findxIndexFromSkincluster(self, mfn_skincluster, joint_dag_path):
         joints_dag_path_array = OpenMaya.MDagPathArray()
         mfn_skincluster.influenceObjects(joints_dag_path_array)
-                
-        influence_indexs = {}        
-        for index in range (joints_dag_path_array.length()):
+
+        influence_indexs = {}
+        for index in range(joints_dag_path_array.length()):
             current_joint = joints_dag_path_array[index].fullPathName()
             influence_indexs.setdefault(current_joint, index)
-            
+
         if joint_dag_path.fullPathName() not in influence_indexs:
-            OpenMaya.MGlobal.displayWarning('\nCan not find index of \"%s\"' % joint_dag_path.fullPathName())
+            OpenMaya.MGlobal.displayWarning(
+                '\nCan not find index of \"%s\"' % joint_dag_path.fullPathName())
             return
-            
         return influence_indexs[joint_dag_path.fullPathName()]
-            
-
-    def get_symmetry_vertex (self, geometry_dag_path, vertex_id, axis=[-1,1,1]) :
-        mfn_mesh = OpenMaya.MFnMesh(geometry_dag_path)        
-        position_m_point = OpenMaya.MPoint()
-        mfn_mesh.getPoint (vertex_id, position_m_point, OpenMaya.MSpace.kWorld)
-        
-        symmetry_position = OpenMaya.MPoint()
-        symmetry_position.x = position_m_point.x*axis[0]
-        symmetry_position.y = position_m_point.y*axis[1]
-        symmetry_position.z = position_m_point.z*axis[2]
-        
-        closest_m_point = OpenMaya.MPoint()
-        m_script_util = OpenMaya.MScriptUtil()
-        index_ptr = m_script_util.asIntPtr()
-        prev_index = m_script_util.asIntPtr()
-        
-        mfn_mesh.getClosestPoint(symmetry_position, closest_m_point, OpenMaya.MSpace.kWorld, index_ptr)        
-        int_index = m_script_util.getInt(index_ptr)        
-        
-        mit_mesh_polygon = OpenMaya.MItMeshPolygon(geometry_dag_path)        
-        mit_mesh_polygon.setIndex(int_index, prev_index)
-        
-        face_vertex_array = OpenMaya.MIntArray ()
-        mit_mesh_polygon.getVertices(face_vertex_array)
-        
-        vector_lengths = []
-        
-        for each_vertex in face_vertex_array:
-            vertex_symmetry_position = OpenMaya.MPoint()
-            mfn_mesh.getPoint (each_vertex, vertex_symmetry_position, OpenMaya.MSpace.kWorld)
-            
-            vertex_symmetry_vector = OpenMaya.MVector(vertex_symmetry_position)
-            symmetry_vector = OpenMaya.MVector(symmetry_position)
-            
-            mVectorLength = vertex_symmetry_vector-symmetry_vector
-            length = mVectorLength.length()
-            vector_lengths.append(length)
-            
-        closest_vertex = min(vector_lengths)
-        vertexIndex = vector_lengths.index(closest_vertex)
-        symmetry_vertex_id = face_vertex_array[vertexIndex]   
-        
-        return symmetry_vertex_id       
-    
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
