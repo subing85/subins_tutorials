@@ -333,11 +333,13 @@ class Geometry(QtGui.QWidget):
             return   
                  
         if self.target_deformer[0] == 1:  # to cluster
-            if self.source_deformer[0] == 5:
-                QtGui.QMessageBox.warning(self, 'Warning',
-                                          'sorry can not process %s to %s!...' % (
-                                              self.source_deformer[1], self.target_deformer[1]),
-                                          QtGui.QMessageBox.Ok)
+            #===================================================================
+            # if self.source_deformer[0] == 5:
+            #     QtGui.QMessageBox.warning(self, 'Warning',
+            #                               'sorry can not process %s to %s!...' % (
+            #                                   self.source_deformer[1], self.target_deformer[1]),
+            #                               QtGui.QMessageBox.Ok)
+            #===================================================================
 
             my_cluster = cluster.Cluster(source_geometry=self.source_geometry,
                                          target_geometrys=[
@@ -372,12 +374,18 @@ class Geometry(QtGui.QWidget):
                     my_cluster.lattice()
                 except Exception as error:
                     raise Exception(error)
+                
+            if self.source_deformer[0] == 5:  # to lattice
+                try:
+                    my_cluster.to_cluster()
+                except Exception as error:
+                    raise Exception(error)                
 
             if self.source_deformer[0] == 6:  # to skincluster
-                try:
-                    my_cluster.skincluster()
-                except Exception as error:
-                    raise Exception(error)
+                #try:
+                my_cluster.skin_cluster()
+                #except Exception as error:
+                #    raise Exception(error)
 
         if self.target_deformer[0] == 2:  # to skincluster
             my_skincluster = skincluster.Skincluster(source_geometry=self.source_geometry,

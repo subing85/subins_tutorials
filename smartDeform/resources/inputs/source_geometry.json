@@ -39,11 +39,6 @@
 	        "order": 1, 
 	        "label": "Soft Selection",
 	        "tooltip": "Soft Selection"        
-	    },
-	    "any": {
-	        "order": 7, 
-	        "label": "Any",
-	        "tooltip": "Any deformer"        
-	    }    
+	    }
 	}
 }

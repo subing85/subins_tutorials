@@ -360,8 +360,8 @@ class Maya(object):
 
         if attribute:
             node, attribute = attribute.split('.')
-            mplug = self.u(node, attribute)
-            mplug.setInt(mplug.asInt+1)
+            mplug = self.getPlug(node, attribute)
+            mplug.setInt(mplug.asInt()+1)
 
         mfn_envelope_mesh = OpenMaya.MFnMesh(envelope_object)
         envelope_point_array = OpenMaya.MFloatPointArray()
@@ -369,7 +369,7 @@ class Maya(object):
             envelope_point_array, OpenMaya.MSpace.kObject)
 
         if attribute:
-            mplug.setInt(mplug.asInt-1)
+            mplug.setInt(mplug.asInt()-1)
 
         if envelope_point_array.length() != origin_point_array.length():
             raise Exception('# Target does not match with base.')
@@ -420,10 +420,10 @@ class Maya(object):
 
     def getName(self, maya_object):
         if isinstance(maya_object, OpenMaya.MDagPath):
-            return maya_object.fullPathName()
+            return maya_object.fullPathName().encode()
         if isinstance(maya_object, OpenMaya.MObject):
             mfn_dependency_node = OpenMaya.MFnDependencyNode(maya_object)
-            return mfn_dependency_node.name()
+            return mfn_dependency_node.name().encode()
 
     def getCenterPosition(self, dag_paths, type):
         x, y, z = 0, 0, 0
@@ -672,3 +672,67 @@ class Maya(object):
                 '\nCan not find index of \"%s\"' % joint_dag_path.fullPathName())
             return
         return influence_indexs[joint_dag_path.fullPathName()]
+    
+    def getParents(self, object_dag_path):
+        if not isinstance(object_dag_path, OpenMaya.MDagPath):
+            object_dag_path = self.getDagPath(object_dag_path)        
+        mfn_dag_node = OpenMaya.MFnDagNode(object_dag_path)
+        parents = OpenMaya.MDagPathArray()
+        for index in range (mfn_dag_node.parentCount()):
+            current_parent = mfn_dag_node.parent(index)
+            parent_mfn_dag_node = OpenMaya.MFnDagNode(current_parent)
+            if not parent_mfn_dag_node.fullPathName():
+                continue
+            parent_dag_Path = self.getDagPath(parent_mfn_dag_node.fullPathName().encode())       
+            parents.append(parent_dag_Path)
+        return parents
+         
+    def getChildren(self, object_dag_path):
+        if not isinstance(object_dag_path, OpenMaya.MDagPath):
+            object_dag_path = self.getDagPath(object_dag_path)        
+        mfn_dag_node = OpenMaya.MFnDagNode(object_dag_path)
+        chidren = OpenMaya.MDagPathArray()
+        for index in range (mfn_dag_node.childCount()):
+            current_child = mfn_dag_node.child(index)
+            child_mfn_dag_node = OpenMaya.MFnDagNode(current_child)
+            if not child_mfn_dag_node.fullPathName():
+                continue
+            child_dag_Path = self.getDagPath(child_mfn_dag_node.fullPathName().encode())       
+            chidren.append(child_dag_Path)
+        return chidren
+    
+    def unParent(self, object):        
+        if not object:
+            return       
+        if isinstance(object, OpenMaya.MDagPath):
+            object = object.fullPathName().encode()            
+        if isinstance(object, OpenMaya.MObject):
+            mfn_dag_node = OpenMaya.MFnDagNode(object)
+            object = mfn_dag_node.fullPathName().encode()
+        mcommand_result = OpenMaya.MCommandResult()
+        OpenMaya.MGlobal.executeCommand('parent -w %s' % object, mcommand_result, True, True)
+        OpenMaya.MGlobal.clearSelectionList()
+        results = []
+        mcommand_result.getResult(results)        
+        return results
+    
+    def parentTo(self, source, target):        
+        if not source or not target:
+            return        
+        if isinstance(source, OpenMaya.MDagPath):
+            source = source.fullPathName().encode()            
+        if isinstance(source, OpenMaya.MObject):
+            mfn_dag_node = OpenMaya.MFnDagNode(source)
+            source = mfn_dag_node.fullPathName().encode()            
+        if isinstance(target, OpenMaya.MDagPath):
+            target = target.fullPathName().encode()            
+        if isinstance(target, OpenMaya.MObject):
+            mfn_dag_node = OpenMaya.MFnDagNode(target)
+            target = mfn_dag_node.fullPathName().encode()           
+        mcommand_result = OpenMaya.MCommandResult()
+        OpenMaya.MGlobal.executeCommand('parent %s %s' % (source, target), mcommand_result, True, True)
+        OpenMaya.MGlobal.clearSelectionList()        
+        results = []
+        mcommand_result.getResult(results)
+        return results             
+

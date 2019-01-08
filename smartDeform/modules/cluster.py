@@ -7,7 +7,9 @@ from maya import OpenMayaAnim
 import studioMaya
 
 from smartDeform.modules import studioMaya
+from smartDeform.modules import skincluster
 reload(studioMaya)
+reload(skincluster)
 
 
 class Cluster(studioMaya.Maya):
@@ -253,9 +255,9 @@ class Cluster(studioMaya.Maya):
             return
         if not self.target_deformers:
             x, y, z = self.get_center_of_selection()
-            cluster, clustserHandle = self.create('soft_selection_cluster')
-            self.setClusterPosition(clustserHandle, [x, y, z])
-            self.target_deformers = [clustserHandle.encode()]
+            cluster, clusterhandle = self.create('soft_selection_cluster')
+            self.setClusterPosition(clusterhandle, [x, y, z])
+            self.target_deformers = [clusterhandle.encode()]
 
         for each_cluster in self.target_deformers:
             cluster_mobject = self.getDependences(
@@ -281,8 +283,8 @@ class Cluster(studioMaya.Maya):
             _targt_deformers = self.target_deformers[index]                 
             if not self.target_deformers[index]:
                 name = '%s_blend_shape_cluster' % self.source_deformers[index].replace('.', '_')
-                cluster, clustserHandle = self.create(name, clear=True)
-                _targt_deformers = clustserHandle.encode()
+                cluster, clusterhandle = self.create(name, clear=True)
+                _targt_deformers = clusterhandle.encode()
                 
             cluster_mobject = self.getDependences(_targt_deformers, OpenMaya.MFn.kClusterFilter)
             weights = self.getWeightsFromEnvelope(source_mobject, source_mobject, self.source_deformers[index])
@@ -296,31 +298,118 @@ class Cluster(studioMaya.Maya):
                 self.target_deformers.append(None)
         loop = min([len(self.target_deformers), len(self.source_deformers)])
         
+        source_deformer_dag_path = OpenMaya.MDagPathArray()
         for index in range(loop):              
             source_dag_path = self.getDagPath(self.source_deformers[index])
+            source_deformer_dag_path.append(source_dag_path)       
+        
+        for index in range(source_deformer_dag_path.length()): 
+                         
+            source_dag_path = source_deformer_dag_path[index]
             if source_dag_path.hasFn(OpenMaya.MFn.kCurve): # to check to curve
-                curve_weights = self.getWeightsFromCurve(source_dag_path, self.target_geometrys[0])
-                for k, v in curve_weights.items():                    
+                curve_weights = self.getWeightsFromCurve(source_dag_path, self.source_geometry)
+                for k, v in curve_weights.items():
                     name = '%s_%s_wire_cluster' % (self.source_deformers[index], k)                    
                     cluster, clusterhandel = self.create(name, clear=True)                    
                     self.setClusterPosition(clusterhandel.encode(), v['position'])
                     self.setClusterWeights(self.target_geometrys[0], cluster.encode(), v['weights'])
-            else:
-                _targt_deformers = self.target_deformers[index]                 
+                    
+            elif source_dag_path.hasFn(OpenMaya.MFn.kTransform) or source_dag_path.hasFn(OpenMaya.MFn.kJoint):
+                _targt_deformers = self.target_deformers[index]
+                
+                # parents = self.getParents(source_dag_path)
+                # for pindex in range (parents.length()):
+                #    self.unParent(source_dag_path)
+                    
+                children = self.getChildren(source_dag_path)
+                for cindex in range (children.length()):                    
+                    self.unParent(children[cindex])
+
                 if not self.target_deformers[index]:
                     name = '%s_wire_cluster' % self.source_deformers[index]
-                    cluster, clustserHandle = self.create(name, clear=True)
-                    _targt_deformers = clustserHandle.encode()                    
-                    x, y, z = self.getClusterPosition(self.source_deformers[index])
-                    self.setClusterPosition(clustserHandle.encode(), [x, y, z])  
-                                    
+                    cluster, clusterhandle = self.create(name, clear=True)
+                    _targt_deformers = clusterhandle.encode()
+                    
+                    x, y, z = self.clusterhandle(self.source_deformers[index])
+                    if  source_dag_path.hasFn(OpenMaya.MFn.kJoint):                               
+                        x, y, z = self.getJointPosition(self.source_deformers[index])
+                    self.setClusterPosition(clusterhandle.encode(), [x, y, z])
+                                            
                 attribute = '{}.translateX'.format(self.source_deformers[index])
                 cluster_mobject = self.getDependences(_targt_deformers, OpenMaya.MFn.kClusterFilter)
                 weights = self.getWeightsFromEnvelope(source_mobject, source_mobject, attribute)
                 self.setClusterWeights(self.target_geometrys[0], cluster_mobject[0], weights)
+                    
+                for rindex in range (children.length()):
+                    self.parentTo(children[rindex], source_dag_path)
+            else:
+                OpenMaya.MGlobal.displayWarning('Your select is wrong!...')
 
     def lattice(self):
         self.wire()
+        
+    def to_cluster(self):
+        source_mobject = self.getMObject(self.source_geometry)
+        if not self.target_deformers:
+            self.target_deformers = []
+            for x in range (len(self.source_deformers)):
+                self.target_deformers.append(None)
+        loop = min([len(self.target_deformers), len(self.source_deformers)])
+        
+        for index in range(loop):      
+            _targt_deformers = self.target_deformers[index]                 
+            if not self.target_deformers[index]:
+                name = '%s_cluster_cluster' % self.source_deformers[index].replace('.', '_')
+                cluster, clusterhandle = self.create(name, clear=True)
+                x, y, z = self.getClusterPosition(self.source_deformers[index])                
+                self.setClusterPosition(clusterhandle.encode(), [x, y, z])
+                _targt_deformers = clusterhandle.encode()
+                                   
+                
+            cluster_mobject = self.getDependences(_targt_deformers, OpenMaya.MFn.kClusterFilter)
+            weight_data = self.get_weight(self.source_deformers[index])            
+            weight_object = weight_data['geometry'].keys()[0]            
+            weights = weight_data['geometry'][weight_object]['weights']
+            
+            weight_array = OpenMaya.MFloatArray()
+            mscript_util = OpenMaya.MScriptUtil()
+            mscript_util.createFloatArrayFromList(weights, weight_array)   
 
-    def skincluster(self):
-        self.wire()
+            self.setClusterWeights(self.target_geometrys[0], cluster_mobject[0], weight_array)
+        
+                
+        
+
+    def skin_cluster(self):        
+        source_mobject = self.getMObject(self.source_geometry)
+
+        if not self.target_deformers:
+            self.target_deformers = []
+            for x in range (len(self.source_deformers)):
+                self.target_deformers.append(None)
+        loop = min([len(self.target_deformers), len(self.source_deformers)])
+                        
+        skinclu = skincluster.Skincluster()
+        for index in range(loop):      
+            _targt_deformers = self.target_deformers[index]                 
+            if not self.target_deformers[index]:
+                name = '%s_skincluster_cluster' % self.source_deformers[index].replace('.', '_')
+                cluster, clusterhandle = self.create(name, clear=True)
+                x, y, z = self.getJointPosition(self.source_deformers[index])
+                self.setClusterPosition(clusterhandle.encode(), [x, y, z])                
+                _targt_deformers = clusterhandle.encode()
+                
+            joint_dag_path = self.getDagPath(self.source_deformers[index])
+            cluster_mobject = self.getDependences(_targt_deformers, OpenMaya.MFn.kClusterFilter)            
+            weight_data = skinclu.get_weight(joint_dag_path)
+            
+            weight_object = weight_data['geometry'].keys()[0]            
+            weights = weight_data['geometry'][weight_object]['weights']
+            
+            weight_array = OpenMaya.MFloatArray()
+            mscript_util = OpenMaya.MScriptUtil()
+            mscript_util.createFloatArrayFromList(weights, weight_array)            
+            
+            self.setClusterWeights(self.target_geometrys[0], cluster_mobject[0], weight_array)
+
+        
