@@ -13,7 +13,6 @@ reload(studioMaya)
 class Skincluster(studioMaya.Maya):
 
     def __init__(self, **kwargs):
-
         self.source_geometry = None
         self.target_geometrys = None
         self.source_deformers = None
@@ -28,15 +27,28 @@ class Skincluster(studioMaya.Maya):
         if 'target_deformers' in kwargs:
             self.target_deformers = kwargs['target_deformers']
 
-    def create(self, name):
+    def create(self, name, clear=False):
         name = name.split('|')[-1]
+        if clear:
+            OpenMaya.MGlobal.clearSelectionList() 
+            
+        mcommand_result = OpenMaya.MCommandResult()
+        OpenMaya.MGlobal.executeCommand('joint -p 0 0 0 -n %s' % name, mcommand_result, True, True)
         OpenMaya.MGlobal.clearSelectionList()
+        result = []
+        mcommand_result.getResult(result)        
+        return result[0].encode()         
+          
+            
+        '''          
         mfn_dag_node = OpenMaya.MFnDagNode()
         mfn_dag_node.create('joint')
         mfn_dag_node.setName(name)
         joint_dag_path = OpenMaya.MDagPath()
         mfn_dag_node.getPath(joint_dag_path)
-        return joint_dag_path
+        return joint_dag_path, joint_dag_path.fullPathName().encode()
+        '''
+    
 
     def get_weight(self, joint_dag_path):        
         m_skinclusters = self.getDependences(joint_dag_path, OpenMaya.MFn.kSkinClusterFilter)        
@@ -63,8 +75,7 @@ class Skincluster(studioMaya.Maya):
         skincluster_weights = {}        
         for each_dag_path in joints:       
             data  = self.get_weight(each_dag_path)            
-            joint_handle = each_dag_path.fullPathName().encode()
-            
+            joint_handle = each_dag_path.fullPathName().encode()            
             skincluster_weights.setdefault(joint_handle, data)       
         return skincluster_weights
 
@@ -80,88 +91,11 @@ class Skincluster(studioMaya.Maya):
         if locked:        
             plug.setBool(locked) 
 
-
     def set_weights(self, data):        
         for each_joint, joint_data in data.items(): 
             joint_dag_path = self.getDagPath(each_joint)            
             self.set_weight(joint_dag_path, joint_data)
 
-    def softSelection(self):
-        print '\n', self.source_geometry
-        print self.target_geometrys
-        print self.source_deformers
-        print self.target_deformers, '\n\n'
-        
-        if not self.target_deformers:
-            # cluster, clustserHandle = self.create()
-            # self.target_defomrer = clusterHandle
-            pass
-
-        dag_paths, memberships, weights = self.getWeightsFromSelection()        
-        if not dag_paths:
-            return
-                
-        for each_joint in self.target_deformers:            
-            m_skinclusters = self.getDependences(each_joint, OpenMaya.MFn.kSkinClusterFilter)
-            joint_dag_path = self.getDagPath(each_joint)
-            mfn_skincluster = OpenMayaAnim.MFnSkinCluster(m_skinclusters[0])
-            
-            for x in range (len(self.target_geometrys)):
-                each_shape = self.target_geometrys[x]
-                shape_dag_path = self.getDagPath(each_shape)                
-                self.setSkinclusterWeights(m_skinclusters[0], joint_dag_path, 
-                        shape_dag_path, memberships[x], weights[x])
-
-
-
-    def blendShape(self):
-        print '\n', self.source_geometry
-        print self.target_geometrys
-        print self.source_deformers
-        print self.target_deformers, '\n\n'
-
-        source_mobject = self.getMObject(self.source_geometry)
-        for index in range(len(self.source_deformers)):
-            weights = self.getWeightsFromEnvelope(source_mobject, source_mobject, self.source_deformers[index])
-
-            m_skinclusters = self.getDependences(self.target_deformers[index], OpenMaya.MFn.kSkinClusterFilter)
-            joint_dag_path = self.getDagPath(self.target_deformers[index])
-            mfn_skincluster = OpenMayaAnim.MFnSkinCluster(m_skinclusters[0])            
-            shape_dag_path = self.getDagPath(self.target_geometrys[0])
-                        
-            mit_mesh_vertex = OpenMaya.MItMeshVertex(source_mobject)
-            vertexs = range (mit_mesh_vertex.count())            
-            self.setSkinclusterWeights(m_skinclusters[0], joint_dag_path, shape_dag_path, vertexs, weights)
-                
-                
-
-    def wire(self):
-        print '\n', self.source_geometry
-        print self.target_geometrys
-        print self.source_deformers
-        print self.target_deformers, '\n\n'
-
-        source_mobject = self.getMObject(self.source_geometry)
-        for index in range(len(self.source_deformers)):            
-            attribute = '{}.translateX'.format(self.source_deformers[index])
-            weights = self.getWeightsFromEnvelope(source_mobject, source_mobject, attribute)
-            
-            m_skinclusters = self.getDependences(self.target_deformers[index], OpenMaya.MFn.kSkinClusterFilter)
-            joint_dag_path = self.getDagPath(self.target_deformers[index])
-            mfn_skincluster = OpenMayaAnim.MFnSkinCluster(m_skinclusters[0])            
-            shape_dag_path = self.getDagPath(self.target_geometrys[0])
-                        
-            mit_mesh_vertex = OpenMaya.MItMeshVertex(source_mobject)
-            vertexs = range (mit_mesh_vertex.count())            
-            self.setSkinclusterWeights(m_skinclusters[0], joint_dag_path, shape_dag_path, vertexs, weights)
-
-    def lattice(self):
-        self.wire()
-
-    def cluster(self):
-        self.wire()
-        
-        
     def read_weight(self, m_skincluster, joint_dag_path):
         '''       
         mfn_skincluster = OpenMayaAnim.MFnSkinCluster(m_skincluster) 
@@ -189,8 +123,8 @@ class Skincluster(studioMaya.Maya):
         m_dag_path = OpenMaya.MDagPath()        
         selection_list.getDagPath(0, m_dag_path, m_object)
         
-        joint_index = mfn_skincluster.indexForInfluenceObject(joint_dag_path)
-        # joint_index = self.findxIndexFromSkincluster(mfn_skincluster, joint_dag_path)        
+        # joint_index = mfn_skincluster.indexForInfluenceObject(joint_dag_path)
+        joint_index = self.findxIndexFromSkincluster(mfn_skincluster, joint_dag_path)        
         
         mit_geometry = OpenMaya.MItGeometry(m_dag_path)
         membership_list = []
@@ -198,7 +132,7 @@ class Skincluster(studioMaya.Maya):
         
         while not mit_geometry.isDone():
             component = mit_geometry.currentItem()
-            float_array = OpenMaya.MFloatArray()            
+            float_array = Openclear=FalseMaya.MFloatArray()            
             membership = self.hasMembership(m_skincluster, m_dag_path, component)
                         
             if not m_float_array:
@@ -212,11 +146,9 @@ class Skincluster(studioMaya.Maya):
             membership_list.append(membership)
             weight_list.append(float_array[0])   
                      
-            mit_geometry.next()
-        
+            mit_geometry.next()        
         return m_dag_path, weight_list, membership_list
     
-
     def write_weight(self, joint_dag_path, geometry_data):        
         for each_geometry,  geometrys in geometry_data.items():            
             weights = geometrys['weights']
@@ -240,8 +172,6 @@ class Skincluster(studioMaya.Maya):
                                                   
             self.setSkinclusterWeights(skincluster_mobjects[0], joint_dag_path, geometry_dag_path, vertexs, weights)
             # print       joint_dag_path.fullPathName()
-
-
 
     def combine_weights(self, joint_dag_paths):
         weights_data = {}
@@ -297,12 +227,12 @@ class Skincluster(studioMaya.Maya):
         
         self.set_weight(joint_dag_path, combine_datas) 
 
+    def copy_weight(self, source_joint, target_joint):
+        pass
     
-    def copy_weights(self, source_joint, target_joint):
-       
+    def copy_weights(self, source_joint, target_joint):       
         weight_data = self.get_weight(source_joint)  
-        self.set_weight(target_joint, weight_data)
-        
+        self.set_weight(target_joint, weight_data)        
     
     def create_mirror_flip(self, joint_dag_paths, axis, tag):
         for index in range (joint_dag_paths.length()):            
@@ -334,12 +264,9 @@ class Skincluster(studioMaya.Maya):
             target_datas['position'] = mirror_position
             target_datas['locked'] = False
             
-            
             self.addInfluence(joint_dag_path, target_weights.keys())
-
             self.set_weight(joint_dag_path, target_datas)            
                 
-
     def get_flip_weights(self, geometry_data, axis):
         symmetry_weights = copy.deepcopy(geometry_data['geometry'])        
         for each_geometry, weights_data in geometry_data['geometry'].items():            
@@ -352,7 +279,6 @@ class Skincluster(studioMaya.Maya):
                 symmetry_weights[each_geometry]['memberships'][symmetry_vertex_id] = memberships[index]
 
         return symmetry_weights
-    
     
     def merge_weights(self, weight_a, weight_b):        
         merge_weight_data = copy.deepcopy(weight_a)        
@@ -375,5 +301,110 @@ class Skincluster(studioMaya.Maya):
                 merge_weight_data[each_geometry]['weights'][index] = merge_weight     
                 merge_weight_data[each_geometry]['memberships'][index] = current_memberships
                 
-        return merge_weight_data   
+        return merge_weight_data  
+
+    def soft_selection(self):
+        dag_paths, memberships, weights = self.getWeightsFromSelection()        
+        if not dag_paths:
+            return
         
+        if not self.target_deformers:
+            x, y, z = self.get_center_of_selection()
+            joint = self.create('soft_selection_joint', clear=True)
+            self.setJointPosition(joint, [x, y, z])            
+            self.addInfluence(joint, self.target_geometrys)            
+            self.target_deformers = [joint]            
+    
+        for each_joint in self.target_deformers:  
+            for each_geometry in self.target_geometrys:
+                self.setSkinclusterWeights(each_joint, each_geometry, weights[0])
+                
+
+    def blend_shape(self):
+        if not self.target_deformers:
+            self.target_deformers = []
+            for x in range(len(self.source_deformers)):
+                self.target_deformers.append(None)
+        loop = min([len(self.target_deformers), len(self.source_deformers)])        
+        for index in range(loop):
+            weights = self.getWeightsFromEnvelope(self.source_geometry, self.source_geometry, self.source_deformers[index])            
+            _targt_deformers = self.target_deformers[index]
+            if not self.target_deformers[index]:
+                x, y, z = self.get_center_of_weights(self.source_geometry, weights)
+                name = '%s_blend_shape_joint' % self.source_deformers[index].replace('.', '_')                
+                joint = self.create(name, clear=True)
+                self.setJointPosition(joint, [x, y, z])            
+                self.addInfluence(joint, self.target_geometrys)            
+                _targt_deformers = joint               
+            for each_geometry in self.target_geometrys:
+                self.setSkinclusterWeights(_targt_deformers, each_geometry, weights)                   
+
+    def wire(self):
+        self.to_specific_deformer('wire')
+
+    def lattice(self):
+        self.to_specific_deformer('lattice')
+
+    def cluster(self):
+        self.wire()
+
+    def to_skincluster(self):
+        pass
+    
+    def to_specific_deformer(self, tag):
+        if not self.target_deformers:
+            self.target_deformers = []
+            for x in range(len(self.source_deformers)):
+                self.target_deformers.append(None)
+        loop = min([len(self.target_deformers), len(self.source_deformers)])
+        source_deformer_dag_path = OpenMaya.MDagPathArray()
+        
+        for index in range(loop):
+            source_dag_path = self.getDagPath(self.source_deformers[index])
+            source_deformer_dag_path.append(source_dag_path)
+            
+        for index in range(source_deformer_dag_path.length()):
+            source_dag_path = source_deformer_dag_path[index]
+            if source_dag_path.hasFn(OpenMaya.MFn.kCurve):  # to check to curve
+                curve_weights = self.getWeightsFromCurve(source_dag_path, self.source_geometry)
+                for k, v in curve_weights.items():
+                    name = '%s_%s_%s_joint' % (self.source_deformers[index], k, tag)
+                    joint = self.create(name, clear=True)
+                    self.setJointPosition(joint, v['position'])
+                    self.addInfluence(joint, self.target_geometrys)            
+                    for each_geometry in self.target_geometrys:                    
+                        self.setSkinclusterWeights(joint, each_geometry, v['weights'])                   
+
+            elif source_dag_path.hasFn(OpenMaya.MFn.kTransform) or source_dag_path.hasFn(OpenMaya.MFn.kJoint):
+                _targt_deformers = self.target_deformers[index]
+                
+                if source_dag_path.hasFn(OpenMaya.MFn.kJoint):
+                    children = self.getChildren(source_dag_path)
+                elif source_dag_path.hasFn(OpenMaya.MFn.kTransform):
+                    children = self.getChildren(source_dag_path, mfn_shape=OpenMaya.MFn.kCluster)
+                    
+                for cindex in range(children.length()):
+                    self.unParent(children[cindex])                    
+                if not self.target_deformers[index]:
+                    name = '%s_%s_joint' % (self.source_deformers[index], tag)
+                    joint = self.create(name, clear=True)
+                    x, y, z = self.getJointPosition(self.source_deformers[index])                    
+                    if source_dag_path.hasFn(OpenMaya.MFn.kTransform):
+                        x, y, z = self.getClusterPosition(self.source_deformers[index])                        
+                    self.setJointPosition(joint, [x, y, z])
+                    self.addInfluence(joint, self.target_geometrys)            
+                    _targt_deformers = joint                    
+                    
+                attribute = '{}.translateX'.format(self.source_deformers[index])
+                weights = self.getWeightsFromEnvelope(self.source_geometry, self.source_geometry, attribute)
+                
+                for each_geometry in self.target_geometrys:                    
+                    self.setSkinclusterWeights(joint, each_geometry, weights)
+                    # plug = self.getPlug(joint, 'liw')
+                    # plug.setBool(False)                    
+                
+                for rindex in range(children.length()):
+                    self.parentTo(children[rindex], source_dag_path)
+            else:
+                OpenMaya.MGlobal.displayWarning('Your select is wrong!...')
+    

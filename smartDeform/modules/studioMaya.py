@@ -1,5 +1,6 @@
 from maya import OpenMaya
 from maya import OpenMayaAnim
+from _ast import If
 
 
 class Maya(object):
@@ -348,13 +349,15 @@ class Maya(object):
             mit_selection_list.next()
         return dag_paths, memberships, weights
 
-    def getWeightsFromEnvelope(self, origin_object, envelope_object, attribute=None):
-        if not isinstance(origin_object, OpenMaya.MObject):
-            origin_object = self.getMObject(origin_object)
-        if not isinstance(envelope_object, OpenMaya.MObject):
-            envelope_object = self.getMObject(envelope_object)
+    def getWeightsFromEnvelope(self, origin_dag_path, envelope_dag_path, attribute=None):
+        print 'origin_dag_path\t', origin_dag_path
+        if not isinstance(origin_dag_path, OpenMaya.MDagPath):
+            origin_dag_path = self.getDagPath(origin_dag_path)
+            
+        if not isinstance(envelope_dag_path, OpenMaya.MDagPath):
+            envelope_dag_path = self.getDagPath(envelope_dag_path)
 
-        mfn_origin_mesh = OpenMaya.MFnMesh(origin_object)
+        mfn_origin_mesh = OpenMaya.MFnMesh(origin_dag_path)
         origin_point_array = OpenMaya.MFloatPointArray()
         mfn_origin_mesh.getPoints(origin_point_array, OpenMaya.MSpace.kObject)
 
@@ -363,7 +366,7 @@ class Maya(object):
             mplug = self.getPlug(node, attribute)
             mplug.setInt(mplug.asInt()+1)
 
-        mfn_envelope_mesh = OpenMaya.MFnMesh(envelope_object)
+        mfn_envelope_mesh = OpenMaya.MFnMesh(envelope_dag_path)
         envelope_point_array = OpenMaya.MFloatPointArray()
         mfn_envelope_mesh.getPoints(
             envelope_point_array, OpenMaya.MSpace.kObject)
@@ -510,8 +513,11 @@ class Maya(object):
             
         return x/count, y/count, z/count
 
-    def get_center_of_weights(self, mobject, weights):
-        mfn_mesh = OpenMaya.MFnMesh(source_mobject)
+    def get_center_of_weights(self, geometry_dag_path, weights):
+        if not isinstance(geometry_dag_path, OpenMaya.MDagPath):
+            geometry_dag_path = self.getDagPath(geometry_dag_path)  
+            
+        mfn_mesh = OpenMaya.MFnMesh(geometry_dag_path)
         x, y, z = 0, 0, 0
         count = 0
         for index in range(weights.length()):    
@@ -522,7 +528,7 @@ class Maya(object):
             x += m_point.x
             y += m_point.y
             z += m_point.z
-            count +=1
+            count +=1            
         return x/count, y/count, z/count    
 
     def setClusterWeights(self, dag_path, cluster_mobject, weights):
@@ -563,7 +569,7 @@ class Maya(object):
         if not remove_selection_lst.isEmpty():
             mfn_set.removeMembers(remove_selection_lst)
 
-    def setSkinclusterWeights(self, skincluster, joint, shape, vertexs, weights):
+    def _setSkinclusterWeights(self, skincluster, joint, shape, vertexs, weights):
         if not isinstance(skincluster, OpenMaya.MObject):
             skincluster = self.getMObject(skincluster)
         if not isinstance(joint, OpenMaya.MDagPath):
@@ -581,6 +587,26 @@ class Maya(object):
             index_component.addElement(vertexs[index])
             mfn_skincluster.setWeights(shape, component, joint_index,
                                        weights[index], True, old_values)
+            
+    def setSkinclusterWeights(self, joint_dag_path, geometry_dag_path, weights):
+        if not isinstance(joint_dag_path, OpenMaya.MDagPath):
+            joint_dag_path = self.getDagPath(joint_dag_path)
+            
+        if not isinstance(geometry_dag_path, OpenMaya.MDagPath):
+            geometry_dag_path = self.getDagPath(geometry_dag_path)
+         
+        components = self.getVertexsMObjects(geometry_dag_path)
+        skin_cluster = self.getSkincluster(geometry_dag_path)
+        skincluster_mobject = self.getMObject(skin_cluster)        
+        
+        mfn_skincluster = OpenMayaAnim.MFnSkinCluster(skincluster_mobject)
+        # example joint_index = mfn_skincluster.indexForInfluenceObject(joint_dag_path)
+        joint_index = self.findxIndexFromSkincluster(mfn_skincluster, joint_dag_path)    
+        
+        joint_index_arry = OpenMaya.MIntArray()
+        joint_index_arry.append(joint_index)
+        old_values = OpenMaya.MFloatArray()
+        mfn_skincluster.setWeights(geometry_dag_path, components, joint_index_arry, weights, True, old_values)        
 
     def getClusterPosition(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
@@ -642,7 +668,7 @@ class Maya(object):
             joint = joint.fullPathName()
 
         for each_geometry in geometrys:
-            m_object = self.getMObject(each_geometry)
+            m_object = self.getMObject(each_geometry.encode())
             m_skinclusters = self.getDeformerNodes(
                 m_object, OpenMaya.MFn.kSkinClusterFilter)
 
@@ -651,11 +677,15 @@ class Maya(object):
                     '\nCan not find skincluster \"%s\"' % each_geometry.encode())
                 continue
 
-            skincluster = self.getName(m_skinclusters[0])
-            OpenMaya.MGlobal.executeCommand('skinCluster -e -ug -dr 4 -ps 0 \
-                        -ns 10 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
-            plug = self.getPlug(joint, 'liw')
-            plug.setBool(False)
+            skincluster = self.getName(m_skinclusters[0])            
+            #OpenMaya.MGlobal.executeCommand('skinCluster -e -ug -dr 4 -ps 0 \
+            #            -ns 10 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
+            
+            OpenMaya.MGlobal.executeCommand('skinCluster -e  -dr 4 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
+           
+            
+            # plug = self.getPlug(joint, 'liw')
+            # plug.setBool(False)
         return True
 
     def findxIndexFromSkincluster(self, mfn_skincluster, joint_dag_path):
@@ -687,20 +717,29 @@ class Maya(object):
             parents.append(parent_dag_Path)
         return parents
          
-    def getChildren(self, object_dag_path):
+    def getChildren(self, object_dag_path, mfn_shape=None):
         if not isinstance(object_dag_path, OpenMaya.MDagPath):
-            object_dag_path = self.getDagPath(object_dag_path)        
+            object_dag_path = self.getDagPath(object_dag_path)
+            
+        if mfn_shape:        
+            shape_dag_path = self.getShapeNode(object_dag_path, mfn_shape)            
+                  
         mfn_dag_node = OpenMaya.MFnDagNode(object_dag_path)
+        
         chidren = OpenMaya.MDagPathArray()
         for index in range (mfn_dag_node.childCount()):
             current_child = mfn_dag_node.child(index)
             child_mfn_dag_node = OpenMaya.MFnDagNode(current_child)
             if not child_mfn_dag_node.fullPathName():
                 continue
-            child_dag_Path = self.getDagPath(child_mfn_dag_node.fullPathName().encode())       
+            child_dag_Path = self.getDagPath(child_mfn_dag_node.fullPathName().encode())
+            if mfn_shape:
+                if shape_dag_path.isValid() and child_dag_Path.isValid():
+                    if shape_dag_path.apiType()==child_dag_Path.apiType():
+                        continue               
             chidren.append(child_dag_Path)
         return chidren
-    
+
     def unParent(self, object):        
         if not object:
             return       
@@ -734,5 +773,14 @@ class Maya(object):
         OpenMaya.MGlobal.clearSelectionList()        
         results = []
         mcommand_result.getResult(results)
-        return results             
-
+        return results
+    
+    def getSkincluster(self, geometry):
+        if isinstance(geometry, OpenMaya.MDagPath):
+            geometry = geometry.fullPathName().encode().split('|')[-1]
+        mcommand_result = OpenMaya.MCommandResult()
+        OpenMaya.MGlobal.executeCommand('findRelatedSkinCluster(\"%s\");' % geometry, mcommand_result, True, True)
+        results = []
+        mcommand_result.getResult(results)
+        print results[0].encode()
+        return results[0].encode()

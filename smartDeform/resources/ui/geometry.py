@@ -328,19 +328,20 @@ class Geometry(QtGui.QWidget):
             treewidget.setItemExpanded(parent_item, 1)
 
     def convert(self, lineedit, treewidget):
+        if not self.source_geometry:
+            OpenMaya.MGlobal.displayWarning('Not select any source geometry!...')
+            return                    
+        if not self.target_geometry:
+            OpenMaya.MGlobal.displayWarning('Not select any target geometry!...')
+            return            
+        if not self.source_deformer:
+            OpenMaya.MGlobal.displayWarning('Not select any source deformers!...')
+            return          
         if not self.target_deformer:
             OpenMaya.MGlobal.displayWarning('Not select any target deformers!...')
             return   
                  
         if self.target_deformer[0] == 1:  # to cluster
-            #===================================================================
-            # if self.source_deformer[0] == 5:
-            #     QtGui.QMessageBox.warning(self, 'Warning',
-            #                               'sorry can not process %s to %s!...' % (
-            #                                   self.source_deformer[1], self.target_deformer[1]),
-            #                               QtGui.QMessageBox.Ok)
-            #===================================================================
-
             my_cluster = cluster.Cluster(source_geometry=self.source_geometry,
                                          target_geometrys=[
                                              self.target_geometry],
@@ -382,12 +383,20 @@ class Geometry(QtGui.QWidget):
                     raise Exception(error)                
 
             if self.source_deformer[0] == 6:  # to skincluster
-                #try:
-                my_cluster.skin_cluster()
-                #except Exception as error:
-                #    raise Exception(error)
+                try:
+                    my_cluster.skin_cluster()
+                except Exception as error:
+                    raise Exception(error)
 
         if self.target_deformer[0] == 2:  # to skincluster
+            m_skinclusters = self.my_maya.getDeformerNodes(self.target_geometry.encode(), OpenMaya.MFn.kSkinClusterFilter)
+            
+            if not m_skinclusters.length():
+                QtGui.QMessageBox.warning(self, 'Warning',
+                        'sorry can not find skincluster on the geometry,\nbind the geometry with joint first',
+                        QtGui.QMessageBox.Ok)
+                return
+            
             my_skincluster = skincluster.Skincluster(source_geometry=self.source_geometry,
                                                      target_geometrys=[
                                                          self.target_geometry],
@@ -395,34 +404,34 @@ class Geometry(QtGui.QWidget):
                                                      target_deformers=self.target_deformers)
 
             if self.source_deformer[0] == 1:  # to softSelection
-                try:
-                    my_skincluster.soft_selection()
-                except Exception as error:
-                    raise Exception(error)
+                #try:
+                my_skincluster.soft_selection()
+                #except Exception as error:
+                #    raise Exception(error)
 
             if self.source_deformer[0] == 2:  # to blendShape
-                try:
-                    my_skincluster.blend_shape()
-                except Exception as error:
-                    raise Exception(error)
+                #try:
+                my_skincluster.blend_shape()
+                #except Exception as error:
+                #    raise Exception(error)
 
             if self.source_deformer[0] == 3:  # to wire
-                try:
-                    my_skincluster.wire()
-                except Exception as error:
-                    raise Exception(error)
+                #try:
+                my_skincluster.wire()
+                #except Exception as error:
+                #    raise Exception(error)
 
             if self.source_deformer[0] == 4:  # to lattice
-                try:
-                    my_skincluster.lattice()
-                except Exception as error:
-                    raise Exception(error)
+                #try:
+                my_skincluster.lattice()
+                #except Exception as error:
+                #    raise Exception(error)
 
             if self.source_deformer[0] == 5:  # to cluster
-                try:
-                    my_skincluster.cluster()
-                except Exception as error:
-                    raise Exception(error)
+                #try:
+                my_skincluster.cluster()
+                #except Exception as error:
+                #    raise Exception(error)
 
         self.set_current_deformer(lineedit, treewidget, self.titles[1], self.target_deformer[0])
         
