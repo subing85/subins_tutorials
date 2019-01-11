@@ -588,13 +588,13 @@ class Maya(object):
             mfn_skincluster.setWeights(shape, component, joint_index,
                                        weights[index], True, old_values)
             
-    def setSkinclusterWeights(self, joint_dag_path, geometry_dag_path, weights):
-        if not isinstance(joint_dag_path, OpenMaya.MDagPath):
-            joint_dag_path = self.getDagPath(joint_dag_path)
-            
+    def setSkinclusterWeights(self, geometry_dag_path, joint_dag_path, weights):
         if not isinstance(geometry_dag_path, OpenMaya.MDagPath):
             geometry_dag_path = self.getDagPath(geometry_dag_path)
-         
+
+        if not isinstance(joint_dag_path, OpenMaya.MDagPath):
+            joint_dag_path = self.getDagPath(joint_dag_path)
+                     
         components = self.getVertexsMObjects(geometry_dag_path)
         skin_cluster = self.getSkincluster(geometry_dag_path)
         skincluster_mobject = self.getMObject(skin_cluster)        
@@ -606,7 +606,7 @@ class Maya(object):
         joint_index_arry = OpenMaya.MIntArray()
         joint_index_arry.append(joint_index)
         old_values = OpenMaya.MFloatArray()
-        mfn_skincluster.setWeights(geometry_dag_path, components, joint_index_arry, weights, True, old_values)        
+        mfn_skincluster.setWeights(geometry_dag_path, components, joint_index_arry, weights, True, old_values) 
 
     def getClusterPosition(self, dag_path):
         if not isinstance(dag_path, OpenMaya.MDagPath):
@@ -681,7 +681,7 @@ class Maya(object):
             #OpenMaya.MGlobal.executeCommand('skinCluster -e -ug -dr 4 -ps 0 \
             #            -ns 10 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
             
-            OpenMaya.MGlobal.executeCommand('skinCluster -e  -dr 4 -lw false -wt 0 -ai {} {}'.format(joint, skincluster))
+            OpenMaya.MGlobal.executeCommand('skinCluster -e  -dr 4 -lw true -wt 0 -ai {} {}'.format(joint, skincluster))
            
             
             # plug = self.getPlug(joint, 'liw')
@@ -782,5 +782,4 @@ class Maya(object):
         OpenMaya.MGlobal.executeCommand('findRelatedSkinCluster(\"%s\");' % geometry, mcommand_result, True, True)
         results = []
         mcommand_result.getResult(results)
-        print results[0].encode()
         return results[0].encode()

@@ -240,13 +240,24 @@ class Geometry(QtGui.QWidget):
 
         current_type = self.my_maya.object_types[current_deformer_index[current_index]]
         deformers = self.my_maya.getDeformerNodes(current_mesh, current_type)
+        
+        print current_mesh        
+        print current_deformer_index[current_index]
+        print current_type
+        print deformers, type(deformers)
+        
         deformer_data = {}
 
         if current_deformer_index[current_index] == 'blendShape':
             deformers = self.my_maya.getBlenshapeAttributes(deformers)
 
         if current_deformer_index[current_index] == 'skincluster':
-            deformers = self.my_maya.getSkinclusterJoints(deformers[0])
+            current_skincluster = self.my_maya.getSkincluster(current_mesh)
+            
+            deformers = OpenMaya.MObjectArray()            
+            if current_skincluster:         
+                skincluster_mobject = self.my_maya.getMObject(current_skincluster)
+                deformers = self.my_maya.getSkinclusterJoints(skincluster_mobject)
 
         if current_deformer_index[current_index] == 'wire':
             deformer_data = {}            
@@ -401,7 +412,8 @@ class Geometry(QtGui.QWidget):
                                                      target_geometrys=[
                                                          self.target_geometry],
                                                      source_deformers=self.source_deformers,
-                                                     target_deformers=self.target_deformers)
+                                                     target_deformers=self.target_deformers
+                                                     )
 
             if self.source_deformer[0] == 1:  # to softSelection
                 #try:
@@ -430,6 +442,12 @@ class Geometry(QtGui.QWidget):
             if self.source_deformer[0] == 5:  # to cluster
                 #try:
                 my_skincluster.cluster()
+                #except Exception as error:
+                #    raise Exception(error)
+
+            if self.source_deformer[0] == 6:  # to skincluster
+                #try:
+                my_skincluster.to_skincluster()
                 #except Exception as error:
                 #    raise Exception(error)
 
