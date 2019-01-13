@@ -1,0 +1,50 @@
+softselection
+	cluster		Done
+	skincluster Done	
+	
+Blendshape
+	cluster		Done
+	skincluster Done
+	
+Lattice
+	cluster		Done
+	skincluster Done
+	
+Wire
+	cluster		Done
+	skincluster Done Error in UI multiply the cluster and joints	
+							
+Cluster
+	skincluster Done	
+	
+Skincluster
+	cluster		Done
+	
+Mirror		
+	cluster		Done
+	skincluster Done
+	
+	all together convert
+
+Cluster	
+	Combine		Done
+	Copy		Done
+	Export		Done
+	Import		Done
+	
+Cluster	
+	Combine		Done
+	Copy		Done
+	Export		Done
+	Import		Done	
+	
+Create Cluster	
+
+
+Skin Cluster Hold and unhold option
+
+QC
+
+Final Testing
+
+release
