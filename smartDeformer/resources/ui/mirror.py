@@ -1,7 +1,7 @@
 '''
 mirror.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 13, 2019
+Last modified: January 15, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -14,19 +14,13 @@ Description
 '''
 
 
-import os
 import sys
 
-path = '/venture/subins_tutorials'
-if path not in sys.path:
-    sys.path.append(path)
-
-from PySide import QtGui
 from PySide import QtCore
+from PySide import QtGui
 from functools import partial
 
 from maya import OpenMaya
-from maya import OpenMayaAnim
 
 from smartDeformer.modules import cluster
 from smartDeformer.modules import skincluster
@@ -47,42 +41,42 @@ class Mirror(QtGui.QWidget):
         self.resize(300, 100)
         self.verticallayout = QtGui.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
-        self.verticallayout.setSpacing(0)
-        self.verticallayout.setContentsMargins(0, 0, 0, 0)
+        self.verticallayout.setSpacing(10)
+        self.verticallayout.setContentsMargins(10, 10, 10, 10)
         mirrors = ['Cluster', 'Skincluster']
         for each_mirror in mirrors:
             self.groupbox = QtGui.QGroupBox(self)
             self.groupbox.setObjectName('groupbox')
             self.groupbox.setTitle('%s Mirror' % each_mirror)
             self.verticallayout.addWidget(self.groupbox)
-            self.horizontallayout = QtGui.QHBoxLayout(self.groupbox)
-            self.horizontallayout.setObjectName(
-                'horizontallayout_%s' % each_mirror)
-            self.horizontallayout.setSpacing(10)
-            self.horizontallayout.setContentsMargins(20, 10, 10, 10)
+            self.horizontallayout_mirror = QtGui.QHBoxLayout(self.groupbox)
+            self.horizontallayout_mirror.setObjectName(
+                'horizontallayout_mirror_%s' % each_mirror)
+            self.horizontallayout_mirror.setSpacing(10)
+            self.horizontallayout_mirror.setContentsMargins(20, 20, 20, 20)
             self.radiobutton_x = QtGui.QRadioButton(self.groupbox)
             self.radiobutton_x.setObjectName('radiobutton_x_%s' % each_mirror)
             self.radiobutton_x.setText('X')
             self.radiobutton_x.setMinimumSize(QtCore.QSize(0, 10))
-            self.horizontallayout.addWidget(self.radiobutton_x)
+            self.horizontallayout_mirror.addWidget(self.radiobutton_x)
             self.radiobutton_y = QtGui.QRadioButton(self.groupbox)
             self.radiobutton_y.setObjectName('radiobutton_y_%s' % each_mirror)
             self.radiobutton_y.setText('Y')
             self.radiobutton_y.setMinimumSize(QtCore.QSize(0, 10))
-            self.horizontallayout.addWidget(self.radiobutton_y)
+            self.horizontallayout_mirror.addWidget(self.radiobutton_y)
             self.radiobutton_z = QtGui.QRadioButton(self.groupbox)
             self.radiobutton_z.setObjectName('radiobutton_z_%s' % each_mirror)
             self.radiobutton_z.setText('Z')
             self.radiobutton_z.setMinimumSize(QtCore.QSize(0, 10))
-            self.horizontallayout.addWidget(self.radiobutton_z)
+            self.horizontallayout_mirror.addWidget(self.radiobutton_z)
             self.button_mirror = QtGui.QPushButton(self.groupbox)
             self.button_mirror.setObjectName('button_mirror_%s' % each_mirror)
             self.button_mirror.setText('Mirror')
-            self.horizontallayout.addWidget(self.button_mirror)
+            self.horizontallayout_mirror.addWidget(self.button_mirror)
             self.button_flip = QtGui.QPushButton(self.groupbox)
             self.button_flip.setObjectName('button_flip_%s' % each_mirror)
             self.button_flip.setText('Flip')
-            self.horizontallayout.addWidget(self.button_flip)
+            self.horizontallayout_mirror.addWidget(self.button_flip)
             radiobuttons = [self.radiobutton_x,
                             self.radiobutton_y, self.radiobutton_z]
             self.button_mirror.clicked.connect(
@@ -94,22 +88,22 @@ class Mirror(QtGui.QWidget):
             self.groupbox.setObjectName('groupbox_%s' % each_mirror)
             self.groupbox.setTitle(each_mirror)
             self.verticallayout.addWidget(self.groupbox)
-            self.horizontallayout = QtGui.QHBoxLayout(self.groupbox)
-            self.horizontallayout.setObjectName(
-                'horizontallayout_%s' % each_mirror)
-            self.horizontallayout.setSpacing(1)
-            self.horizontallayout.setContentsMargins(1, 1, 1, 1)
+            self.horizontallayout_copy = QtGui.QHBoxLayout(self.groupbox)
+            self.horizontallayout_copy.setObjectName(
+                'horizontallayout_copy_%s' % each_mirror)
+            self.horizontallayout_copy.setSpacing(10)
+            self.horizontallayout_copy.setContentsMargins(20, 20, 20, 20)
             self.button_combine = QtGui.QPushButton(self.groupbox)
             self.button_combine.setObjectName(
                 'button_combine_%s' % each_mirror)
             self.button_combine.setText('Combine %s' % each_mirror)
-            self.horizontallayout.addWidget(self.button_combine)
+            self.horizontallayout_copy.addWidget(self.button_combine)
             self.button_combine.clicked.connect(
                 partial(self.combine, each_mirror.lower()))
             self.button_copy = QtGui.QPushButton(self.groupbox)
             self.button_copy.setObjectName('button_copy_%s' % each_mirror)
             self.button_copy.setText('Copy %s' % each_mirror)
-            self.horizontallayout.addWidget(self.button_copy)
+            self.horizontallayout_copy.addWidget(self.button_copy)
             self.button_copy.clicked.connect(
                 partial(self.copy, each_mirror.lower()))
             spacerItem = QtGui.QSpacerItem(

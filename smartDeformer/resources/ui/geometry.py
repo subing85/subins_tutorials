@@ -1,7 +1,7 @@
 '''
 geometry.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 13, 2019
+Last modified: January 15, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -16,23 +16,19 @@ Description
 
 import os
 import sys
-import warnings
 
-path = '/venture/subins_tutorials'
-if path not in sys.path:
-    sys.path.append(path)
-
-from PySide import QtGui
 from PySide import QtCore
-from maya import OpenMaya
+from PySide import QtGui
 from functools import partial
 
+from maya import OpenMaya
+
 from smartDeformer import resources
-from smartDeformer.utils import read
-from smartDeformer.utils import generic
-from smartDeformer.modules import studioMaya
 from smartDeformer.modules import cluster
 from smartDeformer.modules import skincluster
+from smartDeformer.modules import studioMaya
+from smartDeformer.utils import generic
+from smartDeformer.utils import read
 
 
 class Geometry(QtGui.QWidget):
@@ -65,11 +61,11 @@ class Geometry(QtGui.QWidget):
         self.resize(300, 400)
         self.verticallayout = QtGui.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout_')
-        self.verticallayout.setSpacing(5)
-        self.verticallayout.setContentsMargins(5, 10, 5, 5)
+        self.verticallayout.setSpacing(10)
+        self.verticallayout.setContentsMargins(10, 10, 10, 10)
         self.horizontallayout = QtGui.QHBoxLayout(None)
         self.horizontallayout.setObjectName('horizontalLayout')
-        self.horizontallayout.setSpacing(5)
+        self.horizontallayout.setSpacing(10)
         self.horizontallayout.setContentsMargins(0, 0, 0, 0)
         self.verticallayout.addLayout(self.horizontallayout)
         self.deformer_index = {}
@@ -82,13 +78,13 @@ class Geometry(QtGui.QWidget):
             self.verticallayout_geometry = QtGui.QVBoxLayout(self.groupbox)
             self.verticallayout_geometry.setObjectName(
                 'verticallayout_%s' % self.titles[index])
-            self.verticallayout_geometry.setSpacing(5)
-            self.verticallayout_geometry.setContentsMargins(0, 0, 0, 0)
+            self.verticallayout_geometry.setSpacing(10)
+            self.verticallayout_geometry.setContentsMargins(1, 1, 1, 1)
             self.horizontallayout_inputs = QtGui.QHBoxLayout(None)
             self.horizontallayout_inputs.setObjectName(
                 'horizontallayout_inputs_%s' % self.titles[index])
-            self.horizontallayout_inputs.setSpacing(1)
-            self.horizontallayout_inputs.setContentsMargins(0, 0, 0, 0)
+            self.horizontallayout_inputs.setSpacing(10)
+            self.horizontallayout_inputs.setContentsMargins(1, 1, 1, 1)
             self.verticallayout_geometry.addLayout(
                 self.horizontallayout_inputs)
             self.lineedit = QtGui.QLineEdit(self.groupbox)
@@ -134,8 +130,8 @@ class Geometry(QtGui.QWidget):
                 QtGui.QAbstractItemView.ExtendedSelection)
             self.treewidget.setHeaderHidden(True)
             self.treewidget.setToolTip('%s defomer list' % self.titles[index])
-            if self.titles[index] == 'Target':
-                self.pop_menu(self.treewidget)
+            # to bolck if self.titles[index] == 'Target':
+            # to bolck    self.pop_menu(self.treewidget)
             self.treewidget.itemClicked.connect(
                 partial(self.set_defomer_list, self.treewidget, self.titles[index]))
             self.treewidget.itemSelectionChanged.connect(

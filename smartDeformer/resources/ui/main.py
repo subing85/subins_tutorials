@@ -1,7 +1,7 @@
 '''
 main.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 13, 2019
+Last modified: January 15, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -17,43 +17,55 @@ Description
 import os
 import sys
 import webbrowser
-import platform
 
-path = '/venture/subins_tutorials'
-if path not in sys.path:
-    sys.path.append(path)
-
-from PySide import QtGui
 from PySide import QtCore
+from PySide import QtGui
 from functools import partial
+
+from maya import OpenMaya
+from maya import cmds
 
 from smartDeformer import resources
 from smartDeformer.resources.ui import geometry
 from smartDeformer.resources.ui import mirror
 from smartDeformer.resources.ui import weights
-from smartDeformer.utils import maya_platform
+from smartDeformer.utils import platforms
 
 
 class MainWindow(QtGui.QMainWindow):
 
-    def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)        
-        
-        valid = maya_platform.has_valid()        
-        if False in valid:            
-            message = '{}\n\nPlease download the proper version from\n{}'.format(valid[False], resources.getDownloadLink())            
-            QtGui.QMessageBox.critical(self, 'Critical', message, QtGui.QMessageBox.Ok)            
+    def __init__(self, parent=platforms.get_qwidget()):
+        super(MainWindow, self).__init__(parent)
+        valid = platforms.has_valid()
+        if not valid:
+            message = '{}\n\nPlease download the proper version from\n{}'.format(
+                valid[False], resources.getDownloadLink())
+            QtGui.QMessageBox.critical(
+                self, 'Critical', message, QtGui.QMessageBox.Ok)
             return
-                
+        if False in valid:
+            message = '{}\n\nPlease download the proper version from\n{}'.format(
+                valid[False], resources.getDownloadLink())
+            QtGui.QMessageBox.critical(
+                self, 'Critical', message, QtGui.QMessageBox.Ok)
+            return
         self.geometry = geometry.Geometry(parent=self)
         self.my_mirror = mirror.Mirror(parent=self)
         self.weights = weights.Weights(parent=self)
-        self.setupUi()
-        self.setParent(parent)
+        self.tool_kit_object, self.tool_kit_name, self.version = platforms.get_tool_kit()
+        self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
+        self.width, self.height = [500, 800]
 
-    def setupUi(self):
-        self.resize(500, 800)
-        self.setObjectName('Mainwindow_subin')
+        if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
+            cmds.deleteUI(self.tool_kit_object, ctl=1)
+
+        self.setup_ui()
+        self.parent_maya_layout()
+
+    def setup_ui(self):
+        self.resize(self.width, self.height)
+        self.setObjectName('mainwindow_smart_deformer')
+        self.setWindowTitle(self.tool_kit_titile)
         self.centralwidget = QtGui.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)
@@ -98,63 +110,67 @@ class MainWindow(QtGui.QMainWindow):
         self.verticallayout_weights.setObjectName('verticalLayout_weights')
         self.verticallayout_weights.addWidget(self.weights)
         self.verticallayout_weights.setSpacing(0)
-        self.verticallayout_weights.setContentsMargins(10, 0, 0, 0)        
+        self.verticallayout_weights.setContentsMargins(10, 0, 0, 0)
         self.page_credit = QtGui.QWidget()
         self.page_credit.setGeometry(QtCore.QRect(0, 0, 599, 314))
         self.page_credit.setObjectName('page_cluster')
-        self.toolbox.addItem(self.page_credit, 'Subin\'s Tool Kits')        
+        self.toolbox.addItem(self.page_credit, 'Subin\'s Tool Kits')
         self.verticallayout_credit = QtGui.QVBoxLayout(self.page_credit)
         self.verticallayout_credit.setObjectName('verticallayout_credit')
         self.verticallayout_credit.setSpacing(0)
-        self.verticallayout_credit.setContentsMargins(10, 10, 10, 10)        
+        self.verticallayout_credit.setContentsMargins(10, 10, 10, 10)
         self.button_logo = QtGui.QPushButton(self.page_credit)
         self.button_logo.setObjectName('button_link')
-        self.button_logo.setFlat(True)        
-        log_path = os.path.join(resources.getIconPath(), 'logo.png')        
-        icon = QtGui.QIcon ()
-        icon.addPixmap (QtGui.QPixmap (log_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)             
-        self.button_logo.setIcon (icon)
-        self.button_logo.setIconSize (QtCore.QSize(440, 440))              
-        self.verticallayout_credit.addWidget(self.button_logo)       
+        self.button_logo.setFlat(True)
+        log_path = os.path.join(resources.getIconPath(), 'logo.png')
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(log_path),
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.button_logo.setIcon(icon)
+        self.button_logo.setIconSize(QtCore.QSize(440, 440))
+        self.verticallayout_credit.addWidget(self.button_logo)
         self.button_link = QtGui.QPushButton(self.page_credit)
         self.button_link.setObjectName('button_link')
         self.button_link.setFlat(True)
         self.button_link.setText('\nwww.subin_toolkit.com')
-        self.button_link.setStyleSheet('font: 16pt \"Sans Serif\";')        
-        self.verticallayout_credit.addWidget(self.button_link) 
-        self.button_link.clicked.connect(self.toolkit_link)       
+        self.button_link.setStyleSheet('font: 16pt \"Sans Serif\";')
+        self.verticallayout_credit.addWidget(self.button_link)
+        self.button_link.clicked.connect(self.toolkit_link)
         self.button_help = QtGui.QPushButton(self.page_credit)
         self.button_help.setObjectName('button_link')
         self.button_help.setFlat(True)
         self.button_help.setText('About Smart Deformer 0.0.1 (Help)\n')
-        self.button_help.setStyleSheet('font: 16pt \"Sans Serif\";')        
-        self.verticallayout_credit.addWidget(self.button_help)    
-        self.button_link.clicked.connect(self.toolkit_help_link)       
-        size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        self.button_help.setStyleSheet('font: 16pt \"Sans Serif\";')
+        self.verticallayout_credit.addWidget(self.button_help)
+        self.button_help.clicked.connect(self.toolkit_help_link)
+        size_policy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         self.label_subin = QtGui.QLabel(self.page_credit)
         self.label_subin.setObjectName('label_logo')
-        self.label_subin.setAlignment(QtCore.Qt.AlignCenter)            
+        self.label_subin.setAlignment(QtCore.Qt.AlignCenter)
         self.label_subin.setSizePolicy(size_policy)
-        self.label_subin.setText('Author: Subin. Gopi\nsubing85@gmail.com\n#copyright(c) 2019, Subin Gopi')
+        self.label_subin.setText(
+            'Author: Subin. Gopi\nsubing85@gmail.com\n#copyright(c) 2019, Subin Gopi')
         self.label_subin.setStyleSheet('font: 12pt \"Sans Serif\";')
         self.verticallayout_credit.addWidget(self.label_subin)
-        self.toolbox.setCurrentIndex(3)        
+        self.toolbox.setCurrentIndex(3)
 
-    def toolkit_link(self):        
-        # webbrowser.open(resources.getToolKitLink())        
-        # thread.start_new_thread(self.call, ('aaaaaaaaaaaa', ))
-        # os.st
+    def toolkit_link(self):
+        webbrowser.BaseBrowser(resources.getToolKitLink())
+        OpenMaya.MGlobal.displayInfo(resources.getToolKitLink())
 
-        import webbrowser        
-        # webbrowser.open_new('https://www.msn.com/')
-        webbrowser.BaseBrowser('https://www.msn.com/')
-    
     def toolkit_help_link(self):
         webbrowser.open(resources.getToolKitHelpLink())
-        
-    def call(self, path):
-        webbrowser.open(path)
-        
+        OpenMaya.MGlobal.displayInfo(resources.getToolKitHelpLink())
+
+    def parent_maya_layout(self):
+        object_name = str(self.objectName())
+        self.floating_layout = cmds.paneLayout(
+            cn='single', w=self.width, p=platforms.get_main_window())
+        cmds.dockControl(self.tool_kit_object, l=self.tool_kit_titile, area='right',
+                         content=self.floating_layout, allowedArea=['right', 'left'])
+        cmds.control(object_name, e=1, p=self.floating_layout)
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

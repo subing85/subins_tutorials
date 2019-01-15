@@ -1,6 +1,5 @@
-def show_window():    
+def show_window():
     from smartDeformer.resources.ui import main
+    reload(main)
     my_window = main.MainWindow()
     return my_window
-
-    

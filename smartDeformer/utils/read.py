@@ -1,7 +1,7 @@
 '''
 read.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 13, 2019
+Last modified: January 15, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi

@@ -19,9 +19,9 @@ Description
 
 
 import copy
+
 from maya import OpenMaya
 from maya import OpenMayaAnim
-
 from smartDeformer.modules import studioMaya
 
 
