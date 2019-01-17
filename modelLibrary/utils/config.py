@@ -3,4 +3,4 @@ def get_conig():
 
 
 def get_tool_kit():
-    return 'smart_deformer', 'Smart Deformer', '0.0.1'
+    return 'model_library', 'Model Library', '0.0.1'

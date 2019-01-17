@@ -1,6 +1,6 @@
 import platform
 
-from smartDeformer.utils import config
+from modelLibrary.utils import config
 
 
 def has_valid():
