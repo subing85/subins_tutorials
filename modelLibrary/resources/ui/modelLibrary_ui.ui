@@ -420,7 +420,7 @@ p, li { white-space: pre-wrap; }
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
+  <widget class="QMenuBar" name="menu_bar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -429,82 +429,58 @@ p, li { white-space: pre-wrap; }
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionCreate_Folder"/>
-    <addaction name="actionRemove_Folder"/>
-    <addaction name="actionQuit"/>
+    <addaction name="action_create"/>
+    <addaction name="action_remove"/>
+    <addaction name="separator"/>
+    <addaction name="action_quit"/>
    </widget>
-   <widget class="QMenu" name="menuSettings">
+   <widget class="QMenu" name="menu_settings">
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionPrefrensess"/>
+    <addaction name="action_preferences"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="menu_help">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout_Tools"/>
-    <addaction name="actionAbout_Subi_s_Tool_Kits"/>
+    <addaction name="action_aboutools"/>
+    <addaction name="action_abouttoolkits"/>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuSettings"/>
-   <addaction name="menuHelp"/>
+   <addaction name="menu_file"/>
+   <addaction name="menu_settings"/>
+   <addaction name="menu_help"/>
   </widget>
-  <action name="action_createFolder">
+  <action name="action_create">
    <property name="text">
     <string>Create Folder</string>
-   </property>
-  </action>
-  <action name="action_expand">
-   <property name="text">
-    <string>Expand</string>
-   </property>
-  </action>
-  <action name="action_collapse">
-   <property name="text">
-    <string>Collapse</string>
    </property>
   </action>
   <action name="action_remove">
    <property name="text">
-    <string>Remove</string>
-   </property>
-  </action>
-  <action name="action_rename">
-   <property name="text">
-    <string>Rename</string>
-   </property>
-  </action>
-  <action name="actionCreate_Folder">
-   <property name="text">
-    <string>Create Folder</string>
-   </property>
-  </action>
-  <action name="actionRemove_Folder">
-   <property name="text">
     <string>Remove Folder</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="action_quit">
    <property name="text">
     <string>Quit</string>
    </property>
   </action>
-  <action name="actionPrefrensess">
+  <action name="action_preferences">
    <property name="text">
     <string>Preferences</string>
    </property>
   </action>
-  <action name="actionAbout_Tools">
+  <action name="action_aboutools">
    <property name="text">
     <string>About Tools</string>
    </property>
   </action>
-  <action name="actionAbout_Subi_s_Tool_Kits">
+  <action name="action_abouttoolkits">
    <property name="text">
     <string>About Subi's Tool Kits</string>
    </property>
