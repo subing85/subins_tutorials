@@ -65,6 +65,16 @@
              <string notr="true">1</string>
             </property>
            </column>
+           <item>
+            <property name="text">
+             <string>name</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Subin</string>
+             </property>
+            </item>
+           </item>
           </widget>
          </item>
         </layout>

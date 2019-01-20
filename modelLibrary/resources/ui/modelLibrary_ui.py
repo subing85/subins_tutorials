@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/subins_tutorials/modelLibrary/resources/ui/modelLibrary_ui.ui'
 #
-# Created: Fri Jan 18 22:48:04 2019
+# Created: Sat Jan 19 20:24:58 2019
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -52,6 +52,8 @@ class Ui_MainWindow(object):
         self.treeWidget.setHeaderHidden(True)
         self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
         self.treeWidget.headerItem().setText(0, _fromUtf8("1"))
+        item_0 = QtGui.QTreeWidgetItem(self.treeWidget)
+        item_1 = QtGui.QTreeWidgetItem(item_0)
         self.treeWidget.header().setVisible(False)
         self.gridLayout_poseList.addWidget(self.treeWidget, 0, 0, 1, 1)
         self.scrollArea_pose.setWidget(self.scrollAreaWidget_pose)
@@ -222,6 +224,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        __sortingEnabled = self.treeWidget.isSortingEnabled()
+        self.treeWidget.setSortingEnabled(False)
+        self.treeWidget.topLevelItem(0).setText(0, _translate("MainWindow", "name", None))
+        self.treeWidget.topLevelItem(0).child(0).setText(0, _translate("MainWindow", "Subin", None))
+        self.treeWidget.setSortingEnabled(__sortingEnabled)
         self.groupBox_pose.setTitle(_translate("MainWindow", "Pose", None))
         self.label_poseLabel.setText(_translate("MainWindow", "Name", None))
         self.textEdit_history.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

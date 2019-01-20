@@ -16,7 +16,7 @@ Description
 
 import os
 import sys
-import webbrowser
+import tempfile
 
 from PySide import QtCore
 from PySide import QtGui
@@ -25,16 +25,26 @@ from functools import partial
 #from maya import OpenMaya
 #from maya import cmds
 
-#from modelLibrary import resources
+from modelLibrary.modules import studioMaya
+from modelLibrary.modules import studioImage
+
+from modelLibrary import resources
 #from modelLibrary.utils import platforms
 
 #reload(platforms)
 
+reload(studioImage)
+reload(studioMaya)
+
+
+
 class Model(QtGui.QWidget):
 
     def __init__(self, parent=None):
-        super(Model, self).__init__(parent=None)
+        super(Model, self).__init__(parent=None)        
         
+        self.studio_image = studioImage.ImageCalibration()        
+        self._width, self._height = 150, 150   
         self.setup_ui()
 
     def setup_ui(self):
@@ -63,8 +73,8 @@ class Model(QtGui.QWidget):
         self.horizontallayout_snapshot = QtGui.QHBoxLayout(self.groupbox_snapshot)
         self.horizontallayout_snapshot.setObjectName('horizontallayout_snapshot')
         
-        self.horizontallayout_snapshot.setSpacing(10)
-        self.horizontallayout_snapshot.setContentsMargins(10, 10, 10, 10)        
+        self.horizontallayout_snapshot.setSpacing(5)
+        self.horizontallayout_snapshot.setContentsMargins(5, 5, 5, 5)        
         
         spacer_item = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontallayout_snapshot.addItem(spacer_item)
@@ -77,9 +87,12 @@ class Model(QtGui.QWidget):
         size_policy.setVerticalStretch(0)
         size_policy.setHeightForWidth(self.button_snapshot.sizePolicy().hasHeightForWidth())      
         self.button_snapshot.setSizePolicy(size_policy)        
-        self.button_snapshot.setMinimumSize(QtCore.QSize(150, 150))
-        self.button_snapshot.setMaximumSize(QtCore.QSize(150, 150))
+        self.button_snapshot.setMinimumSize(QtCore.QSize(self._width, self._height))
+        self.button_snapshot.setMaximumSize(QtCore.QSize(self._width, self._height))
         self.horizontallayout_snapshot.addWidget(self.button_snapshot)
+        
+        snapshot_image = os.path.join(resources.getIconPath(), 'snapshot.png')        
+        self.image_to_button(self.button_snapshot, snapshot_image, self._width, self._height)
         
         spacer_item = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)        
         self.horizontallayout_snapshot.addItem(spacer_item)
@@ -121,6 +134,36 @@ class Model(QtGui.QWidget):
         self.button_build.setObjectName('button_build')
         self.button_build.setText('Build')        
         self.verticallayout_model.addWidget(self.button_build)
+        
+        self.button_snapshot.clicked.connect(partial (self.snapshot, self.button_snapshot))
+        self.button_publish.clicked.connect(self.publish)
+        
+        
+    def snapshot(self, button):         
+        self.studio_image.image_file = os.path.join(tempfile.gettempdir(),
+                                    'studio_image_snapshot.png') 
+        result = self.studio_image.create()
+        if not result:
+            QtGui.QMessageBox.warning(self, 'Warning', 'Not able to process snap shot!..', QtGui.QMessageBox.Ok)
+            OpenMaya.MGlobal.displayWarning('Snap shot - faild!...')
+            return  
+        self.image_to_button(button, result, self._width, self._height)
+        self.button_snapshot.setStatusTip(result)      
+      
+    def image_to_button(self, button, path, width, height):  # Load Image to button
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        button.setIcon(icon)
+        button.setIconSize(QtCore.QSize(width-5, height-5))
+        
+        
+    def publish(self):       
+        status_tip = self.groupbox_model.statusTip()        
+        source_path = status_tip.split('\n')[-1]      
+
+        print source_path
+        
+        
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

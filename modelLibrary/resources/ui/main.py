@@ -18,6 +18,8 @@ import os
 import sys
 import webbrowser
 
+from pprint import pprint
+
 path = '/mnt/venture/subins_tutorials'
 
 if path not in sys.path:
@@ -33,19 +35,41 @@ from maya import cmds
 from modelLibrary import resources
 from modelLibrary.resources.ui import catalogue
 from modelLibrary.resources.ui import model
-
 from modelLibrary.utils import platforms
 
+from modelLibrary.resources.ui import preferences
+from modelLibrary.modules import readWrite
+from modelLibrary.modules import studioFolder
+
+reload(model)
 reload(platforms)
 reload(catalogue)
 reload(resources)
+reload(preferences)
+reload(readWrite)
+reload(studioFolder)
 
 
 class MainWindow(QtGui.QMainWindow):
 
     # def __init__(self, parent=platforms.get_qwidget()):
     def __init__(self, parent=None):        
-        super(MainWindow, self).__init__(parent)       
+        super(MainWindow, self).__init__(parent)
+        
+        # to check the preferencees        
+        rw = readWrite.ReadWrite(t='preference')
+        rw.file_path = os.path.join(rw.path, 'library_preferences.%s' % rw.extention)
+        self.bundles = rw.get()               
+        if not self.bundles:
+            self.preferences()
+            
+        self.library_path = None        
+        if '0' in self.bundles:            
+            self.library_path = self.bundles['0'] 
+            
+        self.folder = studioFolder.Folder(path=self.library_path)            
+            
+                    
         self.catalogue = catalogue.Catalogue(parent=None)
         self.model = model.Model(parent=None)
               
@@ -56,9 +80,12 @@ class MainWindow(QtGui.QMainWindow):
         if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
             cmds.deleteUI(self.tool_kit_object, ctl=1)
         self.setup_ui()
-        # self.parent_maya_layout()
-        
+        # self.parent_maya_layout()        
         self.set_icons()
+        
+        self.load_library_folders(self.treewidget)
+        
+
 
     def setup_ui(self):
         self.resize(self.width, self.height)
@@ -75,7 +102,12 @@ class MainWindow(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self.catalogue.splitter)
 
         self.catalogue.splitter.addWidget(self.model.groupbox_model)
-        self.catalogue.splitter.setSizes([200, 500, 200])       
+        self.catalogue.splitter.setSizes([200, 500, 200])
+        
+        self.treewidget = self.catalogue.treewidget_folder        
+        self.treewidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.treewidget.customContextMenuRequested.connect(partial (self.on_context_menu, self.treewidget))
+        self.treewidget.itemClicked.connect(partial (self.load_current_folder, self.treewidget))  # Load Pose to UI
         
         self.menu_bar = QtGui.QMenuBar(self)
         self.menu_bar.setGeometry(QtCore.QRect(0, 0, 960, 25))
@@ -127,13 +159,24 @@ class MainWindow(QtGui.QMainWindow):
         self.menu_bar.addAction(self.menu_help.menuAction())          
         
         self.menu_file.addAction(self.action_create)          
-        self.menu_file.addAction(self.action_remove)
         self.menu_file.addAction(self.action_rename)
+        self.menu_file.addAction(self.action_remove)        
         self.menu_file.addSeparator()        
         self.menu_file.addAction(self.action_quit)
         self.menu_settings.addAction(self.action_preferences)
         self.menu_help.addAction(self.action_aboutool)
         self.menu_help.addAction(self.action_abouttoolkits)
+        
+        self.contex_menu = QtGui.QMenu(self)
+        self.contex_menu.addAction(self.action_create)          
+        self.contex_menu.addAction(self.action_rename)        
+        self.contex_menu.addAction(self.action_remove)
+
+        self.action_preferences.triggered.connect(self.preferences)
+        self.action_create.triggered.connect(self.create)
+        self.action_rename.triggered.connect(self.rename)
+        self.action_remove.triggered.connect(self.remove)
+        self.action_quit.triggered.connect(self.close)
         
     
     def set_icons(self):
@@ -147,10 +190,7 @@ class MainWindow(QtGui.QMainWindow):
             icon_path = os.path.join(resources.getIconPath(), current_icon)              
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)                
-            each_action.setIcon(icon)        
-        
-                
-        
+            each_action.setIcon(icon)
 
     def toolkit_link(self):
         webbrowser.BaseBrowser(resources.getToolKitLink())
@@ -167,7 +207,97 @@ class MainWindow(QtGui.QMainWindow):
         cmds.dockControl(self.tool_kit_object, l=self.tool_kit_titile, area='right',
                          content=self.floating_layout, allowedArea=['right', 'left'])
         cmds.control(object_name, e=1, p=self.floating_layout)
+        
+    def preferences(self): 
+        self.hide()
+        preference_window = preferences.Preference(parent=None, child=self)
+        preference_window.show()        
+    
+    def on_context_menu(self, treewidget, paint):
+        self.contex_menu.exec_(treewidget.mapToGlobal(paint))
+        
+    def create(self):
+        folder_name, ok = QtGui.QInputDialog.getText(self, 'Input', 'Enter the folder name:', QtGui.QLineEdit.Normal)
+        if not ok:
+            OpenMaya.MGlobal.displayWarning('abort the folder creation!...')
+            return   
+        current_path = folder_name    
+        if self.treewidget.selectedItems():
+            current_item = self.treewidget.selectedItems()[-1]
+            tool_tip = str(current_item.toolTip(0))            
+            current_path = '{}/{}'.format(tool_tip, folder_name)        
+        result, message = self.folder.create(basename=current_path)        
+        if not result:
+            QtGui.QMessageBox.warning(self, 'Warning', message, QtGui.QMessageBox.Ok)
+            OpenMaya.MGlobal.displayWarning('Create folder  - faild!...')
+            return
+                
+        self.folder.load_folder_structure(self.treewidget)        
+        OpenMaya.MGlobal.displayInfo('\"%s\" Folder create - success!...' % message)  
+        
+    
+    def rename(self):
+        folder_name, ok = QtGui.QInputDialog.getText(self, 'Input', 'Enter the new name:', QtGui.QLineEdit.Normal)
+        if not ok:
+            print '\n#warnings abort the rename'
+            return
+        
+        if not self.treewidget.selectedItems():
+            QtGui.QMessageBox.warning(self, 'Warning', 'Not found any selection\nSelect the folder and try', QtGui.QMessageBox.Ok)
+            return            
+            
+        current_item = self.treewidget.selectedItems()[-1]
+        tool_tip = str(current_item.toolTip(0))            
+        result, message = self.folder.rename(basename=tool_tip, name=folder_name)
+        if not result:
+            QtGui.QMessageBox.warning(self, 'Warning', message, QtGui.QMessageBox.Ok)
+            OpenMaya.MGlobal.displayWarning('Rename folder - faild!...')
+            return          
+        
+        self.folder.load_folder_structure(self.treewidget)        
+        OpenMaya.MGlobal.displayInfo('\"%s\" Rename folder - success!...' % message)                       
+    
+    def remove(self):
+        
+        if not self.treewidget.selectedItems():
+            QtGui.QMessageBox.warning(self, 'Warning', 'Not found any selection\nSelect the folder and try', QtGui.QMessageBox.Ok)
+            return
+        
+        replay = QtGui.QMessageBox.question(self, 'Question', 'Are you sure, you want to remove folder', QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)        
+    
+        if replay == QtGui.QMessageBox.No:
+            OpenMaya.MGlobal.displayWarning('abort the remove folder!...')
+            return       
+            
+        current_item = self.treewidget.selectedItems()[-1]
+        tool_tip = str(current_item.toolTip(0))            
+        result, message = self.folder.remove(basename=tool_tip)
+        
+        if not result:
+            QtGui.QMessageBox.warning(self, 'Warning', message, QtGui.QMessageBox.Ok)
+            OpenMaya.MGlobal.displayWarning('Remove folder - faild!...')
+            return          
+        
+        self.folder.load_folder_structure(self.treewidget)        
+        OpenMaya.MGlobal.displayInfo('\"%s\" Remove folder - success!...' % message)    
 
+
+        
+    def load_library_folders(self, treewidget):
+        data = self.folder.get_folder_structure()
+        self.folder.set_folder_structure(data, parent=treewidget)
+        
+    def load_current_folder(self, treewidget, *args):        
+        current_items = treewidget.selectedItems()
+        paths = []
+        for each_items in current_items:            
+            tool_tip = each_items.toolTip(0)
+            current_path = os.path.join(self.library_path, tool_tip)            
+            paths.append(current_path)
+            
+        self.model.groupbox_model.setStatusTip('\n'.join(paths))    
+
+        
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

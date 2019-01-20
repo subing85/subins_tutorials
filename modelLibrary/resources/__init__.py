@@ -14,8 +14,8 @@ def getIconPath():
     return os.path.join(CURRENT_PATH, 'icons')
 
 
-def getWeightsPath():
-    return os.path.join(getWorkspacePath(), 'weights')
+def getPreferencePath():
+    return os.path.join(getWorkspacePath(), 'preference')
 
 
 def getWorkspacePath():
@@ -27,7 +27,7 @@ def getPublishDirectory():
 
 
 def getResourceTypes():
-    data = {'weights': getWeightsPath()}
+    data = {'preference': getPreferencePath()}
     return data
 
 

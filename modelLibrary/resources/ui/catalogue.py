@@ -82,16 +82,18 @@ class Catalogue(QtGui.QWidget):
         self.listWidget_catalogue.keyPressEvent = self.key_press_event
         self.listWidget_catalogue.keyReleaseEvent = self.key_release_event
         
-        for x in range (100):        
-            item = QtGui.QListWidgetItem()
-            self.listWidget_catalogue.addItem(item)
-            item.setText('subin')
-            
-            icon = QtGui.QIcon()
-            icon_path = '/venture/subins_tutorials/modelLibrary/resources/icons/test.jpg'
-            icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            item.setIcon(icon)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignBottom)
+        #=======================================================================
+        # for x in range (100):        
+        #     item = QtGui.QListWidgetItem()
+        #     self.listWidget_catalogue.addItem(item)
+        #     item.setText('subin')
+        #     
+        #     icon = QtGui.QIcon()
+        #     icon_path = '/venture/subins_tutorials/modelLibrary/resources/icons/test.jpg'
+        #     icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        #     item.setIcon(icon)
+        #     item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignBottom)
+        #=======================================================================
         
 
         self._ctrl_press = False

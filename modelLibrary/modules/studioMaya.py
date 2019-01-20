@@ -16,7 +16,13 @@ Description
 '''
 
 
+import tempfile
+
+from PySide import QtGui
+from PySide import QtCore
+
 from maya import OpenMaya
+from maya import OpenMayaUI
 from maya import OpenMayaAnim
 
 
@@ -26,41 +32,15 @@ class Maya(object):
         if 'node' in kwargs:
             node = kwargs['node']
         self.getObjecTypes()
-
-    def hasCluster(self, dag_path):
-        if not isinstance(dag_path, OpenMaya.MDagPath):
-            dag_path = self.getDagPath()
-        mfn_dag_node = OpenMaya.MFnDagNode(dag_path)
-        cluster_dag_path = mfn_dag_node.dagPath()
-        try:
-            cluster_dag_path.extendToShape()
-        except:
-            cluster_dag_path = None
-        if not dag_path:
-            return False
-        if not cluster_dag_path:
-            return False
-        if not cluster_dag_path.hasFn(OpenMaya.MFn.kCluster):
-            return False
-        return True
-
-    def hasJoint(self, dag_path):
+        
+        
+    def had_polygon(self):
         if not isinstance(dag_path, OpenMaya.MDagPath):
             dag_path = self.getDagPath(dag_path)
-        if not dag_path.hasFn(OpenMaya.MFn.kJoint):
+        if not dag_path.hasFn(OpenMaya.MFn.kMesh):
             return False
-        return True
-
-    def hasMembership(self, deformer_mobject, geometry_dag_path, geometry_component):
-        mfn_geometry_filter = OpenMayaAnim.MFnGeometryFilter(deformer_mobject)
-        deformer_set = mfn_geometry_filter.deformerSet()
-        mfn_set = OpenMaya.MFnSet(deformer_set)
-        selectionList = OpenMaya.MSelectionList()
-        mfn_set.getMembers(selectionList, True)
-        if not selectionList.hasItem(geometry_dag_path, geometry_component):
-            return False
-        return True
-
+        return True        
+    
     def getDagPath(self, node):
         mselection = OpenMaya.MSelectionList()
         mselection.add(node)
@@ -74,6 +54,29 @@ class Maya(object):
         mobject = OpenMaya.MObject()
         mselection.getDependNode(0, mobject)
         return mobject
+    
+    def getParentNode(self, mobject) :  
+        if not isinstance(mobject, OpenMaya.MObject):
+            mobject = self.getMObject(mobject)    
+        mfn_dag_node = OpenMaya.MFnDagNode(mobject)     
+        parent_m_object = mfn_dag_node.parent(0)    
+        parent_mfn_dag_node = OpenMaya.MFnDagNode(parent_m_object)         
+        m_dag_path = OpenMaya.MDagPath()
+        parent_mfn_dag_node.getPath(m_dag_path)           
+        return m_dag_path
+    
+
+    def hasMembership(self, deformer_mobject, geometry_dag_path, geometry_component):
+        mfn_geometry_filter = OpenMayaAnim.MFnGeometryFilter(deformer_mobject)
+        deformer_set = mfn_geometry_filter.deformerSet()
+        mfn_set = OpenMaya.MFnSet(deformer_set)
+        selectionList = OpenMaya.MSelectionList()
+        mfn_set.getMembers(selectionList, True)
+        if not selectionList.hasItem(geometry_dag_path, geometry_component):
+            return False
+        return True
+
+
 
     def getPlug(self, node, attribute):
         mplug = OpenMaya.MPlug()
