@@ -27,7 +27,7 @@ def getPublishDirectory():
 
 
 def getResourceTypes():
-    data = {'preference': getPreferencePath()}
+    data = {'preference': getPreferencePath(), 'polygon': getWorkspacePath(), 'generic': None}
     return data
 
 

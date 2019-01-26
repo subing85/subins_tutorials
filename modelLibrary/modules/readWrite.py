@@ -1,7 +1,7 @@
 '''
 readWrite.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 13, 2019
+Last modified: January 26, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -11,7 +11,7 @@ Author: Subin. Gopi(subing85@gmail.com)
 
 Description
     readWrite is the function set for custom data structure. 
-    The purpose of the readWrite to create, getting and setting the weights data.  
+    The purpose of the readWrite to create, getting and setting the model data.  
 '''
 
 
@@ -20,6 +20,7 @@ import json
 import time
 import getpass
 import warnings
+import tempfile
 
 from datetime import datetime
 
@@ -30,13 +31,21 @@ class ReadWrite(object):
 
     def __init__(self, **kwargs):
         comment = 'subin gopi tool kits'
-        created_date = datetime.now().strftime('%B/%d/%Y - %I:%M:%S:%p')
+        created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         description = 'This data contain information about subin gopi tool kits'
         type = 'generic'
         valid = True
         data = None
         tag = 'generic'
-
+        self.path = tempfile.gettempdir()
+        self.format = 'json'
+        self.name = None
+        if 'path' in kwargs:
+            self.path = kwargs['path']        
+        if 'format' in kwargs:
+            self.format = kwargs['format']
+        if 'name' in kwargs:
+            self.name = kwargs['name']
         if 'c' in kwargs:
             comment = kwargs['c']
         if 'cd' in kwargs:
@@ -51,7 +60,6 @@ class ReadWrite(object):
             data = kwargs['data']
         if 'tag' in kwargs:
             tag = kwargs['tag']
-
         self.datas = {'comment': comment,
                       'created_date': created_date,
                       'author': 'Subin Gopi',
@@ -65,23 +73,53 @@ class ReadWrite(object):
                       'data': data
                       }
 
-        resource_types = resources.getResourceTypes()
-        self.path = resource_types[type]
-        self.extention = 'json'
-        
-    def create(self, name):
         self.file_path = os.path.join(
-            self.path, '%s.%s' % (name, self.extention))
-        if not os.path.isdir(self.path):
-            os.makedirs(self.path)
+            self.path, '%s.%s' % (self.name, self.format))
+
+    def has_file(self):
+        if os.path.isfile(self.file_path):
+            return True
+        return False
+
+    def has_valid(self):
+        data = self.get_all()
+        if not data:
+            return False
+        for each_key in self.datas:
+            if each_key not in data:
+                return False
+        if not data['valid']:
+            return False
+        return True
+
+    def create(self):
+        if not self.file_path:
+            return
+        if not os.path.isdir(os.path.dirname(self.file_path)):
+            os.makedirs(os.path.dirname(self.file_path))
         try:
             write(self.file_path, self.datas)
-            return True
+            return path
         except Exception as result:
             warnings.warn(str(result), Warning)
             return False
 
-    def get(self):
+    def get_data(self):
+        data = self.get_all()
+        if not data:
+            return None
+        return data['data']
+
+    def get_info(self):
+        data = self.get_all()
+        info_data = {}
+        for k, v in data.items():
+            if k == 'data':
+                continue
+            info_data.setdefault(k, v)
+        return info_data
+
+    def get_all(self):
         if not os.path.isfile(self.file_path):
             warnings.warn('Not fount  file %s' % self.file_path, Warning)
             return
@@ -90,12 +128,24 @@ class ReadWrite(object):
         except Exception as error:
             warnings.warn(error, Warning)
             data = None
-            
+
         if 'data' not in data:
             return None
-        
-        return data['data']
-        
+        return data
+
+    def get_library_paths(self):
+        path_data = self.get_data()
+        if not path_data:
+            return None
+        paths = []
+        x = 0
+        while x < len(path_data) + 1:
+            for index,  path, in path_data.items():
+                if int(index) != x:
+                    continue
+                paths.append(path.encode())
+            x += 1
+        return paths
 
     def getBundles(self):
         if not os.path.isdir(self.path):
@@ -103,7 +153,7 @@ class ReadWrite(object):
         files = os.listdir(self.path)
         bundles = {}
         for each_file in files:
-            if not each_file.endswith(self.extention):
+            if not each_file.endswith(self.format):
                 continue
             if os.path.isdir(os.path.join(self.path, each_file)):
                 continue
@@ -136,7 +186,6 @@ def write(path, data):
             os.remove(file)
         except Exception as result:
             print(result)
-
     result = 'successfully created Database {}'.format(path)
     genericData = data.copy()
     currentTime = time.time()
