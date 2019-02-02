@@ -126,7 +126,7 @@ class Model(QtGui.QWidget):
         self.label_subin.setObjectName('label_logo')
         self.label_subin.setAlignment(QtCore.Qt.AlignCenter)
         self.label_subin.setText(
-            'Author: Subin. Gopi\nsubing85@gmail.com\n#copyright(c) 2019, Subin Gopi')
+            'Author: Subin. Gopi\nsubing85@gmail.com\nwww.subins-toolkits.com\ncopyright(c) 2019, Subin Gopi')
         self.label_subin.setStyleSheet('font: 11pt \"Sans Serif\";')
         self.verticallayout_model.addWidget(self.label_subin)
 

@@ -41,7 +41,7 @@ class ReadWrite(object):
         self.format = 'json'
         self.name = None
         if 'path' in kwargs:
-            self.path = kwargs['path']        
+            self.path = kwargs['path']
         if 'format' in kwargs:
             self.format = kwargs['format']
         if 'name' in kwargs:
@@ -99,7 +99,7 @@ class ReadWrite(object):
             os.makedirs(os.path.dirname(self.file_path))
         try:
             write(self.file_path, self.datas)
-            return path
+            return self.file_path
         except Exception as result:
             warnings.warn(str(result), Warning)
             return False
@@ -128,7 +128,6 @@ class ReadWrite(object):
         except Exception as error:
             warnings.warn(error, Warning)
             data = None
-
         if 'data' not in data:
             return None
         return data

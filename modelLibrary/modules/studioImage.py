@@ -35,7 +35,7 @@ class ImageCalibration(object):
         elif path and name:
             self.image_file = os.path.join(path, '%s.%s' % (name, format))
         self.unknown_icon = os.path.join(
-            resources.getIconPath(), 'sanp_shot.png')
+            resources.getIconPath(), 'unknown.png')
 
     def create(self, width=2048, height=2048):
         m_image = self.vieportSnapShot()

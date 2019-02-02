@@ -39,28 +39,33 @@ class Model(studioMaya.Maya):
         return result
 
     def create(self, fake=False):
+
         rw = readWrite.ReadWrite(t='polygon')
         rw.file_path = self.path
         if fake:
             data = rw.get_info()
             return data
-        
+
         data = rw.get_data()
         self.undoChunk('open')
         for index, polydon_data in data.items():
             self.create_polygon_mesh(
                 polydon_data, dag_path=self.geometry_dag_paths)
         self.undoChunk('close')
+        OpenMaya.MGlobal.executeCommand('undoInfo -closeChunk;')
+
         return True
 
-    def save(self, file_path, name, image):
+    def save(self, file_path, name, image, user_comment=None):
         data = {}
         for index in range(self.geometry_dag_paths.length()):
             polygon_data = self.get_polygon_mesh(
                 self.geometry_dag_paths[index])
             data.setdefault(index, polygon_data)
-        comment = '%s %s - polygon container' % (
-            self.tool_kit_name, self.version)
+        comment = '%s %s - polygon' % (self.tool_kit_name, self.version)
+        if user_comment:
+            comment = '%s %s - polygon\n%s' % (
+                self.tool_kit_name, self.version, user_comment)
         created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         description = 'This data contain information about maya polygon'
         type = 'polygon'
@@ -77,7 +82,8 @@ class Model(studioMaya.Maya):
         print '\nresult', mode_path, image_path
 
     def had_file(self, dirname, name):
-        rw = readWrite.ReadWrite(path=dirname, name=name, format='model', t='polygon')
+        rw = readWrite.ReadWrite(
+            path=dirname, name=name, format='model', t='polygon')
         return rw.has_file()
 
     def set_polygon_mesh(self):
@@ -113,7 +119,6 @@ class Model(studioMaya.Maya):
             uvs_data.setdefault(index, current_set)
         vertice_list = []
         for index in range(point_array.length()):
-            print point_array[index]
             vertice_list.append(
                 (point_array[index].x, point_array[index].y, point_array[index].z, point_array[index].w))
         parent_mobject = mfn_mesh.parent(0)

@@ -36,11 +36,6 @@ from modelLibrary.resources.ui import model
 from modelLibrary.utils import platforms
 from modelLibrary import resources
 
-reload(preferences)
-reload(studioMaya)
-reload(readWrite)
-reload(studioModel)
-
 
 class MainWindow(QtGui.QMainWindow):
 
@@ -52,6 +47,7 @@ class MainWindow(QtGui.QMainWindow):
         self.image_format = 'png'
         self.tool_mode = 'publish'
         self.currnet_publish = None
+
         self.preference = preferences.Preference(parent=None)
         self.folder = studioFolder.Folder()
         self.studio_maya = studioMaya.Maya()
@@ -59,13 +55,16 @@ class MainWindow(QtGui.QMainWindow):
         self.model = model.Model(parent=None)
         self.tool_kit_object, self.tool_kit_name, self.version = platforms.get_tool_kit()
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
+
         # to check the preferencees
-        resource_path = resources.getResourceTypes()['preference']
-        self.rw = readWrite.ReadWrite(t='preference', path=resource_path, format='json', name='library_preferences')   
-                 
-        self.library_paths = self.rw.get_library_paths()               
+        resource_path = resources.getResourceTypes()['preference'].encode()
+        self.rw = readWrite.ReadWrite(
+            t='preference', path=resource_path, format='json', name='library_preferences')
+
+        self.library_paths = self.rw.get_library_paths()
         if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
             cmds.deleteUI(self.tool_kit_object, ctl=1)
+
         self.setup_ui()
         self.set_icons()
         self.load_library_folders(self.treewidget)
@@ -124,10 +123,10 @@ class MainWindow(QtGui.QMainWindow):
         self.action_remove.setText('Remove Folder')
         self.action_rename = QtGui.QAction(self)
         self.action_rename.setObjectName('action_rename')
-        self.action_rename.setText('Rename Folder')        
+        self.action_rename.setText('Rename Folder')
         self.action_refresh = QtGui.QAction(self)
         self.action_refresh.setObjectName('action_refresh')
-        self.action_refresh.setText('Refresh')                
+        self.action_refresh.setText('Refresh')
         self.action_expand = QtGui.QAction(self)
         self.action_expand.setObjectName('action_expand')
         self.action_expand.setText('Expand')
@@ -153,7 +152,7 @@ class MainWindow(QtGui.QMainWindow):
         self.menu_file.addAction(self.action_rename)
         self.menu_file.addAction(self.action_remove)
         self.menu_file.addSeparator()
-        self.menu_file.addAction(self.action_refresh)        
+        self.menu_file.addAction(self.action_refresh)
         self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_quit)
         self.menu_settings.addAction(self.action_preferences)
@@ -164,15 +163,15 @@ class MainWindow(QtGui.QMainWindow):
         self.contex_menu.addAction(self.action_rename)
         self.contex_menu.addAction(self.action_remove)
         self.contex_menu.addSeparator()
-        self.contex_menu.addAction(self.action_refresh)        
-        self.contex_menu.addSeparator()        
+        self.contex_menu.addAction(self.action_refresh)
+        self.contex_menu.addSeparator()
         self.contex_menu.addAction(self.action_expand)
-        self.contex_menu.addAction(self.action_collapse)        
+        self.contex_menu.addAction(self.action_collapse)
         self.action_preferences.triggered.connect(self.show_preference)
         self.action_create.triggered.connect(self.create)
         self.action_rename.triggered.connect(self.rename)
         self.action_remove.triggered.connect(self.remove)
-        self.action_refresh.triggered.connect(self.refresh)        
+        self.action_refresh.triggered.connect(self.refresh)
         self.action_quit.triggered.connect(self.close_library)
         self.action_expand.triggered.connect(
             partial(self.expand, self.treewidget))
@@ -215,20 +214,20 @@ class MainWindow(QtGui.QMainWindow):
 
     def show_preference(self):
         self.preference.show()
-        
+
     def set_preference(self):
         self.preference.apply()
-        self.library_paths = self.rw.get_library_paths()         
+        self.library_paths = self.rw.get_library_paths()
         self.load_library_folders(self.treewidget)
-    
+
     def cancel_preference(self):
         self.setEnabled(True)
-        
+
     def close_library(self):
         if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
             cmds.deleteUI(self.tool_kit_object, ctl=1)
-        self.close() 
-        
+        self.close()
+
     def on_context_menu(self, treewidget, paint):
         self.contex_menu.exec_(treewidget.mapToGlobal(paint))
 
@@ -324,7 +323,7 @@ class MainWindow(QtGui.QMainWindow):
         self.listwidget.clear()
         OpenMaya.MGlobal.displayInfo(
             '\"%s\" Remove folder - success!...' % message)
-        
+
     def refresh(self):
         self.load_library_folders(self.treewidget)
         self.listwidget.clear()
@@ -432,7 +431,10 @@ class MainWindow(QtGui.QMainWindow):
                 'Already a file with the same name in the publish')
             if replay != QtGui.QMessageBox.Yes:
                 return
-        studio_model.save(current_path, label, self.image_object)
+
+        user_comment = self.model.textedit_history.toPlainText()
+        studio_model.save(current_path, label,
+                          self.image_object, user_comment=user_comment)
         self.load_current_folder(self.treewidget)
         self.clear_publish()
         QtGui.QMessageBox.information(
@@ -467,7 +469,7 @@ class MainWindow(QtGui.QMainWindow):
         studio_model = studioModel.Model(
             path=publish_path, geometry_dag_paths=None)
         data = studio_model.create(fake=True)
-        
+
         comment = [data['comment'], 'author : %s' % data['author'], data['tag'],
                    data['#copyright'],  'user : %s' % data['user'], data['created_date']]
         self.textedit_history.setText('\n'.join(comment))
@@ -477,7 +479,7 @@ class MainWindow(QtGui.QMainWindow):
         self.model.image_to_button(path=studio_model.get_image(publish_path))
         if tag == 'build':
             studio_model.create()
-            OpenMaya.MGlobal.displayInfo('Build success!...')            
+            OpenMaya.MGlobal.displayInfo('Build success!...')
 
     def rename_model(self, lineedit):
         studio_model = studioModel.Model()

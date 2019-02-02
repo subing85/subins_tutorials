@@ -17,7 +17,6 @@ import os
 import shutil
 import warnings
 
-from PySide import QtCore
 from PySide import QtGui
 
 from modelLibrary import resources

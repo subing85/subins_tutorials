@@ -17,8 +17,6 @@ Description
 
 
 from maya import OpenMaya
-from maya import OpenMayaUI
-from maya import OpenMayaAnim
 
 
 class Maya(object):
@@ -51,10 +49,8 @@ class Maya(object):
                 mselection.getDagPath(x, dag_path)
             except:
                 dag_path = None
-                
             if not dag_path:
                 continue
-            
             dag_path.extendToShape()
             if not dag_path:
                 continue
@@ -128,6 +124,6 @@ class Maya(object):
         mfn_set.addMember(mobject)
 
     def undoChunk(self, tag):
-        OpenMaya.MGlobal.executeCommand('undoInfo -%sChunk;' % tag)
+        OpenMaya.MGlobal.executeCommand('undoInfo -%sChunk;' % tag, False, False)
 
 # end ####################################################################

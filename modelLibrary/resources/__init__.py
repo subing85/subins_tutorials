@@ -27,19 +27,20 @@ def getPublishDirectory():
 
 
 def getResourceTypes():
-    data = {'preference': getPreferencePath(), 'polygon': getWorkspacePath(), 'generic': None}
+    data = {'preference': getPreferencePath(
+    ), 'polygon': getWorkspacePath(), 'generic': None}
     return data
 
 
 def getToolKitLink():
-    return 'http://download.autodesk.com/us/maya/2011help/API/classes.html'
+    return 'https://www.subins-toolkits.com/'
 
 
 def getToolKitHelpLink():
-    return 'http://help.autodesk.com/view/MAYAUL/2017/ENU/?guid=__py_ref_class_open_maya_1_1_m_selection_list_html'
+    return 'https://vimeo.com/314966208'
 
 
 def getDownloadLink():
-    return 'http://download.autodesk.com/us/maya/2011help/API/classes.html'
+    return 'https://github.com/subing85/subins-toolkits'
 
 # end ####################################################################

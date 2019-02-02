@@ -97,8 +97,8 @@ class Preference(QtGui.QWidget):
         valid = True
         data = {}
         tag = 'model_library'
-        
-        resource_path = resources.getResourceTypes()[type]
+
+        resource_path = resources.getResourceTypes()[type].encode()
 
         rw = readWrite.ReadWrite(c=comment, cd=created_date, d=description,
                                  t=type, v=valid, data=data, tag=tag, path=resource_path, name='library_preferences', format='json')
