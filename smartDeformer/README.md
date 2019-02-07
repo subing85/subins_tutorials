@@ -51,5 +51,3 @@ How to run?
 
 import smartDeformer
 smartDeformer.show_window()
-
-
