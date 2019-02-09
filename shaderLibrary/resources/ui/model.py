@@ -24,10 +24,10 @@ from functools import partial
 
 from maya import OpenMaya
 
-from modelLibrary.modules import studioMaya
-from modelLibrary.modules import studioImage
+from shaderLibrary.modules import studioMaya
+from shaderLibrary.modules import studioImage
 
-from modelLibrary import resources
+from shaderLibrary import resources
 
 
 class Model(QtGui.QWidget):
@@ -108,7 +108,16 @@ class Model(QtGui.QWidget):
         self.button_publish = QtGui.QPushButton(self.groupbox_model)
         self.button_publish.setObjectName('button_publish')
         self.button_publish.setText('Publish')
-        self.verticallayout_model.addWidget(self.button_publish)
+        self.verticallayout_model.addWidget(self.button_publish)        
+        
+        self.checkbox_build = QtGui.QCheckBox(self.groupbox_model)
+        self.checkbox_build.setObjectName('checkbox_build')
+        self.checkbox_build.setText('Assign To Object')
+        self.checkbox_build.setToolTip('Assign To Object, if object is exists')        
+        self.checkbox_build.hide()
+        self.verticallayout_model.addWidget(self.checkbox_build)
+        
+        
         self.button_build = QtGui.QPushButton(self.groupbox_model)
         self.button_build.setObjectName('button_build')
         self.button_build.setText('Build')

@@ -1,0 +1,539 @@
+{
+    "blinn1SG": {
+        "connections": {
+            "file1": {
+                "file1.outColor": [
+                    "blinn1.color"
+                ], 
+                "file1.outTransparency": [
+                    "blinn1.transparency"
+                ], 
+                "file1.message": [
+                    "hyperShadePrimaryNodeEditorSavedTabsInfo.tabGraphInfo[0].nodeInfo[0].dependNode", 
+                    "materialInfo1.texture[0]", 
+                    "defaultTextureList1.textures[0]"
+                ]
+            }, 
+            "place2dTexture1": {
+                "place2dTexture1.mirrorV": [
+                    "file1.mirrorV"
+                ], 
+                "place2dTexture1.mirrorU": [
+                    "file1.mirrorU"
+                ], 
+                "place2dTexture1.vertexUvTwo": [
+                    "file1.vertexUvTwo"
+                ], 
+                "place2dTexture1.translateFrame": [
+                    "file1.translateFrame"
+                ], 
+                "place2dTexture1.outUV": [
+                    "file1.uvCoord"
+                ], 
+                "place2dTexture1.message": [
+                    "hyperShadePrimaryNodeEditorSavedTabsInfo.tabGraphInfo[0].nodeInfo[3].dependNode", 
+                    "defaultRenderUtilityList1.utilities[0]"
+                ], 
+                "place2dTexture1.vertexUvThree": [
+                    "file1.vertexUvThree"
+                ], 
+                "place2dTexture1.vertexCameraOne": [
+                    "file1.vertexCameraOne"
+                ], 
+                "place2dTexture1.repeatUV": [
+                    "file1.repeatUV"
+                ], 
+                "place2dTexture1.coverage": [
+                    "file1.coverage"
+                ], 
+                "place2dTexture1.wrapV": [
+                    "file1.wrapV"
+                ], 
+                "place2dTexture1.rotateUV": [
+                    "file1.rotateUV"
+                ], 
+                "place2dTexture1.wrapU": [
+                    "file1.wrapU"
+                ], 
+                "place2dTexture1.rotateFrame": [
+                    "file1.rotateFrame"
+                ], 
+                "place2dTexture1.stagger": [
+                    "file1.stagger"
+                ], 
+                "place2dTexture1.offset": [
+                    "file1.offset"
+                ], 
+                "place2dTexture1.noiseUV": [
+                    "file1.noiseUV"
+                ], 
+                "place2dTexture1.outUvFilterSize": [
+                    "file1.uvFilterSize"
+                ], 
+                "place2dTexture1.vertexUvOne": [
+                    "file1.vertexUvOne"
+                ]
+            }, 
+            "blinn1SG": {
+                "blinn1SG.partition": [
+                    "renderPartition.sets[2]"
+                ], 
+                "blinn1SG.message": [
+                    "lightLinker1.link[2].object", 
+                    "materialInfo1.shadingGroup", 
+                    "lightLinker1.shadowLink[2].shadowObject", 
+                    "hyperShadePrimaryNodeEditorSavedTabsInfo.tabGraphInfo[0].nodeInfo[2].dependNode"
+                ]
+            }, 
+            "blinn1": {
+                "blinn1.outColor": [
+                    "blinn1SG.surfaceShader"
+                ], 
+                "blinn1.message": [
+                    "materialInfo1.material", 
+                    "defaultShaderList1.shaders[4]", 
+                    "hyperShadePrimaryNodeEditorSavedTabsInfo.tabGraphInfo[0].nodeInfo[1].dependNode"
+                ]
+            }
+        }, 
+        "attributes": {
+            "file1": {
+                "file1.filterOffset": 0.0, 
+                "file1.offsetV": 0.0, 
+                "file1.frameOffset": 0, 
+                "file1.colorSpace": "sRGB", 
+                "file1.byCycleIncrement": 1, 
+                "file1.uvTileProxyDirty": 1, 
+                "file1.offsetU": 0.0, 
+                "file1.useCache": 0, 
+                "file1.binMembership": "None", 
+                "file1.uCoord": 0.0, 
+                "file1.baseExplicitUvTilePosition": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.frameExtension": 1, 
+                "file1.alphaIsLuminance": 0, 
+                "file1.vertexUvThree": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.translateFrame": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.workingSpace": "scene-linear Rec 709/sRGB", 
+                "file1.computedFileTextureNamePattern": "/venture/subins_toolkits/subins_toolkit_label_logo.png", 
+                "file1.coverage": [
+                    1.0, 
+                    1.0
+                ], 
+                "file1.colorOffsetB": 0.0, 
+                "file1.ptexFilterSharpness": 0.0, 
+                "file1.invert": 0, 
+                "file1.coverageU": 1.0, 
+                "file1.coverageV": 1.0, 
+                "file1.colorOffsetR": 0.0, 
+                "file1.colorManagementConfigFilePath": "", 
+                "file1.vertexCameraOne": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "file1.ptexFilterBlur": 0.0, 
+                "file1.noiseUV": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.caching": 0, 
+                "file1.rotateUV": 0.0, 
+                "file1.fileTextureName": "/venture/subins_toolkits/subins_toolkit_label_logo.png", 
+                "file1.wrapV": 1, 
+                "file1.wrapU": 1, 
+                "file1.useMaximumRes": 0, 
+                "file1.rotateFrame": 0.0, 
+                "file1.ptexFilterType": 3, 
+                "file1.vertexCameraThreeZ": 0.0, 
+                "file1.colorGain": [
+                    1.0, 
+                    1.0, 
+                    1.0
+                ], 
+                "file1.filterType": 3, 
+                "file1.hdrMapping": 0, 
+                "file1.uvFilterSize": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.vertexUvTwo": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.noiseU": 0.0, 
+                "file1.noiseV": 0.0, 
+                "file1.startCycleExtension": 1, 
+                "file1.alphaGain": 1.0, 
+                "file1.translateFrameV": 0.0, 
+                "file1.translateFrameU": 0.0, 
+                "file1.colorManagementConfigFileEnabled": 0, 
+                "file1.infoBits": 0, 
+                "file1.nodeState": 0, 
+                "file1.vertexCameraThreeX": 0.0, 
+                "file1.vertexCameraThreeY": 0.0, 
+                "file1.forceSwatchGen": 0, 
+                "file1.uvFilterSizeX": 0.0, 
+                "file1.uvFilterSizeY": 0.0, 
+                "file1.colorOffset": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "file1.doTransform": 1, 
+                "file1.vertexUvOneU": 0.0, 
+                "file1.hdrExposure": 0.0, 
+                "file1.vertexCameraTwoX": 0.0, 
+                "file1.vertexCameraTwoY": 0.0, 
+                "file1.vertexCameraTwoZ": 0.0, 
+                "file1.ignoreColorSpaceFileRules": 0, 
+                "file1.frozen": 0, 
+                "file1.colorManagementEnabled": 0, 
+                "file1.colorGainR": 1.0, 
+                "file1.filterWidth": 0.7070000171661377, 
+                "file1.uvCoord": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.colorGainG": 1.0, 
+                "file1.colorGainB": 1.0, 
+                "file1.objectType": 0, 
+                "file1.vertexCameraThree": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "file1.vertexCameraOneZ": 0.0, 
+                "file1.vertexCameraOneX": 0.0, 
+                "file1.vertexCameraOneY": 0.0, 
+                "file1.stagger": 0, 
+                "file1.mirrorV": 0, 
+                "file1.mirrorU": 0, 
+                "file1.pixelCenter": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.filter": 1.0, 
+                "file1.fileTextureNamePattern": "", 
+                "file1.ptexFilterInterpolateLevels": 0, 
+                "file1.vCoord": 0.0, 
+                "file1.offset": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.baseExplicitUvTilePositionU": 0.0, 
+                "file1.disableFileLoad": 0, 
+                "file1.baseExplicitUvTilePositionV": 0.0, 
+                "file1.ptexFilterWidth": 1.0, 
+                "file1.uvTileProxyQuality": 1, 
+                "file1.preFilterRadius": 2.0, 
+                "file1.vertexCameraTwo": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "file1.defaultColorR": 0.5, 
+                "file1.colorProfile": 0, 
+                "file1.uvTileProxyGenerate": 0, 
+                "file1.endCycleExtension": 1, 
+                "file1.defaultColorG": 0.5, 
+                "file1.defaultColorB": 0.5, 
+                "file1.repeatUV": [
+                    1.0, 
+                    1.0
+                ], 
+                "file1.isHistoricallyInteresting": 2, 
+                "file1.uvTilingMode": 0, 
+                "file1.defaultColor": [
+                    0.5, 
+                    0.5, 
+                    0.5
+                ], 
+                "file1.repeatV": 1.0, 
+                "file1.repeatU": 1.0, 
+                "file1.vertexUvOne": [
+                    0.0, 
+                    0.0
+                ], 
+                "file1.useHardwareTextureCycling": 0, 
+                "file1.pixelCenterX": 0.0, 
+                "file1.pixelCenterY": 0.0, 
+                "file1.colorOffsetG": 0.0, 
+                "file1.vertexUvThreeU": 0.0, 
+                "file1.vertexUvThreeV": 0.0, 
+                "file1.exposure": 0.0, 
+                "file1.alphaOffset": 0.0, 
+                "file1.dirtyPixelRegion": 0, 
+                "file1.rayDepth": 0, 
+                "file1.blurPixelation": 1, 
+                "file1.vertexUvTwoU": 0.0, 
+                "file1.vertexUvTwoV": 0.0, 
+                "file1.useFrameExtension": 0, 
+                "file1.preFilter": 0, 
+                "file1.vertexUvOneV": 0.0
+            }, 
+            "place2dTexture1": {
+                "place2dTexture1.fast": 0, 
+                "place2dTexture1.caching": 0, 
+                "place2dTexture1.vertexUvThreeU": 0.0, 
+                "place2dTexture1.vertexUvThreeV": 0.0, 
+                "place2dTexture1.uCoord": 0.0, 
+                "place2dTexture1.offsetU": 0.0, 
+                "place2dTexture1.isHistoricallyInteresting": 2, 
+                "place2dTexture1.rotateFrame": 0.0, 
+                "place2dTexture1.binMembership": "None", 
+                "place2dTexture1.offset": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.translateFrameV": 0.0, 
+                "place2dTexture1.noiseV": 0.0, 
+                "place2dTexture1.mirrorV": 0, 
+                "place2dTexture1.mirrorU": 0, 
+                "place2dTexture1.uvFilterSizeX": 0.0, 
+                "place2dTexture1.uvFilterSizeY": 0.0, 
+                "place2dTexture1.vertexCameraOne": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.noiseUV": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.noiseU": 0.0, 
+                "place2dTexture1.vertexUvOne": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.repeatU": 1.0, 
+                "place2dTexture1.coverageV": 1.0, 
+                "place2dTexture1.repeatV": 1.0, 
+                "place2dTexture1.vertexUvOneV": 0.0, 
+                "place2dTexture1.frozen": 0, 
+                "place2dTexture1.translateFrameU": 0.0, 
+                "place2dTexture1.vertexUvOneU": 0.0, 
+                "place2dTexture1.translateFrame": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.coverageU": 1.0, 
+                "place2dTexture1.vCoord": 0.0, 
+                "place2dTexture1.wrapV": 1, 
+                "place2dTexture1.rotateUV": 0.0, 
+                "place2dTexture1.wrapU": 1, 
+                "place2dTexture1.stagger": 0, 
+                "place2dTexture1.uvCoord": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.coverage": [
+                    1.0, 
+                    1.0
+                ], 
+                "place2dTexture1.vertexUvTwoU": 0.0, 
+                "place2dTexture1.vertexUvTwoV": 0.0, 
+                "place2dTexture1.vertexCameraOneZ": 0.0, 
+                "place2dTexture1.repeatUV": [
+                    1.0, 
+                    1.0
+                ], 
+                "place2dTexture1.vertexCameraOneX": 0.0, 
+                "place2dTexture1.vertexCameraOneY": 0.0, 
+                "place2dTexture1.vertexUvThree": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.nodeState": 0, 
+                "place2dTexture1.offsetV": 0.0, 
+                "place2dTexture1.uvFilterSize": [
+                    0.0, 
+                    0.0
+                ], 
+                "place2dTexture1.vertexUvTwo": [
+                    0.0, 
+                    0.0
+                ]
+            }, 
+            "blinn1SG": {
+                "blinn1SG.isCollapsed": 0, 
+                "blinn1SG.imageShader": "None", 
+                "blinn1SG.templatePath": "None", 
+                "blinn1SG.displacementShader": "None", 
+                "blinn1SG.facetsOnlySet": 0, 
+                "blinn1SG.editPointsOnlySet": 0, 
+                "blinn1SG.caching": 0, 
+                "blinn1SG.edgesOnlySet": 0, 
+                "blinn1SG.iconName": "", 
+                "blinn1SG.renderableOnlySet": 1, 
+                "blinn1SG.binMembership": "None", 
+                "blinn1SG.templateName": "None", 
+                "blinn1SG.surfaceShader": [
+                    0.7886167764663696, 
+                    0.7886167764663696, 
+                    0.7886167764663696
+                ], 
+                "blinn1SG.verticesOnlySet": 0, 
+                "blinn1SG.nodeState": 0, 
+                "blinn1SG.isHistoricallyInteresting": 0, 
+                "blinn1SG.volumeShader": "None", 
+                "blinn1SG.viewName": "None", 
+                "blinn1SG.creator": "None", 
+                "blinn1SG.rmbCommand": "None", 
+                "blinn1SG.uiTreatment": 0, 
+                "blinn1SG.frozen": 0, 
+                "blinn1SG.containerType": "None", 
+                "blinn1SG.annotation": "None", 
+                "blinn1SG.customTreatment": "None", 
+                "blinn1SG.creationDate": "None", 
+                "blinn1SG.isLayer": 0, 
+                "blinn1SG.templateVersion": 0, 
+                "blinn1SG.viewMode": 2, 
+                "blinn1SG.blackBox": 0, 
+                "blinn1SG.memberWireframeColor": -1
+            }, 
+            "blinn1": {
+                "blinn1.reflectionLimit": 1, 
+                "blinn1.hardwareShaderR": 0.0, 
+                "blinn1.refractionLimit": 6, 
+                "blinn1.refractiveIndex": 1.0, 
+                "blinn1.pointCameraX": 1.0, 
+                "blinn1.incandescence": [
+                    0.7886167764663696, 
+                    0.7886167764663696, 
+                    0.7886167764663696
+                ], 
+                "blinn1.pointCameraZ": 1.0, 
+                "blinn1.surfaceThickness": 0.0, 
+                "blinn1.vrEdgeStyle": 0, 
+                "blinn1.normalCameraY": 1.0, 
+                "blinn1.reflectionRolloff": 1, 
+                "blinn1.vrOutlinesAtIntersections": 1, 
+                "blinn1.triangleNormalCameraZ": 0.0, 
+                "blinn1.vrHiddenEdges": 0, 
+                "blinn1.triangleNormalCameraX": 0.0, 
+                "blinn1.chromaticAberration": 0, 
+                "blinn1.hardwareShaderG": 0.0, 
+                "blinn1.matteOpacity": 1.0, 
+                "blinn1.pointCamera": [
+                    1.0, 
+                    1.0, 
+                    1.0
+                ], 
+                "blinn1.vrFillObject": 0, 
+                "blinn1.hardwareShader": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "blinn1.hardwareShaderB": 0.0, 
+                "blinn1.caching": 0, 
+                "blinn1.specularColorB": 0.5, 
+                "blinn1.pointCameraY": 1.0, 
+                "blinn1.translucenceDepth": 0.5, 
+                "blinn1.incandescenceG": 0.7886167764663696, 
+                "blinn1.matteOpacityMode": 2, 
+                "blinn1.ambientColorR": 0.21138322353363037, 
+                "blinn1.ambientColor": [
+                    0.21138322353363037, 
+                    0.21138322353363037, 
+                    0.21138322353363037
+                ], 
+                "blinn1.reflectionSpecularity": 1.0, 
+                "blinn1.translucence": 0.0, 
+                "blinn1.vrEdgeColorR": 0.5, 
+                "blinn1.incandescenceB": 0.7886167764663696, 
+                "blinn1.shadowAttenuation": 0.5, 
+                "blinn1.reflectedColor": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "blinn1.transparency": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "blinn1.vrEdgeColor": [
+                    0.5, 
+                    0.5, 
+                    0.5
+                ], 
+                "blinn1.normalCameraZ": 1.0, 
+                "blinn1.vrEdgeColorG": 0.5, 
+                "blinn1.ambientColorB": 0.21138322353363037, 
+                "blinn1.incandescenceR": 0.7886167764663696, 
+                "blinn1.binMembership": "None", 
+                "blinn1.ambientColorG": 0.21138322353363037, 
+                "blinn1.vrEdgeColorB": 0.5, 
+                "blinn1.diffuse": 0.800000011920929, 
+                "blinn1.vrEdgePriority": 0, 
+                "blinn1.glowIntensity": 0.0, 
+                "blinn1.normalCameraX": 1.0, 
+                "blinn1.isHistoricallyInteresting": 2, 
+                "blinn1.reflectivity": 0.5, 
+                "blinn1.eccentricity": 0.30000001192092896, 
+                "blinn1.colorG": 0.0, 
+                "blinn1.vrEdgeWeight": 0.0, 
+                "blinn1.colorB": 0.0, 
+                "blinn1.specularColorR": 0.5, 
+                "blinn1.hideSource": 0, 
+                "blinn1.normalCamera": [
+                    1.0, 
+                    1.0, 
+                    1.0
+                ], 
+                "blinn1.vrHiddenEdgesOnTransparent": 0, 
+                "blinn1.opacityDepth": 0.0, 
+                "blinn1.frozen": 0, 
+                "blinn1.lightAbsorbance": 0.0, 
+                "blinn1.refractions": 0, 
+                "blinn1.colorR": 0.0, 
+                "blinn1.specularRollOff": 0.699999988079071, 
+                "blinn1.specularColorG": 0.5, 
+                "blinn1.reflectedColorB": 0.0, 
+                "blinn1.transparencyB": 0.0, 
+                "blinn1.translucenceFocus": 0.5, 
+                "blinn1.reflectedColorG": 0.0, 
+                "blinn1.nodeState": 0, 
+                "blinn1.transparencyG": 0.0, 
+                "blinn1.triangleNormalCamera": [
+                    0.0, 
+                    1.0, 
+                    0.0
+                ], 
+                "blinn1.color": [
+                    0.0, 
+                    0.0, 
+                    0.0
+                ], 
+                "blinn1.vrOverwriteDefaults": 0, 
+                "blinn1.reflectedColorR": 0.0, 
+                "blinn1.transparencyR": 0.0, 
+                "blinn1.triangleNormalCameraY": 1.0, 
+                "blinn1.materialAlphaGain": 1.0, 
+                "blinn1.specularColor": [
+                    0.5, 
+                    0.5, 
+                    0.5
+                ], 
+                "blinn1.transparencyDepth": 0.0
+            }
+        }, 
+        "nodes": {
+            "file1": "file", 
+            "place2dTexture1": "place2dTexture", 
+            "blinn1SG": "shadingEngine", 
+            "blinn1": "blinn"
+        }, 
+        "geometries": []
+    }
+}
