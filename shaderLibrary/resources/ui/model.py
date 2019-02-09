@@ -1,7 +1,7 @@
 '''
 model.py 0.0.1 
 Date: January 15, 2019
-Last modified: January 26, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -108,16 +108,13 @@ class Model(QtGui.QWidget):
         self.button_publish = QtGui.QPushButton(self.groupbox_model)
         self.button_publish.setObjectName('button_publish')
         self.button_publish.setText('Publish')
-        self.verticallayout_model.addWidget(self.button_publish)        
-        
+        self.verticallayout_model.addWidget(self.button_publish)
         self.checkbox_build = QtGui.QCheckBox(self.groupbox_model)
         self.checkbox_build.setObjectName('checkbox_build')
         self.checkbox_build.setText('Assign To Object')
-        self.checkbox_build.setToolTip('Assign To Object, if object is exists')        
+        self.checkbox_build.setToolTip('Assign To Object, if object is exists')
         self.checkbox_build.hide()
         self.verticallayout_model.addWidget(self.checkbox_build)
-        
-        
         self.button_build = QtGui.QPushButton(self.groupbox_model)
         self.button_build.setObjectName('button_build')
         self.button_build.setText('Build')

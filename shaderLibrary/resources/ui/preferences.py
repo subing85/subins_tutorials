@@ -1,7 +1,7 @@
 '''
 preferences.py 0.0.1 
 Date: January 15, 2019
-Last modified: January 26, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -23,8 +23,6 @@ from datetime import datetime
 from shaderLibrary import resources
 from shaderLibrary.modules import readWrite
 from shaderLibrary.utils import platforms
-
-reload(resources)
 
 
 class Preference(QtGui.QWidget):

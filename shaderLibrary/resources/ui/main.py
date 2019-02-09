@@ -1,7 +1,7 @@
 '''
 main.py 0.0.1 
 Date: January 15, 2019
-Last modified: January 26, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -36,12 +36,6 @@ from shaderLibrary.resources.ui import model
 from shaderLibrary.utils import platforms
 from shaderLibrary import resources
 
-reload(platforms)
-reload(readWrite)
-reload(preferences)
-reload(studioShader)
-reload(model)
-
 
 class MainWindow(QtGui.QMainWindow):
 
@@ -65,7 +59,7 @@ class MainWindow(QtGui.QMainWindow):
         # to check the preferencees
         resource_path = resources.getResourceTypes()['preference'].encode()
         self.rw = readWrite.ReadWrite(t='preference', path=resource_path,
-                        format='json', name='library_preferences', tag='shader_library')
+                                      format='json', name='library_preferences', tag='shader_library')
 
         self.library_paths = self.rw.get_library_paths()
         if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
@@ -100,10 +94,8 @@ class MainWindow(QtGui.QMainWindow):
             partial(self.builds, 'load', self.listwidget))  # Load Pose to UI
         self.listwidget.itemDoubleClicked.connect(
             partial(self.builds, 'build', self.listwidget))  # Load Pose to UI
-        
-        self.checkbox_build = self.model.checkbox_build        
+        self.checkbox_build = self.model.checkbox_build
         self.button_build = self.model.button_build
-                
         self.button_build.clicked.connect(
             partial(self.builds, 'build', self.listwidget))
         self.lineEdit_label = self.model.lineEdit_label
@@ -370,7 +362,7 @@ class MainWindow(QtGui.QMainWindow):
                 if not each_publish.endswith('.%s' % self.publish_format):
                     continue
                 publish_files.append(os.path.join(curren_path, each_publish))
-                
+
         listwidget.clear()
         for each_file in publish_files:
             item = QtGui.QListWidgetItem()
@@ -431,12 +423,9 @@ class MainWindow(QtGui.QMainWindow):
                 self, 'Warning', 'Not found the Name of the the Publish!...', QtGui.QMessageBox.Ok)
             OpenMaya.MGlobal.displayWarning(
                 'Not found the Name of the the Publish!...')
-            return        
-        
-        ###add condition for mutlipe object
-        
-        
-        studio_shader = studioShader.Shader(geometry_dag_path=geometry_dag_paths[0])
+            return        # add condition for mutlipe object
+        studio_shader = studioShader.Shader(
+            geometry_dag_path=geometry_dag_paths[0])
         if studio_shader.had_file(current_path, label):
             replay = QtGui.QMessageBox.warning(self, 'Warning',
                                                'Already a file with the same name in the publish\n\"%s\"\nIf you want to overwrite press Yes' % label,
@@ -445,21 +434,19 @@ class MainWindow(QtGui.QMainWindow):
                 'Already a file with the same name in the publish')
             if replay != QtGui.QMessageBox.Yes:
                 return
-
         user_comment = self.model.textedit_history.toPlainText()
         result = studio_shader.save(current_path, label,
-                              self.image_object, user_comment=user_comment)        
+                                    self.image_object, user_comment=user_comment)
         self.load_current_folder(self.treewidget)
         self.clear_publish()
-        
-        message = 'Publish success!...'        
+        message = 'Publish success!...'
         if False in result:
-            message = 'Publish Failed!...\n%s\n%s' % (result[False], '[more details and debugging subing85@gmail.com]')
+            message = 'Publish Failed!...\n%s\n%s' % (
+                result[False], '[more details and debugging subing85@gmail.com]')
             QtGui.QMessageBox.critical(
                 self, 'Failed', message, QtGui.QMessageBox.Ok)
-            OpenMaya.MGlobal.displayInfo(message) 
-            return           
-            
+            OpenMaya.MGlobal.displayInfo(message)
+            return
         QtGui.QMessageBox.information(
             self, 'Information', message, QtGui.QMessageBox.Ok)
         OpenMaya.MGlobal.displayInfo(message)
@@ -475,6 +462,7 @@ class MainWindow(QtGui.QMainWindow):
         self.button_publish.show()
         self.button_build.hide()
         self.checkbox_build.hide()
+        self.checkbox_build.setChecked(False)
         self.textedit_history.clear()
         self.textedit_history.setReadOnly(False)
 
@@ -489,13 +477,11 @@ class MainWindow(QtGui.QMainWindow):
         self.button_publish.hide()
         self.button_build.show()
         self.checkbox_build.show()
-        
         publish_path = current_items[-1].toolTip()
         self.currnet_publish = publish_path
         studio_shader = studioShader.Shader(
             path=publish_path, geometry_dag_path=None)
-        data = studio_shader.create(fake=True)
-
+        data = studio_shader.create(False, fake=True)
         comment = [data['comment'], 'author : %s' % data['author'], data['tag'],
                    data['#copyright'],  'user : %s' % data['user'], data['created_date']]
         self.textedit_history.setText('\n'.join(comment))
@@ -504,15 +490,16 @@ class MainWindow(QtGui.QMainWindow):
             os.path.splitext(publish_path)[0]))
         self.model.image_to_button(path=studio_shader.get_image(publish_path))
         if tag == 'build':
-            studio_shader.create()
+            print 'self.checkbox_build.isChecked()', self.checkbox_build.isChecked()
+            studio_shader.create(self.checkbox_build.isChecked())
             OpenMaya.MGlobal.displayInfo('Build success!...')
 
     def rename_model(self, lineedit):
         studio_shader = studioShader.Shader()
         if not self.currnet_publish:
-            OpenMaya.MGlobal.displayWarning('Not selected any shader or shader not valid.')
+            OpenMaya.MGlobal.displayWarning(
+                'Not selected any shader or shader not valid.')
             return
-            
         current_image = studio_shader.get_image(self.currnet_publish)
         new_name = '%s' % lineedit.text()
         model_format = os.path.splitext(self.currnet_publish)[-1]
