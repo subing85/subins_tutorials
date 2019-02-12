@@ -1,7 +1,7 @@
 '''
 model.py 0.0.1 
 Date: January 15, 2019
-Last modified: January 26, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -17,6 +17,7 @@ Description
 import os
 import sys
 import tempfile
+import webbrowser
 
 from PySide import QtCore
 from PySide import QtGui
@@ -24,10 +25,10 @@ from functools import partial
 
 from maya import OpenMaya
 
-from modelLibrary.modules import studioMaya
-from modelLibrary.modules import studioImage
+from shaderLibrary.modules import studioMaya
+from shaderLibrary.modules import studioImage
 
-from modelLibrary import resources
+from shaderLibrary import resources
 
 
 class Model(QtGui.QWidget):
@@ -109,6 +110,12 @@ class Model(QtGui.QWidget):
         self.button_publish.setObjectName('button_publish')
         self.button_publish.setText('Publish')
         self.verticallayout_model.addWidget(self.button_publish)
+        self.checkbox_build = QtGui.QCheckBox(self.groupbox_model)
+        self.checkbox_build.setObjectName('checkbox_build')
+        self.checkbox_build.setText('Assign To Object')
+        self.checkbox_build.setToolTip('Assign To Object, if object is exists')
+        self.checkbox_build.hide()
+        self.verticallayout_model.addWidget(self.checkbox_build)
         self.button_build = QtGui.QPushButton(self.groupbox_model)
         self.button_build.setObjectName('button_build')
         self.button_build.setText('Build')
@@ -117,6 +124,7 @@ class Model(QtGui.QWidget):
         self.button_logo = QtGui.QPushButton(self.groupbox_model)
         self.button_logo.setObjectName('button_logo')
         self.button_logo.setFlat(True)
+        self.button_logo.clicked.connect(self.subin_toolkits)
         log_path = os.path.join(resources.getIconPath(), 'logo.png')
         self.image_to_button(self.button_logo, log_path,
                              self._width, self._height)
@@ -156,6 +164,10 @@ class Model(QtGui.QWidget):
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
         button.setIconSize(QtCore.QSize(width - 5, height - 5))
+        
+    def subin_toolkits(self):
+        webbrowser.BaseBrowser(resources.getToolKitLink())
+        OpenMaya.MGlobal.displayInfo(resources.getToolKitLink())        
 
 
 if __name__ == '__main__':

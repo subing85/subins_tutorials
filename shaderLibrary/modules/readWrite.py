@@ -1,7 +1,7 @@
 '''
 readWrite.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 26, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -24,8 +24,6 @@ import tempfile
 
 from datetime import datetime
 
-from modelLibrary import resources
-
 
 class ReadWrite(object):
 
@@ -33,7 +31,7 @@ class ReadWrite(object):
         comment = 'subin gopi tool kits'
         created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         description = 'This data contain information about subin gopi tool kits'
-        type = 'generic'
+        self.type = 'generic'
         valid = True
         data = None
         self.tag = None
@@ -53,7 +51,7 @@ class ReadWrite(object):
         if 'd' in kwargs:
             description = kwargs['d']
         if 't' in kwargs:
-            type = kwargs['t']
+            self.type = kwargs['t']
         if 'v' in kwargs:
             valid = kwargs['v']
         if 'data' in kwargs:
@@ -66,7 +64,7 @@ class ReadWrite(object):
                       '#copyright': '(c) 2019, Subin Gopi All rights reserved.',
                       'warning': '# WARNING! All changes made in this file will be lost!',
                       'description': description,
-                      'type': type,
+                      'type': self.type,
                       'tag': self.tag,
                       'valid': valid,
                       'user': getpass.getuser(),
@@ -90,6 +88,8 @@ class ReadWrite(object):
                 return False
         if not data['valid']:
             return False
+        if data['type'] != self.type:
+            return False
         return True
 
     def create(self):
@@ -97,21 +97,17 @@ class ReadWrite(object):
             return
         if not os.path.isdir(os.path.dirname(self.file_path)):
             os.makedirs(os.path.dirname(self.file_path))
-        try:
-            write(self.file_path, self.datas)
-            return self.file_path
-        except Exception as result:
-            warnings.warn(str(result), Warning)
-            return False
+        result = write(self.file_path, self.datas)
+        return result, self.file_path
 
     def get_data(self):
         data = self.get_all()
         if not data:
-            return None        
+            return None
         if not self.tag:
-            return data['data']      
+            return data['data']
         if data['tag'] != self.tag:
-            return None            
+            return None
         return data['data']
 
     def get_info(self):
@@ -148,6 +144,7 @@ class ReadWrite(object):
                     continue
                 paths.append(path.encode())
             x += 1
+        print '\npaths', paths
         return paths
 
     def getBundles(self):
@@ -189,7 +186,7 @@ def write(path, data):
             os.remove(file)
         except Exception as result:
             print(result)
-    result = 'successfully created Database {}'.format(path)
+    result = {True: 'successfully created Database {}'.format(path)}
     genericData = data.copy()
     currentTime = time.time()
     try:
@@ -198,9 +195,10 @@ def write(path, data):
         jsonData.write(data)
         jsonData.close()
         os.utime(path, (currentTime, currentTime))
-    except Exception as exceptResult:
-        result = str(exceptResult)
+    except Exception as except_result:
+        result = {False: str(except_result)}
     print('\n#write result\t- ', result)
+    return result
 
 
 def read(path):
