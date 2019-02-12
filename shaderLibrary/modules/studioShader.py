@@ -193,7 +193,19 @@ class Shader(studioMaya.Maya):
                 if not valid:
                     continue
                 mfn_set = OpenMaya.MFnSet(mobject_arrary[index])
-                mfn_set.removeMember(m_object)
+                try:
+                    mfn_set.removeMember(m_object)
+                except:
+                    set_pynode = core.PyNode(mfn_set.name())
+                    dag_members = set_pynode.attr(
+                        'dagSetMembers').listConnections(s=True, d=False, p=True)
+                    face_members = set_pynode.attr(
+                        'memberWireframeColor').listConnections(s=False, d=True, p=True)
+                    for each_member in dag_members + face_members:
+                        try:
+                            each_member.disconnect()
+                        except:
+                            pass
 
     def create_shader_net(self, shader_data, assign=False):
         node_data = shader_data['nodes']
