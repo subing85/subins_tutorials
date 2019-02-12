@@ -44,6 +44,9 @@ class ImageCalibration(object):
 
     def vieportSnapShot(self):
         m3d_view = OpenMayaUI.M3dView.active3dView()
+        if not m3d_view.isVisible():
+            OpenMaya.MGlobal.displayWarning('Active 3d View not visible!...')
+            return
         m3d_view.refresh(True, True, True)
         m_image = OpenMaya.MImage()
         m3d_view.readColorBuffer(m_image, True)

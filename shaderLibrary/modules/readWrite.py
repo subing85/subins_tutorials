@@ -24,8 +24,6 @@ import tempfile
 
 from datetime import datetime
 
-from shaderLibrary import resources
-
 
 class ReadWrite(object):
 

@@ -34,7 +34,7 @@ def getResourceTypes():
 
 
 def getToolKitLink():
-    return 'https://www.subins-toolkits.com/'
+    return 'https://www.subins-toolkits.com'
 
 
 def getToolKitHelpLink():
@@ -42,6 +42,6 @@ def getToolKitHelpLink():
 
 
 def getDownloadLink():
-    return 'https://github.com/subing85/subins-toolkits'
+    return 'https://www.subins-toolkits.com/shader-library'
 
 # end ####################################################################

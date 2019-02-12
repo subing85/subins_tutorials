@@ -118,6 +118,7 @@ def valid_attribute():
         'doubleAngle',
         'char'
     ]
+    return attr_types
 
 
 def getShadingNodeTypes():

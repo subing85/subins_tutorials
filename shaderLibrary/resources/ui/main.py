@@ -183,6 +183,8 @@ class MainWindow(QtGui.QMainWindow):
         self.model.button_publish.clicked.connect(self.publish)
         self.preference.button_apply.clicked.connect(self.set_preference)
         self.preference.button_cancel.clicked.connect(self.cancel_preference)
+        self.action_aboutool.triggered.connect(self.toolkit_help_link)
+        self.action_abouttoolkits.triggered.connect(self.toolkit_link)
 
     def set_icons(self):
         actions = self.findChildren(QtGui.QAction)
@@ -490,9 +492,12 @@ class MainWindow(QtGui.QMainWindow):
             os.path.splitext(publish_path)[0]))
         self.model.image_to_button(path=studio_shader.get_image(publish_path))
         if tag == 'build':
-            print 'self.checkbox_build.isChecked()', self.checkbox_build.isChecked()
-            studio_shader.create(self.checkbox_build.isChecked())
-            OpenMaya.MGlobal.displayInfo('Build success!...')
+            result = studio_shader.create(self.checkbox_build.isChecked())
+            if False in result:
+                OpenMaya.MGlobal.displayWarning(
+                    'Build Failed!... %s' % result[False])
+            else:
+                OpenMaya.MGlobal.displayInfo('Build Success!...')
 
     def rename_model(self, lineedit):
         studio_shader = studioShader.Shader()

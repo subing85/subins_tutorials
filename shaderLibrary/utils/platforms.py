@@ -18,8 +18,6 @@ import platform
 
 from shaderLibrary.utils import config
 
-reload(config)
-
 
 def has_valid():
     tool_os, tool_app, tool_ver, tool_py = config.get_conig()

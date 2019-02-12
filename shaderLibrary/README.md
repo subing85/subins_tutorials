@@ -1,6 +1,7 @@
 https://www.subins-toolkits.com/
 
 Shader Library 0.0.1
+https://www.subins-toolkits.com/shader-library
 
 A free tool for store the Shader networks in Autodesk Maya.
 

@@ -87,7 +87,10 @@ class Maya(object):
                 dag_path = None
             if not dag_path:
                 continue
-            dag_path.extendToShape()
+            try:
+                dag_path.extendToShape()
+            except:
+                dag_path = None
             if not dag_path:
                 continue
             if shape_type:
@@ -148,6 +151,26 @@ class Maya(object):
             selection_list.getDagPath(index, m_dag_path, m_object)
             objects.append(m_dag_path.partialPathName())
         return objects
+
+    def hasValidShadingEngine(self, shading_group, object=None):
+        if isinstance(shading_group, str):
+            shading_group = self.getMObject(shading_group)
+        if isinstance(object, OpenMaya.MDagPath):
+            object = object.partialPathName()
+        if not shading_group.hasFn(OpenMaya.MFn.kShadingEngine):
+            return False
+        mfn_set = OpenMaya.MFnSet(shading_group)
+        selection_list = OpenMaya.MSelectionList()
+        mfn_set.getMembers(selection_list, False)
+        if not selection_list.length():
+            return False
+        for index in range(selection_list.length()):
+            m_dag_path = OpenMaya.MDagPath()
+            m_object = OpenMaya.MObject()
+            selection_list.getDagPath(index, m_dag_path, m_object)
+            if m_dag_path.partialPathName() == object:
+                return True
+        return False
 
     def undoChunk(self, tag):
         OpenMaya.MGlobal.executeCommand(

@@ -17,6 +17,7 @@ Description
 import os
 import sys
 import tempfile
+import webbrowser
 
 from PySide import QtCore
 from PySide import QtGui
@@ -123,6 +124,7 @@ class Model(QtGui.QWidget):
         self.button_logo = QtGui.QPushButton(self.groupbox_model)
         self.button_logo.setObjectName('button_logo')
         self.button_logo.setFlat(True)
+        self.button_logo.clicked.connect(self.subin_toolkits)
         log_path = os.path.join(resources.getIconPath(), 'logo.png')
         self.image_to_button(self.button_logo, log_path,
                              self._width, self._height)
@@ -162,6 +164,10 @@ class Model(QtGui.QWidget):
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
         button.setIconSize(QtCore.QSize(width - 5, height - 5))
+        
+    def subin_toolkits(self):
+        webbrowser.BaseBrowser(resources.getToolKitLink())
+        OpenMaya.MGlobal.displayInfo(resources.getToolKitLink())        
 
 
 if __name__ == '__main__':
