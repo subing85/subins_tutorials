@@ -1,7 +1,7 @@
 '''
 studioFolders.py 0.0.1 
 Date: January 16, 2019
-Last modified: February 10, 2019
+Last modified: February 24, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -71,8 +71,7 @@ class Folder(object):
 
     def rename(self, folder_path=None, name=None, force=False):
         if not os.path.exists(folder_path):
-            return False,  'Can not found directory'
-
+            return False,  'Can not found the directory'
         new_path = os.path.join(os.path.dirname(folder_path), name)
         print 'new_path', new_path
         result = True, new_path
@@ -86,7 +85,7 @@ class Folder(object):
 
     def remove(self, folder_path=None, force=False):
         if not os.path.isdir(folder_path):
-            return False, 'Can not found directory'
+            return False, 'Can not found the directory'
         result = True, folder_path
         try:
             os.chmod(folder_path, 0777)

@@ -1,7 +1,7 @@
 '''
 readWrite.py 0.0.1 
 Date: January 01, 2019
-Last modified: February 10, 2019
+Last modified: February 24, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -23,7 +23,7 @@ import warnings
 import tempfile
 
 from datetime import datetime
-from pprint import pprint
+
 
 class ReadWrite(object):
 
@@ -70,7 +70,6 @@ class ReadWrite(object):
                       'user': getpass.getuser(),
                       'data': data
                       }
-
         self.file_path = os.path.join(
             self.path, '%s.%s' % (self.name, self.format))
 
@@ -131,25 +130,25 @@ class ReadWrite(object):
         if 'data' not in data:
             return None
         return data
-    
+
     def get_inputs(self):
         path_data = self.get_data()
         maya_path = path_data['0']['path']
         library_path = path_data['1']['path']
         create_type = path_data['2']['value']
-        output_path = path_data['3']['path']           
+        output_path = path_data['3']['path']
         return maya_path, library_path, create_type, output_path
 
     def get_library_path(self):
         path_data = self.get_data()
         return path_data['1']['path']
-    
+
     def get_maya_path(self):
-        path_data = self.get_data()        
+        path_data = self.get_data()
         return path_data['0']['path']
-    
+
     def get_create_type(self):
-        path_data = self.get_data()        
+        path_data = self.get_data()
         return path_data['0']['value']
 
     def getBundles(self):
@@ -180,7 +179,7 @@ class ReadWrite(object):
             data['data'] = file_data['data']
             bundles.setdefault(bundle, data)
         return bundles
-    
+
     def set_order(self, data):
         '''
         sort_data = {}
@@ -188,24 +187,24 @@ class ReadWrite(object):
             if 'order' not in dict_data:
                 continue
             sort_data.setdefault(dict_data['order'], []).append(each.encode())
-        
+
         result = sum(sort_data.values(), [])
         return result
         '''
-        result = []   
+        result = []
         index = 0
-        while index<len(data)+1:
+        while index < len(data) + 1:
             x = 0
-            for k, v, in data.items():                
-                if x>len(data):
-                    break                
+            for k, v, in data.items():
+                if x > len(data):
+                    break
                 order = v['order']
-                if order!=index:
-                    continue                
+                if order != index:
+                    continue
                 result.append(k)
-                x+=1
-            index+=1                        
-        return result  
+                x += 1
+            index += 1
+        return result
 
 
 def write(path, data):
