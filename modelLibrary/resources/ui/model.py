@@ -26,6 +26,7 @@ from maya import OpenMaya
 
 from modelLibrary.modules import studioMaya
 from modelLibrary.modules import studioImage
+from modelLibrary.modules import studioModel
 
 from modelLibrary import resources
 

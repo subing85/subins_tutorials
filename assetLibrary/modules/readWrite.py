@@ -1,7 +1,7 @@
 '''
 readWrite.py 0.0.1 
 Date: January 01, 2019
-Last modified: January 26, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -23,9 +23,7 @@ import warnings
 import tempfile
 
 from datetime import datetime
-
-from modelLibrary import resources
-
+from pprint import pprint
 
 class ReadWrite(object):
 
@@ -33,10 +31,10 @@ class ReadWrite(object):
         comment = 'subin gopi tool kits'
         created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         description = 'This data contain information about subin gopi tool kits'
-        type = 'generic'
+        self.type = 'generic'
         valid = True
         data = None
-        tag = 'generic'
+        self.tag = None
         self.path = tempfile.gettempdir()
         self.format = 'json'
         self.name = None
@@ -53,21 +51,21 @@ class ReadWrite(object):
         if 'd' in kwargs:
             description = kwargs['d']
         if 't' in kwargs:
-            type = kwargs['t']
+            self.type = kwargs['t']
         if 'v' in kwargs:
             valid = kwargs['v']
         if 'data' in kwargs:
             data = kwargs['data']
         if 'tag' in kwargs:
-            tag = kwargs['tag']
+            self.tag = kwargs['tag']
         self.datas = {'comment': comment,
                       'created_date': created_date,
                       'author': 'Subin Gopi',
                       '#copyright': '(c) 2019, Subin Gopi All rights reserved.',
                       'warning': '# WARNING! All changes made in this file will be lost!',
                       'description': description,
-                      'type': type,
-                      'tag': tag,
+                      'type': self.type,
+                      'tag': self.tag,
                       'valid': valid,
                       'user': getpass.getuser(),
                       'data': data
@@ -90,6 +88,8 @@ class ReadWrite(object):
                 return False
         if not data['valid']:
             return False
+        if data['type'] != self.type:
+            return False
         return True
 
     def create(self):
@@ -97,16 +97,16 @@ class ReadWrite(object):
             return
         if not os.path.isdir(os.path.dirname(self.file_path)):
             os.makedirs(os.path.dirname(self.file_path))
-        try:
-            write(self.file_path, self.datas)
-            return self.file_path
-        except Exception as result:
-            warnings.warn(str(result), Warning)
-            return False
+        result = write(self.file_path, self.datas)
+        return result, self.file_path
 
     def get_data(self):
         data = self.get_all()
         if not data:
+            return None
+        if not self.tag:
+            return data['data']
+        if data['tag'] != self.tag:
             return None
         return data['data']
 
@@ -131,20 +131,26 @@ class ReadWrite(object):
         if 'data' not in data:
             return None
         return data
-
-    def get_library_paths(self):
+    
+    def get_inputs(self):
         path_data = self.get_data()
-        if not path_data:
-            return None
-        paths = []
-        x = 0
-        while x < len(path_data) + 1:
-            for index,  path, in path_data.items():
-                if int(index) != x:
-                    continue
-                paths.append(path.encode())
-            x += 1
-        return paths
+        maya_path = path_data['0']['path']
+        library_path = path_data['1']['path']
+        create_type = path_data['2']['value']
+        output_path = path_data['3']['path']           
+        return maya_path, library_path, create_type, output_path
+
+    def get_library_path(self):
+        path_data = self.get_data()
+        return path_data['1']['path']
+    
+    def get_maya_path(self):
+        path_data = self.get_data()        
+        return path_data['0']['path']
+    
+    def get_create_type(self):
+        path_data = self.get_data()        
+        return path_data['0']['value']
 
     def getBundles(self):
         if not os.path.isdir(self.path):
@@ -174,6 +180,32 @@ class ReadWrite(object):
             data['data'] = file_data['data']
             bundles.setdefault(bundle, data)
         return bundles
+    
+    def set_order(self, data):
+        '''
+        sort_data = {}
+        for each, dict_data in data.items():
+            if 'order' not in dict_data:
+                continue
+            sort_data.setdefault(dict_data['order'], []).append(each.encode())
+        
+        result = sum(sort_data.values(), [])
+        return result
+        '''
+        result = []   
+        index = 0
+        while index<len(data)+1:
+            x = 0
+            for k, v, in data.items():                
+                if x>len(data):
+                    break                
+                order = v['order']
+                if order!=index:
+                    continue                
+                result.append(k)
+                x+=1
+            index+=1                        
+        return result  
 
 
 def write(path, data):
@@ -185,7 +217,7 @@ def write(path, data):
             os.remove(file)
         except Exception as result:
             print(result)
-    result = 'successfully created Database {}'.format(path)
+    result = {True: 'successfully created Database {}'.format(path)}
     genericData = data.copy()
     currentTime = time.time()
     try:
@@ -194,9 +226,10 @@ def write(path, data):
         jsonData.write(data)
         jsonData.close()
         os.utime(path, (currentTime, currentTime))
-    except Exception as exceptResult:
-        result = str(exceptResult)
+    except Exception as except_result:
+        result = {False: str(except_result)}
     print('\n#write result\t- ', result)
+    return result
 
 
 def read(path):
