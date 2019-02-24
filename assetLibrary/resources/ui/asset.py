@@ -19,10 +19,6 @@ import sys
 import tempfile
 import webbrowser
 
-path = '/mnt/venture/subins_tutorials'
-if path not in sys.path:
-    sys.path.append(path)
-
 from PySide import QtCore
 from PySide import QtGui
 from functools import partial
@@ -31,21 +27,16 @@ from assetLibrary import resources
 from assetLibrary.modules import studioImage
 from assetLibrary.modules import studioPrint
 
-reload(studioImage)
 
 class Asset(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(Asset, self).__init__(parent=None)
         self.studio_image = studioImage.ImageCalibration()
-        # self.studio_maya = studioMaya.Maya()
-        self._width, self._height = 150, 150        
-        
+        self._width, self._height = 150, 150
         self.brows_directory = resources.getWorkspacePath()
         self.setup_ui()
-        
         self.studio_print = studioPrint.Print(__name__, self.textedit_console)
-        
 
     def setup_ui(self):
         self.setObjectName('asset')
@@ -63,39 +54,31 @@ class Asset(QtGui.QWidget):
         self.verticallayout_asset.setObjectName('verticallayout_asset')
         self.verticallayout_asset.setSpacing(10)
         self.verticallayout_asset.setContentsMargins(10, 10, 10, 10)
-        
         self.gridlayout_inputs = QtGui.QGridLayout()
-        self.gridlayout_inputs.setObjectName('gridLayout')   
-             
-        self.label_filepath = QtGui.QLabel(self.groupbox_asset)        
+        self.gridlayout_inputs.setObjectName('gridLayout')
+        self.label_filepath = QtGui.QLabel(self.groupbox_asset)
         self.label_filepath.setObjectName('label_filepath')
-        self.label_filepath.setText('File Path')        
+        self.label_filepath.setText('File Path')
         self.gridlayout_inputs.addWidget(self.label_filepath, 0, 0, 1, 1)
-                
         self.lineedit_filepath = QtGui.QLineEdit(self.groupbox_asset)
         self.lineedit_filepath.setObjectName('lineedit_filepath')
         self.gridlayout_inputs.addWidget(self.lineedit_filepath, 0, 1, 1, 1)
-        
         self.pushbutton_filepath = QtGui.QPushButton(self.groupbox_asset)
         self.pushbutton_filepath.setObjectName('pushbutton_filepath')
-        self.pushbutton_filepath.setText('...')
+        self.pushbutton_filepath.setText('...')        
         self.gridlayout_inputs.addWidget(self.pushbutton_filepath, 0, 2, 1, 1)
-        
-        self.label_imagepath = QtGui.QLabel(self.groupbox_asset)        
+        self.label_imagepath = QtGui.QLabel(self.groupbox_asset)
         self.label_imagepath.setObjectName('label_filepath')
-        self.label_imagepath.setText('Image Path')        
+        self.label_imagepath.setText('Image Path')
         self.gridlayout_inputs.addWidget(self.label_imagepath, 1, 0, 1, 1)
-        
         self.lineedit_imagepath = QtGui.QLineEdit(self.groupbox_asset)
         self.lineedit_imagepath.setObjectName('lineedit_imagepath')
         self.gridlayout_inputs.addWidget(self.lineedit_imagepath, 1, 1, 1, 1)
-        
         self.pushbutton_imagepath = QtGui.QPushButton(self.groupbox_asset)
         self.pushbutton_imagepath.setObjectName('pushbutton_filepath')
         self.pushbutton_imagepath.setText('...')
         self.gridlayout_inputs.addWidget(self.pushbutton_imagepath, 1, 2, 1, 1)
-        self.verticallayout_asset.addLayout(self.gridlayout_inputs)        
-
+        self.verticallayout_asset.addLayout(self.gridlayout_inputs)
         self.groupbox_snapshot = QtGui.QGroupBox(self.groupbox_asset)
         self.groupbox_snapshot.setObjectName('groupBox_snapshot')
         self.verticallayout_asset.addWidget(self.groupbox_snapshot)
@@ -150,7 +133,6 @@ class Asset(QtGui.QWidget):
         self.button_publish.setObjectName('button_publish')
         self.button_publish.setText('Publish')
         self.verticallayout_asset.addWidget(self.button_publish)
-
         self.button_build = QtGui.QPushButton(self.groupbox_asset)
         self.button_build.setObjectName('button_build')
         self.button_build.setText('Build')
@@ -171,33 +153,35 @@ class Asset(QtGui.QWidget):
             'Author: Subin. Gopi\nsubing85@gmail.com\nwww.subins-toolkits.com\ncopyright(c) 2019, Subin Gopi')
         self.label_subin.setStyleSheet('font: 11pt \"Sans Serif\";')
         self.verticallayout_asset.addWidget(self.label_subin)
-
         self.textedit_console = QtGui.QTextEdit(self.groupbox_asset)
         self.textedit_console.setObjectName('textedit_console')
         self.textedit_console.setStyleSheet('font: 10pt \"MS Shell Dlg 2\";')
+        self.textedit_console.setMinimumSize(QtCore.QSize(0, 50))
+        self.textedit_console.setMaximumSize(QtCore.QSize(16777215, 50))
         self.verticallayout_asset.addWidget(self.textedit_console)
-        
-        
+
     def set_source_path(self, widget, tag):
         self.formats = {'file': '(*.ma *.mb)', 'image': '(*.jpg *.tga *.png)'}
-        
+
         self.brows_directory = '/venture/subins_tutorials/assetLibrary/test'
         self.q_image,  self.q_image_path = None, None
-        
-        title  = 'Browse %s' % tag
+
+        title = 'Browse %s' % tag
         current_format = '%s %s' % (tag, self.formats[tag])
-        current_file = QtGui.QFileDialog.getOpenFileName(self, title, self.brows_directory, current_format)
+        current_file = QtGui.QFileDialog.getOpenFileName(
+            self, title, self.brows_directory, current_format)
         if not os.path.isfile(current_file[0]):
-            return False
+            return False, None
         widget.setText(current_file[0])
         self.brows_directory = os.path.dirname(current_file[0])
-        if tag=='image':            
+        if tag == 'image':
             studio_image = studioImage.ImageCalibration()
-            self.q_image,  self.q_image_path = studio_image.setStudioSize(source_image=current_file[0])
-            self.image_to_button(path=self.q_image_path)                        
+            self.q_image,  self.q_image_path = studio_image.setStudioSize(
+                source_image=current_file[0])
+            self.image_to_button(path=self.q_image_path)
             return self.q_image,  self.q_image_path
         return True, current_file[0]
-            
+
     # Load Image to button
     def image_to_button(self, button=None, path=None, width=None, height=None):
         if not button:
@@ -212,15 +196,7 @@ class Asset(QtGui.QWidget):
         icon.addPixmap(QtGui.QPixmap(path),
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
-        button.setIconSize(QtCore.QSize(width - 5, height - 5))            
-            
-            
-            
-            
-            
-            
-            
-
+        button.setIconSize(QtCore.QSize(width - 5, height - 5))
 
     def snapshot(self, button):
         self.studio_image.image_file = os.path.join(tempfile.gettempdir(),
@@ -234,11 +210,9 @@ class Asset(QtGui.QWidget):
         self.image_to_button(button, image_path, self._width, self._height)
         return image_object, image_path
 
-
-        
     def subin_toolkits(self):
         webbrowser.BaseBrowser(resources.getToolKitLink())
-        self.studio_print.display_info(resources.getToolKitLink())  
+        self.studio_print.display_info(resources.getToolKitLink())
 
 
 if __name__ == '__main__':

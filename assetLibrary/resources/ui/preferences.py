@@ -14,9 +14,6 @@ Description
 '''
 
 import sys
-path = '/mnt/venture/subins_tutorials'
-if path not in sys.path:
-    sys.path.append(path)
 
 from PySide import QtCore
 from PySide import QtGui
@@ -36,25 +33,25 @@ class Preference(QtGui.QWidget):
         self.module, self.lable, self.version = platforms.get_tool_kit()
         self.bundles = {
             0: {
-                'label': 'Maya Directory', 
-                'tag': 'maya_directory', 
+                'label': 'Maya Directory',
+                'tag': 'maya_directory',
                 'path': None
-                },
+            },
             1: {
-                'label': 'Library Directory', 
-                'tag': 'library_directory', 
+                'label': 'Library Directory',
+                'tag': 'library_directory',
                 'path': None
-                },
-            2: {'label': 'Create Type', 
+            },
+            2: {'label': 'Create Type',
                 'tag': 'create_type',
-                'types': ['None', 'import', 'reference'], 
+                'types': ['None', 'import', 'reference'],
                 'value': 0
                 },
             3: {
-                'label': 'Output Directory', 
-                'tag': 'output_directory', 
+                'label': 'Output Directory',
+                'tag': 'output_directory',
                 'path': None
-                }
+            }
         }
         self.setup_ui()
         self.create_preference()
@@ -71,7 +68,7 @@ class Preference(QtGui.QWidget):
         self.verticallayout.setContentsMargins(10, 10, 10, 10)
         self.groupbox = QtGui.QGroupBox(self)
         self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('Library Directories')
+        self.groupbox.setTitle('Preferences')
         self.verticallayout.addWidget(self.groupbox)
         self.verticallayout_item = QtGui.QVBoxLayout(self.groupbox)
         self.verticallayout_item.setObjectName('verticallayout')
@@ -108,9 +105,8 @@ class Preference(QtGui.QWidget):
         self.button_apply = QtGui.QPushButton(self)
         self.button_apply.setObjectName('button_apply')
         self.button_apply.setText('Apply')
-        self.horizontallayout.addWidget(self.button_apply)
+        # self.horizontallayout.addWidget(self.button_apply)
         self.button_cancel.clicked.connect(self.close)
-        self.button_apply.clicked.connect(self.apply)
 
     def create_preference(self):
         comment = '{} {} - preference container'.format(
@@ -140,33 +136,29 @@ class Preference(QtGui.QWidget):
         label_label = QtGui.QLabel(self.groupbox)
         label_label.setObjectName('label_label_%s' % row)
         label_label.setText(contents['label'])
-        label_label.setStatusTip(contents['tag'])        
-        label_label.setStyleSheet('color: #FF0000;')
+        label_label.setStatusTip(contents['tag'])
         label_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(label_label, row, 0, 1, 1)
         if 'types' in contents:
             widget = QtGui.QComboBox(self.groupbox)
-            widget.setObjectName('combobox_types')                 
-            widget.addItems(contents['types'])                
+            widget.setObjectName('combobox_types')
+            widget.addItems(contents['types'])
             widget.setCurrentIndex(contents['value'])
-            widget.setToolTip(contents['label'])            
+            widget.setToolTip(contents['label'])
             self.gridlayout.addWidget(widget, row, 1, 1, 1)
-        else:          
+        else:
             widget = QtGui.QLineEdit(self.groupbox)
             widget.setObjectName('lineedit_path_%s' % row)
             widget.setText(contents['path'])
             self.gridlayout.addWidget(widget, row, 1, 1, 1)
-            
         button_find = QtGui.QPushButton(self.groupbox)
         button_find.setObjectName('button_find_%s' % row)
         button_find.setText('...')
         button_find.setStyleSheet('color: #0000FF;')
         button_find.setMinimumSize(QtCore.QSize(35, 25))
         button_find.setMaximumSize(QtCore.QSize(35, 25))
-        
         if 'types' in contents:
             button_find.hide()
-            
         self.gridlayout.addWidget(button_find, row, 2, 1, 1)
         widgets = [label_label, widget, button_find]
         button_find.clicked.connect(partial(self.find_path, widgets))
@@ -194,39 +186,40 @@ class Preference(QtGui.QWidget):
                                  t=type, v=valid, data=data, tag=tag, path=resource_path,
                                  name='library_preferences', format='json')
         rw.create()
-        # print '\n#result preferences updated ', rw.file_path
         self.close()
+        print '\n#result preferences updated ', rw.file_path
 
     def get_source_paths(self, layout):
         data = {}
-        ing = 0        
+        ing = 0
         for index in range(layout.rowCount()):
-            if not layout.itemAt(ing) and layout.itemAt(ing+1):
+            if not layout.itemAt(ing) and layout.itemAt(ing + 1):
                 continue
             lable_widget = layout.itemAt(ing).widget()
             content_widget = layout.itemAt(ing + 1).widget()
             if not lable_widget and content_widget:
-                continue 
+                continue
             current_label = lable_widget.text().encode()
             current_tag = lable_widget.statusTip().encode()
             if isinstance(content_widget, QtGui.QComboBox):
                 value = content_widget.currentIndex()
-                all_items = [str(content_widget.itemText(x)) for x in range(content_widget.count())] 
+                all_items = [str(content_widget.itemText(x))
+                             for x in range(content_widget.count())]
                 content = {
-                    'label': current_label, 
-                    'tag': current_tag, 
+                    'label': current_label,
+                    'tag': current_tag,
                     'types': all_items,
                     'value': value
-                    }           
+                }
             else:
-                print 'content_widget\t', content_widget        
+                print 'content_widget\t', content_widget
                 current_path = content_widget.text().encode()
                 print current_path
                 content = {
-                    'label': current_label, 
-                    'tag': current_tag, 
+                    'label': current_label,
+                    'tag': current_tag,
                     'path': current_path
-                    }
+                }
             data.setdefault(index, content)
             ing += layout.columnCount()
         return data

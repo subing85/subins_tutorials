@@ -1,7 +1,21 @@
+'''
+resource 0.0.1 
+Date: February 11, 2019
+Last modified: February 24, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2018, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
+
 import os
 
 from assetLibrary.utils import platforms
-reload(platforms)
 
 CURRENT_PATH = os.path.dirname(__file__)
 MODULE = platforms.get_tool_kit()[0]
