@@ -42,12 +42,19 @@ class Preference(QtGui.QWidget):
                 'tag': 'library_directory',
                 'path': None
             },
-            2: {'label': 'Create Type',
+            2: {
+                'label': 'Create Type',
                 'tag': 'create_type',
                 'types': ['None', 'import', 'reference'],
                 'value': 0
-                },
+            },
             3: {
+                'label': 'Maya File Type',
+                'tag': 'maya_file_type',
+                'types': ['None', 'mayaAscii', 'mayaBinary'],
+                'value': 0               
+            },
+            4: {
                 'label': 'Output Directory',
                 'tag': 'output_directory',
                 'path': None
@@ -105,7 +112,7 @@ class Preference(QtGui.QWidget):
         self.button_apply = QtGui.QPushButton(self)
         self.button_apply.setObjectName('button_apply')
         self.button_apply.setText('Apply')
-        # self.horizontallayout.addWidget(self.button_apply)
+        self.horizontallayout.addWidget(self.button_apply)
         self.button_cancel.clicked.connect(self.close)
 
     def create_preference(self):
@@ -137,7 +144,7 @@ class Preference(QtGui.QWidget):
         label_label.setObjectName('label_label_%s' % row)
         label_label.setText(contents['label'])
         label_label.setStatusTip(contents['tag'])
-        label_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        label_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(label_label, row, 0, 1, 1)
         if 'types' in contents:
             widget = QtGui.QComboBox(self.groupbox)
@@ -161,11 +168,11 @@ class Preference(QtGui.QWidget):
             button_find.hide()
         self.gridlayout.addWidget(button_find, row, 2, 1, 1)
         widgets = [label_label, widget, button_find]
-        button_find.clicked.connect(partial(self.find_path, widgets))
+        button_find.clicked.connect(partial(self.find_path, widgets, contents['label']))
 
-    def find_path(self, widgets):
+    def find_path(self, widgets, title):
         path = QtGui.QFileDialog.getExistingDirectory(
-            self, 'Browser', self.brows_directory)
+            self, 'Browse for {} folder'.format(title), self.brows_directory)
         if not path:
             return
         self.brows_directory = path

@@ -37,7 +37,6 @@ reload(studioAsset)
 
 class MainWindow(QtGui.QMainWindow):
 
-    #def __init__(self, parent=platforms.get_qwidget(), standalone=False):
     def __init__(self, parent=None, standalone=False):
         super(MainWindow, self).__init__(parent)
         self.standalone = standalone
@@ -60,10 +59,15 @@ class MainWindow(QtGui.QMainWindow):
         self.rw = readWrite.ReadWrite(t='preference', path=resource_path,
                                       format='json', name='library_preferences', tag='asset_library')
         inputs = self.rw.get_inputs()
+        
+        create_type_values = ['None', 'import', 'reference']
+        maya_type_values = ['None', 'mayaAscii', 'mayaBinary']
+        
         self.maya_path = inputs[0]
         self.library_path = inputs[1]
-        self.create_type = inputs[2]
-        self.output_path = inputs[3]
+        self.create_type = create_type_values[inputs[2]]
+        self.maya_type = maya_type_values[inputs[3]]
+        self.output_path = inputs[4]
         self.setup_ui()
         self.set_icons()
         self.load_library_folders(self.treewidget)
@@ -99,8 +103,9 @@ class MainWindow(QtGui.QMainWindow):
         self.button_snapshot = self.asset.button_snapshot
         self.textedit_console = self.asset.textedit_console        
         self.pushbutton_filepath = self.asset.pushbutton_filepath
-        self.lineedit_filepath = self.asset.lineedit_filepath        
-        
+        self.lineedit_filepath = self.asset.lineedit_filepath
+        self.groupbox_path = self.asset.groupbox_path
+           
         if not self.standalone:
             self.textedit_console.hide()
             self.pushbutton_filepath.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -113,7 +118,6 @@ class MainWindow(QtGui.QMainWindow):
             self.path_menu.addAction(self.action_scene)
             self.action_scene.triggered.connect(
                 partial(self.set_current_scene, self.lineedit_filepath))
-            
         self.treewidget.itemClicked.connect(
             partial(self.load_current_folder, self.treewidget))  # Load Pose to UI
         self.button_snapshot.clicked.connect(
@@ -122,10 +126,8 @@ class MainWindow(QtGui.QMainWindow):
             partial(self.rename_model, self.lineedit_label))
         self.listwidget.itemClicked.connect(
             partial(self.builds, 'load', self.listwidget))  # Load Pose to UI
-
-        # self.listwidget.itemSelectionChanged.connect(
-        #    partial(self.builds, 'load', self.listwidget))
-
+        self.listwidget.itemSelectionChanged.connect(
+            partial(self.builds, 'load', self.listwidget))
         self.button_build.clicked.connect(
             partial(self.builds, 'build', self.listwidget))
         self.pushbutton_filepath.clicked.connect(
@@ -136,7 +138,6 @@ class MainWindow(QtGui.QMainWindow):
             QtCore.Qt.CustomContextMenu)
         self.treewidget.customContextMenuRequested.connect(
             partial(self.on_context_menu, self.treewidget))
-
         self.menu_bar = QtGui.QMenuBar(self)
         self.menu_bar.setGeometry(QtCore.QRect(0, 0, 960, 25))
         self.menu_bar.setObjectName('menu_bar')
@@ -210,8 +211,6 @@ class MainWindow(QtGui.QMainWindow):
             partial(self.expand, self.treewidget))
         self.action_collapse.triggered.connect(
             partial(self.collapse, self.treewidget))
-        self.asset.button_snapshot.clicked.connect(
-            partial(self.snapshot, self.asset.button_snapshot))
         self.asset.button_publish.clicked.connect(self.publish)
         self.preference.button_apply.clicked.connect(self.set_preference)
         self.preference.button_cancel.clicked.connect(self.cancel_preference)
@@ -485,9 +484,6 @@ class MainWindow(QtGui.QMainWindow):
 
     def publish(self):
         current_items = self.treewidget.selectedItems()
-        
-        
-        
         if not current_items:
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any folder selection.\nSelect the folder and try!...', QtGui.QMessageBox.Ok)
@@ -524,10 +520,7 @@ class MainWindow(QtGui.QMainWindow):
                 'Already a file with the same name in the publish')
             if replay != QtGui.QMessageBox.Yes:
                 return
-            
-            
         user_comment = self.asset.textedit_history.toPlainText()
-        
         result = studio_asset.save(
             current_path, label, user_comment=user_comment)
         self.load_current_folder(self.treewidget)
@@ -547,6 +540,10 @@ class MainWindow(QtGui.QMainWindow):
         self.studio_print.display_info(message)
 
     def snapshot(self, button):
+        if not self.treewidget.selectedItems():
+            QtGui.QMessageBox.warning(
+                self, 'Warning', 'Not found any selection\nSelect the folder and try', QtGui.QMessageBox.Ok)
+            return              
         self.clear_publish()
         self.q_image,  self.q_image_path = self.asset.snapshot(button)
 
@@ -558,6 +555,7 @@ class MainWindow(QtGui.QMainWindow):
         self.button_build.hide()
         self.textedit_history.clear()
         self.textedit_history.setReadOnly(False)
+        self.groupbox_path.show()
         self.lineedit_filepath.show()
         self.lineedit_filepath.clear()
         self.lineedit_imagepath.show()
@@ -566,24 +564,24 @@ class MainWindow(QtGui.QMainWindow):
         self.pushbutton_imagepath.show()
 
     def builds(self, tag, listwidge, *args):
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.CustomCursor.WaitCursor)
         current_items = listwidge.selectedItems()
         if not current_items:
             self.clear_publish()
             return
         self.button_publish.hide()
         self.button_build.show()
+        self.groupbox_path.hide()        
         self.label_filepath.hide()
         self.lineedit_filepath.hide()
         self.pushbutton_filepath.hide()
         self.label_imagepath.hide()
         self.lineedit_imagepath.hide()
         self.pushbutton_imagepath.hide()
-
         publish_paths = []
         for each_item in current_items:
             publish_paths.append(str(each_item.toolTip()))
         self.currnet_publish = publish_paths[-1]
-
         studio_asset = studioAsset.Asset(paths=publish_paths)
         data = studio_asset.create(False, 'reference', fake=True)
         data = data[data.keys()[0]]
@@ -595,7 +593,7 @@ class MainWindow(QtGui.QMainWindow):
             os.path.splitext(publish_paths[-1])[0]))
         self.asset.image_to_button(
             path=studio_asset.get_image(publish_paths[-1]))
-
+        
         if tag == 'build':
             if self.standalone:
                 if not self.maya_path:
@@ -610,25 +608,39 @@ class MainWindow(QtGui.QMainWindow):
                     self.studio_print.display_warning(
                         'Not such maya path!...\n%s' % self.maya_path)
                     return
-            if not self.create_type:
+            if not self.create_type or self.create_type=='None':
                 QtGui.QMessageBox.warning(
                     self, 'Warning', 'Please set the create type [import or reference]!...', QtGui.QMessageBox.Ok)
                 self.studio_print.display_warning(
                     'Please set the create type [import or reference]!...')
-                returns
+                return
 
+            if not self.maya_type or self.maya_type=='None':
+                QtGui.QMessageBox.warning(
+                    self, 'Warning', 'Please set the maya file type [mayaAscii or mayaBinary]!...', QtGui.QMessageBox.Ok)
+                self.studio_print.display_warning(
+                    'Please set the maya file type [mayaAscii or mayaBinary]!...')
+                return
+            
             if self.standalone:
                 result = studio_asset.create(
-                    'standalone', self.create_type, maya_path=self.maya_path, output_path=self.output_path)
-
+                    'standalone', self.create_type, maya_type=self.maya_type, maya_path=self.maya_path, output_path=self.output_path)
                 message = 'maya file created in - {}'.format(result)
                 self.studio_print.display_info(message)
                 if result:                  
                     QtGui.QMessageBox.information(
-                        self, 'Information', message, QtGui.QMessageBox.Ok)                
+                        self, 'Information', message, QtGui.QMessageBox.Ok)
+                    try:
+                        os.system('xdg-open \"%s\"' % os.path.dirname(result))
+                    except:
+                        pass
+                else:
+                    QtGui.QMessageBox.warning(
+                        self, 'Warning', 'maya file creation faild!...', QtGui.QMessageBox.Ok)                              
             else:
                 result = studio_asset.create(
-                    'maya', self.create_type)
+                    'maya', self.create_type)                
+        QtGui.QApplication.restoreOverrideCursor()
 
     def rename_model(self, lineedit):
         studio_asset = studioAsset.Asset()
