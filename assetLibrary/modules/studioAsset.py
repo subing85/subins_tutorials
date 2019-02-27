@@ -18,6 +18,7 @@ import tempfile
 import subprocess
 import tempfile
 import warnings
+import platform
 
 from datetime import datetime
 
@@ -36,15 +37,17 @@ class Asset(object):
         self.tool_kit_object, self.tool_kit_name, self.version = platforms.get_tool_kit()
         self.output_path = tempfile.gettempdir()
         self.asset_setname = 'asset_set'
-        self.maya_types = {'.mb': 'mayaBinary', '.ma': 'mayaAscii'}
+        self.maya_formats = {'.mb': 'mayaBinary', '.ma': 'mayaAscii'}
+        self.maya_file_types = {'mayaBinary': '.mb', 'mayaAscii': '.ma'}
+        
 
     def get_format(self):
         if not self.path:
             return None
         current_format = os.path.splitext(self.path)[-1]
-        if current_format not in self.maya_types:
+        if current_format not in self.maya_formats:
             return None
-        self.maya_type = self.maya_types[current_format]
+        self.maya_type = self.maya_formats[current_format]
         return self.maya_type
 
     def had_valid(self, publish_file):
@@ -67,23 +70,23 @@ class Asset(object):
             asset_data.setdefault(each_path, data)
         return asset_data
 
-    def create(self, mode, create_type, fake=False, maya_path=None, output_path=None):
+    def create(self, mode, create_type, maya_type=None, fake=False, maya_path=None, output_path=None):
         paths = self.paths
         if fake:
             paths = [self.paths[-1]]
             info_data = self.read_data('info', paths)
-            return info_data
-        
+            return info_data        
         asset_data = self.read_data('data', self.paths)
         if mode == 'standalone':
             result = self.create_maya_file(
-                asset_data, create_type, maya_path, output_path)
+                asset_data, create_type, maya_type, maya_path, output_path)
         if mode == 'maya':
             result = self.create_assets(asset_data, create_type)
         return result
 
-    def create_maya_file(self, asset_data, create_type, maya_path, output_path):
-        bash_file = os.path.join(tempfile.gettempdir(), 'asset_library.py')
+    def create_maya_file(self, asset_data, create_type, maya_type, maya_path, output_path):
+        bash_file = os.path.abspath(
+            os.path.join(tempfile.gettempdir(), 'asset_library.py')).replace('\\', '/')
         if os.path.isfile(bash_file):
             try:
                 os.chmod(folder_path, 0777)
@@ -96,8 +99,12 @@ class Asset(object):
         if not output_path:
             output_path = tempfile.gettempdir()
         current_time = datetime.now().strftime('%Y_%d_%B_%I_%M_%S_%p')
-        output_file = os.path.join(
-            output_path, 'asset_bundle_{}.ma'.format(current_time))
+
+        output_file = os.path.abspath(os.path.join(
+            output_path, 'asset_bundle_{}.{}'.format(current_time, self.maya_file_types[maya_type])))
+        
+        
+        output_file = output_file.replace('\\', '/')
         # asset_data = self.read_data('data', self.paths)
         data = [
             '#!{}/bin/mayapy'.format(maya_path),
@@ -110,8 +117,12 @@ class Asset(object):
             '\tasset_path = data[each_asset][\'path\']',
             '\tasset_format = data[each_asset][\'format\']',
             '\t{}'.format(core_type),
-            '\tprint asset_path',
-            'core.saveAs(\'{}\', typ=\'mayaBinary\')'.format(output_file),
+            '\tprint \"\\n\", \"asset name\", \"\\t=\" , asset_name',
+            '\tprint \"{}\", \"\\t=\", asset_path'.format(create_type),            
+            '\ttry:',
+            '\t\tcore.saveAs(\'{}\', typ=\'{}\')'.format(output_file, maya_type),
+            '\texcept Exception as error:',
+            '\t\t\"save error\", error',
             'standalone.uninitialize(name=\'python\')'
         ]
         bash_data = open(bash_file, 'w')
@@ -125,11 +136,25 @@ class Asset(object):
             os.chmod(bash_file, 0o777)
         except Exception as error:
             warnings.warn(str(error), Warning)
-        result = subprocess.call(
+		
+        if platform.system()=='Windows':	    
+            mayapy = os.path.abspath(os.path.join(maya_path, 'bin/mayapy.exe')).replace('\\', '/')
+            windows_command = '\"{}\" \"{}\"'.format(mayapy, bash_file)
+            result = subprocess.call(
+            windows_command, stdout=None, shell=True, stderr=None)	
+        if platform.system()=='Linux':
+            result = subprocess.call(
             bash_file, stdout=None, shell=True, stderr=None)
+            
+        if os.path.isfile(bash_file):
+            try:
+                os.chmod(bash_file, 0777)
+                os.remove(bash_file)
+            except Exception as result:
+                print(result)            
         return output_file
 
-    def create_assets(self, asset_data, create_type):
+    def create_assets(self, asset_data, create_type, maya_type):
         from pymel import core
         self.set_bounding_box()
         for each_asset in asset_data:

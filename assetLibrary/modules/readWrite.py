@@ -136,8 +136,9 @@ class ReadWrite(object):
         maya_path = path_data['0']['path']
         library_path = path_data['1']['path']
         create_type = path_data['2']['value']
-        output_path = path_data['3']['path']
-        return maya_path, library_path, create_type, output_path
+        maya_type = path_data['3']['value']         
+        output_path = path_data['4']['path']
+        return maya_path, library_path, create_type, maya_type, output_path
 
     def get_library_path(self):
         path_data = self.get_data()

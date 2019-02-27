@@ -34,11 +34,13 @@ def getPreferencePath():
 
 
 def getWorkspacePath():
-    return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
+    # print'subin\t', os.path.join(os.getenv('HOME'))
+    # return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
+    return os.path.join(os.path.expanduser('~'), 'Documents', MODULE)
 
 
 def getPublishDirectory():
-    return os.path.join(os.environ['HOME'], 'Walk_cycle', 'characters')
+    return os.path.join(os.path.expanduser('~'), 'Walk_cycle', 'characters')
 
 
 def getResourceTypes():
