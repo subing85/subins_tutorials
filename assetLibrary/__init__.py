@@ -6,7 +6,6 @@ from PySide import QtGui
 
 def show_window(standalone=None):
     from assetLibrary.resources.ui import main
-    reload(main)
     my_window = main.MainWindow(standalone=standalone)
     my_window.show()
         

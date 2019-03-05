@@ -124,7 +124,7 @@ class Asset(object):
             '\texcept Exception as error:',
             '\t\t\"save error\", error',
             'standalone.uninitialize(name=\'python\')'
-        ]
+            ]
         bash_data = open(bash_file, 'w')
         try:
             bash_data.write('\n'.join(data))
@@ -154,16 +154,16 @@ class Asset(object):
                 print(result)            
         return output_file
 
-    def create_assets(self, asset_data, create_type, maya_type):
+    def create_assets(self, asset_data, create_type):
         from pymel import core
         self.set_bounding_box()
         for each_asset in asset_data:
             asset_name = asset_data[each_asset]['name']
             asset_path = asset_data[each_asset]['path']
             asset_format = asset_data[each_asset]['format']
-            if create_type == 2:
+            if create_type == 'reference':
                 core.createReference(asset_path, iv=True, ns=asset_name)
-            if create_type == 1:
+            if create_type == 'import':
                 core.importFile(asset_path, iv=True, ns=asset_name)
         return True
 
@@ -182,11 +182,11 @@ class Asset(object):
             'name': name,
             'path': self.path,
             'format': format
-        }
+            }
         tag = self.tool_kit_object
         rw = readWrite.ReadWrite(c=comment, cd=created_date,
-                                 d=description, t=type, v=valid, data=data, tag=tag,
-                                 path=file_path, name=name, format='asset')
+                 d=description, t=type, v=valid, data=data, tag=tag,
+                 path=file_path, name=name, format='asset')
         result, asset_path = rw.create()
         if False in result:
             return result
