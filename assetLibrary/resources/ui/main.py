@@ -17,6 +17,7 @@ import os
 import sys
 import webbrowser
 import thread
+import platform
 
 from PySide import QtCore
 from PySide import QtGui
@@ -32,7 +33,6 @@ from assetLibrary.resources.ui import asset
 from assetLibrary.utils import platforms
 from assetLibrary.core import inputs
 from assetLibrary import resources
-reload(studioAsset)
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -46,8 +46,8 @@ class MainWindow(QtGui.QMainWindow):
         self.image_format = 'png'
         self.tool_mode = 'publish'
         self.currnet_publish = None
-        self.q_image,  self.q_image_path = None, None
-        self.source_file,  self.source_file_path = None, None
+        self.q_image, self.q_image_path = None, None
+        self.source_file, self.source_file_path = None, None
         self.tool_kit_object, self.tool_kit_name, self.version = platforms.get_tool_kit()
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
         self.preference = preferences.Preference(parent=None)
@@ -59,14 +59,12 @@ class MainWindow(QtGui.QMainWindow):
         self.rw = readWrite.ReadWrite(t='preference', path=resource_path,
                                       format='json', name='library_preferences', tag='asset_library')
         inputs = self.rw.get_inputs()
-        
-        create_type_values = ['None', 'import', 'reference']
-        maya_type_values = ['None', 'mayaAscii', 'mayaBinary']
-        
+        self.create_type_values = ['None', 'import', 'reference']
+        self.maya_type_values = ['None', 'mayaAscii', 'mayaBinary']
         self.maya_path = inputs[0]
         self.library_path = inputs[1]
-        self.create_type = create_type_values[inputs[2]]
-        self.maya_type = maya_type_values[inputs[3]]
+        self.create_type = self.create_type_values[inputs[2]]
+        self.maya_type = self.maya_type_values[inputs[3]]
         self.output_path = inputs[4]
         self.setup_ui()
         self.set_icons()
@@ -81,6 +79,8 @@ class MainWindow(QtGui.QMainWindow):
         self.setStyleSheet('font: 12pt \"MS Shell Dlg 2\";')
         self.setObjectName('mainwindow_%s' % self.tool_kit_object)
         self.setWindowTitle(self.tool_kit_titile)
+        title_icon = os.path.join(resources.getIconPath(), 'title.png')
+        self.setWindowIcon(QtGui.QIcon(title_icon))   
         self.centralwidget = QtGui.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)
@@ -103,7 +103,6 @@ class MainWindow(QtGui.QMainWindow):
         self.button_snapshot = self.asset.button_snapshot
         self.textedit_console = self.asset.textedit_console        
         self.pushbutton_filepath = self.asset.pushbutton_filepath
-        self.lineedit_filepath = self.asset.lineedit_filepath
         self.groupbox_path = self.asset.groupbox_path
            
         if not self.standalone:
@@ -276,9 +275,9 @@ class MainWindow(QtGui.QMainWindow):
         from pymel import core        
         current_scene = core.sceneName()        
         if not current_scene:        
-            self.source_file,  self.source_file_path = False, None
+            self.source_file, self.source_file_path = False, None
         linedeit.setText(current_scene)   
-        self.source_file,  self.source_file_path = True, str(current_scene)
+        self.source_file, self.source_file_path = True, str(current_scene)
          
     def show_preference(self):
         self.preference.show()
@@ -288,8 +287,9 @@ class MainWindow(QtGui.QMainWindow):
         inputs = self.rw.get_inputs()
         self.maya_path = inputs[0]
         self.library_path = inputs[1]
-        self.create_type = inputs[2]
-        self.output_path = inputs[3]        
+        self.create_type = self.create_type_values[inputs[2]]
+        self.maya_type = self.maya_type_values[inputs[3]]
+        self.output_path = inputs[4]        
         self.load_library_folders(self.treewidget)
 
     def cancel_preference(self):
@@ -453,7 +453,7 @@ class MainWindow(QtGui.QMainWindow):
             icon.addPixmap(QtGui.QPixmap(icon_path),
                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item.setIcon(icon)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter |
+            item.setTextAlignment(QtCore.Qt.AlignHCenter | 
                                   QtCore.Qt.AlignBottom)
             thread.start_new_thread(
                 self.validte_asset_publish, (each_file, item,))
@@ -463,7 +463,7 @@ class MainWindow(QtGui.QMainWindow):
         valid = studio_asset.had_valid(file)
         if valid:
             return
-        item.setFlags(QtCore.Qt.ItemIsSelectable |
+        item.setFlags(QtCore.Qt.ItemIsSelectable | 
                       QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
 
     def collect_child_items(self, parent):
@@ -473,13 +473,12 @@ class MainWindow(QtGui.QMainWindow):
             self.collect_child_items(current_child)
 
     def set_source_file_path(self, widget):
-        self.source_file,  self.source_file_path = self.asset.set_source_path(
-            widget, 'file')
-        
-        print self.source_file,  self.source_file_path
+        self.source_file, self.source_file_path = self.asset.set_source_path(
+            widget, 'file')        
+        print self.source_file, self.source_file_path
 
     def set_source_image_path(self, widget):
-        self.q_image,  self.q_image_path = self.asset.set_source_path(
+        self.q_image, self.q_image_path = self.asset.set_source_path(
             widget, 'image')
 
     def publish(self):
@@ -508,8 +507,10 @@ class MainWindow(QtGui.QMainWindow):
                 self, 'Warning', 'Not found the Name of the the Publish!...', QtGui.QMessageBox.Ok)
             self.studio_print.display_warning(
                 'Not found the Name of the the Publish!...')
-            return        # add condition for mutlipe object
-        
+            return  # add condition for mutlipe object
+                
+        self.source_file_path = os.path.abspath(
+            str(self.lineedit_filepath.text())).replace('\\', '/')        
         studio_asset = studioAsset.Asset(
             path=self.source_file_path, image=self.q_image)
         if studio_asset.had_file(current_path, label):
@@ -525,7 +526,7 @@ class MainWindow(QtGui.QMainWindow):
             current_path, label, user_comment=user_comment)
         self.load_current_folder(self.treewidget)
         self.clear_publish()
-        self.source_file,  self.source_file_path = False, None
+        self.source_file, self.source_file_path = False, None
         
         message = 'Publish success!...'
         if False in result:
@@ -545,7 +546,7 @@ class MainWindow(QtGui.QMainWindow):
                 self, 'Warning', 'Not found any selection\nSelect the folder and try', QtGui.QMessageBox.Ok)
             return              
         self.clear_publish()
-        self.q_image,  self.q_image_path = self.asset.snapshot(button)
+        self.q_image, self.q_image_path = self.asset.snapshot(button)
 
     def clear_publish(self):
         self.currnet_publish = None
@@ -564,7 +565,6 @@ class MainWindow(QtGui.QMainWindow):
         self.pushbutton_imagepath.show()
 
     def builds(self, tag, listwidge, *args):
-        QtGui.QApplication.setOverrideCursor(QtCore.Qt.CustomCursor.WaitCursor)
         current_items = listwidge.selectedItems()
         if not current_items:
             self.clear_publish()
@@ -586,7 +586,7 @@ class MainWindow(QtGui.QMainWindow):
         data = studio_asset.create(False, 'reference', fake=True)
         data = data[data.keys()[0]]
         comment = [data['comment'], 'author : %s' % data['author'], data['tag'],
-                   data['#copyright'],  'user : %s' % data['user'], data['created_date']]
+                   data['#copyright'], 'user : %s' % data['user'], data['created_date']]
         self.textedit_history.setText('\n'.join(comment))
         self.textedit_history.setReadOnly(True)
         self.lineedit_label.setText(os.path.basename(
@@ -608,39 +608,48 @@ class MainWindow(QtGui.QMainWindow):
                     self.studio_print.display_warning(
                         'Not such maya path!...\n%s' % self.maya_path)
                     return
-            if not self.create_type or self.create_type=='None':
+            if not self.create_type or self.create_type == 'None':
                 QtGui.QMessageBox.warning(
                     self, 'Warning', 'Please set the create type [import or reference]!...', QtGui.QMessageBox.Ok)
                 self.studio_print.display_warning(
                     'Please set the create type [import or reference]!...')
                 return
 
-            if not self.maya_type or self.maya_type=='None':
+            if not self.maya_type or self.maya_type == 'None':
                 QtGui.QMessageBox.warning(
                     self, 'Warning', 'Please set the maya file type [mayaAscii or mayaBinary]!...', QtGui.QMessageBox.Ok)
                 self.studio_print.display_warning(
                     'Please set the maya file type [mayaAscii or mayaBinary]!...')
                 return
-            
+           
             if self.standalone:
+                QtGui.QApplication.setOverrideCursor(QtCore.Qt.CustomCursor.WaitCursor)  
                 result = studio_asset.create(
                     'standalone', self.create_type, maya_type=self.maya_type, maya_path=self.maya_path, output_path=self.output_path)
                 message = 'maya file created in - {}'.format(result)
                 self.studio_print.display_info(message)
+                QtGui.QApplication.restoreOverrideCursor()
                 if result:                  
                     QtGui.QMessageBox.information(
                         self, 'Information', message, QtGui.QMessageBox.Ok)
-                    try:
-                        os.system('xdg-open \"%s\"' % os.path.dirname(result))
-                    except:
-                        pass
+                    if platform.system() == 'Windows':
+                        try:
+                            os.startfile(os.path.dirname(result))
+                        except:
+                            pass                            
+                    if platform.system() == 'Linux':
+                        try:
+                            os.system('xdg-open \"%s\"' % os.path.dirname(result))
+                        except:
+                            pass
                 else:
                     QtGui.QMessageBox.warning(
                         self, 'Warning', 'maya file creation faild!...', QtGui.QMessageBox.Ok)                              
             else:
+                QtGui.QApplication.setOverrideCursor(QtCore.Qt.CustomCursor.WaitCursor)  
                 result = studio_asset.create(
                     'maya', self.create_type)                
-        QtGui.QApplication.restoreOverrideCursor()
+                QtGui.QApplication.restoreOverrideCursor()
 
     def rename_model(self, lineedit):
         studio_asset = studioAsset.Asset()

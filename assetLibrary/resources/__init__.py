@@ -14,6 +14,7 @@ Description
 '''
 
 import os
+import platform
 
 from assetLibrary.utils import platforms
 
@@ -34,9 +35,11 @@ def getPreferencePath():
 
 
 def getWorkspacePath():
-    # print'subin\t', os.path.join(os.getenv('HOME'))
-    # return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
-    return os.path.join(os.path.expanduser('~'), 'Documents', MODULE)
+    if platform.system()=='Windows':
+        return os.path.abspath (
+            os.getenv('USERPROFILE') + '/Documents').replace ('\\', '/')
+    if platform.system()=='Linux':
+        return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
 
 
 def getPublishDirectory():
