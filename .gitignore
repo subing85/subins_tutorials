@@ -1,7 +1,0 @@
-*.pyc
-.project
-.pydevproject
-.settings
-reference
-smartDeformer
-smartDeformer_PySide
