@@ -130,8 +130,7 @@ class Asset(object):
         try:
             os.chmod(bash_file, 0o777)
         except Exception as error:
-            warnings.warn(str(error), Warning)
-		
+            warnings.warn(str(error), Warning)		
         if platform.system()=='Windows':	    
             mayapy = os.path.abspath(os.path.join(maya_path, 'bin/mayapy.exe')).replace('\\', '/')
             windows_command = '\"{}\" \"{}\"'.format(mayapy, bash_file)
