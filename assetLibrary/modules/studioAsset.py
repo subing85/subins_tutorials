@@ -98,10 +98,8 @@ class Asset(object):
         if not output_path:
             output_path = tempfile.gettempdir()
         current_time = datetime.now().strftime('%Y_%d_%B_%I_%M_%S_%p')
-
         output_file = os.path.abspath(os.path.join(
-            output_path, 'asset_bundle_{}.{}'.format(current_time, self.maya_file_types[maya_type])))
-        
+            output_path, 'asset_bundle_{}.{}'.format(current_time, self.maya_file_types[maya_type])))        
         output_file = output_file.replace('\\', '/')
         data = [
             '#!{}/bin/mayapy'.format(maya_path),
@@ -141,8 +139,7 @@ class Asset(object):
             windows_command, stdout=None, shell=True, stderr=None)	
         if platform.system()=='Linux':
             result = subprocess.call(
-            bash_file, stdout=None, shell=True, stderr=None)
-            
+            bash_file, stdout=None, shell=True, stderr=None)            
         if os.path.isfile(bash_file):
             try:
                 os.chmod(bash_file, 0777)
