@@ -72,7 +72,8 @@ class MainWindow(QtGui.QMainWindow):
         if not self.standalone:
             self.parent_maya_layout()
         self.set_contex_menu()
-        self.studio_print = studioPrint.Print(self.standalone, self.textedit_console)
+        self.studio_print = studioPrint.Print(
+            self.standalone, self.textedit_console)
 
     def setup_ui(self):
         self.resize(self.width, self.height)
@@ -80,7 +81,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setObjectName('mainwindow_%s' % self.tool_kit_object)
         self.setWindowTitle(self.tool_kit_titile)
         title_icon = os.path.join(resources.getIconPath(), 'title.png')
-        self.setWindowIcon(QtGui.QIcon(title_icon))   
+        self.setWindowIcon(QtGui.QIcon(title_icon))
         self.centralwidget = QtGui.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)
@@ -101,16 +102,16 @@ class MainWindow(QtGui.QMainWindow):
         self.button_build = self.asset.button_build
         self.textedit_history = self.asset.textedit_history
         self.button_snapshot = self.asset.button_snapshot
-        self.textedit_console = self.asset.textedit_console        
+        self.textedit_console = self.asset.textedit_console
         self.pushbutton_filepath = self.asset.pushbutton_filepath
         self.groupbox_path = self.asset.groupbox_path
-           
         if not self.standalone:
             self.textedit_console.hide()
-            self.pushbutton_filepath.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+            self.pushbutton_filepath.setContextMenuPolicy(
+                QtCore.Qt.CustomContextMenu)
             self.pushbutton_filepath.customContextMenuRequested.connect(
-                partial(self.on_context_path, self.pushbutton_filepath))   
-            self.path_menu = QtGui.QMenu(self)            
+                partial(self.on_context_path, self.pushbutton_filepath))
+            self.path_menu = QtGui.QMenu(self)
             self.action_scene = QtGui.QAction(self)
             self.action_scene.setObjectName('action_scene')
             self.action_scene.setText('Current Scene')
@@ -240,7 +241,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def on_context_menu(self, treewidget, paint):
         self.contex_menu.exec_(treewidget.mapToGlobal(paint))
-        
+
     def on_context_path(self, button, paint):
         self.path_menu.exec_(button.mapToGlobal(paint))
 
@@ -270,26 +271,26 @@ class MainWindow(QtGui.QMainWindow):
         self.contex_menu.addSeparator()
         self.contex_menu.addAction(self.action_expand)
         self.contex_menu.addAction(self.action_collapse)
-    
+
     def set_current_scene(self, linedeit):
-        from pymel import core        
-        current_scene = core.sceneName()        
-        if not current_scene:        
+        from pymel import core
+        current_scene = core.sceneName()
+        if not current_scene:
             self.source_file, self.source_file_path = False, None
-        linedeit.setText(current_scene)   
+        linedeit.setText(current_scene)
         self.source_file, self.source_file_path = True, str(current_scene)
-         
+
     def show_preference(self):
         self.preference.show()
 
     def set_preference(self):
-        self.preference.apply()       
+        self.preference.apply()
         inputs = self.rw.get_inputs()
         self.maya_path = inputs[0]
         self.library_path = inputs[1]
         self.create_type = self.create_type_values[inputs[2]]
         self.maya_type = self.maya_type_values[inputs[3]]
-        self.output_path = inputs[4]        
+        self.output_path = inputs[4]
         self.load_library_folders(self.treewidget)
 
     def cancel_preference(self):
@@ -453,7 +454,7 @@ class MainWindow(QtGui.QMainWindow):
             icon.addPixmap(QtGui.QPixmap(icon_path),
                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item.setIcon(icon)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter | 
+            item.setTextAlignment(QtCore.Qt.AlignHCenter |
                                   QtCore.Qt.AlignBottom)
             thread.start_new_thread(
                 self.validte_asset_publish, (each_file, item,))
@@ -463,7 +464,7 @@ class MainWindow(QtGui.QMainWindow):
         valid = studio_asset.had_valid(file)
         if valid:
             return
-        item.setFlags(QtCore.Qt.ItemIsSelectable | 
+        item.setFlags(QtCore.Qt.ItemIsSelectable |
                       QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
 
     def collect_child_items(self, parent):
@@ -474,7 +475,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_source_file_path(self, widget):
         self.source_file, self.source_file_path = self.asset.set_source_path(
-            widget, 'file')        
+            widget, 'file')
         print self.source_file, self.source_file_path
 
     def set_source_image_path(self, widget):
@@ -485,14 +486,16 @@ class MainWindow(QtGui.QMainWindow):
         current_items = self.treewidget.selectedItems()
         if not current_items:
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not found any folder selection.\nSelect the folder and try!...', QtGui.QMessageBox.Ok)
+                self, 'Warning', 'Not found any folder selection.\nSelect the folder and try!...',
+                QtGui.QMessageBox.Ok)
             self.studio_print.display_warning(
                 'Not found any folder selection.')
             return
         current_path = str(current_items[-1].toolTip(0))
         if not os.path.isdir(current_path):
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not found such Publish directory!...%s' % current_path, QtGui.QMessageBox.Ok)
+                self, 'Warning', 'Not found such Publish directory!...%s' % current_path,
+                QtGui.QMessageBox.Ok)
             self.studio_print.display_warning(
                 'Not found such Publish directory!...%s' % current_path)
             return
@@ -504,19 +507,21 @@ class MainWindow(QtGui.QMainWindow):
         label = self.asset.lineedit_label.text()
         if not label:
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not found the Name of the the Publish!...', QtGui.QMessageBox.Ok)
+                self, 'Warning', 'Not found the Name of the the Publish!...',
+                QtGui.QMessageBox.Ok)
             self.studio_print.display_warning(
                 'Not found the Name of the the Publish!...')
             return  # add condition for mutlipe object
-                
+
         self.source_file_path = os.path.abspath(
-            str(self.lineedit_filepath.text())).replace('\\', '/')        
+            str(self.lineedit_filepath.text())).replace('\\', '/')
         studio_asset = studioAsset.Asset(
             path=self.source_file_path, image=self.q_image)
         if studio_asset.had_file(current_path, label):
-            replay = QtGui.QMessageBox.warning(self, 'Warning',
-                                               'Already a file with the same name in the publish\n\"%s\"\nIf you want to overwrite press Yes' % label,
-                                               QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            replay = QtGui.QMessageBox.warning(
+                self, 'Warning', 
+                'Already a file with the same name in the publish\n\"%s\"\nIf you want to overwrite press Yes' % label,
+                QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
             self.studio_print.display_warning(
                 'Already a file with the same name in the publish')
             if replay != QtGui.QMessageBox.Yes:
@@ -527,7 +532,7 @@ class MainWindow(QtGui.QMainWindow):
         self.load_current_folder(self.treewidget)
         self.clear_publish()
         self.source_file, self.source_file_path = False, None
-        
+
         message = 'Publish success!...'
         if False in result:
             message = 'Publish Failed!...\n%s\n%s' % (
@@ -543,8 +548,9 @@ class MainWindow(QtGui.QMainWindow):
     def snapshot(self, button):
         if not self.treewidget.selectedItems():
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not found any selection\nSelect the folder and try', QtGui.QMessageBox.Ok)
-            return              
+                self, 'Warning', 'Not found any selection\nSelect the folder and try',
+                QtGui.QMessageBox.Ok)
+            return
         self.clear_publish()
         self.q_image, self.q_image_path = self.asset.snapshot(button)
 
@@ -571,7 +577,7 @@ class MainWindow(QtGui.QMainWindow):
             return
         self.button_publish.hide()
         self.button_build.show()
-        self.groupbox_path.hide()        
+        self.groupbox_path.hide()
         self.label_filepath.hide()
         self.lineedit_filepath.hide()
         self.pushbutton_filepath.hide()
@@ -593,62 +599,71 @@ class MainWindow(QtGui.QMainWindow):
             os.path.splitext(publish_paths[-1])[0]))
         self.asset.image_to_button(
             path=studio_asset.get_image(publish_paths[-1]))
-        
+
         if tag == 'build':
             if self.standalone:
                 if not self.maya_path:
                     QtGui.QMessageBox.warning(
-                        self, 'Warning', 'Please set the maya path!...', QtGui.QMessageBox.Ok)
+                        self, 'Warning', 'Please set the maya path!...',
+                        QtGui.QMessageBox.Ok)
                     self.studio_print.display_warning(
                         'Please set the maya path!...')
                     return
                 if not os.path.isdir(self.maya_path):
                     QtGui.QMessageBox.warning(
-                        self, 'Warning', 'Not such maya path!...\n%s' % self.maya_path, QtGui.QMessageBox.Ok)
+                        self, 'Warning', 'Not such maya path!...\n%s' % self.maya_path,
+                        QtGui.QMessageBox.Ok)
                     self.studio_print.display_warning(
                         'Not such maya path!...\n%s' % self.maya_path)
                     return
             if not self.create_type or self.create_type == 'None':
                 QtGui.QMessageBox.warning(
-                    self, 'Warning', 'Please set the create type [import or reference]!...', QtGui.QMessageBox.Ok)
+                    self, 'Warning', 'Please set the create type [import or reference]!...',
+                    QtGui.QMessageBox.Ok)
                 self.studio_print.display_warning(
                     'Please set the create type [import or reference]!...')
                 return
 
             if not self.maya_type or self.maya_type == 'None':
                 QtGui.QMessageBox.warning(
-                    self, 'Warning', 'Please set the maya file type [mayaAscii or mayaBinary]!...', QtGui.QMessageBox.Ok)
+                    self, 'Warning', 'Please set the maya file type [mayaAscii or mayaBinary]!...',
+                    QtGui.QMessageBox.Ok)
                 self.studio_print.display_warning(
                     'Please set the maya file type [mayaAscii or mayaBinary]!...')
                 return
-           
+
             if self.standalone:
-                QtGui.QApplication.setOverrideCursor(QtCore.Qt.CustomCursor.WaitCursor)  
+                QtGui.QApplication.setOverrideCursor(
+                    QtCore.Qt.CustomCursor.WaitCursor)
                 result = studio_asset.create(
-                    'standalone', self.create_type, maya_type=self.maya_type, maya_path=self.maya_path, output_path=self.output_path)
+                    'standalone', self.create_type, maya_type=self.maya_type,
+                    maya_path=self.maya_path, output_path=self.output_path)
                 message = 'maya file created in - {}'.format(result)
                 self.studio_print.display_info(message)
                 QtGui.QApplication.restoreOverrideCursor()
-                if result:                  
+                if result:
                     QtGui.QMessageBox.information(
                         self, 'Information', message, QtGui.QMessageBox.Ok)
                     if platform.system() == 'Windows':
                         try:
                             os.startfile(os.path.dirname(result))
                         except:
-                            pass                            
+                            pass
                     if platform.system() == 'Linux':
                         try:
-                            os.system('xdg-open \"%s\"' % os.path.dirname(result))
+                            os.system('xdg-open \"%s\"' %
+                                      os.path.dirname(result))
                         except:
                             pass
                 else:
                     QtGui.QMessageBox.warning(
-                        self, 'Warning', 'maya file creation faild!...', QtGui.QMessageBox.Ok)                              
+                        self, 'Warning', 'maya file creation faild!...',
+                        QtGui.QMessageBox.Ok)
             else:
-                QtGui.QApplication.setOverrideCursor(QtCore.Qt.CustomCursor.WaitCursor)  
+                QtGui.QApplication.setOverrideCursor(
+                    QtCore.Qt.CustomCursor.WaitCursor)
                 result = studio_asset.create(
-                    'maya', self.create_type)                
+                    'maya', self.create_type)
                 QtGui.QApplication.restoreOverrideCursor()
 
     def rename_model(self, lineedit):
@@ -668,17 +683,17 @@ class MainWindow(QtGui.QMainWindow):
         self.load_current_folder(self.treewidget)
 
     def parent_maya_layout(self):
-        from maya import cmds        
+        from maya import cmds
         if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
-            cmds.deleteUI(self.tool_kit_object, ctl=1)                    
+            cmds.deleteUI(self.tool_kit_object, ctl=1)
         object_name = str(self.objectName())
         self.floating_layout = cmds.paneLayout(
             cn='single', w=self.width, p=platforms.get_main_window())
         cmds.dockControl(self.tool_kit_object, l=self.tool_kit_titile, area='right',
                          content=self.floating_layout, allowedArea=['right', 'left'])
         cmds.control(object_name, e=1, p=self.floating_layout)
-        
-        
+
+
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = MainWindow(parent=None, standalone=True)
