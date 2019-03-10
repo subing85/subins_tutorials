@@ -52,7 +52,7 @@ class Preference(QtGui.QWidget):
                 'label': 'Maya File Type',
                 'tag': 'maya_file_type',
                 'types': ['None', 'mayaAscii', 'mayaBinary'],
-                'value': 0               
+                'value': 0
             },
             4: {
                 'label': 'Output Directory',
@@ -144,7 +144,7 @@ class Preference(QtGui.QWidget):
         label_label.setObjectName('label_label_%s' % row)
         label_label.setText(contents['label'])
         label_label.setStatusTip(contents['tag'])
-        label_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        label_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(label_label, row, 0, 1, 1)
         if 'types' in contents:
             widget = QtGui.QComboBox(self.groupbox)
@@ -168,7 +168,8 @@ class Preference(QtGui.QWidget):
             button_find.hide()
         self.gridlayout.addWidget(button_find, row, 2, 1, 1)
         widgets = [label_label, widget, button_find]
-        button_find.clicked.connect(partial(self.find_path, widgets, contents['label']))
+        button_find.clicked.connect(
+            partial(self.find_path, widgets, contents['label']))
 
     def find_path(self, widgets, title):
         path = QtGui.QFileDialog.getExistingDirectory(
@@ -189,9 +190,10 @@ class Preference(QtGui.QWidget):
         data = directorys
         tag = 'asset_library'
         resource_path = resources.getResourceTypes()[type]
-        rw = readWrite.ReadWrite(c=comment, cd=created_date, d=description,
-                                 t=type, v=valid, data=data, tag=tag, path=resource_path,
-                                 name='library_preferences', format='json')
+        rw = readWrite.ReadWrite(
+            c=comment, cd=created_date, d=description,
+            t=type, v=valid, data=data, tag=tag, path=resource_path,
+            name='library_preferences', format='json')
         rw.create()
         self.close()
         print '\n#result preferences updated ', rw.file_path
@@ -219,9 +221,7 @@ class Preference(QtGui.QWidget):
                     'value': value
                 }
             else:
-                print 'content_widget\t', content_widget
                 current_path = content_widget.text().encode()
-                print current_path
                 content = {
                     'label': current_label,
                     'tag': current_tag,

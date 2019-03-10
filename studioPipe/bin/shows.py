@@ -3,7 +3,7 @@ import optparse
 
 from pprint import pprint
 
-def create():
+def pipe_shows():
     parser = optparse.OptionParser(usage='usage: %prog [options] create your show',
                           version='Studio Pipe 0.0.1')
     option_list = [
@@ -45,5 +45,5 @@ def create():
 
 
 if __name__ == '__main__':
-    create() 
+    pipe_shows() 
     

@@ -35,10 +35,10 @@ def getPreferencePath():
 
 
 def getWorkspacePath():
-    if platform.system()=='Windows':
-        return os.path.abspath (
-            os.getenv('USERPROFILE') + '/Documents').replace ('\\', '/')
-    if platform.system()=='Linux':
+    if platform.system() == 'Windows':
+        return os.path.abspath(
+            os.getenv('USERPROFILE') + '/Documents').replace('\\', '/')
+    if platform.system() == 'Linux':
         return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
 
 
@@ -61,10 +61,10 @@ def getToolKitLink():
 
 
 def getToolKitHelpLink():
-    return 'https://vimeo.com/314966208'
+    return 'https://vimeo.com/322552816'
 
 
 def getDownloadLink():
-    return 'https://www.subins-toolkits.com/shader-library'
+    return 'https://www.subins-toolkits.com/asset-library'
 
 # end ####################################################################

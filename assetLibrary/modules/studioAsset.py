@@ -40,7 +40,6 @@ class Asset(object):
         self.maya_formats = {'.mb': 'mayaBinary', '.ma': 'mayaAscii'}
         self.maya_file_types = {'mayaBinary': '.mb', 'mayaAscii': '.ma'}
         
-
     def get_format(self):
         if not self.path:
             return None
@@ -103,9 +102,7 @@ class Asset(object):
         output_file = os.path.abspath(os.path.join(
             output_path, 'asset_bundle_{}.{}'.format(current_time, self.maya_file_types[maya_type])))
         
-        
         output_file = output_file.replace('\\', '/')
-        # asset_data = self.read_data('data', self.paths)
         data = [
             '#!{}/bin/mayapy'.format(maya_path),
             'from maya import standalone',
