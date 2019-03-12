@@ -25,9 +25,9 @@ from functools import partial
 from datetime import datetime
 
 from studioPipe import resources
-from studioPipe.modules import studioImage
-from studioPipe.utils import platforms
+from studioPipe.core import studioImage
 
+from studioPipe.utils import platforms
 from studioPipe.api import studioShows
 
 
@@ -40,7 +40,8 @@ class Show(QtGui.QWidget):
         self.studio_pipe_path = '/home/shreya/Documents/studio_pipe'
         self.module, self.lable, self.version = platforms.get_tool_kit()
         self.icon_format = '.png'
-        self._width, self._height = 256, 144
+        self.width, self.height = 256, 144
+        
         self.setup_ui()
         self.load_widgets()
 
@@ -68,7 +69,7 @@ class Show(QtGui.QWidget):
         self.label_logo = QtGui.QLabel(self.groupbox)
         self.label_logo.setObjectName('label_subins_toolkits')
         self.label_logo.setPixmap(QtGui.QPixmap(
-            os.path.join(resources.getIconPath(), 'subins_toolkits.png')))
+            os.path.join(resources.getIconPath(), 'subins_toolkits_1.png')))
         self.label_logo.setScaledContents(True)
         self.label_logo.setMinimumSize(QtCore.QSize(128, 128))
         self.label_logo.setMaximumSize(QtCore.QSize(128, 128))
@@ -178,7 +179,7 @@ class Show(QtGui.QWidget):
     def snapshot(self, button, image_file):
         self.studio_image = studioImage.ImageCalibration(imgae_file=image_file)
         self.q_image, self.q_image_path = self.studio_image.setStudioSize(
-            width=self._width, height=self._height)
+            width=self.width, height=self.height)
         if not self.q_image:
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not able to process image!..', QtGui.QMessageBox.Ok)
@@ -192,14 +193,18 @@ class Show(QtGui.QWidget):
         if not path:
             path = os.path.join(resources.getIconPath(), 'template.png')
         if not width:
-            width = self._width
+            width = self.width
         if not height:
-            height = self._height
+            height = self.height
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(path),
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
-        button.setIconSize(QtCore.QSize(self._width - 5, self._height - 5))
+        button.setIconSize(QtCore.QSize(self.width - 5, self.height - 5))
+        
+
+        
+
 
 
 if __name__ == '__main__':

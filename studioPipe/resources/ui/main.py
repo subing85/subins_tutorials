@@ -16,6 +16,7 @@ Description
 import sys
 import os
 import tempfile
+import thread
 
 sys.path.append('/venture/subins_tutorials')
 
@@ -25,9 +26,16 @@ from functools import partial
 from datetime import datetime
 
 from studioPipe import resources
-from studioPipe.modules import studioDataBase
-from studioPipe.modules import studioImage
 from studioPipe.utils import platforms
+from studioPipe.api import studioShows
+from studioPipe.api import studioInput
+
+
+
+import catalogue
+import input
+
+reload(input)
 
 
 class Main(QtGui.QWidget):
@@ -39,86 +47,199 @@ class Main(QtGui.QWidget):
         self.studio_pipe_path = '/home/shreya/Documents/studio_pipe'
         self.module, self.lable, self.version = platforms.get_tool_kit()
         self.icon_format = 'png'
-        self._width, self._height = 256, 144
-        input_file = os.path.join(resources.getInputPath(), 'show.json')
-        self.read_db = studioDataBase.Connect(full_path=input_file)
-        self.input_data = self.read_db.getData()
+        self.width, self.height = 256, 144
+        self.show_data = {}
+
         self.setup_ui()
-        self.load_widgets()
+        # self.load_widgets()
+        self.load_tool_bar()
+        self.set_icons()
+        self.load_shows_to_layout(self.listWidget_shows)
+        self.load_discipline(self.treewidget_discipline)   
+        
 
     def setup_ui(self):
         self.setObjectName('asset')
         self.setWindowTitle(
             'Show Inputs ({} {})'.format(self.lable, self.version))
-        self.resize(500, 100)
+        self.resize(1000, 600)
         self.verticallayout = QtGui.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
         self.verticallayout.setContentsMargins(10, 10, 10, 10)
-        self.groupbox = QtGui.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('Create your show')
-        self.verticallayout.addWidget(self.groupbox)
-        self.verticallayout_item = QtGui.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(10, 10, 10, 10)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontalLayout.setObjectName('horizontalLayout')
-        self.verticallayout_item.addLayout(self.horizontalLayout)
-        self.label_logo = QtGui.QLabel(self.groupbox)
+        
+        self.label_logo = QtGui.QLabel(self)
         self.label_logo.setObjectName('label_subins_toolkits')
         self.label_logo.setPixmap(QtGui.QPixmap(
-            os.path.join(resources.getIconPath(), 'subins_toolkits.png')))
+            os.path.join(resources.getIconPath(), 'subins_toolkits_2.png')))
         self.label_logo.setScaledContents(True)
-        self.label_logo.setMinimumSize(QtCore.QSize(128, 128))
-        self.label_logo.setMaximumSize(QtCore.QSize(128, 128))
-        self.horizontalLayout.addWidget(self.label_logo)
-        self.button_show = QtGui.QPushButton(self.groupbox)
-        self.button_show.setFlat(True)
-        self.button_show.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred))
-        self.button_show.setObjectName('button_show')
-        self.button_show.setMinimumSize(QtCore.QSize(256, 144))
-        self.button_show.setMaximumSize(QtCore.QSize(256, 144))
-        self.horizontalLayout.addWidget(self.button_show)
-        self.gridlayout = QtGui.QGridLayout(None)
-        self.gridlayout.setObjectName('gridlayout')
-        self.gridlayout.setSpacing(5)
-        self.gridlayout.setContentsMargins(10, 0, 0, 0)
-        self.verticallayout_item.addLayout(self.gridlayout)
-        spacer_item = QtGui.QSpacerItem(
-            20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticallayout.addItem(spacer_item)
+        self.label_logo.setMinimumSize(QtCore.QSize(500, 142))
+        self.label_logo.setMaximumSize(QtCore.QSize(500, 142))        
+        self.verticallayout.addWidget(self.label_logo)       
+       
         self.horizontallayout = QtGui.QHBoxLayout()
         self.horizontallayout.setObjectName('horizontallayout')
-        self.horizontallayout.setSpacing(10)
-        self.horizontallayout.setContentsMargins(10, 10, 10, 10)
         self.verticallayout.addLayout(self.horizontallayout)
-        spacer_item = QtGui.QSpacerItem(
-            40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontallayout.addItem(spacer_item)
-        self.button_cancel = QtGui.QPushButton(self)
-        self.button_cancel.setObjectName('button_cancel')
-        self.button_cancel.setText('Cancel')
-        self.horizontallayout.addWidget(self.button_cancel)
-        self.button_create = QtGui.QPushButton(self)
-        self.button_create.setObjectName('button_create')
-        self.button_create.setText('Create')
-        self.horizontallayout.addWidget(self.button_create)
-        self.button_create.clicked.connect(self.create_show)
-        self.button_cancel.clicked.connect(self.close)
+        
+        self.verticalLayout_shows_a = QtGui.QVBoxLayout()
+        self.verticalLayout_shows_a.setObjectName('verticalLayout_show_a')
+        self.horizontallayout.addLayout(self.verticalLayout_shows_a)
+        
+        self.verticalLayout_pipe = QtGui.QVBoxLayout()
+        self.verticalLayout_pipe.setObjectName('verticalLayout_pipe')        
+        self.horizontallayout.addLayout(self.verticalLayout_pipe)
+               
+        self.groupbox_shows = QtGui.QGroupBox(self)
+        self.groupbox_shows.setObjectName('groupbox_shows')
+        self.groupbox_shows.setTitle('Shows')
+        self.verticalLayout_pipe.addWidget(self.groupbox_shows)
+        
+        self.verticalLayout_shows_b = QtGui.QVBoxLayout(self.groupbox_shows)
+        self.verticalLayout_shows_b.setObjectName('verticalLayout_show_b')
+        
+        self.listWidget_shows = catalogue.Catalogue(
+            parent=self.groupbox_shows, width=self.width, height=self.height)
+        self.listWidget_shows.itemClicked.connect(
+            partial(self.set_my_show, self.listWidget_shows))  # Load Pose to UI
+        self.verticalLayout_shows_b.addWidget(self.listWidget_shows)
+        
+        self.groupbox_toolbar = QtGui.QGroupBox(self)
+        self.groupbox_toolbar.setObjectName('groupbox_toolbar')
+        # self.groupbox_toolbar.setTitle('groupbox_toolbar')
+        self.groupbox_toolbar.setMinimumSize(QtCore.QSize(0, 35))
+        self.groupbox_toolbar.setMaximumSize(QtCore.QSize(16777215, 35))         
+        self.groupbox_toolbar.hide()
+        self.verticalLayout_pipe.addWidget(self.groupbox_toolbar)  
+                 
+        self.horizontallayout_toolbar = QtGui.QHBoxLayout(self.groupbox_toolbar)
+        self.horizontallayout_toolbar.setObjectName('horizontallayout_toolbar')
+                
+        self.groupbox_show = QtGui.QGroupBox(self)
+        self.groupbox_show.setObjectName('groupbox_show')
+        # self.groupbox_show.setTitle('Show')
+        self.groupbox_show.hide()
+        self.verticalLayout_pipe.addWidget(self.groupbox_show)
+        
+        self.verticalLayout_show = QtGui.QVBoxLayout(self.groupbox_show)
+        self.verticalLayout_show.setObjectName('verticalLayout_show')        
 
+        self.splitter = QtGui.QSplitter(self.groupbox_show)
+        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setObjectName('splitter')
+        
+        self.verticalLayout_show.addWidget(self.splitter)
+        
+        self.treewidget_discipline = QtGui.QTreeWidget(self.splitter)
+        self.treewidget_discipline.setObjectName('treewidget_discipline') 
+        self.treewidget_discipline.headerItem().setText(0,'Deciplines')
+               
+        self.splitter.addWidget(self.treewidget_discipline)
+        
+        self.treewidget = QtGui.QTreeWidget(self.splitter)
+        self.treewidget.setObjectName('treewidget')        
+        self.splitter.addWidget(self.treewidget) 
+        
+        self.groupbox_details = QtGui.QGroupBox(self.splitter)
+        self.groupbox_details.setObjectName('groupbox_details')
+        self.groupbox_details.setTitle('Details')
+        self.splitter.addWidget(self.groupbox_details)
+        self.splitter.setSizes([171, 381, 108])
+        
 
+               
     
+    def load_tool_bar(self):    
+        self.toolBar = QtGui.QToolBar()        
+        self.horizontallayout_toolbar.addWidget(self.toolBar)
+        
+        self.action_add_discipline = QtGui.QAction(self)
+        self.action_add_discipline.setObjectName('action_add_discipline')
+        self.action_add_discipline.setText('Add Discipline')
+        self.action_add_discipline.setToolTip('Add Discipline')
+        
+        self.action_remove_discipline = QtGui.QAction(self)
+        self.action_remove_discipline.setObjectName('action_remove_discipline')
+        self.action_remove_discipline.setText('Remove Discipline')
+        self.action_remove_discipline.setToolTip('Add Discipline')
+        
+        self.action_add_tag = QtGui.QAction(self)
+        self.action_add_tag.setObjectName('action_add_tag')
+        self.action_add_tag.setText('Add Tag')
+        self.action_add_tag.setToolTip('Add Discipline')
+        
+        self.action_remove_tag = QtGui.QAction(self)
+        self.action_remove_tag.setObjectName('action_remove_tag')      
+        self.action_remove_tag.setText('Remove Tag')
+        self.action_remove_tag.setToolTip('Add Discipline')
+        
+        self.toolBar.addAction(self.action_add_discipline)
+        self.toolBar.addAction(self.action_remove_discipline)
+        self.toolBar.addSeparator ()        
+        self.toolBar.addAction(self.action_add_tag)
+        self.toolBar.addAction(self.action_remove_tag)
+        self.action_add_discipline.triggered.connect(self.add_discipline)
+        
+        
+    def set_icons(self):
+        actions = self.findChildren(QtGui.QAction)
+        for each_action in actions:
+            objectName = each_action.objectName()
+            if not objectName:
+                continue
+            current_icon = '{}.png'.format(objectName.split('action_')[-1])
+            icon_path = os.path.join(resources.getIconPath(), current_icon)
+            icon = QtGui.QIcon()
+            icon.addPixmap(
+                QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            each_action.setIcon(icon)
+            
     
-    
-    
-    
-    
-    
-    
+    # 689x195    
+    def load_shows_to_layout(self, listwidget):
+        studio_shows = studioShows.Connect()
+        data, rollback_data, sort_data = studio_shows.getShowAllData()
+
+        listwidget.clear()
+        for each_show in sort_data:
+            current_icon = data[rollback_data[each_show]][each_show]['show_icon']
+            display_name = data[rollback_data[each_show]][each_show]['display_name']
+            tooltip = data[rollback_data[each_show]][each_show]['tooltip']           
+            self.show_data.setdefault(each_show, data[rollback_data[each_show]][each_show])
+            
+            item = QtGui.QListWidgetItem()
+            listwidget.addItem(item)
+            item.setText(display_name)
+            item.setToolTip(tooltip)
+            item.setStatusTip(each_show)
+            icon = QtGui.QIcon()
+
+            icon.addPixmap(
+                QtGui.QPixmap(current_icon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+            item.setIcon(icon)
+            item.setTextAlignment(
+                QtCore.Qt.AlignHCenter|QtCore.Qt.AlignBottom)
+            
+
+    def set_my_show(self, listwidget, *args):        
+        current_items = listwidget.selectedItems()
+        if not current_items:
+            return        
+        current_show = current_items[-1].statusTip()        
+        if current_show not in self.show_data:
+            print 'Value error, not found your show %s'%current_show
+            return
+        
+        self.verticalLayout_shows_a.addWidget(self.listWidget_shows)
+
+        self.listWidget_shows.setMinimumSize(QtCore.QSize(290, 0))
+        self.listWidget_shows.setMaximumSize(QtCore.QSize(290, 16777215))             
+        self.groupbox_shows.hide()
+        
+        self.groupbox_show.show()
+        self.groupbox_toolbar.show()
+        print current_show
+        
     
     def image_to_button(self, button=None, path=None, width=None, height=None):
         if not button:
@@ -126,18 +247,49 @@ class Main(QtGui.QWidget):
         if not path:
             path = os.path.join(resources.getIconPath(), 'template.png')
         if not width:
-            width = self._width
+            width = self.width
         if not height:
-            height = self._height
+            height = self.height
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(path),
-                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(
+            QtGui.QPixmap(path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
-        button.setIconSize(QtCore.QSize(self._width - 5, self._height - 5))
+        button.setIconSize(QtCore.QSize(self.width - 5, self.height - 5))
+        # button.setMinimumSize(QtCore.QSize(self.width, self.height))
+        # button.setMaximumSize(QtCore.QSize(self.width, self.height))
+        
+    def load_discipline (self, treewidget):
+        cursor = studioInput.Connect('discipline', value='disciplines')
+        disciplines, sort_disciplines = cursor.getInputData()
+        
+        for each_discipline in sort_disciplines:            
+            display_name = disciplines[each_discipline]['display_name']
+            tooltip = disciplines[each_discipline]['tooltip']
+            
+            icon_path = os.path.join(
+                resources.getIconPath(), '%s.png'%each_discipline)
+            
+            item = QtGui.QTreeWidgetItem(treewidget)
+            item.setText(0, display_name)
+            item.setToolTip(0, tooltip)
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(icon_path),
+                           QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            item.setIcon(0, icon)            
+        
+        treewidget.setIconSize(QtCore.QSize(50, 50))
+      
+    
+    def add_discipline(self):
+        print self.splitter.sizes ()
+               
+        self.input_window = input.Window(
+            parent=None, type='discipline', value='discipline_child_inputs')
+        self.input_window.show()
 
-
+                
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    window = Show(parent=None)
-    window.Main()
+    window = Main(parent=None)
+    window.show()
     sys.exit(app.exec_())

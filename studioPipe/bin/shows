@@ -1,0 +1,85 @@
+#!/usr/bin/python
+import optparse
+
+from pprint import pprint
+
+from studioPipe.api import studioShows
+
+
+def pipe_shows():
+    parser = optparse.OptionParser(
+        usage='usage: %prog [options] create your show',
+        version='Studio Pipe 0.0.1')
+    option_list = [
+        optparse.make_option(
+            '--na', '--name', action='store', type='string', dest='name'),
+        optparse.make_option(
+            '--dn', '--displayname', action='store', type='string', dest='dname'),
+        optparse.make_option(
+            '--sn', '--shortname', action='store', type='string', dest='sname'),
+        optparse.make_option(
+            '--tp', '--tooltip', action='store', type='string', dest='tname'),
+        optparse.make_option(
+            '--i', '--icon', action='store', type='string', dest='ifile')
+    ]
+    parser.add_options(option_list)
+    parser.add_option('-q', '--query',
+                      action='store_true',
+                      dest='query',
+                      default=False,
+                      help='to query')
+    parser.add_option('--s', '--shows',
+                      action='store_true',
+                      dest='getShows',
+                      default=False,
+                      help='find the exists shows')
+    parser.add_option('--ex', '--exists',
+                      action='store',
+                      dest='getShowExists',
+                      default=False,
+                      help='find the exists shows')
+    parser.add_option('--em', '--example',
+                      action='store_true',
+                      dest='example',
+                      default=False,
+                      help='example to create shows')
+    (options, args) = parser.parse_args()
+
+    if options.query and options.getShows and not options.getShowExists:
+        studio_shows = studioShows.Connect()
+        shows = studio_shows.getShows()
+        pprint(shows)
+        return shows
+    if options.query and not options.getShows and options.getShowExists:
+        studio_shows = studioShows.Connect()
+        shows = studio_shows.getShows()
+        if options.getShowExists in shows:
+            print True
+            return True
+        print False
+        return False
+    if options.name and options.dname and options.sname and options.tname and options.ifile:
+        studio_shows = studioShows.Connect()
+        studio_shows.create(
+            na=options.name,
+            dn=options.dname,
+            sn=options.sname,
+            tp=options.tname,
+            ic=options.ifile
+        )
+        print 'successfully created your show called \"%s\"' % options.name
+    if options.example:
+        flags = [
+            '--na \"rocky_the_hero\"',
+            '--dn \"Rocky The Hero\"',
+            '--sn \"RTH\"',
+            '--tp \"Rocky The Hero\"',
+            '--i \"/tmp/rocky.jpg\"'
+        ]
+        print 'create shows\t- shows {}'.format(' '.join(flags))
+        print 'get all show\t- shows -q --s'
+        print 'get show exists\t- shows -q --ex \"rocky_the_hero\"'
+
+
+if __name__ == '__main__':
+    pipe_shows()

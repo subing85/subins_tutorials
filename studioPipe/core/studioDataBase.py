@@ -1,7 +1,7 @@
 '''
 studioImage.py 0.0.1 
-Date: January 16, 2019
-Last modified: February 24, 2019
+Date: March 09, 2019
+Last modified: March 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2018, Subin Gopi
@@ -48,7 +48,7 @@ class Connect(object):
             'valid': True,
             'user': getpass.getuser(),
             'data': {}
-        }
+            }       
 
     def hasValid(self, force=False):
         if force:

@@ -13,7 +13,11 @@ Description
     None.
 '''
 
+# add icon to disciplines
+
 import sys
+
+from pprint import pprint
 
 sys.path.append('/venture/subins_tutorials')
 
@@ -24,28 +28,36 @@ from datetime import datetime
 
 
 from studioPipe import resources
-from studioPipe.modules import readWrite
+from studioPipe.core import readWrite
 from studioPipe.utils import platforms
+from studioPipe.api import studioInput
 
-class Types(QtGui.QWidget):
+reload(studioInput)
 
-    def __init__(self, parent=None):
-        super(Types, self).__init__(parent)
+class Window(QtGui.QWidget):
+
+    def __init__(self, parent=None, **kwargs):
+        super(Window, self).__init__(parent)
         
+        self.type = kwargs['type']
+        self.value = kwargs['value']
+         
+        if 'input_datas' in kwargs:
+            self.data, self.sort_data = kwargs['input_datas']
+        else:            
+            self.cursor = studioInput.Connect(self.type, self.value)
+            self.data, self.sort_data = self.cursor.getInputData()  
+                  
+             
         self.module, self.lable, self.version = platforms.get_tool_kit()
-        
-        self.rw = readWrite.ReadWrite(
-            path=resources.getInputPath(), name='pipe_type', tag='pipe_type')
-        self.input_data = self.rw.get_data()
-        self.setup_ui()
-        
-        self.load_widgets()
 
+        self.setup_ui()
+        self.load_widgets()
 
     def setup_ui(self):
         self.setObjectName('asset')
         self.setWindowTitle(
-            'Input Type ({} {})'.format(self.lable, self.version))
+            'Add Discipline ({} {})'.format(self.lable, self.version))
         self.resize(500, 100)
         self.verticallayout = QtGui.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
@@ -53,22 +65,13 @@ class Types(QtGui.QWidget):
         self.verticallayout.setContentsMargins(10, 10, 10, 10)
         self.groupbox = QtGui.QGroupBox(self)
         self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('Create your custom categories or departments of asset and shot')
+        self.groupbox.setTitle('Create your custom %s to asset or shot'% self.type)
         self.verticallayout.addWidget(self.groupbox)
         self.verticallayout_item = QtGui.QVBoxLayout(self.groupbox)
         self.verticallayout_item.setObjectName('verticallayout')
         self.verticallayout_item.setSpacing(10)
         self.verticallayout_item.setContentsMargins(10, 10, 10, 10)
-        
-        #=======================================================================
-        # self.label_label = QtGui.QLabel(self.groupbox)
-        # self.label_label.setObjectName('label_label')
-        # self.label_label.setText('Create your custom categorie or department')
-        # self.label_label.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
-        # 
-        # self.verticallayout_item.addWidget(self.label_label)
-        #=======================================================================
-        
+       
                     
         self.gridlayout = QtGui.QGridLayout(None)
         self.gridlayout.setObjectName('gridlayout')
@@ -94,18 +97,16 @@ class Types(QtGui.QWidget):
         self.button_create.setObjectName('button_create')
         self.button_create.setText('Create')
         self.horizontallayout.addWidget(self.button_create)
+        self.button_create.clicked.connect(self.create)
         self.button_cancel.clicked.connect(self.close)
+
         
     def load_widgets(self):
-        print self.input_data         
-        sort_data = self.rw.set_order(self.input_data)
-        
-        for index in range (len(sort_data)):
-            
-            current_item = self.input_data[sort_data[index]]
+        for index in range (len(self.sort_data)):
+            current_item = self.data[self.sort_data[index]]
             
             label = QtGui.QLabel(self.groupbox)
-            label.setObjectName('label_%s' % sort_data[index])
+            label.setObjectName('label_%s' % self.sort_data[index])
             label.setText(current_item['display_name'])
             label.setStatusTip(current_item['tooltip'])
             label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
@@ -113,89 +114,60 @@ class Types(QtGui.QWidget):
             
             if current_item['type']=='str':
                 widget = QtGui.QLineEdit(self.groupbox)
-                widget.setObjectName('lineedit_%s' % sort_data[index])
+                widget.setObjectName('lineedit_%s' % self.sort_data[index])
 
             elif current_item['type']=='enum':
                 widget = QtGui.QComboBox(self.groupbox)
-                widget.setObjectName('combobox_%s' % sort_data[index])
+                widget.setObjectName('combobox_%s' % self.sort_data[index])
                 widget.addItems(current_item['values'])
                 widget.setCurrentIndex(current_item['value'])
                 
             if current_item['example']:
                  widget.setToolTip('\n'.join(current_item['example']))
             
+            widget.setStatusTip(self.sort_data[index])
+            
             self.gridlayout.addWidget(widget, index, 1, 1, 1)            
             
-        
-                 
 
+ 
 
-
-
-    def create_widgets(self):
-        keys = self.bundles.keys()
-        keys.sort()
-        for index in range(len(keys)):
-            self.add_widgets(index, self.bundles[keys[index]])
-
-    def add_widgets(self, row, contents=None):
-        label_label = QtGui.QLabel(self.groupbox)
-        label_label.setObjectName('label_label_%s' % row)
-        label_label.setText(contents['label'])
-        label_label.setStatusTip(contents['tag'])
-        label_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridlayout.addWidget(label_label, row, 0, 1, 1)
-        if 'types' in contents:
-            widget = QtGui.QComboBox(self.groupbox)
-            widget.setObjectName('combobox_types')
-            widget.addItems(contents['types'])
-            widget.setCurrentIndex(contents['value'])
-            widget.setToolTip(contents['label'])
-            self.gridlayout.addWidget(widget, row, 1, 1, 1)
-        else:
-            widget = QtGui.QLineEdit(self.groupbox)
-            widget.setObjectName('lineedit_path_%s' % row)
-            widget.setText(contents['path'])
-            self.gridlayout.addWidget(widget, row, 1, 1, 1)
-        button_find = QtGui.QPushButton(self.groupbox)
-        button_find.setObjectName('button_find_%s' % row)
-        button_find.setText('...')
-        button_find.setStyleSheet('color: #0000FF;')
-        button_find.setMinimumSize(QtCore.QSize(35, 25))
-        button_find.setMaximumSize(QtCore.QSize(35, 25))
-        if 'types' in contents:
-            button_find.hide()
-        self.gridlayout.addWidget(button_find, row, 2, 1, 1)
-        widgets = [label_label, widget, button_find]
-        button_find.clicked.connect(partial(self.find_path, widgets, contents['label']))
-
-    def find_path(self, widgets, title):
-        path = QtGui.QFileDialog.getExistingDirectory(
-            self, 'Browse for {} folder'.format(title), self.brows_directory)
-        if not path:
-            return
-        self.brows_directory = path
-        widgets[1].setText(path)
-
-    def apply(self):
-        directorys = self.get_source_paths(self.gridlayout)
-        comment = '{} {} - preference container'.format(
-            self.lable, self.version)
-        created_date = datetime.now().strftime('%B/%d/%Y - %I:%M:%S:%p')
-        description = 'This data contain information about asset library preference'
-        type = 'preference'
-        valid = True
-        data = directorys
-        tag = 'asset_library'
-        resource_path = resources.getResourceTypes()[type]
-        rw = readWrite.ReadWrite(c=comment, cd=created_date, d=description,
-                                 t=type, v=valid, data=data, tag=tag, path=resource_path,
-                                 name='library_preferences', format='json')
-        rw.create()
+    def create(self):
+        input_datas = self.get_source_paths(self.gridlayout)
+        studio_input = studioInput.Connect(self.type, self.value)
+        studio_input.create(
+            en=True,
+            na=input_datas['name'],
+            dn=input_datas['display_name'],
+            tp=input_datas['tooltip'],
+            ty=input_datas['type']
+        )
         self.close()
-        print '\n#result preferences updated ', rw.file_path
+
 
     def get_source_paths(self, layout):
+        data = {}
+        ing = 0
+        for index in range(layout.rowCount()):
+            widget = layout.itemAtPosition(index, 1).widget()
+            if isinstance(widget, QtGui.QComboBox):
+                value = widget.currentIndex()
+            else:
+                value = widget.text().encode()
+            tag = widget.statusTip()
+            
+            print tag
+            data.setdefault(tag.encode(), value)
+            
+        return data
+
+
+
+
+
+
+
+    def _get_source_paths(self, layout):
         data = {}
         ing = 0
         for index in range(layout.rowCount()):
@@ -218,9 +190,7 @@ class Types(QtGui.QWidget):
                     'value': value
                 }
             else:
-                print 'content_widget\t', content_widget
                 current_path = content_widget.text().encode()
-                print current_path
                 content = {
                     'label': current_label,
                     'tag': current_tag,
@@ -230,9 +200,10 @@ class Types(QtGui.QWidget):
             ing += layout.columnCount()
         return data
 
-
+   
+    
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    window = Types(parent=None)
+    window = Window(parent=None, type='discipline', value='discipline_child_inputs')
     window.show()
     sys.exit(app.exec_())
