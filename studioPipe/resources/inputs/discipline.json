@@ -11,77 +11,88 @@
    	"type": "input_data",
 	"tag": "disciplines",   	
     "data": {
-    	"disciplines": {
-    		"assets": {
-    			"order": 0,
-    			"display_name": "Assets",
-    			"tooltip": "Assets"
-    		},
-    		"shots":{
-    			"order": 1,
-    			"display_name": "Shots",
-    			"tooltip": "Shots"
-    		}
-    	},
-       	"discipline_child_inputs": {
-			"name": {
-				"enable": true,
-				"type": "str",
-				"order": 0,
-				"display_name": "Name",
-				"tooltip": "Asolute name of category or department",
-				"value": null,
-				"values": null,			
-				"example": [
-	    			"model",
-	    			"surfacing",
-	    			"rigging",
-	    			"layout",
-	    			"animation",
-	    			"light",
-	    			"render",
-	    			"comb"
-					]
-				},
-			"display_name": {
-				"enable": true,
-				"type": "str",
-				"order": 1,
-				"display_name": "Display Name",
-				"tooltip": "Display name of category or department name",
-				"value": null,
-				"values": null,			
-				"example": [
-	    			"model",
-	    			"surfacing",
-	    			"rigging",
-	    			"layout",
-	    			"animation",
-	    			"light",
-	    			"render",
-	    			"comb"
-					]
-				},			
-			"tooltip": {
-				"enable": true,
-				"type": "str",
-				"order": 3,
-				"display_name": "Tooltip",
-				"tooltip": "Tooltip name of category or department name",
-				"value": null,
-				"values": null,
-				"example": null
-				},
-			"type": {
-				"enable": true,
-				"type": "enum",
-				"order": 4,
-				"display_name": "Type",
-				"tooltip": "Tooltip name of category or department name",
-				"value": 0,	
-				"values": ["None", "Assets", "Shots"],
-				"example": null
-				}
+    	"current_show": {
+			"enable": true,
+			"type": "enum",
+			"order": 0,
+			"display_name": "Current Show",
+			"tooltip": "Set your show",
+			"value": null,
+			"values": null,			
+			"example": [
+				]
+			},    	
+		"name": {
+			"enable": true,
+			"type": "str",
+			"order": 1,
+			"display_name": "Name",
+			"tooltip": "Asolute name of category or department",
+			"value": "rigging",
+			"values": null,			
+			"example": [
+				"model",
+				"surfacing",
+				"rigging",
+				"layout",
+				"animation",
+				"light",
+				"render",
+				"comb"
+				]
+			},
+		"display_name": {
+			"enable": true,
+			"type": "str",
+			"order": 2,
+			"display_name": "Display Name",
+			"tooltip": "Display name of category or department name",
+			"value": "Rigging",
+			"values": null,			
+			"example": [
+				"model",
+				"surfacing",
+				"rigging",
+				"layout",
+				"animation",
+				"light",
+				"render",
+				"comb"
+				]
+			},			
+		"tooltip": {
+			"enable": true,
+			"type": "str",
+			"order": 3,
+			"display_name": "Tooltip",
+			"tooltip": "Tooltip name of category or department name",
+			"value": "Rigging",
+			"values": null,
+			"example": null
+			},
+		"type": {
+			"enable": true,
+			"type": "enum",
+			"order": 4,
+			"display_name": "Type",
+			"tooltip": "Tooltip name of category or department name",
+			"value": 0,	
+			"values": ["None", "Assets", "Shots"],
+			"example": null
+			},
+		"discipline_icon": {
+			"enable": true,
+			"type": "path",
+			"order": 5,
+			"display_name": "Disciplines Icon/Image",
+			"tooltip": "Disciplines Icon/Image",
+			"value": "",
+			"values": null,
+			"example": [
+				"image path"
+				],			
+			"description": "Browse your disciplines icon/image file",
+			"resolution": [256, 144]	
 			}
 		}
 	}

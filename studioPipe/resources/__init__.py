@@ -16,7 +16,7 @@ Description
 import os
 import platform
 
-from assetLibrary.utils import platforms
+from studioPipe.utils import platforms
 
 CURRENT_PATH = os.path.dirname(__file__)
 MODULE = platforms.get_tool_kit()[0]
@@ -41,9 +41,25 @@ def getPreferencePath():
 def getWorkspacePath():
     if platform.system()=='Windows':
         return os.path.abspath (
-            os.getenv('USERPROFILE') + '/Documents').replace ('\\', '/')
+            os.getenv('USERPROFILE') + '/Documents/%s'%MODULE).replace ('\\', '/')
     if platform.system()=='Linux':
         return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
+    
+
+def getDefaultPreferences():
+    current_data = {
+        'pipe_maya_directory': '/usr/autodesk/maya2016',
+        'pipe_maya_version': '2016',
+        'pipe_name': 'studio_pipe',
+        'pipe_nuke_directory': '/usr/autodesk/nuke',
+        'pipe_nuke_version': '2.7',
+        'pipe_python_directory': '/usr/bin/python',
+        # 'pipe_shows_directory': os.path.join(getWorkspacePath()),
+        'pipe_shows_directory': '/venture/shows',
+        'pipe_site_packages_directory': '/usr/lib64/python2.7/site-packages',
+        'pipe_studio_pipe_directory': '/venture/subins_tutorials/studioPipe'
+    }
+    return current_data
 
 
 def getToolKitLink():

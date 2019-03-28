@@ -8,8 +8,8 @@
     "description": "inputs of shows",    
     "warning": "# WARNING! All changes made in this file will be lost!", 
     "valid": true,
-   	"type": "input_data",
-	"tag": "show",   	
+   	"type": "input_db",
+	"tag": "shows",   	
     "data": {
 		"show_name": {
 			"enable": true,
@@ -17,7 +17,7 @@
 			"order": 0,
 			"display_name": "Name",
 			"tooltip": "Asolute name of the show",
-			"value": "",
+			"value": "my_super_hero",
 			"values": null,			
 			"example": [
     			"my_super_hero"
@@ -29,7 +29,7 @@
 			"order": 1,
 			"display_name": "Display Name",
 			"tooltip": "Display name of the show",
-			"value": "",
+			"value": "My Super Hero",
 			"values": null,			
 			"example": [
     			"My Super Hero",
@@ -42,7 +42,7 @@
 			"order": 2,
 			"display_name": "Short Name",
 			"tooltip": "Short Name of the show",
-			"value": "",
+			"value": "MSH",
 			"values": null,			
 			"example": [
     			"MSH",
@@ -57,7 +57,7 @@
 			"order": 3,
 			"display_name": "Tooltip",
 			"tooltip": "Tooltip name of the show",
-			"value": "",
+			"value": "My Super Hero",
 			"values": null,
 			"example": [
 				"My Super Hero"
@@ -65,7 +65,7 @@
 			},
 		"show_icon": {
 			"enable": true,
-			"type": "str",
+			"type": "path",
 			"order": 4,
 			"display_name": "Show Icon/Image",
 			"tooltip": "Show Icon/Image",
@@ -74,12 +74,8 @@
 			"example": [
 				"image path"
 				],			
-			"widget": {
-				"type": "button",
-				"label": "...",
-				"name": "browse",
-				"description": "Browse your show icon/image file"
-				}		
+			"description": "Browse your show icon/image file",
+			"resolution": [256, 144]	
 			}
 		}
 	}

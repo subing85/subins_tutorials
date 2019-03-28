@@ -34,14 +34,14 @@ class ImageCalibration(object):
 
     def create(self, width=2048, height=2048):
         try:
-            m_image = self.vieportSnapShot()
-            output_path = self.writeMayaImage(m_image)
+            m_image = self.vieport_snapshot()
+            output_path = self.write_maya_image(m_image)
         except:
             output_path = self.unknown_icon
         q_image = QtGui.QImage(output_path)
         return q_image, output_path
 
-    def vieportSnapShot(self):
+    def vieport_snapshot(self):
         from maya import OpenMaya
         from maya import OpenMayaUI
         m3d_view = OpenMayaUI.M3dView.active3dView()
@@ -53,22 +53,22 @@ class ImageCalibration(object):
         m3d_view.readColorBuffer(m_image, True)
         return m_image
 
-    def writeMayaImage(self, m_image):
+    def write_maya_image(self, m_image):
         if not m_image:
             m_image = OpenMaya.MImage()
             m_image.readFromFile(self.unknown_icon)
         m_image.writeToFileWithDepth(self.image_file, self.format, False)
-        self.keepAspectRatio(output_path=self.image_file)
-        output_path = self.imageResize(output_path=self.image_file)
+        self.keep_aspect_ratio(output_path=self.image_file)
+        output_path = self.image_resize(output_path=self.image_file)
         return output_path
 
-    def writeImage(self, q_image):
+    def write_image(self, q_image):
         if not q_image:
             q_image = QtGui.QImage(self.unknown_icon)
         result = q_image.save(self.image_file, self.format.upper())
         return result
 
-    def imageResize(self, output_path=None, width=2048, height=2048):
+    def image_resize(self, output_path=None, width=2048, height=2048):
         if not output_path:
             output_path = self.image_file
         q_image = QtGui.QImage(self.image_file)
@@ -76,17 +76,17 @@ class ImageCalibration(object):
         scaled.save(output_path)
         return output_path
     
-    def setStudioSize(self, source_image=None, output_path=None, width=2048, height=2048):
+    def set_studio_size(self, source_image=None, output_path=None, width=2048, height=2048):
         if source_image:
             self.image_file = source_image
-        result, q_image = self.keepAspectRatio(output_path=None, width=width, height=height)
+        result, q_image = self.keep_aspect_ratio(output_path=None, width=width, height=height)
         if not output_path:
             output_path = os.path.join(
                 tempfile.gettempdir(), 'studio_image_snapshot.%s' % self.format)
         q_image.save(output_path)
         return q_image, output_path
     
-    def keepAspectRatio(self, output_path=None, width=2048, height=2048):
+    def keep_aspect_ratio(self, output_path=None, width=2048, height=2048):
         q_image = QtGui.QImage(self.image_file)
         sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 
         if sq_scaled.width() <= sq_scaled.height():
@@ -100,7 +100,7 @@ class ImageCalibration(object):
             copy.save(output_path)
         return True, copy
     
-    def setQImage(self, path):
+    def set_qimage(self, path):
         q_image = QtGui.QImage(path)
         return q_image
        

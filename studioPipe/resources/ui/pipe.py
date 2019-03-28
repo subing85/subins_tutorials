@@ -17,7 +17,7 @@ import sys
 import os
 import tempfile
 import thread
-
+from pprint import  pprint
 sys.path.append('/venture/subins_tutorials')
 
 from PySide import QtCore
@@ -28,14 +28,9 @@ from datetime import datetime
 from studioPipe import resources
 from studioPipe.utils import platforms
 from studioPipe.api import studioShows
-from studioPipe.api import studioInput
-
-
+from studioPipe.api import studioDiscipline
 
 import catalogue
-import input
-
-reload(input)
 
 
 class Main(QtGui.QWidget):
@@ -46,16 +41,15 @@ class Main(QtGui.QWidget):
         self.brows_directory = '/mnt/bkp/Icons gallery/icons_04'
         self.studio_pipe_path = '/home/shreya/Documents/studio_pipe'
         self.module, self.lable, self.version = platforms.get_tool_kit()
+        
         self.icon_format = 'png'
         self.width, self.height = 256, 144
         self.show_data = {}
 
         self.setup_ui()
-        # self.load_widgets()
         self.load_tool_bar()
         self.set_icons()
         self.load_shows_to_layout(self.listWidget_shows)
-        self.load_discipline(self.treewidget_discipline)   
         
 
     def setup_ui(self):
@@ -131,7 +125,9 @@ class Main(QtGui.QWidget):
         
         self.treewidget_discipline = QtGui.QTreeWidget(self.splitter)
         self.treewidget_discipline.setObjectName('treewidget_discipline') 
+        # self.treewidget_discipline.setStyleSheet('font: 14pt \"Sans Serif\";')        
         self.treewidget_discipline.headerItem().setText(0,'Deciplines')
+        self.treewidget_discipline.setAlternatingRowColors(True)
                
         self.splitter.addWidget(self.treewidget_discipline)
         
@@ -238,7 +234,38 @@ class Main(QtGui.QWidget):
         
         self.groupbox_show.show()
         self.groupbox_toolbar.show()
-        print current_show
+        
+        self.load_discipline(self.treewidget_discipline, current_show)   
+        
+        
+    def load_discipline (self, treewidget, current_show):
+        treewidget.clear()
+        studio_discipline = studioDiscipline.Connect()
+        disciplines, discipline_content = studio_discipline.getDisciplines(current_show)
+        
+        for each_discipline in disciplines:            
+            display_name = discipline_content[each_discipline]['display_name']
+            tooltip = discipline_content[each_discipline]['tooltip']
+            icon_path = discipline_content[each_discipline]['discipline_icon']
+            item = QtGui.QTreeWidgetItem(treewidget)
+            item.setText(0, display_name)
+            item.setToolTip(0, tooltip)
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(icon_path),
+                           QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            item.setIcon(0, icon)            
+        
+        treewidget.setIconSize(QtCore.QSize(50, 50))
+      
+    
+    def add_discipline(self):
+        print self.splitter.sizes ()
+        import discipline
+        discipline_window = discipline.Connect(parent=None, type='discipline', value=None,
+                         title='Disciplines Inputs', label='Create your Show Disciplines', width=500, height=407)
+        discipline_window.show()        
+        
+        
         
     
     def image_to_button(self, button=None, path=None, width=None, height=None):
@@ -258,34 +285,6 @@ class Main(QtGui.QWidget):
         # button.setMinimumSize(QtCore.QSize(self.width, self.height))
         # button.setMaximumSize(QtCore.QSize(self.width, self.height))
         
-    def load_discipline (self, treewidget):
-        cursor = studioInput.Connect('discipline', value='disciplines')
-        disciplines, sort_disciplines = cursor.getInputData()
-        
-        for each_discipline in sort_disciplines:            
-            display_name = disciplines[each_discipline]['display_name']
-            tooltip = disciplines[each_discipline]['tooltip']
-            
-            icon_path = os.path.join(
-                resources.getIconPath(), '%s.png'%each_discipline)
-            
-            item = QtGui.QTreeWidgetItem(treewidget)
-            item.setText(0, display_name)
-            item.setToolTip(0, tooltip)
-            icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(icon_path),
-                           QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            item.setIcon(0, icon)            
-        
-        treewidget.setIconSize(QtCore.QSize(50, 50))
-      
-    
-    def add_discipline(self):
-        print self.splitter.sizes ()
-               
-        self.input_window = input.Window(
-            parent=None, type='discipline', value='discipline_child_inputs')
-        self.input_window.show()
 
                 
 if __name__ == '__main__':

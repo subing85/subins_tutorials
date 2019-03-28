@@ -1,0 +1,165 @@
+#!/usr/bin/python
+import optparse
+from pprint import pprint
+from studioPipe.api import studioPreferences
+
+
+def pipe_shows():
+    parser = optparse.OptionParser(
+        usage='usage: %prog [options] create studio pipe preferences',
+        version='Studio Pipe 0.0.1')
+    option_list = [
+        optparse.make_option(
+            '--spd', '--spdir', action='store', type='string', dest='studio_pipe_dir'),
+        optparse.make_option(
+            '--shd', '--showdir', action='store', type='string', dest='shows_dir'),
+        optparse.make_option(
+            '--pyd', '--pydir', action='store', type='string', dest='python_dir'),
+        optparse.make_option(
+            '--sid', '--sidir', action='store', type='string', dest='site_packages_dir'),
+        optparse.make_option(
+            '--mad', '--madir', action='store', type='string', dest='maya_dir'),
+        optparse.make_option(
+            '--mav', '--maver', action='store', type='string', dest='maya_ver'),
+        optparse.make_option(
+            '--nkd', '--nkdir', action='store', type='string', dest='nuke_dir'),
+         optparse.make_option(
+            '--nkv', '--nkver', action='store', type='string', dest='nuke_ver')
+    ]
+    parser.add_options(option_list)
+    
+    parser.add_option('-q', '--query',
+                      action='store_true',
+                      dest='query',
+                      default=False,
+                      help='to query')
+    parser.add_option('--al', '--all',
+                      action='store_true',
+                      dest='getPreferences',
+                      default=False,
+                      help='find the preferences data')
+    parser.add_option('--ke', '--keys',
+                      action='store_true',
+                      dest='getKeys',
+                      default=False,
+                      help='find the preferences keys')
+    parser.add_option('--va', '--values',
+                      action='store_true',
+                      dest='getValues',
+                      default=False,
+                      help='find the preferences values')            
+    parser.add_option('--ex', '--exists',
+                      action='store',
+                      dest='getExists',
+                      default=False,
+                      help='find the exists shows')
+    parser.add_option('--em', '--example',
+                      action='store_true',
+                      dest='example',
+                      default=False,
+                      help='example to create shows')
+    (options, args) = parser.parse_args()
+
+    if options.query and options.getPreferences:
+        '''
+            :example shows -q --al
+        '''
+        studio_preferences = studioPreferences.Connect()
+        preference_data = studio_preferences.getOutputData()
+        preference_data.pop('enable')
+        pprint(preference_data)
+        return preference_data
+    
+    if options.query and options.getKeys:
+        '''
+            :example shows -q --ke
+        '''            
+        studio_preferences = studioPreferences.Connect()
+        preference_data = studio_preferences.getOutputData()
+        preference_data.pop('enable')        
+        pprint(preference_data.keys())
+        return preference_data.keys()  
+    
+    if options.query and options.getValues:
+        '''
+            :example shows -q --va
+        '''         
+        studio_preferences = studioPreferences.Connect()
+        preference_data = studio_preferences.getOutputData()
+        preference_data.pop('enable')        
+        pprint(preference_data.values())
+        return preference_data.values()  
+        
+    if options.query and options.getExists:
+        '''
+            :example shows -q --ex pipe_shows_directory
+        '''        
+        studio_preferences = studioPreferences.Connect()
+        preference_data = studio_preferences.getOutputData()
+        if options.getExists in preference_data:
+            print preference_data[options.getExists]
+            return preference_data[options.getExists]
+        print False
+        return False
+    
+    arg_list = [
+        options.studio_pipe_dir,
+        options.shows_dir,
+        options.python_dir,
+        options.site_packages_dir,
+        options.maya_dir,
+        options.maya_ver,
+        options.nuke_dir,
+        options.nuke_ver,
+        ]
+    
+    print '\n', arg_list, len(arg_list), '\n'
+    
+    if arg_list and len(arg_list)==8 and None not in arg_list:
+        '''
+        :example shows --spd '/venture/subins_tutorials/studioPipe'
+                       --shd '/venture/shows'
+                       ---pyd '/usr/bin/python'
+                       --sid '/usr/lib64/python2.7/site-packages'
+                       --mad '/usr/autodesk/maya2016'
+                       --mav '2016'
+                       --nkd '/usr/autodesk/nuke'
+                       --nkv '2.7'
+        '''
+        input_data = {
+            'pipe_name': 'studio_pipe',
+            'pipe_studio_pipe_directory': options.studio_pipe_dir,
+            'pipe_shows_directory': options.shows_dir,
+            'pipe_python_directory': options.python_dir,
+            'pipe_site_packages_directory': options.site_packages_dir,    
+            'pipe_maya_directory': options.maya_dir,    
+            'pipe_maya_version': options.maya_ver,
+            'pipe_nuke_directory': options.nuke_dir,
+            'pipe_nuke_version': options.nuke_ver,
+        }
+        studio_preferences = studioPreferences.Connect()
+        studio_preferences.create(input_data)
+
+        print 'successfully created your show called \"studio_pipe"'
+
+
+    if options.example:
+        flags = [
+            '--spd \"/venture/subins_tutorials/studioPipe\"',
+            '--shd \"/venture/shows\"',
+            '--pyd \"/usr/bin/python\"',
+            '--sid \"/usr/lib64/python2.7/site-packages\"',
+            '--mad \"/usr/autodesk/maya2016\"',
+            '--mav \"2016\"',
+            '--nkd \"/usr/autodesk/nuke\"',
+            '--nkv \"2.7\"',
+        ]
+        print 'create preferences\t- preferences {}'.format(' '.join(flags))
+        print 'get all preferences\t- preferences -q --all'
+        print 'get preferences keys\t- preferences -q --ke'
+        print 'get preferences valus\t- preferences -q --va'       
+        print 'get preferences exists\t- preferences -q --ex \"pipe_shows_directory\"'
+
+
+if __name__ == '__main__':
+    pipe_shows()
