@@ -29,6 +29,7 @@ from studioPipe import resources
 from studioPipe.utils import platforms
 from studioPipe.api import studioShows
 from studioPipe.api import studioDiscipline
+from studioPipe.api import studioHeader
 
 import catalogue
 
@@ -128,11 +129,14 @@ class Main(QtGui.QWidget):
         # self.treewidget_discipline.setStyleSheet('font: 14pt \"Sans Serif\";')        
         self.treewidget_discipline.headerItem().setText(0,'Deciplines')
         self.treewidget_discipline.setAlternatingRowColors(True)
+
                
         self.splitter.addWidget(self.treewidget_discipline)
         
         self.treewidget = QtGui.QTreeWidget(self.splitter)
-        self.treewidget.setObjectName('treewidget')        
+        self.treewidget.setObjectName('treewidget')   
+        self.treewidget.setAlternatingRowColors(True)
+        self.treewidget.setColumnCount(0)        
         self.splitter.addWidget(self.treewidget) 
         
         self.groupbox_details = QtGui.QGroupBox(self.splitter)
@@ -141,7 +145,8 @@ class Main(QtGui.QWidget):
         self.splitter.addWidget(self.groupbox_details)
         self.splitter.setSizes([171, 381, 108])
         
-
+        self.treewidget_discipline.itemClicked.connect(
+            partial(self.set_my_discipline, self.treewidget))
                
     
     def load_tool_bar(self):    
@@ -221,8 +226,8 @@ class Main(QtGui.QWidget):
         current_items = listwidget.selectedItems()
         if not current_items:
             return        
-        current_show = current_items[-1].statusTip()        
-        if current_show not in self.show_data:
+        self.current_show = current_items[-1].statusTip()        
+        if self.current_show not in self.show_data:
             print 'Value error, not found your show %s'%current_show
             return
         
@@ -235,7 +240,7 @@ class Main(QtGui.QWidget):
         self.groupbox_show.show()
         self.groupbox_toolbar.show()
         
-        self.load_discipline(self.treewidget_discipline, current_show)   
+        self.load_discipline(self.treewidget_discipline, self.current_show)   
         
         
     def load_discipline (self, treewidget, current_show):
@@ -263,11 +268,25 @@ class Main(QtGui.QWidget):
         import discipline
         discipline_window = discipline.Connect(parent=None, type='discipline', value=None,
                          title='Disciplines Inputs', label='Create your Show Disciplines', width=500, height=407)
-        discipline_window.show()        
-        
-        
+        discipline_window.show()
         
     
+    def set_my_discipline (self, treewidget, *args):
+        studio_header = studioHeader.Connect()
+        data, sort_data, key_data = input_data = studio_header.getInputData()
+        treewidget.header().setDefaultSectionSize(100)       
+        index = 0
+        for each in sort_data:
+            header = data[each]
+            treewidget.headerItem().setText(index, header['display_name'])
+            treewidget.header ().resizeSection (index, header['size'])
+            index+=1 
+        treewidget.header ().resizeSection (0, 50)
+
+        pprint (input_data[0])
+        pprint (input_data[1])
+        pprint (input_data[2])
+
     def image_to_button(self, button=None, path=None, width=None, height=None):
         if not button:
             button = self.button_snapshot

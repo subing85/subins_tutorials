@@ -1,4 +1,5 @@
 import sys
+from __builtin__ import int
 sys.path.append('/venture/subins_tutorials')
 
 import os
@@ -7,11 +8,8 @@ import warnings
 
 from pprint import pprint
 
-
 from studioPipe import resources
 from studioPipe.core import studioConfig
-from studioPipe.core import studioImage
-
 from studioPipe.api import studioConnect
 
 reload(studioConnect)
@@ -22,7 +20,7 @@ class Connect(object):
 
     def __init__(self, **kwargs):
         '''
-        Description -API operate on read and write discipline informations.
+        Description -API operate on read and write description informations.
             : __init__() <None>.       
         '''
         self.studio_config = studioConfig.Connect()
@@ -31,9 +29,9 @@ class Connect(object):
         
         self.dirname = studio_pipe_directory
         self.localhost = 'root'
-        self.name = 'discipline'
-        self.type = 'output_db'
-        self.tag = 'discipline'
+        self.name = 'tier'
+        self.type = 'input_db'
+        self.tag = 'tier'
         
         if 'dirname' in kwargs:
             self.dirname = kwargs['dirname']
@@ -52,10 +50,14 @@ class Connect(object):
         self.full_path = os.path.join(
             self.dirname, self.localhost, '%s%s' % (self.name, self.format))
         self.icon_format = '.png'
-
+        
+        self.description_type = {
+            1: 'assets',
+            2: 'shots'
+        }
 
     #########################
-    def has(self, discipline_name):
+    def has(self, description_name):
         '''
         Description -function set for validate the show.
             :paran show_name <str> example 'my_super_hero'
@@ -66,8 +68,8 @@ class Connect(object):
                 ss.hasShow('my_super_hero')
         '''
         stdio_input = studioConnect.Connect(file_path=self.full_path)
-        disciplines = stdio_input.sortData()
-        if discipline_name in disciplines:
+        descriptions = stdio_input.sortData()
+        if description_name in descriptions:
             return True
         return False
 
@@ -81,33 +83,23 @@ class Connect(object):
                 ss = studioShows.Shows()
                 ss.getInputData('my_super_hero')
         '''
-        input_file = os.path.join(resources.getInputPath(), 'discipline.json')
+        input_file = os.path.join(resources.getInputPath(), 'description.json')
         studio_input = studioConnect.Connect(file_path=input_file)
         data, sort_data, key_data = studio_input.getInputData()
         return data, sort_data, key_data
 
-    def create(self, current_show, input_data):
-        input_data['enabled'] = True    
-        
-        studio_image = studioImage.ImageCalibration(
-            imgae_file=input_data['discipline_icon'])
-        q_image, q_image_path = studio_image.set_studio_size(
-            width=256, height=256) 
-        icon_path = os.path.join(
-            self.dirname, 'icons', '%s_%s%s' % (
-                current_show, input_data['name'], self.icon_format))
-        input_data['discipline_icon'] = icon_path
-               
+    def create(self, current_show, description, input_data):
+        input_data['enabled'] = True
+
+        input_data['name'] = self.description_type[description]
         current_input_data = {
                 input_data['name']: input_data
-            }        
-        discipline_data = self.disciplineData(
+                }
+        description_data = self.tierData(
             current_show, current_input_data)
-        
-        current_discipline_data = {
-            current_show: discipline_data
+        current_description_data = {
+            current_show: description_data
             }
-
         studio_input = studioConnect.Connect()
         studio_input.createDb(
             dirname=self.dirname,
@@ -115,14 +107,10 @@ class Connect(object):
             name=self.name,
             type=self.type,
             tag=self.tag,
-            data=current_discipline_data            
-        )
+            data=current_description_data            
+        )     
         
-        if not os.path.isdir(os.path.dirname(icon_path)):
-            os.makedirs(os.path.dirname(icon_path))
-        q_image.save(icon_path)        
-        
-    def disciplineData(self, show, current_data):
+    def tierData(self, show, current_data):
         studio_connect = studioConnect.Connect(file_path=self.full_path)
         data, rollback_data, sort_data = studio_connect.getAllData()
         exists_data = {}
@@ -133,7 +121,6 @@ class Connect(object):
                         continue
                     exists_data = v
                     break
-        pprint(exists_data)
         rollback_data = self.rollback(exists_data)
         pprint (rollback_data)
         length = len(exists_data)
@@ -164,7 +151,7 @@ class Connect(object):
         output_data = stdio_input.getOutputData()
         return output_data
 
-    def getDisciplineData(self, show):
+    def getDescriptionData(self, show):
         '''
         Description -function set for get show list.
             :paran <None> 
@@ -176,40 +163,73 @@ class Connect(object):
         '''
         stdio_input = studioConnect.Connect(file_path=self.full_path)
         data = stdio_input.getAllData()        
-        show_discipline_content = {}        
+        show_description_content = {}        
         for k, v in data[0].items():
             if show not in v:
                 continue
-            show_discipline_content = v
+            show_description_content = v
             break        
-        return show_discipline_content  
+        return show_description_content  
     
-    def getDisciplines(self, show):
-        show_discipline_content = self.getDisciplineData(show)
-        if show not in show_discipline_content:
+    def getDescriptions(self, show):
+        show_description_content = self.getDescriptionData(show)        
+        if show not in show_description_content:
             return None, None
         stdio_input = studioConnect.Connect(file_path=self.full_path)
-        disciplines = stdio_input.sortData(data=show_discipline_content[show])
-        discipline_content = {}
-        for k, v in show_discipline_content[show].items():
-            discipline_content.update(v)            
-        return disciplines, discipline_content
+        descriptions = stdio_input.sortData(data=show_description_content[show])
+        description_content = {}
+        for k, v in show_description_content[show].items():
+            description_content.update(v)            
+        return descriptions, description_content
+    
+    def getTiers(self, show, description=None):
+        descriptions, description_content = self.getDescriptions(show)
+        if not description_content:
+            return None
+        current_tier_data = {}
+        if description:
+            if description not in description_content:
+                return None
+            current_tier_data = {
+                description: description_content[description]
+                }
+        else:
+            current_tier_data = description_content        
+        chunks = ['current_show', 'description', 'enabled', 'name']
+        tiers = {}
+        for des, contents in current_tier_data.items():
+            result, index = [], 0
+            while index < len(contents) + 1:
+                x = 0
+                for k, v, in contents.items():
+                    
+                    if k in chunks:
+                        continue
+                    if x > len(contents):
+                        break
+                    order = int(k)
+                    if order != index:
+                        continue
+                    result.append(v.encode())
+                    x += 1
+                index += 1
+            tiers.setdefault(des.encode(), result)
+        return tiers      
     
     def getShows(self):
         stdio_input = studioConnect.Connect(file_path=self.full_path)
         data = stdio_input.sortData()
         return data    
           
-    def getDisciplineAllData(self):
+    def getTierAllData(self):
         stdio_input = studioConnect.Connect(file_path=self.full_path)
         data = stdio_input.getAllData()
         return data
 
-    def getSpecificTypes(self, show):
-        data = self.getDisciplines(show)        
-        specific_data = {}      
-        for k, v in data[1].items():
-            specific_data.setdefault(v['type'], []).append(k.encode())
+    def getSpecificTypes(self, show, description):
+        if isinstance(description, int):
+            description = self.description_type[description]
+        specific_data = self.getTiers(show, description=description)
         return specific_data
     
     def getShowIndex(self, show):
@@ -218,17 +238,6 @@ class Connect(object):
             return None   
         return shows.index(show)
         
-        
-
-#===============================================================================
-# a = Connect()
-# b = a.getSpecificTypes() 
-# pprint(b)
-#===============================================================================
-
-
-
-
 
 
 

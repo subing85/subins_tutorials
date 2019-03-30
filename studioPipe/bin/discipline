@@ -8,7 +8,7 @@ from studioPipe.api import studioDiscipline
 
 def pipe_discipline():
     parser = optparse.OptionParser(
-        usage='usage: %prog [options] create your show',
+        usage='usage: %prog [options] create your show discipline',
         version='Studio Pipe 0.0.1')
     option_list = [
         optparse.make_option(
@@ -89,7 +89,6 @@ def pipe_discipline():
         if int(options.getDspType) not in disciplines:
             print 'not found any disciplines!...'
             return
-            
         pprint(disciplines[int(options.getDspType)])
         return disciplines[int(options.getDspType)]
 

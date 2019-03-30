@@ -49,12 +49,12 @@ class Connect(input.Window):
         current_data = studio_shows.getShows()
         self.input_datas = self.get_widget_data(self.gridlayout)
         self.show_widget = None
-        self.type_widget = None
+        self.description_widget = None
         for k, v in self.input_datas.items():
             if k=='current_show':
                 self.show_widget = v['widget']
-            if k=='type':
-                self.type_widget = v['widget']
+            if k=='description':
+                self.description_widget = v['widget']
 
         self.show_widget.addItems(['None'] + current_data)        
         self.show_widget.currentIndexChanged.connect(partial(self.set_show, self.show_widget))
@@ -71,12 +71,12 @@ class Connect(input.Window):
         if not self.current_show:
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any show!..', QtGui.QMessageBox.Ok)
-        if not self.type_widget:
+        if not self.description_widget:
             warnings.warn('Not found type widget')
             return
-        if self.type_widget.currentText()=='None':
+        if self.description_widget.currentText()=='None':
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not foound any discipline type!..', QtGui.QMessageBox.Ok)
+                self, 'Warning', 'Not found any discipline type(description)!..', QtGui.QMessageBox.Ok)
             return
         input_data = self.get_data(self.gridlayout)
 

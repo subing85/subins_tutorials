@@ -165,6 +165,20 @@ class Window(QtGui.QWidget):
                 if current_item['values']:
                     widget.addItems(current_item['values'])
                     widget.setCurrentIndex(current_item['value'])
+                    
+            elif current_item['type']=='add':     
+                widget = QtGui.QPushButton(self.groupbox)
+                widget.setObjectName('button_add_%s'%self.sort_data[index])
+                widget.setText(u'\u002B')
+                widget.setStyleSheet('color: #0000FF;')
+                widget.setMinimumSize(QtCore.QSize(20, 20))
+                widget.setMaximumSize(QtCore.QSize(20, 20))
+                                
+                #===============================================================
+                # self.gridLayout.addWidget(self.pushButton_l_add, 2, 0, 1, 1)
+                # self.gridLayout.addWidget(self.pushButton_add, 2, 1, 1, 1)
+                # self.gridLayout.addWidget(self.lineEdit_add, 2, 2, 1, 1)
+                #===============================================================
                 
             if current_item['type']=='path' or current_item['type']=='directory':
                 button_find = QtGui.QPushButton(self.groupbox)
@@ -187,7 +201,7 @@ class Window(QtGui.QWidget):
             if not widget:
                 continue
             widget.setStatusTip(self.sort_data[index])
-            self.gridlayout.addWidget(widget, index, 1, 1, 1)            
+            self.gridlayout.addWidget(widget, index, 1, 1, 2)            
 
     def find_paths(self, widget, types, resolution=None, title=None):
         if types=='path':
@@ -236,10 +250,12 @@ class Window(QtGui.QWidget):
         button.setIcon(icon)
         button.setIconSize(QtCore.QSize(width - 5, height- 5))
 
-    def get_widget_data(self, layout):
+    def _get_widget_data(self, layout):
         data = {}
         ing = 0
         for index in range(layout.rowCount()):
+            if not layout.itemAtPosition(index, 1):
+                continue
             widget = layout.itemAtPosition(index, 1).widget()
             if isinstance(widget, QtGui.QComboBox):
                 value = widget.currentIndex()
@@ -251,20 +267,51 @@ class Window(QtGui.QWidget):
                 'value': value
                 }
             data.setdefault(tag.encode(), values)
-        return data    
-
-    def get_data(self, layout):
+        return data 
+       
+    def get_widget_data(self, layout):
         data = {}
-        ing = 0
-        for index in range(layout.rowCount()):
-            widget = layout.itemAtPosition(index, 1).widget()
+        for row in range(layout.rowCount()):            
+            widget = None
+            for column in range(2, layout.columnCount()):
+                if not layout.itemAtPosition(row, column):
+                    continue     
+                widget = layout.itemAtPosition(row, column).widget()
+            if not widget:
+                continue
             if isinstance(widget, QtGui.QComboBox):
-                value = widget.currentIndex()
+                if not widget.isEditable():
+                    value = widget.currentIndex()
+                else:
+                    value = widget.currentText().encode()
             else:
                 value = widget.text().encode()
-            tag = widget.statusTip()
-            data.setdefault(tag.encode(), value)
+            values = {
+                'widget': widget,
+                'value': value
+                }
+            data.setdefault(widget.statusTip().encode(), values)
         return data 
+    
+    def get_data(self, layout):
+        data = {}
+        for row in range(layout.rowCount()):
+            widget = None
+            for column in range(2, layout.columnCount()):
+                if not layout.itemAtPosition(row, column):
+                    continue     
+                widget = layout.itemAtPosition(row, column).widget()
+            if not widget:
+                continue
+            if isinstance(widget, QtGui.QComboBox):
+                if not widget.isEditable():
+                    value = widget.currentIndex()
+                else:
+                    value = widget.currentText().encode()
+            else:
+                value = widget.text().encode()
+            data.setdefault(widget.statusTip().encode(), value)
+        return data  
 
     
 if __name__ == '__main__':

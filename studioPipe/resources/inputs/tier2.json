@@ -1,0 +1,266 @@
+{
+    "created_by": "subin gopi", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "#copyright": "(c) 2018, Subin Gopi All rights reserved.", 
+    "date": "March:28:2019 - 09:20:01:PM",
+    "last_modified": "March:28::2019 - 09:20:01:PM",         
+    "comment": "Discipline tier", 
+    "description": "inputs of show discipline",    
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "valid": true,
+   	"type": "input_db",
+	"tag": "tier",   	
+    "data": {
+    	"assets": {
+			"name": {
+				"enable": true,
+				"type": "str",
+				"order": 0,
+				"display_name": "Name",
+				"tooltip": "Asolute name of the task",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "mandatory",
+				"example": [
+	    			"bat"
+					]
+				},
+			"type": {
+				"enable": true,
+				"type": "enum",
+				"order": 1,
+				"display_name": "Type",
+				"tooltip": "Type of task",
+				"value": 0,	
+				"values": [
+					"None",
+					"Character",
+					"Prop",
+					"Environment",
+					"Dressing",
+					"Camera",
+					"Light"
+					],
+				"parser": "mandatory",
+				"example": null
+				},
+			"artist_user": {
+				"enable": true,
+				"type": "enum",
+				"order": 3,
+				"display_name": "User",
+				"tooltip": "Task assinged user",
+				"value": 0,	
+				"values": [],
+				"parser": "optional",
+				"example": null
+				},
+			"man_days": {
+				"enable": true,
+				"type": "int",
+				"order": 4,
+				"display_name": "Man Days",
+				"tooltip": "Task estimate may days",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				},
+			"man_days_result": {
+				"enable": true,
+				"type": "progress bar",
+				"order": 5,
+				"display_name": "Man Days Result",
+				"tooltip": "Task estimate may days result",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				},				
+			"man_days_details": {
+				"enable": true,
+				"type": "str",
+				"order": 6,
+				"display_name": "Man Days Details",
+				"tooltip": "Task estimate may days details",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				},
+								
+			"super_user": {
+				"enable": true,
+				"type": "enum",
+				"order": 7,
+				"display_name": "Type",
+				"tooltip": "Task owner user",
+				"value": 0,	
+				"values": [],
+				"parser": "optional",
+				"example": null
+				},
+			"status": {
+				"enable": true,
+				"type": "enum",
+				"order": 8,
+				"display_name": "Status",
+				"tooltip": "Tooltip name of category or department name",
+				"value": 0,	
+				"values": [
+					"Quee",
+					"WIP",
+					"Correction",
+					"Publish"
+					],
+				"parser": "mandatory",
+				"example": null
+				},
+			"status_details": {
+				"enable": true,
+				"type": "str",
+				"order": 9,
+				"display_name": "Status Details",
+				"tooltip": "Task estimate may days details",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				}				
+			},
+    	"shots": {
+			"name": {
+				"enable": true,
+				"type": "str",
+				"order": 0,
+				"display_name": "Name",
+				"tooltip": "Asolute name of the task",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "mandatory",
+				"example": [
+	    			"bat"
+					]
+				},
+			"type": {
+				"enable": true,
+				"type": "enum",
+				"order": 1,
+				"display_name": "Type",
+				"tooltip": "Type of task",
+				"value": 0,	
+				"values": [
+					"None",
+					"Character",
+					"Prop",
+					"Environment",
+					"Dressing",
+					"Camera",
+					"Light"
+					],
+				"parser": "mandatory",
+				"example": null
+				},
+			"artist_user": {
+				"enable": true,
+				"type": "enum",
+				"order": 3,
+				"display_name": "User",
+				"tooltip": "Task assinged user",
+				"value": 0,	
+				"values": [],
+				"parser": "optional",
+				"example": null
+				},
+			"man_days": {
+				"enable": true,
+				"type": "int",
+				"order": 4,
+				"display_name": "Man Days",
+				"tooltip": "Task estimate may days",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				},
+			"man_days_result": {
+				"enable": true,
+				"type": "progress bar",
+				"order": 5,
+				"display_name": "Man Days Result",
+				"tooltip": "Task estimate may days result",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				},				
+			"man_days_details": {
+				"enable": true,
+				"type": "str",
+				"order": 6,
+				"display_name": "Man Days Details",
+				"tooltip": "Task estimate may days details",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				},
+								
+			"super_user": {
+				"enable": true,
+				"type": "enum",
+				"order": 7,
+				"display_name": "Type",
+				"tooltip": "Task owner user",
+				"value": 0,	
+				"values": [],
+				"parser": "optional",
+				"example": null
+				},
+			"status": {
+				"enable": true,
+				"type": "enum",
+				"order": 8,
+				"display_name": "Status",
+				"tooltip": "Tooltip name of category or department name",
+				"value": 0,	
+				"values": [
+					"Quee",
+					"WIP",
+					"Correction",
+					"Publish"
+					],
+				"parser": "mandatory",
+				"example": null
+				},
+			"status_details": {
+				"enable": true,
+				"type": "str",
+				"order": 9,
+				"display_name": "Status Details",
+				"tooltip": "Task estimate may days details",
+				"value": "xxx_xxx",
+				"values": null,	
+				"parser": "optional",
+				"example": [
+	    			"bat"
+					]
+				}				
+			}			
+		}    
+    }
+}

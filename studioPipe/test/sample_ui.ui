@@ -52,73 +52,141 @@
                 <height>199</height>
                </rect>
               </property>
-              <layout class="QGridLayout" name="gridLayout">
-               <item row="1" column="0">
-                <widget class="QPushButton" name="pushButton_5">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3">
-                <widget class="QPushButton" name="pushButton_8">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QPushButton" name="pushButton_6">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButton_7">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QPushButton" name="pushButton_3">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <widget class="QPushButton" name="pushButton_4">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QPushButton" name="pushButton_2">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                 <property name="flat">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="4">
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
+              <widget class="QWidget" name="layoutWidget">
+               <property name="geometry">
+                <rect>
+                 <x>110</x>
+                 <y>49</y>
+                 <width>297</width>
+                 <height>117</height>
+                </rect>
+               </property>
+               <layout class="QGridLayout" name="gridLayout">
+                <item row="1" column="0">
+                 <widget class="QPushButton" name="pushButton_2">
+                  <property name="text">
+                   <string>PushButton</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QPushButton" name="pushButton_l_add">
+                  <property name="text">
+                   <string>PushButton</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" colspan="2">
+                 <widget class="QComboBox" name="comboBox_2">
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="insertPolicy">
+                   <enum>QComboBox::NoInsert</enum>
+                  </property>
+                  <property name="duplicatesEnabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Prop</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Character</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Environment</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Camera</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Light</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="1" column="1" colspan="2">
+                 <widget class="QComboBox" name="comboBox"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QPushButton" name="pushButton_3">
+                  <property name="text">
+                   <string>PushButton</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="2">
+                 <widget class="QLineEdit" name="lineEdit_add">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="lineEdit"/>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="lineEdit_2"/>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="layoutWidget">
+               <property name="geometry">
+                <rect>
+                 <x>460</x>
+                 <y>50</y>
+                 <width>311</width>
+                 <height>41</height>
+                </rect>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QComboBox" name="comboBox_3"/>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>TextLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </widget>
            </item>
@@ -127,26 +195,6 @@
              <property name="styleSheet">
               <string notr="true">font: 14pt &quot;Sans Serif&quot;;</string>
              </property>
-             <item>
-              <property name="text">
-               <string>New Item</string>
-              </property>
-              <property name="checkState">
-               <enum>Unchecked</enum>
-              </property>
-              <property name="icon">
-               <iconset resource="qt.qrc">
-                <normaloff>:/newPrefix/batman.jpg</normaloff>:/newPrefix/batman.jpg</iconset>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsTristate</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>New Item</string>
-              </property>
-             </item>
             </widget>
            </item>
           </layout>
@@ -203,6 +251,9 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="lineWidth">
+               <number>10</number>
+              </property>
               <property name="alternatingRowColors">
                <bool>true</bool>
               </property>
@@ -212,25 +263,15 @@
                 <height>50</height>
                </size>
               </property>
-              <column>
-               <property name="text">
-                <string>Deciplines</string>
-               </property>
-              </column>
-              <item>
-               <property name="text">
-                <string>Assets</string>
-               </property>
-               <property name="icon">
-                <iconset resource="qt.qrc">
-                 <normaloff>:/newPrefix/batman.jpg</normaloff>:/newPrefix/batman.jpg</iconset>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Shots</string>
-               </property>
-              </item>
+              <property name="indentation">
+               <number>1</number>
+              </property>
+              <property name="columnCount">
+               <number>0</number>
+              </property>
+              <attribute name="headerDefaultSectionSize">
+               <number>50</number>
+              </attribute>
              </widget>
              <widget class="QTreeWidget" name="treeWidget_2">
               <column>

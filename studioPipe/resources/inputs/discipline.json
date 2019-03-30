@@ -70,11 +70,11 @@
 			"values": null,
 			"example": null
 			},
-		"type": {
+		"description": {
 			"enable": true,
 			"type": "enum",
 			"order": 4,
-			"display_name": "Type",
+			"display_name": "Description",
 			"tooltip": "Tooltip name of category or department name",
 			"value": 0,	
 			"values": ["None", "Assets", "Shots"],

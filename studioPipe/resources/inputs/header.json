@@ -1,0 +1,129 @@
+{
+    "created_by": "subin gopi", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "#copyright": "(c) 2018, Subin Gopi All rights reserved.", 
+    "date": "March:28:2019 - 09:20:01:PM",
+    "last_modified": "March:28::2019 - 09:20:01:PM",         
+    "comment": "Discipline header", 
+    "description": "inputs of show discipline",    
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "valid": true,
+   	"type": "input_db",
+	"tag": "header",   	
+    "data": {
+    	"number": {
+			"enable": false,
+			"editable": false,
+			"size": 50,
+			"type": "str",
+			"order": 0,
+			"display_name": "No",
+			"tooltip": "No",
+			"value": "",
+			"values": null,
+			"example":[]
+			},    
+    
+    	"name": {
+			"enable": false,
+			"editable": true,
+			"size": 200,
+			"type": "str",
+			"order": 1,
+			"display_name": "Name",
+			"tooltip": "Name",
+			"value": "Sachin",
+			"values": null,
+			"example":[]
+			},
+		"tier": {
+			"enable": false,
+			"editable": true,
+			"size": 100,
+			"type": "tier",
+			"order": 2,
+			"display_name": "Tiers",
+			"tooltip": "Tiers",
+			"value": "",
+			"values": null,
+			"example":[]
+			},  	
+    	"user": {
+			"enable": false,
+			"editable": true,
+			"size": 100,
+			"type": "enum",
+			"order": 3,
+			"display_name": "Artist",
+			"tooltip": "Artist",
+			"value": null,
+			"values": null,
+			"example":[]
+			},
+    	"man_days": {
+			"enable": false,
+			"editable": true,
+			"size": 100,
+			"type": "str",
+			"order": 4,
+			"display_name": "Man Days",
+			"tooltip": "Task Man Days",
+			"value": null,
+			"values": null,
+			"example":[]
+			},			   
+    	"status": {
+			"enable": false,
+			"editable": true,
+			"size": 100,
+			"type": "enum",
+			"order": 5,
+			"display_name": "Status",
+			"tooltip": "Task Status",
+			"value": null,
+			"values": [
+				"None",
+				"Start",
+				"WIP",
+				"Submit",
+				"Publish"],
+			"example":[]
+			},
+    	"start": {
+			"enable": false,
+			"editable": false,
+			"size": 100,
+			"type": "str",
+			"order": 6,
+			"display_name": "Start Time",
+			"tooltip": "Task Start Time",
+			"value": null,
+			"values": null,
+			"example": []
+			},	
+    	"end": {
+			"enable": false,
+			"editable": false,
+			"size": 100,			
+			"type": "str",
+			"order": 7,
+			"display_name": "Ende Time",
+			"tooltip": "Task Ende Time",
+			"value": null,
+			"values": null,
+			"example": []
+			},
+    	"super_user": {
+			"enable": false,
+			"editable": true,
+			"size": 100,			
+			"type": "enum",
+			"order": 8,
+			"display_name": "Task Approved",
+			"tooltip": "Task Approved",
+			"value": null,
+			"values": null,
+			"example": []
+			}
+		}
+	}
