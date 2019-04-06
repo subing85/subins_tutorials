@@ -297,11 +297,13 @@ class Window(QtGui.QWidget):
         data = {}
         for row in range(layout.rowCount()):
             widget = None
-            for column in range(2, layout.columnCount()):
+            for column in range(layout.columnCount()):
                 if not layout.itemAtPosition(row, column):
                     continue     
                 widget = layout.itemAtPosition(row, column).widget()
             if not widget:
+                continue
+            if isinstance(widget, QtGui.QPushButton):
                 continue
             if isinstance(widget, QtGui.QComboBox):
                 if not widget.isEditable():

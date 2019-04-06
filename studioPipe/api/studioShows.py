@@ -27,9 +27,9 @@ class Connect(object):
             : __init__() <None>.       
         '''
         self.studio_config = studioConfig.Connect()
-        self.config_data = self.studio_config.get_exists_output() 
-        studio_pipe_directory = self.config_data['pipe_shows_directory']        
-        
+        self.config_data = self.studio_config.get_exists_output()
+        studio_pipe_directory = self.config_data['pipe_shows_directory']
+
         self.dirname = studio_pipe_directory
         self.localhost = 'root'
         self.name = 'shows'
@@ -55,20 +55,21 @@ class Connect(object):
         self.width = 256
         self.height = 144
 
-    def getInputData(self):
+    def hasShow(self, show_name):
         '''
-        Description -function set for get the show input data.
-            :paran <None>
-            :return (<dict>, <list>)
+        Description -function set for validate the show.
+            :paran show_name <str> example 'my_super_hero'
+            :return <bool>
             :example
                 from studioPipe.api import studioShows
                 ss = studioShows.Shows()
-                ss.getInputData('my_super_hero')
+                ss.hasShow('my_super_hero')
         '''
-        input_file = os.path.join(resources.getInputPath(), 'shows.json')
-        studio_input = studioConnect.Connect(file_path=input_file)
-        data, sort_data, key_data = studio_input.getInputData()
-        return data, sort_data, key_data
+        stdio_input = studioConnect.Connect(file_path=self.full_path)
+        shows = stdio_input.sortData()
+        if show_name in shows:
+            return True
+        return False
 
     def create(self, input_data):
         '''
@@ -89,11 +90,12 @@ class Connect(object):
                     )
         '''
         if not self.studio_config.has_valid():
-            warnings.warn('not found studio preferences data, update the preferences and try', Warning)
-            return    
+            warnings.warn(
+                'not found studio preferences data, update the preferences and try', Warning)
+            return
         if not os.path.isdir(self.dirname):
             warnings.warn('not found studio pipe directory', Warning)
-            return    
+            return
 
         if not os.path.isfile(input_data['show_icon']):
             warnings.warn('not found file %s' %
@@ -121,23 +123,21 @@ class Connect(object):
         if not os.path.isdir(os.path.dirname(icon_path)):
             os.makedirs(os.path.dirname(icon_path))
         q_image.save(icon_path)
-        
 
-    def hasShow(self, show_name):
+    def getInputData(self):
         '''
-        Description -function set for validate the show.
-            :paran show_name <str> example 'my_super_hero'
-            :return <bool>
+        Description -function set for get the show input data.
+            :paran <None>
+            :return (<dict>, <list>)
             :example
                 from studioPipe.api import studioShows
                 ss = studioShows.Shows()
-                ss.hasShow('my_super_hero')
+                ss.getInputData('my_super_hero')
         '''
-        stdio_input = studioConnect.Connect(file_path=self.full_path)
-        shows = stdio_input.sortData()
-        if show_name in shows:
-            return True
-        return False
+        input_file = os.path.join(resources.getInputPath(), 'shows.json')
+        studio_input = studioConnect.Connect(file_path=input_file)
+        data, sort_data, key_data = studio_input.getInputData()
+        return data, sort_data, key_data
 
     def getOutputData(self, show_name=None):
         '''
@@ -171,19 +171,8 @@ class Connect(object):
         stdio_input = studioConnect.Connect(file_path=self.full_path)
         data = stdio_input.getAllData()
         return data
-    
+
     def getSpecificValue(self, key, value):
         stdio_input = studioConnect.Connect(file_path=self.full_path)
-        data = stdio_input.getSpecificValue(key, value)     
-        
-        return data   
-
-
-
-
-
-
-
-
-
-
+        data = stdio_input.getSpecificValue(key, value)
+        return data

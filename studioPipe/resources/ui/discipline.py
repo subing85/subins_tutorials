@@ -78,8 +78,11 @@ class Connect(input.Window):
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any discipline type(description)!..', QtGui.QMessageBox.Ok)
             return
+        
         input_data = self.get_data(self.gridlayout)
-
+        
+        pprint(input_data)
+        
         studio_discipline = studioDiscipline.Connect()        
         studio_discipline.create(self.current_show, input_data)
         

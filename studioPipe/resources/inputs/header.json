@@ -19,8 +19,10 @@
 			"order": 0,
 			"display_name": "No",
 			"tooltip": "No",
-			"value": "",
+			"value": "1",
 			"values": null,
+			"color": [0, 255, 0],
+			"add": null,
 			"example":[]
 			},    
     
@@ -34,18 +36,22 @@
 			"tooltip": "Name",
 			"value": "Sachin",
 			"values": null,
+			"color": [192, 255, 192],
+			"add": null,
 			"example":[]
 			},
 		"tier": {
 			"enable": false,
 			"editable": true,
 			"size": 100,
-			"type": "tier",
+			"type": "enum",
 			"order": 2,
 			"display_name": "Tiers",
 			"tooltip": "Tiers",
-			"value": "",
+			"value": 0,
 			"values": null,
+			"color": [0, 0, 255],	
+			"add": "tier",
 			"example":[]
 			},  	
     	"user": {
@@ -56,8 +62,10 @@
 			"order": 3,
 			"display_name": "Artist",
 			"tooltip": "Artist",
-			"value": null,
+			"value": 0,
 			"values": null,
+			"color": [192, 192, 255],
+			"add": "user",
 			"example":[]
 			},
     	"man_days": {
@@ -70,6 +78,8 @@
 			"tooltip": "Task Man Days",
 			"value": null,
 			"values": null,
+			"color": [128, 128, 0],	
+			"add": null,					
 			"example":[]
 			},			   
     	"status": {
@@ -80,13 +90,15 @@
 			"order": 5,
 			"display_name": "Status",
 			"tooltip": "Task Status",
-			"value": null,
+			"value": 0,
 			"values": [
 				"None",
 				"Start",
 				"WIP",
 				"Submit",
 				"Publish"],
+			"color": [128, 0, 0],
+			"add": null,
 			"example":[]
 			},
     	"start": {
@@ -99,6 +111,8 @@
 			"tooltip": "Task Start Time",
 			"value": null,
 			"values": null,
+			"color": [0, 192, 192],
+			"add": null,
 			"example": []
 			},	
     	"end": {
@@ -111,6 +125,8 @@
 			"tooltip": "Task Ende Time",
 			"value": null,
 			"values": null,
+			"color": [192, 255, 255],
+			"add": null,
 			"example": []
 			},
     	"super_user": {
@@ -121,8 +137,10 @@
 			"order": 8,
 			"display_name": "Task Approved",
 			"tooltip": "Task Approved",
-			"value": null,
+			"value": 0,
 			"values": null,
+			"color": [255, 0, 255],
+			"add": "user",
 			"example": []
 			}
 		}

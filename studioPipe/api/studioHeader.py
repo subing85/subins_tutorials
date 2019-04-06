@@ -3,6 +3,7 @@ sys.path.append('/venture/subins_tutorials')
 
 import os
 import json
+import copy
 import warnings
 
 from pprint import pprint
@@ -14,6 +15,7 @@ from studioPipe.core import studioImage
 from studioPipe.core import studioConfig
 
 from studioPipe.api import studioConnect
+from studioPipe.api import studioDiscipline
 
 reload(studioConnect)
 reload(studioConfig)
@@ -28,10 +30,11 @@ class Connect(object):
         '''
         self.studio_config = studioConfig.Connect()
         self.config_data = self.studio_config.get_exists_output() 
-        studio_pipe_directory = self.config_data['pipe_shows_directory']        
-        
+        studio_pipe_directory = self.config_data['pipe_shows_directory']
+
         self.dirname = studio_pipe_directory
         self.localhost = 'root'
+        self.prefix = 'header'
         self.name = 'header'
         self.type = 'output_db'
         self.tag = 'header'
@@ -41,19 +44,21 @@ class Connect(object):
         if 'localhost' in kwargs:
             self.localhost = kwargs['localhost']
         if 'name' in kwargs:
-            self.name = kwargs['name']
+            self.name = '{}_{}'.format(self.prefix, kwargs['name'])
         if 'type' in kwargs:
             self.type = kwargs['type']
         if 'tag' in kwargs:
             self.tag = kwargs['tag']
+            
+        self.description_type = {
+            1: 'assets',
+            2: 'shots'
+        }
 
         self.format = '.json'
         self.icon_format = '.png'
         self.full_path = os.path.join(
             self.dirname, self.localhost, '%s%s' % (self.name, self.format))
-
-        self.width = 256
-        self.height = 144
 
     def getInputData(self):
         '''
@@ -70,8 +75,27 @@ class Connect(object):
         data, sort_data, key_data = studio_input.getInputData()
         return data, sort_data, key_data
     
+    def getOutputData(self, show_name=None):
+        '''
+        Description -function set for get exists show or shows data.
+            :paran show_name <str> exmple 'my_super_hero'
+            :return <dict>
+            :example
+                from studioPipe.api import studioShows
+                ss = studioShows.Shows()
+                ss.get('my_super_hero')
+        '''
+        stdio_input = studioConnect.Connect(file_path=self.full_path)
+        output_data = stdio_input.getOutputData(tag_name=show_name)
+        if not output_data:
+            warnings.warn('not fount data')
+            return           
+        if show_name not in output_data:
+            warnings.warn('not fount %s data' %show_name)
+            return
+        return output_data[show_name]    
 
-    def create(self, input_data):
+    def create(self, show, description, discipline, input_data):
         '''
         Description - Creates and edit the exists show this function set to operate        
             :param na <str> exmple 'my_super_hero'
@@ -94,22 +118,28 @@ class Connect(object):
             return    
         if not os.path.isdir(self.dirname):
             warnings.warn('not found studio pipe directory', Warning)
-            return    
-
-        if not os.path.isfile(input_data['show_icon']):
-            warnings.warn('not found file %s' %
-                          input_data['show_icon'], Warning)
             return
+        
+        studio_discipline = studioDiscipline.Connect()
+        discipline_data = studio_discipline.getSpecificTypes(show)
+        disciplines = discipline_data[description]
+                
+        exists_data = self.headerData(
+            show, discipline, disciplines, input_data)
+        
 
-        studio_image = studioImage.ImageCalibration(
-            imgae_file=input_data['show_icon'])
-        q_image, q_image_path = studio_image.set_studio_size(
-            width=self.width, height=self.height)
-
-        icon_path = os.path.join(
-            self.dirname, 'icons', '%s%s' % (input_data['show_name'], self.icon_format))
-        input_data['show_icon'] = icon_path
-
+         
+        #=======================================================================
+        # all_data = {}
+        # for k, v in input_data.items():
+        #     each_data = {}
+        #     for each in disciplines[description]:
+        #         each_data.setdefault(each, v)
+        #     all_data.setdefault(k, each_data)
+        #=======================================================================
+ 
+        current_data = {show: exists_data}
+ 
         studio_input = studioConnect.Connect()
         studio_input.createDb(
             dirname=self.dirname,
@@ -117,13 +147,120 @@ class Connect(object):
             name=self.name,
             type=self.type,
             tag=self.tag,
-            data={input_data['show_name']: input_data}
+            data=current_data
         )
-        if not os.path.isdir(os.path.dirname(icon_path)):
-            os.makedirs(os.path.dirname(icon_path))
-        q_image.save(icon_path)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
 
+        # collect disciplines from description
+        #=======================================================================
+        # studio_discipline = studioDiscipline.Connect()
+        # disciplines = studio_discipline.getSpecificTypes(show)
+        # if description not in disciplines:
+        #     print 'not found any disciplines!...'
+        #     return
+        #=======================================================================
+       
+        #=======================================================================
+        # input_data = {'1': {'end': {'value': ''},
+        #             'man_days': {'value': ''},
+        #             'name': {'value': 'None'},
+        #             'number': {'value': '1'},
+        #             'start': {'value': ''},
+        #             'status': {'value': 'None'},
+        #             'super_user': {'value': ''},
+        #             'tier': {'value': 'props'},
+        #             'user': {'value': ''}}}
+        #=======================================================================
+        
+
+
+    def findHeaderInDiscipline(self, data, ):
+        pass
+
+
+    def headerData(self, show, discipline, disciplines, current_data):
+        # show, discipline, input_data
+        studio_connect = studioConnect.Connect(file_path=self.full_path)
+        data, rollback_data, sort_data = studio_connect.getAllData()
+        show_data, show_index = self.getShowData(show, data=data)
+                
+        new_header = list(set(current_data.keys())-set(show_data.keys()))
+
+        for index, discipline_content in show_data.items():
+            if index in new_header:
+                continue
+            for each_discipline, content in discipline_content.items():
+                # update all discipline header name
+                content['name']['value'] = current_data[index]['name']
+                if discipline not in each_discipline:
+                    continue
+                # update specific discipline header values
+                for k, v in current_data[index].items():
+                    content[k]['value'] = current_data[index][k]
+        
+        # create new header disciplines        
+        new_data = {}        
+        for index in new_header:
+            new_discipline_data = {}
+            for each_discipline in disciplines:
+                new_header_data = {}
+                for each_header, values in current_data[index].items():
+                    values = {'value': values}
+                    new_header_data.setdefault(each_header, values)
+                new_discipline_data.setdefault(each_discipline, new_header_data)
+            new_data.setdefault(index, new_discipline_data)
+        
+        show_data.update(new_data)
+        # replace the specific show data
+        #=======================================================================
+        # data[show_index].pop(show)
+        # data[show_index] = {show: show_data}
+        #=======================================================================
+        return show_data
+
+    def getShowData(self, show, data=None):
+        if not data:
+            studio_connect = studioConnect.Connect(file_path=self.full_path)
+            data, rollback_data, sort_data = studio_connect.getAllData() 
+        show_index = 0           
+        show_data = {}
+        for index, content in data.items():
+            if show not in content:
+                continue
+            show_data = content[show]
+            show_index = index
+            break
+        return show_data, show_index
+    
+    def getHeader(self, exists_data, current_data):         
+        current_index = None         
+        for index, content in current_data.items():
+            if index not in exists_data:
+                continue
+            
+            
+        
+         
+    
+    def rollback(self, data):
+        rollback_data = {}
+        for index, content in data.items():
+            for k, v in content.items():
+                rollback_data.setdefault(k, index)
+        return rollback_data  
+    
+        
     def hasShow(self, show_name):
         '''
         Description -function set for validate the show.
@@ -140,19 +277,7 @@ class Connect(object):
             return True
         return False
 
-    def getOutputData(self, show_name=None):
-        '''
-        Description -function set for get exists show or shows data.
-            :paran show_name <str> exmple 'my_super_hero'
-            :return <dict>
-            :example
-                from studioPipe.api import studioShows
-                ss = studioShows.Shows()
-                ss.get('my_super_hero')
-        '''
-        stdio_input = studioConnect.Connect(file_path=self.full_path)
-        output_data = stdio_input.getOutputData(tag_name=show_name)
-        return output_data
+
 
     def getShows(self):
         '''

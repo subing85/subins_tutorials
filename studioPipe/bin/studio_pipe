@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+#  Studio Bash v0.0.1
+#  Date : April 05, 2019
+#  Last modified: April 05, 2019
+#  Author# Subin. Gopi (subing85@gmail.com)
+#  Copyright (c) 2018, Subin Gopi
+#  All rights reserved.
+#
+#   WARNING! All changes made in this file will be lost!
+#
+#  Description
+#      This bash module for configure and launch the studio pipe.  
+
+#clear
+function studio_pipe 
+	{
+		# current_path=`pwd`
+		current_path='/venture/subins_tutorials'
+		configure_file=$current_path"/studioPipe/bin/configure.sh"
+		if [ -f $configure_file ]; then		
+			export STUDIO_PIPE_PATH=$current_path
+			source $configure_file
+			# konsole	
+			current_bundle=$STUDIO_PIPE_PATH"/studioPipe/bin/studio_"$1
+			if [ -f $current_bundle ]; then
+				source $current_bundle
+				echo "current_bundle  "$current_bundle
+			else
+				echo "not found bundle "$current_bundle
+			fi
+		else
+			echo "errot not found" \"$current_path"/configure.sh"\"
+		fi		
+		}	
+studio_pipe $1

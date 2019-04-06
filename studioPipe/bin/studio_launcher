@@ -1,0 +1,2 @@
+#!/bin/bash
+python $STUDIO_PIPE_PATH"/studioPipe/launcher/__init__.py"
