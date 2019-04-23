@@ -1,0 +1,151 @@
+#!/usr/bin/python
+import optparse
+
+from pprint import pprint
+
+from studioPipe.api import studioDiscipline
+
+
+def pipe_discipline():
+    parser = optparse.OptionParser(
+        usage='usage: %prog [options] create your show discipline',
+        version='Studio Pipe 0.0.1')
+    option_list = [
+        optparse.make_option(
+            '--na', '--name', action='store', type='string', dest='name'),
+        optparse.make_option(
+            '--dn', '--displayname', action='store', type='string', dest='dname'),
+        optparse.make_option(
+            '--tp', '--tooltip', action='store', type='string', dest='tname'),
+        optparse.make_option(
+            '--i', '--icon', action='store', type='string', dest='ifile')     
+    ]
+    parser.add_options(option_list)
+    parser.add_option('-q', '--query',
+                      action='store_true',
+                      dest='query',
+                      default=False,
+                      help='to query')
+    
+    parser.add_option('--sh', '--show',
+                      action='store_true',
+                      dest='allShow',
+                      default=False,
+                      help='specific show')  
+    
+    parser.add_option('--cs', '--current_show',
+                      action='store',
+                      dest='currentShow',
+                      default=False,
+                      help='current show')       
+    
+    parser.add_option('--al', '--all',
+                      action='store_true',
+                      dest='getAll',
+                      default=False,
+                      help='find all the exists disciplines')
+    parser.add_option('--ty', '--type',
+                      type='string',
+                      dest='getDspType',
+                      default=False,
+                      help='find the specific exists disciplines (0=None, 1=Assets, 2=Shots)')
+    parser.add_option('--ex', '--exists',
+                      action='store',
+                      dest='getDspExists',
+                      default=False,
+                      help='find the exists discipline')
+    parser.add_option('--em', '--example',
+                      action='store_true',
+                      dest='example',
+                      default=False,
+                      help='example to create discipline')    
+    (options, args) = parser.parse_args()
+    
+    if options.query and options.allShow:
+        '''
+            :example discipline -q --sh
+        '''
+        studio_discipline = studioDiscipline.Connect()  
+        shows = studio_discipline.getShows()
+        pprint(shows)
+        return shows
+    
+
+    if options.query and options.currentShow and options.getAll:
+        '''
+            :example discipline -q --cs my_super_hero --all
+        '''
+        studio_discipline = studioDiscipline.Connect()
+        disciplines = studio_discipline.getDisciplines(options.currentShow)
+        pprint(disciplines[0])
+        return disciplines[0]
+
+    if options.query and options.currentShow and options.getDspType:
+        '''
+            :example discipline -q --cs my_super_hero --ty 2
+        '''
+        studio_discipline = studioDiscipline.Connect()
+        disciplines = studio_discipline.getSpecificTypes(options.currentShow)
+        if int(options.getDspType) not in disciplines:
+            print 'not found any disciplines!...'
+            return
+        pprint(disciplines[int(options.getDspType)])
+        return disciplines[int(options.getDspType)]
+
+    if options.query and options.currentShow and options.getDspExists:
+        '''
+            :example discipline -q --cs my_super_hero --ex modeling
+        '''
+        studio_discipline = studioDiscipline.Connect()
+        disciplines = studio_discipline.getDisciplines(options.currentShow)
+        if options.getDspExists in disciplines[0]:
+            print True
+            return True
+        print False
+        return True
+
+    if options.currentShow and options.name and options.dname and options.tname and options.getDspType and options.ifile:
+        '''
+            :example discipline --cs my_super_hero --na animation --dn Animation --tp Animation --ty 2, i /mnt/bkp/Icons gallery/icons_04/1600.png
+        '''
+        studio_discipline = studioDiscipline.Connect()
+        show_index = studio_discipline.getShowIndex(options.currentShow)
+        
+        if show_index==None:
+            print 'error\tnot found show called %s'%options.currentShow
+            return None
+        
+        input_data = {
+            'name': options.name,
+            'display_name': options.dname,
+            'tooltip': options.tname,
+            'type': int(options.getDspType),
+            "discipline_icon": options.ifile,
+            "current_show": show_index,             
+            }
+        studio_discipline.create(options.currentShow, input_data)
+        print 'successfully created your discipline called \"%s\"' % options.name
+        return True
+    
+    if options.example:
+        flags = [
+            '--cs \"my_super_hero\"',
+            '--na \"animation\"',
+            '--dn \"Animation\"',
+            '--tp \"Animation\"',
+            '--ty 2',
+            '--i \"/mnt/bkp/Icons gallery/icons_04/1600.png\"'
+        ]
+        
+        print 'create discipline\t- discipline {}'.format(' '.join(flags))        
+        print 'get all shows\t- discipline -q --sh'
+        print 'get all discipline\t- discipline -q --cs \"my_super_hero\" --all'
+        print 'get discipline exists\t- discipline -q --cs \"my_super_hero\" --ex \"animation\"'
+        print 'get specific type discipline\t- discipline -q --cs \"my_super_hero\" --ty 2'
+        return True
+    
+    print 'error\t-wrong arguments!...'
+
+
+if __name__ == '__main__':
+    pipe_discipline()

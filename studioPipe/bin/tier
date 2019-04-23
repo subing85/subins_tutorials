@@ -1,0 +1,192 @@
+#!/usr/bin/python
+import optparse
+
+from pprint import pprint
+
+from studioPipe.api import studioTier
+
+
+def pipe_tier():
+    parser = optparse.OptionParser(
+        usage='usage: %prog [options] create your show description teir',
+        version='Studio Pipe 0.0.1')
+    option_list = [
+        optparse.make_option(
+            '--nas', '--names', action='store', type='string', dest='names')   
+    ]
+    parser.add_options(option_list)
+    parser.add_option('-q', '--query',
+                      action='store_true',
+                      dest='query',
+                      default=False,
+                      help='to query')
+    
+    parser.add_option('--sh', '--show',
+                      action='store_true',
+                      dest='allShow',
+                      default=False,
+                      help='specific show')  
+    
+    parser.add_option('--des', '--description',
+                      action='store_true',
+                      dest='descriptions',
+                      default=False,
+                      help='specific show descriptions')      
+    
+    parser.add_option('--cs', '--current_show',
+                      action='store',
+                      dest='currentShow',
+                      default=False,
+                      help='current show')       
+    
+    parser.add_option('--al', '--all',
+                      action='store_true',
+                      dest='getAll',
+                      default=False,
+                      help='find all the exists disciplines')
+    parser.add_option('--ty', '--type',
+                      type='string',
+                      dest='getDspType',
+                      default=False,
+                      help='find the specific exists disciplines (0=None, 1=Assets, 2=Shots)')
+    parser.add_option('--ex', '--exists',
+                      action='store',
+                      dest='getDspExists',
+                      default=False,
+                      help='find the exists discipline')
+    parser.add_option('--em', '--example',
+                      action='store_true',
+                      dest='example',
+                      default=False,
+                      help='example to create discipline')    
+    (options, args) = parser.parse_args()
+    
+    if options.query and options.allShow:
+        '''
+            :example tier -q --sh
+        '''
+        studio_tier = studioTier.Connect()  
+        shows = studio_tier.getShows()
+        pprint(shows)
+        return shows
+    
+    if options.query and options.currentShow and options.descriptions:
+        '''
+            :example tier -q --cs my_super_hero --des
+        '''
+        studio_tier = studioTier.Connect()
+        descriptions = studio_tier.getDescriptions(options.currentShow)
+        if not descriptions[0]:
+            print 'not found any description under this show \"%s\"'%options.currentShow
+            return       
+        pprint(descriptions[0])
+        return descriptions[0] 
+    
+
+    if options.query and options.currentShow and options.getAll:
+        '''
+            :example tier -q --cs my_super_hero --all
+        '''
+        studio_tier = studioTier.Connect()
+        descriptions = studio_tier.getTiers(options.currentShow)
+        if not descriptions:
+            print 'not found any description tier under this show \"%s\"'%options.currentShow
+            return            
+        pprint(descriptions)
+        return descriptions       
+
+    if options.query and options.currentShow and options.getDspType and not options.getDspExists:
+        '''
+            :example tier -q --cs my_super_hero --ty 2
+        '''
+        description_type = {
+            1: 'assets',
+            2: 'shots'
+        }        
+        if int(options.getDspType) not in description_type:
+            print 'not found any descriptions called \"%s\"!...'% options.getDspType
+            return 
+        studio_tier = studioTier.Connect()
+        descriptions = studio_tier.getSpecificTypes(options.currentShow, int(options.getDspType))        
+        current_description = description_type[int(options.getDspType)]
+        if  current_description not in descriptions:
+            print 'not found any tier under descriptions called\"%s\"!...'%current_description
+            return                        
+        pprint(descriptions[current_description])
+        return descriptions[current_description]
+
+    if options.query and options.currentShow and options.getDspType and options.getDspExists:
+        '''
+            :example tier -q --cs my_super_hero --ty 1 --ex character
+        '''
+        description_type = {
+            1: 'assets',
+            2: 'shots'
+        }          
+        if int(options.getDspType) not in description_type:
+            print 'not found any descriptions called \"%s\"!...'% options.getDspType
+            return        
+        studio_tier = studioTier.Connect()
+        descriptions = studio_tier.getSpecificTypes(options.currentShow, int(options.getDspType))
+        current_description = description_type[int(options.getDspType)]             
+        if options.getDspExists in descriptions[current_description]:
+            print True
+            return True
+        print False
+        return True
+
+    if options.currentShow and options.getDspType and options.names:
+        '''
+            :example tier --cs my_super_hero --ty 1 --nas props, characters, set
+        '''       
+        description_type = {
+            1: 'assets',
+            2: 'shots'
+        } 
+        if int(options.getDspType) not in description_type:
+            print 'error\tnot found any descriptions called \"%s\"!...'% options.getDspType
+            return       
+        
+        studio_tier = studioTier.Connect()
+        show_index = studio_tier.getShowIndex(options.currentShow)
+        
+        if show_index==None:
+            print 'error\tnot found show called %s'%options.currentShow
+            return None
+
+        tiers = {}  
+        index = 0       
+        for each in options.names.split(','):
+            tiers.setdefault(index, each.strip())
+            index+=1
+        
+        input_data = {
+            "description": int(options.getDspType),
+            "current_show": show_index             
+            }
+        input_data.update(tiers)
+
+        studio_discipline = studioTier.Connect()        
+        studio_discipline.create(options.currentShow, input_data['description'], input_data)
+        print 'successfully created your description called \"%s\"' % options.names
+        return True
+    
+    if options.example:
+        flags = [
+            '--cs \"my_super_hero\"',
+            '--ty \"1\"',
+            '--nas \"props,characters,environment, camera, light\"'
+        ]
+        print 'create description\t'.rjust(32), '- tier {}'.format(' '.join(flags))        
+        print 'get all shows\t'.rjust(32), '- tier -q --sh'
+        print 'get all description\t'.rjust(32), '- tier -q --cs my_super_hero --des'
+        print 'get all tiers\t'.rjust(32), '- tier -q --cs my_super_hero --all'
+        print 'get specific description tiers\t'.rjust(32), '- tier -q --cs my_super_hero --ty 1'
+        print 'get tier exists\t'.rjust(32), '- tier -q --cs my_super_hero --ty 1 --ex props'        
+        return True
+    
+    print 'error\t-wrong arguments!...'
+
+
+if __name__ == '__main__':
+    pipe_tier()

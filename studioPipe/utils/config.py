@@ -20,3 +20,7 @@ def get_conig():
 
 def get_tool_kit():
     return 'studio_pipe', 'Studio Pipe', '0.0.1'
+
+
+def set_studio_variables():
+    pass

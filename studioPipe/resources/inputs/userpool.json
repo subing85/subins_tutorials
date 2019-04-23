@@ -1,0 +1,46 @@
+{
+    "created_by": "subin gopi", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "#copyright": "(c) 2018, Subin Gopi All rights reserved.", 
+    "date": "April:05:2019 - 09:20:01:PM",
+    "last_modified": "April:05::2019 - 09:20:01:PM",         
+    "comment": "User Pool", 
+    "description": "inputs of show discipline",    
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "valid": true,
+   	"type": "input_db",
+	"tag": "user_pool",   	
+    "data": {
+    	"current_show": {
+			"enable": true,
+			"type": "enum",
+			"order": 0,
+			"display_name": "Current Show",
+			"tooltip": "Set your show",
+			"value": null,
+			"values": null,			
+			"example": []
+			},
+    	"description": {
+			"enable": true,
+			"type": "enum",
+			"order": 1,
+			"display_name": "Description",
+			"tooltip": "Set your show description",
+			"value": 0,	
+			"values": ["None", "Assets", "Shots"],		
+			"example": []			
+			},
+		"add": {
+			"enable": true,
+			"type": "lable",
+			"order": 2,
+			"display_name": "Add",
+			"tooltip": "Name",
+			"value": "studio_pipe",
+			"values": null,
+			"example":[]
+			}
+		}    
+    }
+	

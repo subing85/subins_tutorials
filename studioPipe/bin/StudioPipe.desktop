@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=StudioPipe
+Comment=StudioPipe
+Exec=studio_pipe konsole
+Icon=/venture/subins_tutorials/studioPipe/resources/icons/subins_toolkits_1.png
+Categories=Application
+Version=0.0.1-x86_64
+Type=Application
+Terminal=0
