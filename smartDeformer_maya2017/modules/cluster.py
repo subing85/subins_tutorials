@@ -23,7 +23,7 @@ import copy
 from maya import OpenMaya
 from maya import OpenMayaAnim
 
-from smartDeformer.modules import studioMaya
+from smartDeformer_maya2017.modules import studioMaya
 
 
 class Cluster(studioMaya.Maya):
@@ -326,7 +326,7 @@ class Cluster(studioMaya.Maya):
                 self.target_deformers.append(None)
         loop = min([len(self.target_deformers), len(self.source_deformers)])
 
-        from smartDeformer.modules import skincluster
+        from smartDeformer_maya2017.modules import skincluster
         skinclu = skincluster.Skincluster()
 
         for index in range(loop):

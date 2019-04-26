@@ -23,7 +23,7 @@ import warnings
 
 from datetime import datetime
 
-from smartDeformer import resources
+from smartDeformer_maya2017 import resources
 
 
 class ReadWrite(object):

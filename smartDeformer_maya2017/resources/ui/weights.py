@@ -26,11 +26,11 @@ from functools import partial
 
 from maya import OpenMaya
 
-from smartDeformer import resources
-from smartDeformer.modules import cluster
-from smartDeformer.modules import readWrite
-from smartDeformer.modules import skincluster
-from smartDeformer.modules import studioMaya
+from smartDeformer_maya2017 import resources
+from smartDeformer_maya2017.modules import cluster
+from smartDeformer_maya2017.modules import readWrite
+from smartDeformer_maya2017.modules import skincluster
+from smartDeformer_maya2017.modules import studioMaya
 
 
 class Weights(QtWidgets.QWidget):

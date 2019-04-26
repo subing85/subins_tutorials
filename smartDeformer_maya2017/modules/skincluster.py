@@ -23,7 +23,7 @@ import copy
 from maya import OpenMaya
 from maya import OpenMayaAnim
 
-from smartDeformer.modules import studioMaya
+from smartDeformer_maya2017.modules import studioMaya
 
 
 class Skincluster(studioMaya.Maya):
@@ -311,7 +311,7 @@ class Skincluster(studioMaya.Maya):
     def cluster(self):
         source_mobject = self.getMObject(self.source_geometry)
 
-        from smartDeformer.modules import cluster
+        from smartDeformer_maya2017.modules import cluster
         clu = cluster.Cluster()
 
         if not self.target_deformers:

@@ -24,12 +24,12 @@ from functools import partial
 
 from maya import OpenMaya
 
-from smartDeformer import resources
-from smartDeformer.modules import cluster
-from smartDeformer.modules import skincluster
-from smartDeformer.modules import studioMaya
-from smartDeformer.utils import generic
-from smartDeformer.utils import read
+from smartDeformer_maya2017 import resources
+from smartDeformer_maya2017.modules import cluster
+from smartDeformer_maya2017.modules import skincluster
+from smartDeformer_maya2017.modules import studioMaya
+from smartDeformer_maya2017.utils import generic
+from smartDeformer_maya2017.utils import read
 
 
 class Geometry(QtWidgets.QWidget):
