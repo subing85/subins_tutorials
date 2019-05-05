@@ -1,6 +1,6 @@
 https://www.subins-toolkits.com/
 
-Smart Deformer 0.0.1 Maya 2017
+Smart Deformer 0.0.1 Maya 2018
 
 A free tool to manage polygon geometries deformer weights in Autodesk Maya.
 
@@ -41,13 +41,14 @@ How to run?
 
     > Un-zip the contents of the tool to your local maya source script path. Typically something like:
 
-        win C:/Documents and Settings/USERNAME/My  Documents/maya/2016/scripts
+        win C:/Documents and Settings/USERNAME/My  Documents/maya/2018/scripts
 
-        linux /home/USERNAME/maya/2016/scripts/
+        linux /home/USERNAME/maya/2018/scripts/
 
     > Start Maya
 
     > Run the following code in the Python script editor.
+    
 
-import smartDeformer_maya2017
-smartDeformer_maya2017.show_window()
+	import smartDeformer_maya2018
+	smartDeformer_maya2018.show_window()

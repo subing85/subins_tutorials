@@ -106,8 +106,7 @@ class Connect(object):
             data = None
         if 'data' not in data:
             return None
-        return data
-    
+        return data    
     
     def rollback(self):
         data_contents = self.contents

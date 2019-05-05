@@ -41,13 +41,14 @@ How to run?
 
     > Un-zip the contents of the tool to your local maya source script path. Typically something like:
 
-        win C:/Documents and Settings/USERNAME/My  Documents/maya/2016/scripts
+        win C:/Documents and Settings/USERNAME/My  Documents/maya/2017/scripts
 
-        linux /home/USERNAME/maya/2016/scripts/
+        linux /home/USERNAME/maya/2017/scripts/
 
     > Start Maya
 
     > Run the following code in the Python script editor.
+    
 
-import smartDeformer_maya2017
-smartDeformer_maya2017.show_window()
+	import smartDeformer_maya2017
+	smartDeformer_maya2017.show_window()

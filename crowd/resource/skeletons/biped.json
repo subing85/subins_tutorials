@@ -1,0 +1,713 @@
+{
+    "comment": "subin gopi tool kits Subin Crowds", 
+    "name": "biped", 
+    "format": "json", 
+    "data": {
+        "R_Wrist_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Elbow_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                -180.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                -7.0, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "wrist"
+        }, 
+        "C_Chest_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Spine_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                13.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "chest"
+        }, 
+        "R_Clavicle_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Chest_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                -180.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                -1.0, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "clavicle"
+        }, 
+        "C_Tip_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Head_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                18.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "tip"
+        }, 
+        "C_Neck_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Chest_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                14.5, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "neck"
+        }, 
+        "R_Ball_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                180.0, 
+                -90.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Ankle_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                180.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                -1.0, 
+                0.0, 
+                1.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "ball"
+        }, 
+        "C_Hip_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Root_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                -180.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                9.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "hip"
+        }, 
+        "R_Toe_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Ball_Joint", 
+            "preferredAngle": [
+                0.0, 
+                1.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                90.0, 
+                0.0
+            ], 
+            "translate": [
+                -1.0, 
+                0.0, 
+                2.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "toe"
+        }, 
+        "L_Shoulder_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Clavicle_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                2.0, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "shoulder"
+        }, 
+        "C_Root_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": null, 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                10.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "root"
+        }, 
+        "R_Shoulder_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Clavicle_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                -180.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                -2.0, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "shoulder"
+        }, 
+        "C_Head_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Neck_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                15.5, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "head"
+        }, 
+        "L_Ankle_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Knee_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                1.0, 
+                1.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "ankle"
+        }, 
+        "R_Elbow_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Shoulder_Joint", 
+            "preferredAngle": [
+                0.0, 
+                -1.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                -180.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                -4.5, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "elbow"
+        }, 
+        "L_Clavicle_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Chest_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                1.0, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "clavicle"
+        }, 
+        "L_Wrist_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Elbow_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                7.0, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "wrist"
+        }, 
+        "C_Spine_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Root_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                0.0, 
+                11.5, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 0, 
+            "otherType": "spine"
+        }, 
+        "R_Pelvis_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Hip_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                90.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                -1.0, 
+                9.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "pelvis"
+        }, 
+        "L_Ball_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                180.0, 
+                -90.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Ankle_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                1.0, 
+                0.0, 
+                1.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "ball"
+        }, 
+        "R_Ankle_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Knee_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                180.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                -1.0, 
+                1.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "ankle"
+        }, 
+        "L_Pelvis_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "C_Hip_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                -90.0, 
+                0.31, 
+                -90.0
+            ], 
+            "translate": [
+                1.0, 
+                9.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "pelvis"
+        }, 
+        "L_Knee_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Pelvis_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                1.0
+            ], 
+            "jointOrient": [
+                -90.0, 
+                0.36, 
+                -90.0
+            ], 
+            "translate": [
+                1.0, 
+                4.5, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "knee"
+        }, 
+        "L_Elbow_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Shoulder_Joint", 
+            "preferredAngle": [
+                0.0, 
+                -1.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                4.5, 
+                14.0, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "elbow"
+        }, 
+        "L_Toe_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "L_Ball_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                180.0, 
+                -90.0, 
+                0.0
+            ], 
+            "translate": [
+                1.0, 
+                0.0, 
+                2.0
+            ], 
+            "type": 18, 
+            "side": 1, 
+            "otherType": "toe"
+        }, 
+        "R_Knee_Joint": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.2, 
+            "parent": "R_Pelvis_Joint", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                1.0
+            ], 
+            "jointOrient": [
+                90.0, 
+                0.0, 
+                90.0
+            ], 
+            "translate": [
+                -1.0, 
+                4.5, 
+                0.0
+            ], 
+            "type": 18, 
+            "side": 2, 
+            "otherType": "knee"
+        }
+    }, 
+    "tag": "biped", 
+    "valid": true, 
+    "created_date": "2019/04/May - 02:20:29:PM", 
+    "path": "/venture/subins_tutorials/crowd/resource/skeletons", 
+    "type": "skeleton", 
+    "description": "This data contain information about subin gopi tool kits crowd"
+}
