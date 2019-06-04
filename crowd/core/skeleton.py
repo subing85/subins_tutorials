@@ -42,13 +42,21 @@ def get_skeleton_inputs(joints):
     return data
 
 
-def create_skeleton(inputs):
+def create_skeleton(tag, inputs, position=None, parent=None):
+    if not position:
+        position = [0, 0, 0]
     parent_data = {}
     for name, attributes in inputs.items():
         OpenMaya.MGlobal.clearSelectionList()
         mfn_dag_node = OpenMaya.MFnDagNode()
         mfn_dag_node.create('joint')
-        mfn_dag_node.setName(name)
+        node_name = name
+        if core.ls('{}*'.format(name)):
+            node_name = '{}{}'.format(name, len(core.ls('{}*'.format(name))))
+        mfn_dag_node.setName(node_name)        
+        mdag_path = OpenMaya.MDagPath()
+        mfn_dag_node.getPath(mdag_path)
+        add_tag(mdag_path.node(), tag=tag)        
         joint_dag_path = OpenMaya.MDagPath()
         mfn_dag_node.getPath(joint_dag_path)
         parent_data.setdefault(name, joint_dag_path)
@@ -60,57 +68,60 @@ def create_skeleton(inputs):
             try:
                 node.set(values)
             except:
-                print 'error\t', attribute
+                print 'error\t', attribute               
+                
     for k, v in parent_data.items():
         root = parent_data[k]
         if not inputs[k]['parent']:
             continue
         parent = parent_data[inputs[k]['parent']]
         core.PyNode(root).setParent(core.PyNode(parent))
+          
+    any_node = core.PyNode(parent_data.keys()[0])    
+    root_dag_path = parent_data[any_node.root().name()] 
+
+    mFnTransform = OpenMaya.MFnTransform(root_dag_path)
+    mvector = OpenMaya.MVector(position[0], position[1], position[2])
+    mFnTransform.setTranslation(mvector, OpenMaya.MSpace.kWorld)
+            
     OpenMaya.MGlobal.clearSelectionList()
-    return parent_data
+    return root_dag_path, parent_data
 
+def add_tag(mobject, tag=None):
+    mfn_attribute = OpenMaya.MFnTypedAttribute()
+    skeleton_attribute = mfn_attribute.create(
+        'crowd_type', "crdt", OpenMaya.MFnData.kString)
+    mfn_attribute.setKeyable(False)
+    mfn_attribute.setWritable(False)
+    mfn_attribute.setReadable(False)
+    mfn_attribute.setStorable(False)
+    mfn_attribute.setHidden(False)
+    mfn_attribute.setChannelBox(False)     
+    mfn_dependency_node = OpenMaya.MFnDependencyNode()
+    mfn_dependency_node.setObject(mobject)    
+    mfn_dependency_node.addAttribute(skeleton_attribute)
+    if tag:
+        plug = mfn_dependency_node.findPlug('crowd_type')
+        plug.setString(tag)
 
-def collect_puppet_skeleton(tag, root):
-    
-    ik_skeletons = [
-        ['pelvis', 'knee', 'ankle'], 
-        ['shoulder', 'elbow, wrist']
-        ]
-    fk_skeletons = ''
+'''
+from crowd.api import crowdSkeleton
+reload(crowdSkeleton)
+crowd_skeleton = crowdSkeleton.Connect()
+root_node, result = crowd_skeleton.create('biped')
 
-    pass
+from crowd.core import skeleton
 
+joints = core.ls(sl=1)
 
-def get_root_children():
-    roots = get_root_joints()
-    result = {}
-    for each_root in roots:
-        children = get_children(each_root)
-        result.setdefault(each_root, list(children))
-    return result
-
-
-def get_root_joints():
-    joints = core.ls(type='joint')
-    root_joints = []
-    for each_joint in joints:
-        other_type = each_joint.getAttr('otherType')
-        if other_type != 'root':
-            continue
-        root_joints.append(each_joint)
-    return root_joints
-
-
-def get_children(root):
-    stack = set()
-    nodes = root.getChildren()
-    children = []
-    while nodes:
-        node = nodes.pop()
-        if node in stack:
-            continue
-        children = node.getChildren()
-        stack.add(node)
-        nodes.extend(children)
-    return stack
+data = skeleton.get_skeleton_inputs(joints)
+from crowd.core import readWrite
+reload(readWrite)
+rw = readWrite.ReadWrite(    
+    fm='json',
+    pa='/venture/subins_tutorials/crowd/resource/skeletons',
+    na='biped',
+    ty='skeleton',
+    tg='biped')
+rw.write(data, force=True) 
+'''

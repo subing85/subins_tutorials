@@ -7,13 +7,13 @@ from datetime import datetime
 
 from crowd import resource
 from crowd.core import cdata
-reload(data)
+reload(cdata)
 
 
 class ReadWrite(object):
 
     def __init__(self, **kwargs):
-        super(ReadWrite, self).__init__(**kwargs)        
+        super(ReadWrite, self).__init__()        
         self.comment = 'subin gopi tool kits Subin Crowds'
         self.created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         self.description = 'This data contain information about subin gopi tool kits crowd'
@@ -40,6 +40,7 @@ class ReadWrite(object):
 
     def collect(self, input, type):
         result = {}
+        orders = {}
         input_path = resource.getInputPath(input)
         if not os.path.isdir(input_path):
             warnings.warn('not fount input called %s' % input, Warning)
@@ -54,9 +55,10 @@ class ReadWrite(object):
             if data['type'] != type:
                 continue
             result.setdefault(data['tag'], data['data'])
-        if not result:
-            return None
-        return result
+            orders.setdefault(data['order'], []).append(data['tag'])
+        if not result or not orders:
+            return None, None
+        return result, orders
 
     def get_input_data(self, long_names, input):
         kwargs_data = {}

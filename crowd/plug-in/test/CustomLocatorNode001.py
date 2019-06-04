@@ -29,13 +29,13 @@ def nodeCreator():
 	return OpenMayaMPx.asMPxPtr(myNode())
  
 def nodeInitializer():
-	# return OpenMaya.MStatus.kSuccess
-	return None
+	#return OpenMaya.MStatus.kSuccess
+	pass
  
 def initializePlugin(obj):						#procedure lance au moment de l'initialisation du plugin
 	plugin = OpenMayaMPx.MFnPlugin(obj)
 	try:
-		plugin.registerNode(nodeTypeName, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kLocatorNode)
+		plugin.registerNode(nodeTypeName, nodeTypeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kLocatorNode)
 	except:
 		sys.stderr.write( "Failed to register node: %s" % nodeTypeName)
 

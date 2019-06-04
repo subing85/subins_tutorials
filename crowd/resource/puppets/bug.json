@@ -2,22 +2,22 @@
     "description": "This data contain information about subin gopi tool kits crowd",
     "created_date": "2019/04/May - 02:20:29:PM", 
     "comment": "subin gopi tool kits Subin Crowds", 
-    "name": "biped", 
+    "name": "bug", 
     "type": "puppet", 
-    "tag": "biped", 
+    "tag": "bug", 
     "valid": true, 
     "data": {
         "ik" : {            
-            "1": {
+            "leg": {
                 "joints" : ["pelvis", "knee", "ankle"],
-                "control": "box",
-                "radius": 2.0,                
+                "control": "cube",
+                "radius": 0.75,                
                 "parent": "hip"
                 },
-            "2": {
-                "joints" : ["shoulder", "elbow, wrist"],
-                "control": "box",
-                "radius": 2.0,                
+            "arm": {
+                "joints" : ["shoulder", "elbow", "wrist"],
+                "control": "cube",
+                "radius": 0.75,                
                 "parent": "clavicle"
                 }
             },
@@ -56,7 +56,21 @@
                 "radius": 1.7,
                 "parent": "neck",
                 "follow": true
-                }
+                },
+             "hip": {
+                "order": 6,
+                "control": "cricle",
+                "radius": 1.7,
+                "parent": "root",
+                "follow": true
+                },
+             "clavicle": {
+                "order": 7,
+                "control": "cricle",
+                "radius": 1.0,
+                "parent": "chest",
+                "follow": true
+                }                       
 			}
 		}              
     }
