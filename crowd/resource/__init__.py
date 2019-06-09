@@ -1,4 +1,5 @@
 import os
+import logging
 
 CURRENT_PATH = os.path.dirname(__file__)
 
@@ -20,3 +21,26 @@ def getToolKitHelpLink():
 
 def getDownloadLink():
     return 'https://www.subins-toolkits.com/subin-crowds'
+
+
+def getPublishTypes():
+    data = [
+        'skeleton',
+        'puppet',
+        'scene']
+    return data
+
+def getPublishPath(type=None):    
+    path = os.path.join(CURRENT_PATH, 'publish')
+    if type:
+        path = os.path.join(CURRENT_PATH, 'publish', type)
+    if not os.path.isdir(path):
+        logging.warning('not found such path called \"%s\"'%path)
+        return    
+    return path
+    
+        
+        
+            
+        
+    

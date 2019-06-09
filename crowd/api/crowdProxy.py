@@ -81,7 +81,7 @@ class Connect(OpenMayaMPx.MPxCommand):
                 row=row,
                 column=column,
                 rowOffset=row_offset,
-                columnOffset=row_offset,
+                columnOffset=column_offset,
                 random=random
                 )
             crowd_setup.create()

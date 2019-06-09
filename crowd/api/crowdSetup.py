@@ -1,3 +1,5 @@
+import random
+
 from pymel import core
 from maya import OpenMaya
 
@@ -39,18 +41,61 @@ class Connect(object):
 
         s_row = 0
         s_column = 0
+        
+        a = 0
+        b = 0
+        
+        print self.count
+        
              
         for x in range(self.count):          
             if x % self.row:
                 s_column+=(self.distance*-1)
+                a+=1
             else:
                 s_row+=(self.distance*1)
                 s_column=0                
+                b+=1
+                a=0
+                
+            if not x % 2:         
+                s_column = s_column+(self.row_offset*-1)
+                
+            if (a%2)!=0:
+                s_row = s_row+(self.column_offset*-1)                
+                
+            if self.random:            
+                s_row = random.randrange(s_row-self.random, s_row+self.random)
+                s_column = random.randrange(s_column-self.random, s_column+self.random)
+                
+            
+            #===================================================================
+            # row = 0
+            # column = 0
+            # 
+            # for x in range(0, 53):
+            #     
+            #     if x%5:
+            #         column+=1
+            #     else:
+            #         row+=1
+            #         column=0
+            #         print '\n'
+            #     if (column%2)!=0:
+            #         print '\t', x
+            #===================================================================
+
+                
+            #slide ===================================================================
+            # if x % 2:        
+            #     s_row = s_row+(self.column_offset*-1)
+            #===================================================================
+                                  
             position = [s_row, 0, s_column]  
                                        
             root_dag_path, result = crowd_skeleton.create(self.type, position=position)
             root_joints.append(root_dag_path)
-        
+         
         self.addTocontainer(root_joints)
         
 

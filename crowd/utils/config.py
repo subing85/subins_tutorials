@@ -20,7 +20,9 @@ def get_conig():
 
 def get_tool_kit():
     
-    tools = {'skeleton': ['skeleton', 'Skeleton', '0.0.1']
+    tools = {
+        'skeleton': ['skeleton', 'Skeleton', '0.0.1'],
+        'publish': ['publish', 'Publish', '0.0.1']
         
         }
     
