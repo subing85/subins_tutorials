@@ -12,7 +12,7 @@ CLASS = 'InputJoint'
 
 from pymel import core
 
-from crowd.api import crowdPublish
+from crowd.core import skeleton
 
 
 class InputJoint(object):
@@ -20,18 +20,13 @@ class InputJoint(object):
     def __init__(self, input=None):
         print '\n%s WIP. %s' % (MODULE_TYPE, COMMENTS)
         self.input = input
-        crowd_publish = crowdPublish.Publish()
-        self.result = self.check()
+        self.result = self.get()
 
-    def check(self):
+    def get(self):
         out, nodes, message = self.get_nodes()
         return out, nodes, message
 
     def get_nodes(self):
-        '''
-        crowd_publish = crowdPublish.Publish(type=self.publish_type)
-        bundle_keys = crowd_publish.getBundleKeys()
-        '''
         default_nodes = ['persp', 'top', 'front', 'side']
         maya_nodes = core.ls(assemblies=True)
         nodes = [each.name().encode()
@@ -40,7 +35,10 @@ class InputJoint(object):
             return 'failed', nodes, 'more than one hierarchy found!..'
         if len(nodes) == 0:
             return 'error', 'None', 'not found any hierarchy!..'
-        return 'success', nodes, 'good hierarchy!..'
+        
+        joints = core.ls(type='joint')        
+        data = skeleton.get_skeleton_inputs(joints)        
+        return 'success', data, 'joints'
 
 
 def testRun():

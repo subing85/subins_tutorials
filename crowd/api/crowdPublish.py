@@ -1,24 +1,42 @@
+import os
+import time
 import logging
 import pkgutil
+import shutil
+
+from datetime import datetime
 
 from crowd import resource
+from crowd.core import readWrite
 
 reload(resource)
+reload(readWrite)
 
 
 class Publish(object):
 
-    def __init__(self, type=None):
-
-        self.publish_type = type
-        self.resource_path = resource.getPublishPath(type=type)
-
+    def __init__(self, **kwargs): 
+        self.type = None
+        self.tag = None          
+        self.format = 'json'
+                
+        if 'type' in kwargs:
+            self.type = kwargs['type']
+        if 'tag' in kwargs:           
+            self.tag = kwargs['tag']        
+        if 'format' in kwargs:           
+            self.format = kwargs['format']      
+              
+        self.resource_path = resource.getPublishResource(type=self.type)        
+        self.directory = resource.getPublishDirectory()
+        
         self.bundle_value = {
             'failed': ['red', False],
             'error': ['magenta', False],
             'success': ['green', True],
             'runtime error': ['yellow', False]
         }
+        self.components = {}
 
     def getBundleKeys(self):
         return self.bundle_value
@@ -35,7 +53,7 @@ class Publish(object):
             if not hasattr(module, 'VALID'):
                 continue
             module_data.append(module)
-        if not self.publish_type:
+        if not self.type:
             return modules
         return module_data
 
@@ -77,11 +95,11 @@ class Publish(object):
             module_data.setdefault(bundle_type, []).append(current_module)
         return module_data
 
-    def executeValidateModule(self, module):
+    def executeModule(self, module):
         if not module:
             logging.warnings('publish build not valid', Warning)
             return
-        if not self.publish_type:
+        if not self.type:
             logging.warnings('publish build type not valid', Warning)
             return
         try:
@@ -90,14 +108,49 @@ class Publish(object):
             result, data, message = 'runtime error', [], str(except_error)
 
         value = self.bundle_value[result][1]
-        color = self.bundle_value[result][0]
+        color = self.bundle_value[result][0]        
         return result, value, color, data, message
     
-    
-    def executeExtractModule(self, module):        
-        result, value, color, data, message = self.executeValidateModule(module)
+    def do(self, data=None, name=None, comment=None, description=None):
+        '''
+            :param data <dict>
+            :param name <str>
+            :param comment <str> optional
+            :param description <str> optional
+            :param valid <str> optional
+            :param format <str> optional
+        ''' 
+        rw = readWrite.ReadWrite( 
+            co=comment,
+            de=description, 
+            fm=self.format,
+            pa=self.directory,
+            na=name,
+            ty=self.type,
+            tg=self.tag)           
+        rw.write(data, force=True)
+        self.components.setdefault(name, rw.file_path)
+
+    def commit(self, origin=None, comment=None, description=None):
         
+        source = os.path.join(
+            self.directory, self.tag, 'scene%s'%os.path.splitext(origin)[-1])         
         
-        
-        
-        
+        rw = readWrite.ReadWrite( 
+            de=description,
+            ty=self.type,
+            tg=self.tag,
+            cp=self.components.keys(),
+            pa=self.directory,
+            lo=self.components,
+            su=source,
+            og=origin,
+            co=comment,
+            na='manifest',
+            fm='man'
+            )       
+        rw.commit(force=True)        
+        current_time = time.time() 
+                
+        shutil.copy2(origin, source)            
+        os.utime(source,(current_time, current_time))          

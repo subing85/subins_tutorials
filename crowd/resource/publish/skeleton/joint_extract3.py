@@ -40,7 +40,7 @@ class InputJoint(object):
             return 'failed', nodes, 'more than one hierarchy found!..'
         if len(nodes) == 0:
             return 'error', 'None', 'not found any hierarchy!..'
-        return 'success', nodes, 'good hierarchy!..'
+        return 'success', nodes, 'shader'
 
 
 def testRun():

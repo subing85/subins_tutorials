@@ -1,0 +1,14 @@
+{
+    "comment": null, 
+    "name": "shader", 
+    "format": "json", 
+    "data": [
+        "joint1"
+    ], 
+    "tag": "tails", 
+    "valid": true, 
+    "created_date": "2019/11/June - 12:15:51:AM", 
+    "path": "/venture/subins_tutorials/crowd/resource/show", 
+    "type": 0, 
+    "description": null
+}

@@ -30,7 +30,7 @@ def getPublishTypes():
         'scene']
     return data
 
-def getPublishPath(type=None):    
+def getPublishResource(type=None):    
     path = os.path.join(CURRENT_PATH, 'publish')
     if type:
         path = os.path.join(CURRENT_PATH, 'publish', type)
@@ -38,6 +38,15 @@ def getPublishPath(type=None):
         logging.warning('not found such path called \"%s\"'%path)
         return    
     return path
+
+
+def getPublishDirectory():    
+    # return os.path.join(CURRENT_PATH, 'show') 
+    return '/home/shreya/Documents/subin_crowd'
+        
+                  
+        
+        
     
         
         

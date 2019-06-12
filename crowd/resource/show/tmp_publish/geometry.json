@@ -1,0 +1,153 @@
+{
+    "comment": null, 
+    "name": "geometry", 
+    "format": "json", 
+    "data": {
+        "joint2": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.9160373454054935, 
+            "parent": "joint1", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                -8.88, 
+                0.0
+            ], 
+            "translate": [
+                -1.56, 
+                0.0, 
+                7.26
+            ], 
+            "type": 0, 
+            "side": 0, 
+            "otherType": "jaw"
+        }, 
+        "joint3": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.7928514067016125, 
+            "parent": "joint2", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                10.05, 
+                0.0
+            ], 
+            "translate": [
+                7.38, 
+                0.0, 
+                8.66
+            ], 
+            "type": 0, 
+            "side": 0, 
+            "otherType": "jaw"
+        }, 
+        "joint1": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 1.1059924470468387, 
+            "parent": null, 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                -35.97, 
+                0.0
+            ], 
+            "translate": [
+                -11.85, 
+                0.0, 
+                -0.21
+            ], 
+            "type": 0, 
+            "side": 0, 
+            "otherType": "jaw"
+        }, 
+        "joint4": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.6621486108427522, 
+            "parent": "joint3", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                23.54, 
+                0.0
+            ], 
+            "translate": [
+                13.94, 
+                0.0, 
+                7.49
+            ], 
+            "type": 0, 
+            "side": 0, 
+            "otherType": "jaw"
+        }, 
+        "joint5": {
+            "rotateOrder": 1, 
+            "rotate": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "radius": 0.6621486108427522, 
+            "parent": "joint4", 
+            "preferredAngle": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "jointOrient": [
+                0.0, 
+                0.0, 
+                0.0
+            ], 
+            "translate": [
+                17.73, 
+                0.0, 
+                5.84
+            ], 
+            "type": 0, 
+            "side": 0, 
+            "otherType": "jaw"
+        }
+    }, 
+    "tag": "tailss", 
+    "valid": true, 
+    "created_date": "2019/11/June - 12:16:14:AM", 
+    "path": "/venture/subins_tutorials/crowd/resource/show", 
+    "type": 0, 
+    "description": null
+}

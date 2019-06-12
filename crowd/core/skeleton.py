@@ -39,6 +39,7 @@ def get_skeleton_inputs(joints):
             'parent': parent
         }
         data[each.name().encode()] = values
+        each.setParent(parent)
     return data
 
 

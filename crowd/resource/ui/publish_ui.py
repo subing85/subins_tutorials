@@ -1,5 +1,7 @@
 import sys
 
+from pymel import core
+
 from PySide import QtCore
 from PySide import QtGui
 from functools import partial
@@ -7,6 +9,8 @@ from functools import partial
 from crowd import resource
 from crowd.utils import platforms
 from crowd.api import crowdPublish
+
+from crowd.resource.ui import comment_ui
 
 
 reload(crowdPublish)
@@ -23,12 +27,15 @@ window.show()
 class Connect(QtGui.QWidget):
 
     def __init__(self, type, parent=None):
-        super(Connect, self).__init__(parent=None)
-
-        self.publish_type = type
+        super(Connect, self).__init__(platforms.get_qwidget())
+        self.type = type
         self.publish_heading = '[Subin CROwd]\t%s Publish' % (
-            self.publish_type)
-
+            self.type)
+        self.validate_bundles = {}
+        self.extract_bundles = {}
+        self.global_result = []
+        self.global_extract = []
+        
         valid = platforms.has_valid()
         if not valid:
             message = '{}\n\nPlease download the proper version from\n{}'.format(
@@ -130,8 +137,7 @@ class Connect(QtGui.QWidget):
         self.verticallayout_extract = QtGui.QVBoxLayout(self.groupbox_extract)
         self.verticallayout_extract.setObjectName('verticallayout_extract')
         self.verticallayout_extract.setSpacing(4)
-        self.verticallayout_extract.setContentsMargins(10, 10, 5, 5)
-        
+        self.verticallayout_extract.setContentsMargins(10, 10, 5, 5)        
         
         self.scrollarea_extract = QtGui.QScrollArea(self)
         self.scrollarea_extract.setObjectName('scrollarea_validate')
@@ -160,16 +166,16 @@ class Connect(QtGui.QWidget):
         self.horizontallayout_publish.setObjectName('horizontalLayout_publish')
         self.horizontallayout_publish.setSpacing(4)
 
-        self.button_testRun = QtGui.QPushButton(self.groupbox_publish)
-        self.button_testRun.setObjectName('button_testRun')
-        self.button_testRun.setText('Test Run')
-
-        self.horizontallayout_publish.addWidget(self.button_testRun)
+        self.button_testrun = QtGui.QPushButton(self.groupbox_publish)
+        self.button_testrun.setObjectName('button_testrun')
+        self.button_testrun.setText('Test Run')
+        self.button_testrun.clicked.connect(self.test_run)
+        self.horizontallayout_publish.addWidget(self.button_testrun)
 
         self.button_publish = QtGui.QPushButton(self.groupbox_publish)
         self.button_publish.setObjectName('button_publish')
         self.button_publish.setText('Publish')
-
+        self.button_publish.clicked.connect(self.publish)
         self.horizontallayout_publish.addWidget(self.button_publish)
 
         self.verticallayout_publish.addLayout(self.horizontallayout_publish)
@@ -182,30 +188,28 @@ class Connect(QtGui.QWidget):
         self.verticallayout_publish.addWidget(self.progressbar)
 
     def modify_ui(self):
-        reload(resource)
         data = resource.getPublishTypes()
         self.combobox_input.addItems(data)
-        self.combobox_input.setCurrentIndex(data.index(self.publish_type))
+        self.combobox_input.setCurrentIndex(data.index(self.type))
         self.combobox_input.setEnabled(False)
 
     def load_validate(self):
-        crowd_publish = crowdPublish.Publish(type=self.publish_type)
+        crowd_publish = crowdPublish.Publish(type=self.type)
         validator_bundles = crowd_publish.getValidate(valid=True)
-        self.load_buldles(
+        self.validate_bundles = self.load_buldles(
             'validate', validator_bundles, self.gridlayout_validate)
 
     def load_extract(self):
-        crowd_publish = crowdPublish.Publish(type=self.publish_type)
+        crowd_publish = crowdPublish.Publish(type=self.type)
         extract_bundles = crowd_publish.getExtract(valid=True)
-        self.load_buldles(
-            'extarct', extract_bundles, self.gridlayout_extract)
-        
+        self.extract_bundles = self.load_buldles(
+            'extract', extract_bundles, self.gridlayout_extract)        
         
     def load_buldles(self, type, data, layout):
         sorted_data = self.sorted_order(data)
-
         index, ing = 0, 1
-
+        bundle_data = {}
+        
         for k, v in sorted_data.items():
             for each_data in v:
                 current_dict = each_data.__dict__
@@ -236,12 +240,13 @@ class Connect(QtGui.QWidget):
                 layout.addWidget(textedit, ing, 1, 1, 2)
 
                 button_name.clicked.connect(partial(
-                    self.execute_bundle, each_data, type, button_name, textedit))
+                    self.execute_bundle, type, each_data, button_name, textedit))
                 button_open.clicked.connect(
                     partial(self.execute_bundle_detail, button_open, textedit))
-
+                bundle_data.setdefault(index, [each_data, button_name, textedit])
                 index += 1
-                ing += 2
+                ing += 2                
+        return bundle_data
 
     def decorate_widget(self, widget, lable, min, max, policy):
         widget.setText(lable)
@@ -270,17 +275,81 @@ class Connect(QtGui.QWidget):
         textedit.show()
         widget.setText('-')
 
-    def execute_bundle(self, bundle, type, widget, textedit):
-        crowd_publish = crowdPublish.Publish(type=self.publish_type)
-        if type=='validate':
-            result, value, color, data, message = crowd_publish.executeValidateModule(bundle)
-            
+    def execute_bundle(self, type, bundle, widget, textedit):
+        crowd_publish = crowdPublish.Publish(type=self.type)
+        result, value, color, data, message = crowd_publish.executeModule(bundle)
+                
         if type=='extract':
-            result, value, color, data, message = crowd_publish.executeExtractModule(bundle)
+            self.global_extract.append([data, message])
             
         widget.setStyleSheet('Text-align:left; color: {};'.format(color))
-        textedit.setText('%s\n#%s\n%s\n%s'%(bundle.__file__, result, message, data))        
+        textedit.setText('%s\n#%s\n%s\n%s'%(bundle.__file__, result, message, data))
+        self.global_result.append(value)
+        
+    def test_run(self):
+        self.global_result = []
+        self.global_extract = [] 
+        data = [self.validate_bundles, self.extract_bundles]
+        type = ['validate', 'extract']
+        for x, each_data in enumerate(data):        
+            for index, bundle_data in each_data.items():                
+                self.execute_bundle(type[x], bundle_data[0], bundle_data[1], bundle_data[2])
+                
+    def publish(self):
+        comment_window = comment_ui.Connect(parent=platforms.get_qwidget())
+        comment_window.show()
+        
+
+        
         return
+                        
+        
+        self.test_run()     
+        if False in self.global_result:
+            QtGui.QMessageBox.warning(
+                self,'Warning', 'Can not publish,\nfix the problems and try', QtGui.QMessageBox.Ok)
+            return
+
+        if not self.type:        
+            self.type = self.combobox_input.currentText() 
+        if self.type not in resource.getPublishTypes():
+            return         
+        
+        tag = self.lineedit_input.text()          
+        if not tag:
+            return
+        
+        scene_name = core.sceneName()
+        if not scene_name:
+            return       
+
+        comment = None
+        description = 'This data contain information about <%s> publish'% self.type  
+        
+        crowd_publish = crowdPublish.Publish(
+            type=self.type, tag=tag)
+        
+        for data, name in self.global_extract:            
+            crowd_publish.do(
+                data=data,
+                name=name,
+                comment=comment,
+                description=description)
+        
+        description = 'This data contain information about <%s> publish manifest'% self.type  
+        crowd_publish.commit(
+            origin=str(scene_name), comment=None, description=description)    
+        
+        
+        print self.global_result
+        print self.global_extract
+        
+        
+        
+        
+        
+        
+        
 
 
 if __name__ == '__main__':
