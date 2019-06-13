@@ -1,6 +1,6 @@
 https://www.subins-toolkits.com/
 
-Shader Library maya 2017 0.0.1
+Shader Library maya 2018 0.0.1
 https://www.subins-toolkits.com/shader-library
 
 A free tool for store the Shader networks in Autodesk Maya.
@@ -26,15 +26,15 @@ How to run?
 
     > Un-zip the contents of the tool to your local maya source script path. Typically something like:
 
-        win C:/Documents and Settings/USERNAME/My  Documents/maya/2017/scripts
+        win C:/Documents and Settings/USERNAME/My  Documents/maya/2018/scripts
 
-        linux /home/USERNAME/maya/2017/scripts/
+        linux /home/USERNAME/maya/2018/scripts/
 
     > Start Maya
 
     > Run the following code in the Python script editor.
 
-import shaderLibrary_maya2017
-shaderLibrary_maya2017.show_window()
+import shaderLibrary_maya2018
+shaderLibrary_maya2018.show_window()
 
 

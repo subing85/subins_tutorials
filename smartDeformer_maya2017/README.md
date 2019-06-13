@@ -28,7 +28,7 @@ Features
 Tutorials
 
     How to use the tool ?
-		https://vimeo.com/315608713	    
+		https://vimeo.com/317189570    
 
 
 How to run?
