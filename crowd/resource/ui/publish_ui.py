@@ -14,6 +14,7 @@ from crowd.resource.ui import comment_ui
 
 
 reload(crowdPublish)
+reload(comment_ui)
 
 
 '''
@@ -23,14 +24,12 @@ window = publish_ui.Connect()
 window.show()
 '''
 
-
 class Connect(QtGui.QWidget):
 
     def __init__(self, type, parent=None):
-        super(Connect, self).__init__(platforms.get_qwidget())
+        super(Connect, self).__init__(parent)
         self.type = type
-        self.publish_heading = '[Subin CROwd]\t%s Publish' % (
-            self.type)
+        self.publish_heading = '[Subin CROwd]\t%s Publish' % (self.type)
         self.validate_bundles = {}
         self.extract_bundles = {}
         self.global_result = []
@@ -54,11 +53,15 @@ class Connect(QtGui.QWidget):
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
         self.width, self.height = [500, 125]
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
+        
+        self.comment = comment_ui.Connect(parent=None)
+
 
         self.setup_ui()
         self.modify_ui()
         self.load_validate()
         self.load_extract()
+        self.show()
 
     def setup_ui(self):
         self.setObjectName('publish')
@@ -296,13 +299,7 @@ class Connect(QtGui.QWidget):
                 self.execute_bundle(type[x], bundle_data[0], bundle_data[1], bundle_data[2])
                 
     def publish(self):
-        comment_window = comment_ui.Connect(parent=platforms.get_qwidget())
-        comment_window.show()
         
-
-        
-        return
-                        
         
         self.test_run()     
         if False in self.global_result:
@@ -313,42 +310,32 @@ class Connect(QtGui.QWidget):
         if not self.type:        
             self.type = self.combobox_input.currentText() 
         if self.type not in resource.getPublishTypes():
+            QtGui.QMessageBox.warning(
+                self,'Warning', 'Can not find publish type called <%s>'%self.type, QtGui.QMessageBox.Ok)            
             return         
         
         tag = self.lineedit_input.text()          
         if not tag:
+            QtGui.QMessageBox.warning(
+                self,'Warning', 'Can not find name (tag)', QtGui.QMessageBox.Ok)            
             return
-        
+                
         scene_name = core.sceneName()
         if not scene_name:
-            return       
+            return        
 
-        comment = None
         description = 'This data contain information about <%s> publish'% self.type  
         
-        crowd_publish = crowdPublish.Publish(
-            type=self.type, tag=tag)
+        self.comment.type = self.type
+        self.comment.tag = tag
+        self.comment.description = description
+        self.comment.scene_name = scene_name
+        self.comment.extract = self.global_extract       
+
+        self.comment.show()
+        self.close()       
         
-        for data, name in self.global_extract:            
-            crowd_publish.do(
-                data=data,
-                name=name,
-                comment=comment,
-                description=description)
-        
-        description = 'This data contain information about <%s> publish manifest'% self.type  
-        crowd_publish.commit(
-            origin=str(scene_name), comment=None, description=description)    
-        
-        
-        print self.global_result
-        print self.global_extract
-        
-        
-        
-        
-        
-        
+  
         
 
 

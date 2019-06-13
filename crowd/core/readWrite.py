@@ -47,9 +47,6 @@ class ReadWrite(object):
         self.file_path = os.path.join(
             self.kwargs_data['path'], self.kwargs_data['tag'], '%s.%s' % (self.kwargs_data['name'], self.kwargs_data['format']))
         
-        from pprint import pprint
-        pprint(self.kwargs_data)
-        
     def collect(self, input, type):
         result = {}
         orders = {}
@@ -127,7 +124,7 @@ class ReadWrite(object):
         self.kwargs_data['data'] = data
         with open(self.file_path, 'w') as file:
             file.write(json.dumps(self.kwargs_data, indent=4))
-        print 'write success!.', self.file_path
+        print 'write success!...', '<%s>'%self.file_path
 
     def commit(self, force=False):
         keys = [
@@ -146,9 +143,6 @@ class ReadWrite(object):
         ]        
         pyton_data = []
         dict_data = {}
-        
-        from pprint import pprint
-        pprint(self.kwargs_data)
         for each_key in keys:            
             if each_key not in self.kwargs_data:
                 continue
@@ -161,7 +155,7 @@ class ReadWrite(object):
         with open(self.file_path, 'w') as file:
             # file.write('\n'.join(pyton_data))
             file.write(json.dumps(dict_data, indent=4))
-            
+        print 'write success!...', '<%s>'%self.file_path    
         return True      
 
     def force(self):

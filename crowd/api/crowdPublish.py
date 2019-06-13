@@ -3,6 +3,7 @@ import time
 import logging
 import pkgutil
 import shutil
+import sqlite3
 
 from datetime import datetime
 
@@ -131,8 +132,7 @@ class Publish(object):
         rw.write(data, force=True)
         self.components.setdefault(name, rw.file_path)
 
-    def commit(self, origin=None, comment=None, description=None):
-        
+    def commit(self, origin=None, comment=None, description=None):        
         source = os.path.join(
             self.directory, self.tag, 'scene%s'%os.path.splitext(origin)[-1])         
         
@@ -150,7 +150,7 @@ class Publish(object):
             fm='man'
             )       
         rw.commit(force=True)        
-        current_time = time.time() 
-                
+        current_time = time.time()                 
         shutil.copy2(origin, source)            
-        os.utime(source,(current_time, current_time))          
+        os.utime(source,(current_time, current_time))
+        print 'write success!...', '<%s>'% source  

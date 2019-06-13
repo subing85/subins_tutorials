@@ -43,6 +43,9 @@ def getPublishResource(type=None):
 def getPublishDirectory():    
     # return os.path.join(CURRENT_PATH, 'show') 
     return '/home/shreya/Documents/subin_crowd'
+
+def getDBDirectory():
+    return '/home/shreya/Documents/sqlite_db'
         
                   
         
