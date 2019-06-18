@@ -30,9 +30,10 @@ class Connect(QtGui.QWidget):
         self.setup_ui()
         
     def setup_ui(self):
-        self.setWindowTitle('Comment')
         self.setObjectName('comment')
+        self.setWindowTitle('Comment 0.0.1')        
         self.resize(400, 320)
+        self.setStyleSheet('font: 14pt \"Sans Serif\";')
         self.verticallayout = QtGui.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
         self.label = QtGui.QLabel(self)
@@ -56,7 +57,7 @@ class Connect(QtGui.QWidget):
                 self,'Warning', 'Can not publish with out comment!...', QtGui.QMessageBox.Ok)
             return
                     
-        crowd_publish = crowdPublish.Publish(
+        crowd_publish = crowdPublish.Connect(
             type=self.type, tag=self.tag)
         
         for data, name in self.extract:            

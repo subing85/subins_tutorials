@@ -20,7 +20,7 @@ class InputJoint(object):
     def __init__(self, input=None):
         print '\n%s WIP. %s' % (MODULE_TYPE, COMMENTS)
         self.input = input
-        crowd_publish = crowdPublish.Publish()
+        crowd_publish = crowdPublish.Connect()
         self.result = self.check()
 
     def check(self):
@@ -29,7 +29,7 @@ class InputJoint(object):
 
     def get_nodes(self):
         '''
-        crowd_publish = crowdPublish.Publish(type=self.publish_type)
+        crowd_publish = crowdPublish.Connect(type=self.publish_type)
         bundle_keys = crowd_publish.getBundleKeys()
         '''
         default_nodes = ['persp', 'top', 'front', 'side']

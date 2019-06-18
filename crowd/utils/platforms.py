@@ -1,7 +1,7 @@
 '''
 platforms.py 0.0.1 
 Date: January 15, 2019
-Last modified: January 26, 2019
+Last modified: June 14, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -16,7 +16,6 @@ Description
 import platform
 
 from crowd.utils import config
-reload(config)
 
 
 def has_valid():
@@ -24,15 +23,26 @@ def has_valid():
     operating_system, application, version, python = get_maya_platform()
     result = {True, 'Support to your maya version'}
     if tool_app not in application:
-        result = {False: 'Only support \"%s %s\"' %
-                  (tool_app, tool_ver)}
+        result = {
+            False: 'Only support \"%s %s\"' % (tool_app, tool_ver)
+        }
         return result
     if tool_ver not in version:
-        result = {False: 'Only support \"%s %s\"' %
-                  (tool_app, tool_ver)}
+        result = {
+            False: 'Only support \"%s %s\"' % (tool_app, tool_ver)
+        }
         return result
     return result
 
+def had_tool_valid():
+    tool_oss, tool_app, tool_ver, tool_py = config.get_conig()
+    python = platform.python_version()
+    result = {True, 'Support to your Python version'}
+    if tool_py.split('.')[0] != python.split('.')[0]:
+        result = {
+            False: 'Only support \"Python %s.*.*\"' % (tool_py.split('.')[0])
+        }
+    return result     
 
 def get_maya_platform():
     from maya import cmds
@@ -65,3 +75,11 @@ def get_main_window():
     maya_windows = [each_win for each_win in cmds.lsUI(
         wnd=True) if cmds.window(each_win, q=True, mw=True)]
     return maya_windows[0]
+
+
+def remove_exists_window(object_name):
+    from maya import OpenMayaUI
+    from pymel import core
+    wind = OpenMayaUI.MQtUtil()
+    if wind.findWindow(object_name):
+        core.deleteUI(object_name)

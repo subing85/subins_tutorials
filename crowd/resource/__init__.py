@@ -40,12 +40,22 @@ def getPublishResource(type=None):
     return path
 
 
+def getCreateResource(type=None):    
+    path = os.path.join(CURRENT_PATH, 'create')
+    if type:
+        path = os.path.join(CURRENT_PATH, 'create', type)
+    if not os.path.isdir(path):
+        logging.warning('not found such path called \"%s\"'%path)
+        return    
+    return path
+
+
 def getPublishDirectory():    
     # return os.path.join(CURRENT_PATH, 'show') 
     return '/home/shreya/Documents/subin_crowd'
 
-def getDBDirectory():
-    return '/home/shreya/Documents/sqlite_db'
+def getDatabaseDirectory():
+    return 'crowd', '/home/shreya/Documents/subin_crowd/database'
         
                   
         

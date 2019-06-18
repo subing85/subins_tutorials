@@ -46,7 +46,7 @@ class ReadWrite(object):
         self.kwargs_data = self.get_input_data(long_names, kwargs)
         self.file_path = os.path.join(
             self.kwargs_data['path'], self.kwargs_data['tag'], '%s.%s' % (self.kwargs_data['name'], self.kwargs_data['format']))
-        
+
     def collect(self, input, type):
         result = {}
         orders = {}
@@ -112,19 +112,19 @@ class ReadWrite(object):
         '''
         if not force:
             if os.path.isfile(self.file_path):
-                warnings.warn('already exists the file called %s' %
-                              self.file_path, Warning)
+                warnings.warn(
+                    'already exists the file called %s' % self.file_path, Warning)
                 return
         if force:
             self.force()
 
         if not os.path.isdir(os.path.dirname(self.file_path)):
             os.makedirs(os.path.dirname(self.file_path))
-            
+
         self.kwargs_data['data'] = data
         with open(self.file_path, 'w') as file:
             file.write(json.dumps(self.kwargs_data, indent=4))
-        print 'write success!...', '<%s>'%self.file_path
+        print 'write success!...', '<%s>' % self.file_path
 
     def commit(self, force=False):
         keys = [
@@ -140,23 +140,24 @@ class ReadWrite(object):
             'origin',
             'comment',
             'valid'
-        ]        
+        ]
         pyton_data = []
         dict_data = {}
-        for each_key in keys:            
+        for each_key in keys:
             if each_key not in self.kwargs_data:
                 continue
-            pyton_data.append('%s = %s'%(each_key, self.kwargs_data[each_key]))
+            pyton_data.append('%s = %s' %
+                              (each_key, self.kwargs_data[each_key]))
             dict_data.setdefault(each_key, self.kwargs_data[each_key])
-            
+
         if not os.path.isdir(os.path.dirname(self.file_path)):
-            os.makedirs(os.path.dirname(self.file_path)) 
-            
+            os.makedirs(os.path.dirname(self.file_path))
+
         with open(self.file_path, 'w') as file:
             # file.write('\n'.join(pyton_data))
             file.write(json.dumps(dict_data, indent=4))
-        print 'write success!...', '<%s>'%self.file_path    
-        return True      
+        print 'write success!...', '<%s>' % self.file_path
+        return self.file_path
 
     def force(self):
         if os.path.isfile(self.file_path):

@@ -1,20 +1,24 @@
 import os
+import json
 import time
 import logging
 import pkgutil
 import shutil
-import sqlite3
 
+
+from pprint import pprint
 from datetime import datetime
 
 from crowd import resource
 from crowd.core import readWrite
+from crowd.core import database
 
 reload(resource)
 reload(readWrite)
+reload(database)
 
 
-class Publish(object):
+class Connect(object):
 
     def __init__(self, **kwargs): 
         self.type = None
@@ -46,16 +50,12 @@ class Publish(object):
         if not self.resource_path:
             return
         module_data = []
-        modules = []
         for module_loader, name, ispkg in pkgutil.iter_modules([self.resource_path]):
-            modules.append(name)
             loader = module_loader.find_module(name)
             module = loader.load_module(name)
             if not hasattr(module, 'VALID'):
                 continue
             module_data.append(module)
-        if not self.type:
-            return modules
         return module_data
 
     def getValidate(self, valid=True):
@@ -149,8 +149,79 @@ class Publish(object):
             na='manifest',
             fm='man'
             )       
-        rw.commit(force=True)        
+        manifest = rw.commit(force=True)
         current_time = time.time()                 
         shutil.copy2(origin, source)            
         os.utime(source,(current_time, current_time))
-        print 'write success!...', '<%s>'% source  
+        
+        db = database.Database(table=self.type)
+        db.create()
+        db.insert(tag=self.tag, manifest=os.path.dirname(source))        
+        print 'write success!...', '<%s>'% source        
+        
+    def getTypes(self):
+        db = database.Database()
+        tables = db.get_tables()
+        return tables
+    
+    def getTables(self):
+        db = database.Database(table=self.type)
+        tags = db.get_columns()
+        return tags
+               
+    def getDatas(self):
+        db = database.Database(table=self.type)
+        data = db.select()
+        return data
+    
+    def getData(self):
+        datas = self.getDatas()        
+        for each in datas:
+            if self.tag not in each:
+                continue
+            return each
+        
+    def getSpecificDatas(self, key):    
+        data = self.getDatas()
+        keys = []        
+        for each in data:
+            keys.append(each[key])            
+        return keys             
+            
+    def getTags(self):    
+        return self.getSpecificDatas(1)
+                
+    def getDirectory(self):
+        data = self.getData() 
+        return data[4]   
+
+    def getManifestData(self, show=False):
+        path = self.getDirectory()
+        rw = readWrite.ReadWrite()        
+        rw.file_path = os.path.join(path, 'manifest.man')
+        infom_dict = rw.read(all=True)
+        if show:
+            print json.dumps(infom_dict, indent=4)        
+        return infom_dict
+    
+    def getLocations(self):
+        infom_dict = self.getManifestData(show=False)        
+        return infom_dict['location']
+    
+    def getInputs(self, show=False):
+        locations = self.getLocations()
+        input_data = {}
+        for k, v in locations.items():
+            rw = readWrite.ReadWrite()        
+            rw.file_path = v   
+            current_data = rw.read(all=False)            
+            input_data.setdefault(k, current_data)        
+        if show:
+            print json.dumps(input_data, indent=4)
+            print json.dumps(locations, indent=4) 
+        return input_data
+                
+        
+        
+        
+            
