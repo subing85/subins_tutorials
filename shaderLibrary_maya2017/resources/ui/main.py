@@ -1,7 +1,7 @@
 '''
 main.py 0.0.1 
 Date: January 15, 2019
-Last modified: June 13, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -55,12 +55,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.model = model.Model(parent=None)
         self.tool_kit_object, self.tool_kit_name, self.version = platforms.get_tool_kit()
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
-
         # to check the preferencees
         resource_path = resources.getResourceTypes()['preference'].encode()
-        self.rw = readWrite.ReadWrite(t='preference', path=resource_path,
-                                      format='json', name='library_preferences', tag='shader_library')
-
+        self.rw = readWrite.ReadWrite(
+            t='preference',
+            path=resource_path,
+            format='json',
+            name='library_preferences',
+            tag='shader_library')
         self.library_paths = self.rw.get_library_paths()
         if cmds.dockControl(self.tool_kit_object, q=1, ex=1):
             cmds.deleteUI(self.tool_kit_object, ctl=1)
@@ -95,6 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.listwidget.itemDoubleClicked.connect(
             partial(self.builds, 'build', self.listwidget))  # Load Pose to UI
         self.checkbox_build = self.model.checkbox_build
+        self.checkbox_assign = self.model.checkbox_assign
         self.button_build = self.model.button_build
         self.button_build.clicked.connect(
             partial(self.builds, 'build', self.listwidget))
@@ -211,8 +214,12 @@ class MainWindow(QtWidgets.QMainWindow):
         object_name = str(self.objectName())
         self.floating_layout = cmds.paneLayout(
             cn='single', w=self.width, p=platforms.get_main_window())
-        cmds.dockControl(self.tool_kit_object, l=self.tool_kit_titile, area='right',
-                         content=self.floating_layout, allowedArea=['right', 'left'])
+        cmds.dockControl(
+            self.tool_kit_object,
+            l=self.tool_kit_titile,
+            area='right',
+            content=self.floating_layout,
+            allowedArea=['right', 'left'])
         cmds.control(object_name, e=1, p=self.floating_layout)
 
     def show_preference(self):
@@ -270,7 +277,10 @@ class MainWindow(QtWidgets.QMainWindow):
             current_path = os.path.join(tool_tip, folder_name)
         if os.path.isdir(current_path):
             QtWidgets.QMessageBox.warning(
-                self, 'Warning', 'Already found the folder.\n%s' % current_path, QtWidgets.QMessageBox.Ok)
+                self,
+                'Warning',
+                'Already found the folder.\n%s' % current_path,
+                QtWidgets.QMessageBox.Ok)
             return
         result, message = self.folder.create(folder_path=current_path)
         if not result:
@@ -290,8 +300,8 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not self.treewidget.selectedItems():
             QtWidgets.QMessageBox.warning(
-                self, 
-                'Warning', 
+                self,
+                'Warning',
                 'Not found any selection\nSelect the folder and try',
                 QtWidgets.QMessageBox.Ok)
             return
@@ -329,8 +339,10 @@ class MainWindow(QtWidgets.QMainWindow):
             current_path = str(each_item.toolTip(0))
             result, message = self.folder.remove(folder_path=current_path)
             if not result:
-                QtWidgets.QMessageBox.warning(self, 'Warning', '%s\n%s' % (
-                    current_path, message), QtWidgets.QMessageBox.Ok)
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    'Warning', '%s\n%s' % (current_path, message),
+                    QtWidgets.QMessageBox.Ok)
                 OpenMaya.MGlobal.displayWarning('Remove folder - faild!...')
         self.load_library_folders(self.treewidget)
         self.listwidget.clear()
@@ -385,8 +397,9 @@ class MainWindow(QtWidgets.QMainWindow):
             icon = QtGui.QIcon()
             icon_path = each_file.replace(
                 '.%s' % self.publish_format, '.%s' % self.image_format)
-            icon.addPixmap(QtGui.QPixmap(icon_path),
-                           QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(
+                QtGui.QPixmap(icon_path),
+                QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item.setIcon(icon)
             item.setTextAlignment(QtCore.Qt.AlignHCenter |
                                   QtCore.Qt.AlignBottom)
@@ -398,8 +411,9 @@ class MainWindow(QtWidgets.QMainWindow):
         valid = studio_shader.had_valid(file)
         if valid:
             return
-        item.setFlags(QtCore.Qt.ItemIsSelectable |
-                      QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
+        item.setFlags(
+            QtCore.Qt.ItemIsSelectable |
+            QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
 
     def collect_child_items(self, parent):
         for index in range(parent.childCount()):
@@ -413,7 +427,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(
                 self,
                 'Warning',
-                'Not found any folder selection.\nSelect the folder and try!...', 
+                'Not found any folder selection.\nSelect the folder and try!...',
                 QtWidgets.QMessageBox.Ok)
             OpenMaya.MGlobal.displayWarning('Not found any folder selection.')
             return
@@ -431,7 +445,7 @@ class MainWindow(QtWidgets.QMainWindow):
             OpenMaya.MFn.kMesh)
         if not geometry_dag_paths.length():
             QtWidgets.QMessageBox.warning(
-                self,
+                self, 
                 'Warning',
                 'Not found any Polygon Geometry in your selection!...',
                 QtWidgets.QMessageBox.Ok)
@@ -462,8 +476,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if replay != QtWidgets.QMessageBox.Yes:
                 return
         user_comment = self.model.textedit_history.toPlainText()
-        result = studio_shader.save(current_path, label,
-                                    self.image_object, user_comment=user_comment)
+        result = studio_shader.save(
+            current_path, label, self.image_object, user_comment=user_comment)
         self.load_current_folder(self.treewidget)
         self.clear_publish()
         message = 'Publish success!...'
@@ -489,7 +503,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.button_publish.show()
         self.button_build.hide()
         self.checkbox_build.hide()
-        self.checkbox_build.setChecked(False)
+        # self.checkbox_build.setChecked(False)
+        self.checkbox_assign.hide()
+        # self.checkbox_assign.setChecked(False)
         self.textedit_history.clear()
         self.textedit_history.setReadOnly(False)
 
@@ -507,20 +523,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.button_publish.hide()
         self.button_build.show()
         self.checkbox_build.show()
+        self.checkbox_assign.show()
         publish_path = current_items[-1].toolTip()
         self.currnet_publish = publish_path
         studio_shader = studioShader.Shader(
             path=publish_path, geometry_dag_path=None)
-        data = studio_shader.create(False, fake=True)
-        comment = [data['comment'], 'author : %s' % data['author'], data['tag'],
-                   data['#copyright'],  'user : %s' % data['user'], data['created_date']]
+        data = studio_shader.create(False, False, fake=True)
+        comment = [
+            data['comment'],
+            'author : %s' % data['author'],
+            data['tag'],
+            data['#copyright'],
+            'user : %s' % data['user'],
+            data['created_date']
+        ]
         self.textedit_history.setText('\n'.join(comment))
         self.textedit_history.setReadOnly(True)
         self.lineEdit_label.setText(os.path.basename(
             os.path.splitext(publish_path)[0]))
         self.model.image_to_button(path=studio_shader.get_image(publish_path))
         if tag == 'build':
-            result = studio_shader.create(self.checkbox_build.isChecked())
+            result = studio_shader.create(
+                self.checkbox_build.isChecked(),
+                self.checkbox_assign.isChecked(),
+            )
             if False in result:
                 OpenMaya.MGlobal.displayWarning(
                     'Build Failed!... %s' % result[False])
@@ -536,11 +562,13 @@ class MainWindow(QtWidgets.QMainWindow):
         current_image = studio_shader.get_image(self.currnet_publish)
         new_name = '%s' % lineedit.text()
         model_format = os.path.splitext(self.currnet_publish)[-1]
-        self.folder.rename(folder_path=self.currnet_publish,
-                           name='%s%s' % (new_name, model_format))
+        self.folder.rename(
+            folder_path=self.currnet_publish,
+            name='%s%s' % (new_name, model_format))
         image_format = os.path.splitext(current_image)[-1]
-        self.folder.rename(folder_path=current_image,
-                           name='%s%s' % (new_name, image_format))
+        self.folder.rename(
+            folder_path=current_image,
+            name='%s%s' % (new_name, image_format))
         self.load_current_folder(self.treewidget)
 
 

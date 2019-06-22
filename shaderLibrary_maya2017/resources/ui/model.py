@@ -1,7 +1,7 @@
 '''
 model.py 0.0.1 
 Date: January 15, 2019
-Last modified: June 13, 2019
+Last modified: February 10, 2019
 Author: Subin. Gopi(subing85@gmail.com)
 
 # Copyright(c) 2019, Subin Gopi
@@ -114,9 +114,16 @@ class Model(QtWidgets.QWidget):
         self.checkbox_build = QtWidgets.QCheckBox(self.groupbox_model)
         self.checkbox_build.setObjectName('checkbox_build')
         self.checkbox_build.setText('Assign To Object')
-        self.checkbox_build.setToolTip('Assign To Object, if object is exists')
+        self.checkbox_build.setToolTip(
+            'Assign to the object, if object is exists')
         self.checkbox_build.hide()
         self.verticallayout_model.addWidget(self.checkbox_build)
+        self.checkbox_assign = QtWidgets.QCheckBox(self.groupbox_model)
+        self.checkbox_assign.setObjectName('checkbox_assign')
+        self.checkbox_assign.setText('Assign To Selected Object')
+        self.checkbox_assign.setToolTip('Assign to selected object')
+        self.checkbox_assign.hide()
+        self.verticallayout_model.addWidget(self.checkbox_assign)
         self.button_build = QtWidgets.QPushButton(self.groupbox_model)
         self.button_build.setObjectName('button_build')
         self.button_build.setText('Build')
@@ -144,7 +151,7 @@ class Model(QtWidgets.QWidget):
         image_object, image_path = self.studio_image.create()
         if not image_path:
             QtWidgets.QMessageBox.warning(
-                self, 'Warning', 'Not able to process snap shot!..', QtWidgets.QMessageBox.Ok)
+                self, 'Warning', 'Not able to process snap shot!..', QtGui.QMessageBox.Ok)
             OpenMaya.MGlobal.displayWarning('Snap shot - faild!...')
             return
         self.image_to_button(button, image_path, self._width, self._height)
