@@ -1,4 +1,4 @@
-https://www.subins-toolkits.com/
+assetLibrary_releasehttps://www.subins-toolkits.com/
 
 Model Library 0.0.1
 
@@ -33,7 +33,7 @@ How to run?
 
     > Run the following code in the Python script editor.
 
-import modelLibrary
-modelLibrary.show_window()
+	import modelLibrary
+	modelLibrary.show_window()
 
 

@@ -1,0 +1,24 @@
+{
+    "created_by": "subin gopi", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "#copyright": "(c) 2018, Subin Gopi All rights reserved.", 
+    "date": "December:01:2018 - 09:20:01:PM",
+    "last_modified": "December:01:2018 - 09:20:01:PM",         
+    "comment": "Input keys", 
+    "description": "inputs",    
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "valid": true,
+   	"type": "input_from", 
+    "data": {
+	    "skincluster": {
+	        "order": 2, 
+	        "label": "Skincluster",
+	        "tooltip": "Skincluster"        
+	    }, 
+	    "cluster": {
+	        "order": 1, 
+	        "label": "Cluster",
+	        "tooltip": "Cluster"        
+	    } 
+	}
+}

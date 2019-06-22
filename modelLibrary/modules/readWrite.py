@@ -36,7 +36,7 @@ class ReadWrite(object):
         type = 'generic'
         valid = True
         data = None
-        self.tag = None
+        tag = 'generic'
         self.path = tempfile.gettempdir()
         self.format = 'json'
         self.name = None
@@ -59,7 +59,7 @@ class ReadWrite(object):
         if 'data' in kwargs:
             data = kwargs['data']
         if 'tag' in kwargs:
-            self.tag = kwargs['tag']
+            tag = kwargs['tag']
         self.datas = {'comment': comment,
                       'created_date': created_date,
                       'author': 'Subin Gopi',
@@ -67,7 +67,7 @@ class ReadWrite(object):
                       'warning': '# WARNING! All changes made in this file will be lost!',
                       'description': description,
                       'type': type,
-                      'tag': self.tag,
+                      'tag': tag,
                       'valid': valid,
                       'user': getpass.getuser(),
                       'data': data
@@ -107,11 +107,7 @@ class ReadWrite(object):
     def get_data(self):
         data = self.get_all()
         if not data:
-            return None        
-        if not self.tag:
-            return data['data']      
-        if data['tag'] != self.tag:
-            return None            
+            return None
         return data['data']
 
     def get_info(self):
