@@ -87,9 +87,17 @@ class Shader(studioMaya.Maya):
         valid = True
         data = net_data
         tag = self.tool_kit_object
-        rw = readWrite.ReadWrite(c=comment, cd=created_date,
-                                 d=description, t=type, v=valid, data=data, tag=tag,
-                                 path=file_path, name=name, format='shader')
+        rw = readWrite.ReadWrite(
+            c=comment,
+            cd=created_date,
+            d=description,
+            t=type,
+            v=valid,
+            data=data,
+            tag=tag,
+            path=file_path,
+            name=name,
+            format='shader')
         result, shader_path = rw.create()
         if False in result:
             return result
