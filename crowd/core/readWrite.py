@@ -11,10 +11,10 @@ from crowd.core import cdata
 reload(cdata)
 
 
-class ReadWrite(object):
+class Connect(object):
 
     def __init__(self, **kwargs):
-        super(ReadWrite, self).__init__()
+        super(Connect, self).__init__()
         self.comment = 'subin gopi tool kits Subin Crowds'
         self.created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         self.description = 'This data contain information about subin gopi tool kits crowd'

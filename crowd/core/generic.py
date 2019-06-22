@@ -3,7 +3,6 @@ import logging
 from pymel import core
 
 
-
 def disable_attributes(node, attributs=None):
     if not attributs:
         attributs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz', 'v']
@@ -46,10 +45,10 @@ def find_ik_skeletons(skeletons, data):
     return ik_skeletons
 
 
-def get_skeletons(root, skeletons):    
-    current_data = {}    
+def get_skeletons(root, skeletons):
+    current_data = {}
     for k, v in skeletons.items():
-        if root!=k.name():
+        if root != k.name():
             continue
         current_data = {k: v}
         break
@@ -71,11 +70,12 @@ def get_skeletons(root, skeletons):
 
 def get_root_children():
     roots = get_root_joints()
-    print 'roots\t', roots
     result = {}
     for each_root in roots:
+        print '\t', each_root
         children = get_children(each_root)
         result.setdefault(each_root, list(children))
+
     return result
 
 
@@ -84,7 +84,7 @@ def get_root_joints():
     root_joints = []
     for each_joint in joints:
         other_type = each_joint.getAttr('otherType')
-        if other_type != 'root':
+        if other_type != 'world':
             continue
         root_joints.append(each_joint)
     return root_joints
@@ -96,11 +96,41 @@ def get_children(root):
     children = []
     while nodes:
         node = nodes.pop()
-        if node.type()!='joint':
-            continue        
+        if node.type() != 'joint':
+            continue
         if node in stack:
-            continue        
+            continue
         children = node.getChildren()
         stack.add(node)
         nodes.extend(children)
     return stack
+
+
+def get_hierarchy(root, types=None):
+    if isinstance(root, str):
+        root = core.PyNode(root)
+    nodes = []
+    seen = set()
+    stack = [root]
+    index = 0
+    while stack:
+        node = stack.pop()
+        if node in seen:
+            continue
+        if types:
+            for each_type in types:
+                if node.type() != each_type:
+                    continue
+                nodes.append(node)
+                break
+        else:
+            nodes.append(node)
+        stack.extend(node.getChildren())
+        seen.add(node)
+        index += 1
+    return nodes
+
+
+
+
+

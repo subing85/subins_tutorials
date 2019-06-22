@@ -1,5 +1,20 @@
+import logging
 from pymel import core
 from maya import OpenMaya
+
+
+def get_root_skeletons():
+    default_nodes = ['persp', 'top', 'front', 'side']
+    maya_nodes = core.ls(assemblies=True)
+    nodes = [each.name().encode()
+             for each in maya_nodes if each.name() not in default_nodes]
+    if len(nodes) > 1:
+        logging.warning('#valueError: more than one hierarchy found!..')
+        return None, 'more than one hierarchy found!..'
+    if len(nodes) == 0:
+        logging.warning('#valueError: not found any hierarchy!..')
+        return None, 'not found any hierarchy!..'
+    return nodes, 'good hierarchy!..'
 
 
 def get_skeleton_inputs(joints):
@@ -54,10 +69,10 @@ def create_skeleton(tag, inputs, position=None, parent=None):
         node_name = name
         if core.ls('{}*'.format(name)):
             node_name = '{}{}'.format(name, len(core.ls('{}*'.format(name))))
-        mfn_dag_node.setName(node_name)        
+        mfn_dag_node.setName(node_name)
         mdag_path = OpenMaya.MDagPath()
         mfn_dag_node.getPath(mdag_path)
-        add_tag(mdag_path.node(), tag=tag)        
+        add_tag(mdag_path.node(), tag=tag)
         joint_dag_path = OpenMaya.MDagPath()
         mfn_dag_node.getPath(joint_dag_path)
         parent_data.setdefault(name, joint_dag_path)
@@ -69,24 +84,25 @@ def create_skeleton(tag, inputs, position=None, parent=None):
             try:
                 node.set(values)
             except:
-                print 'error\t', attribute               
-                
+                print 'error\t', attribute
+
     for k, v in parent_data.items():
         root = parent_data[k]
         if not inputs[k]['parent']:
             continue
         parent = parent_data[inputs[k]['parent']]
         core.PyNode(root).setParent(core.PyNode(parent))
-          
-    any_node = core.PyNode(parent_data.keys()[0])    
-    root_dag_path = parent_data[any_node.root().name()] 
+
+    any_node = core.PyNode(parent_data.keys()[0])
+    root_dag_path = parent_data[any_node.root().name()]
 
     mFnTransform = OpenMaya.MFnTransform(root_dag_path)
     mvector = OpenMaya.MVector(position[0], position[1], position[2])
     mFnTransform.setTranslation(mvector, OpenMaya.MSpace.kWorld)
-            
+
     OpenMaya.MGlobal.clearSelectionList()
     return root_dag_path, parent_data
+
 
 def add_tag(mobject, tag=None):
     mfn_attribute = OpenMaya.MFnTypedAttribute()
@@ -97,13 +113,14 @@ def add_tag(mobject, tag=None):
     mfn_attribute.setReadable(False)
     mfn_attribute.setStorable(False)
     mfn_attribute.setHidden(False)
-    mfn_attribute.setChannelBox(False)     
+    mfn_attribute.setChannelBox(False)
     mfn_dependency_node = OpenMaya.MFnDependencyNode()
-    mfn_dependency_node.setObject(mobject)    
+    mfn_dependency_node.setObject(mobject)
     mfn_dependency_node.addAttribute(skeleton_attribute)
     if tag:
         plug = mfn_dependency_node.findPlug('crowd_type')
         plug.setString(tag)
+
 
 '''
 from crowd.api import crowdSkeleton

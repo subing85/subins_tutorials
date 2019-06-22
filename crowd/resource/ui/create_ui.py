@@ -13,46 +13,8 @@ Description
     None.
 '''
 
-
 import sys
 
-from PySide import QtCore
-from PySide import QtGui
-from functools import partial
-
-from crowd import resource
-from crowd.utils import platforms
-from crowd.api import crowdSkeleton
-from crowd.api.old import puppet
-
-reload(platforms)
-reload(crowdSkeleton)
-reload(puppet)
-
-'''
-from crowd.resource.ui.old import skeleton_ui
-reload(skeleton_ui)
-window = skeleton_ui.Connect()
-window.show()
-'''
-'''
-publish_ui.py 0.0.1 
-Date: June 10, 2019
-Last modified: June 14, 2019
-Author: Subin. Gopi(subing85@gmail.com)
-
-# Copyright(c) 2019, Subin Gopi
-# All rights reserved.
-
-# WARNING! All changes made in this file will be lost!
-
-Description
-    None.
-'''
-
-import sys
-
-from pymel import core
 from PySide import QtCore
 from PySide import QtGui
 from functools import partial
@@ -62,7 +24,6 @@ from crowd.utils import platforms
 from crowd.api import crowdPublish
 from crowd.api import crowdCreate
 
-reload(crowdPublish)
 reload(crowdCreate)
 
 
@@ -87,12 +48,12 @@ class Connect(QtGui.QWidget):
             QtGui.QMessageBox.critical(
                 self, 'Critical', message, QtGui.QMessageBox.Ok)
             return
+
         tool_kit = platforms.get_tool_kit()
-        self.tool_kit_object, self.tool_kit_name, self.version = tool_kit['publish']
+        self.tool_kit_object, self.tool_kit_name, self.version = tool_kit['create']
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
         self.width, self.height = [500, 125]
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
-
         self.setup_ui()
         self.modify_ui()
 
@@ -136,18 +97,38 @@ class Connect(QtGui.QWidget):
         self.button_create = QtGui.QPushButton(self)
         self.button_create.setObjectName('button_create')
         self.button_create.setText('Create')
-        self.button_create.clicked.connect(self.create)
         self.horizontallayout_input.addWidget(self.button_create)
+        self.button_create.clicked.connect(
+            partial(self.create, self.combobox_input))
 
     def modify_ui(self):
-        publish = crowdPublish.Connect(type=self.type)
+        current_type = self.type
+        if self.type == 'puppet':
+            current_type = 'skeleton'
+        publish = crowdPublish.Connect(type=current_type)
         tags = publish.getTags()
+        if not tags:
+            QtGui.QMessageBox.warning(
+                self,
+                'Warning',
+                'Not found any <%s>!...' % (self.type),
+                QtGui.QMessageBox.Ok)
+            return
         self.combobox_input.addItems(tags)
 
-    def create(self):
-        current_tag = str(self.combobox_input.currentText())
-        ccreate = crowdCreate.Connect(type=self.type, tag=current_tag)
-        ccreate.do()
+    def create(self, combobox):
+        current_tag = str(combobox.currentText())
+        if not current_tag:
+            QtGui.QMessageBox.warning(
+                self,
+                'Warning',
+                'Not found any <%s> publish!...' % self.type,
+                QtGui.QMessageBox.Ok
+            )
+            return
+        c_create = crowdCreate.Connect(type=self.type, tag=current_tag)
+        c_create.do()
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

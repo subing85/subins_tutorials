@@ -4,7 +4,10 @@ import logging
 CURRENT_PATH = os.path.dirname(__file__)
 
 
-def getInputPath(input):
+def getInputPath():
+    return os.path.join(CURRENT_PATH, 'inputs')
+
+def getPath(input):
     return os.path.join(CURRENT_PATH, input)
 
 def getSkeleonPath():

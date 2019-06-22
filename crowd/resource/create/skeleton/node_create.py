@@ -6,19 +6,20 @@ BUNDLE_TYPE = 'create'
 VALID = True
 LAST_MODIFIED = 'June 16, 2019'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To Create Skeleton'
+COMMENTS = 'To create skeleton'
 VERSION = 1.0
-CLASS = 'Create'
+CLASS = 'CreateNode'
+
 
 from pymel import core
 
 from crowd.core import skeleton
 
 
-class Create(object):
+class CreateNode(object):
 
     def __init__(self, **kwargs):
-        print '\n%s WIP. %s' % (MODULE_TYPE, COMMENTS)
+        print '\n#<%s> <%s> <%s>' % (BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
         self.type = None
         self.tag = None
         self.input = None
@@ -34,8 +35,7 @@ class Create(object):
             self.position = kwargs['position']
         if 'parent' in kwargs:
             self.parent = kwargs['parent']
-
-        self.result = self.make()
+        self.result = self.make()        
 
     def make(self):
         try:
@@ -47,7 +47,7 @@ class Create(object):
 
 
 def testRun(*args):
-    input_joint = Create(tag=args[0], input=args[1])
+    input_joint = CreateNode(tag=args[0], input=args[1])
     result, data, message = input_joint.result
     print '\ntest run', result, data, message
     return result, data, message

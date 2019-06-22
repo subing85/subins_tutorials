@@ -44,7 +44,7 @@ class Shader(studioMaya.Maya):
         result = rw.has_valid()
         return result
 
-    def create(self, assign, fake=False):
+    def create(self, assign, selected, fake=False):
         rw = readWrite.ReadWrite(t='shader_net')
         rw.file_path = self.path
         if fake:
@@ -53,13 +53,27 @@ class Shader(studioMaya.Maya):
         data = rw.get_data()
         self.undoChunk('open')
         result = {True: None}
+        maya_objects = []
         if assign:  # disconnect remove exists shading_engine
             for index, shader_data in data.items():
-                self.disconnect_shader(shader_data['geometries'])
-
+                for objects in shader_data['geometries'].values():
+                    exists_objects = [
+                        each for each in objects if core.objExists(each)]
+                    maya_objects.extend(exists_objects)
+        if selected:
+            selected_objects = core.ls(sl=True)
+            for object in selected_objects:
+                try:
+                    shape_nodes = [
+                        each.name() for each in object.getShapes()]
+                except:
+                    shape_nodes = []
+                maya_objects.extend(shape_nodes)
+        if maya_objects:  # disconnect remove exists shading_engine
+            self.disconnect_shader(maya_objects)
         for index, shader_data in data.items():
             try:
-                self.create_shader_net(shader_data, assign=assign)
+                self.create_shader_net(shader_data, maya_objects)
             except Exception as error:
                 result = {False: error}
         self.undoChunk('close')
@@ -87,9 +101,17 @@ class Shader(studioMaya.Maya):
         valid = True
         data = net_data
         tag = self.tool_kit_object
-        rw = readWrite.ReadWrite(c=comment, cd=created_date,
-                                 d=description, t=type, v=valid, data=data, tag=tag,
-                                 path=file_path, name=name, format='shader')
+        rw = readWrite.ReadWrite(
+            c=comment,
+            cd=created_date,
+            d=description,
+            t=type,
+            v=valid,
+            data=data,
+            tag=tag,
+            path=file_path,
+            name=name,
+            format='shader')
         result, shader_path = rw.create()
         if False in result:
             return result
@@ -173,18 +195,10 @@ class Shader(studioMaya.Maya):
         shader_data['shading_engine'] = set_name
         return shader_data
 
-    def disconnect_shader(self, geometry_data):
-        assign_objects = []
-        for index, components in geometry_data.items():
-            for each_component in components:
-                if not core.objExists(each_component):
-                    continue
-                py_node = core.PyNode(each_component)
-                if py_node.node().name() in assign_objects:
-                    continue
-                assign_objects.append(py_node.node().name())
-
-        for each_object in assign_objects:
+    def disconnect_shader(self, objects):
+        for each_object in objects:
+            if not core.objExists(each_object):
+                continue
             m_object = self.getMObject(each_object)
             mobject_arrary = self.getObjectShadingEngine(m_object)
             for index in range(mobject_arrary.length()):
@@ -207,11 +221,10 @@ class Shader(studioMaya.Maya):
                         except:
                             pass
 
-    def create_shader_net(self, shader_data, assign=False):
+    def create_shader_net(self, shader_data, assign_components):
         node_data = shader_data['nodes']
         attribute_data = shader_data['attributes']
         connection_data = shader_data['connections']
-        geometry_data = shader_data['geometries']
         shading_engine = None
         py_nodes = {}
         for each_node, node_type in node_data.items():
@@ -256,18 +269,10 @@ class Shader(studioMaya.Maya):
                     except Exception as error:
                         print 'shader libaray warning \"connect attri\" {}\t{}\n\t{}'.format(
                             current_parent_attribute, each_child, error)
-        if not assign:
-            return True
         if not shading_engine:
             return True
-        assign_components = []
-        for index, components in geometry_data.items():
-            for each_component in components:
-                if not core.objExists(each_component):
-                    continue
-                assign_components.append(each_component)
-                py_node = core.PyNode(each_component)
-        self.assignToMaterial(assign_components, shading_engine)
+        if assign_components:
+            self.assignToMaterial(assign_components, shading_engine)
         return True
 
     def create_node(self, type=None, name=None):

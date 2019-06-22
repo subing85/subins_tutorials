@@ -11,14 +11,13 @@ VERSION = 1.0
 CLASS = 'InputJoint'
 
 from pymel import core
-
 from crowd.core import skeleton
 
 
 class InputJoint(object):
 
     def __init__(self, input=None):
-        print '\n%s WIP. %s' % (MODULE_TYPE, COMMENTS)
+        print '\n#<%s> <%s> <%s>' % (BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
         self.input = input
         self.result = self.get()
 
@@ -35,14 +34,13 @@ class InputJoint(object):
             return 'failed', nodes, 'more than one hierarchy found!..'
         if len(nodes) == 0:
             return 'error', 'None', 'not found any hierarchy!..'
-        
-        joints = core.ls(type='joint')        
-        data = skeleton.get_skeleton_inputs(joints)        
-        return 'success', data, 'joints'
+        joints = core.ls(type='joint')
+        data = skeleton.get_skeleton_inputs(joints)
+        return 'success', data, 'skeleton'
 
 
 def testRun():
     input_joint = InputJoint()
     result, data, message = input_joint.result
-    print '\ntest run', result, data, message
+    print '\n', result, data, message
     return result, data, message

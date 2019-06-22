@@ -25,9 +25,6 @@ from crowd.utils import platforms
 from crowd.api import crowdPublish
 from crowd.resource.ui import comment_ui
 
-reload(crowdPublish)
-reload(comment_ui)
-
 
 class Connect(QtGui.QWidget):
 
@@ -49,7 +46,7 @@ class Connect(QtGui.QWidget):
             QtGui.QMessageBox.critical(
                 self, 'Critical', message, QtGui.QMessageBox.Ok)
             return
-        
+
         tool_kit = platforms.get_tool_kit()
         self.tool_kit_object, self.tool_kit_name, self.version = tool_kit['publish']
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
@@ -186,11 +183,9 @@ class Connect(QtGui.QWidget):
             'extract', extract_bundles, self.gridlayout_extract)
 
     def load_buldles(self, type, data, layout):
-        
         sorted_data = self.sorted_order(data)
         index, ing = 0, 1
         bundle_data = {}
-
         for k, v in sorted_data.items():
             for each_data in v:
                 current_dict = each_data.__dict__
@@ -204,7 +199,9 @@ class Connect(QtGui.QWidget):
                 button_name.setObjectName('button_name_%s' % bundle_name)
                 button_name.setStyleSheet('Text-align:left;')
                 self.decorate_widget(
-                    button_name, ' %s' % bundle_name, [22, 22], [16777215, 22], 'Preferred')
+                    button_name,
+                    ' %s' % bundle_name, [22, 22], [16777215, 22],
+                    'Preferred')
                 layout.addWidget(button_name, ing - 1, 1, 1, 1)
                 button_open = QtGui.QPushButton(self)
                 button_open.setObjectName('button_open_%s' % bundle_name)

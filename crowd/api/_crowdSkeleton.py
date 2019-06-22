@@ -36,7 +36,7 @@ class Connect(object):
         return root_dag_path, result
 
     def findInputs(self):
-        rw = readWrite.ReadWrite()
+        rw = readWrite.Connect()
         data, orders = rw.collect('skeletons', 'skeleton')
         return data, orders
 

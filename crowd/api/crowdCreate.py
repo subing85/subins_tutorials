@@ -1,11 +1,12 @@
+import os
+import json
 import pkgutil
 import logging
 
 
 from crowd import resource
-
-# from crowd.api import crowdSkeleton
 from crowd.api import crowdPublish
+from crowd.core import database
 reload(resource)
 
 class Connect(object):
@@ -47,18 +48,26 @@ class Connect(object):
         return modules
     
     def do(self):
-        publish = crowdPublish.Connect(type=self.type, tag=self.tag)      
-        input_data = publish.getInputs(show=False)
+        current_type = self.type
+        if self.type == 'puppet':
+            current_type = 'skeleton'
+                    
+        publish = crowdPublish.Connect(type=current_type, tag=self.tag)      
+        input_data = publish.getInputs(show=False)        
         
         modules = self.getPackages()        
         for order, module in modules.items():
-            for each_module in module:                
+            for each_module in module:   
                 if not hasattr(each_module, 'MODULE_TYPE'):
-                    continue                
+                    continue    
                 if each_module.MODULE_TYPE not in input_data:
-                    continue                
+                    continue
+                print '\t', each_module.MODULE_TYPE
+                print '\t', self.tag
+                           
                 self.executeModule(
                     each_module, self.tag, input_data[each_module.MODULE_TYPE])                
+                         
 
     def executeModule(self, module, tag, inputs):
         if not module:
@@ -75,4 +84,11 @@ class Connect(object):
         value = self.bundle_value[result][1]
         color = self.bundle_value[result][0]        
         return result, value, color, data, message
+    
+    def getTypes(self):
+        return ['puppet']
+
+    def getTags(self):
+        return self.getSpecificDatas(1)
+
     
