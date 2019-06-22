@@ -26,15 +26,15 @@ from functools import partial
 from maya import OpenMaya
 from maya import cmds
 
-from shaderLibrary_maya2017.modules import readWrite
-from shaderLibrary_maya2017.modules import studioFolder
-from shaderLibrary_maya2017.modules import studioMaya
-from shaderLibrary_maya2017.modules import studioShader
-from shaderLibrary_maya2017.resources.ui import preferences
-from shaderLibrary_maya2017.resources.ui import catalogue
-from shaderLibrary_maya2017.resources.ui import model
-from shaderLibrary_maya2017.utils import platforms
-from shaderLibrary_maya2017 import resources
+from shaderLibrary_maya2019.modules import readWrite
+from shaderLibrary_maya2019.modules import studioFolder
+from shaderLibrary_maya2019.modules import studioMaya
+from shaderLibrary_maya2019.modules import studioShader
+from shaderLibrary_maya2019.resources.ui import preferences
+from shaderLibrary_maya2019.resources.ui import catalogue
+from shaderLibrary_maya2019.resources.ui import model
+from shaderLibrary_maya2019.utils import platforms
+from shaderLibrary_maya2019 import resources
 
 
 class MainWindow(QtWidgets.QMainWindow):
