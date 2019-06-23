@@ -1,6 +1,36 @@
 import logging
+import json
 
 from pymel import core
+
+
+def get_skeleton_type():
+    return 'joint'
+
+
+def get_joint_str_type():
+    data = {
+        'side': {
+            0: 'Center',
+            1: 'Left',
+            2: 'Right',
+            3: 'None'},
+        'type': {
+            18: 'Other'}
+    }
+    print '\n#result\n', json.dumps(data, indent=4)
+    return data
+
+
+def get_joint_type(node):
+    pynode = core.PyNode(node)
+    if pynode.type() != get_skeleton_type():
+        logging.warning('wrong node type!...')
+        return
+    side = pynode.getAttr('side')
+    joint_type = pynode.getAttr('type')
+    other_type = pynode.getAttr('otherType')
+    return side, joint_type, other_type
 
 
 def disable_attributes(node, attributs=None):
@@ -129,8 +159,3 @@ def get_hierarchy(root, types=None):
         seen.add(node)
         index += 1
     return nodes
-
-
-
-
-

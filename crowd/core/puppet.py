@@ -1,3 +1,9 @@
+import logging
+
+
+from pymel import core
+
+
 from pprint import pprint
 from crowd.core import skeleton
 from crowd.core import generic
@@ -6,6 +12,34 @@ reload(skeleton)
 reload(generic)
 
 
+def create_puupet_data(data):    
+    nodes = skeleton.get_root_skeletons()    
+    if not nodes:
+        return    
+    pynode = core.PyNode(nodes[0][0])   
+    if pynode.type() != generic.get_skeleton_type():
+        return    
+    if not core.objExists('%s.notes'%pynode.name()):        
+        pynode.addAttr('notes', dt='string')   
+    pynode.setAttr('notes', data)
+    return True
+
+
+    
+    
+               
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+####################################
 def transform_types():
     types = [
         'transform',
@@ -51,6 +85,7 @@ def get_transform_data(node):
 
 
 def get_snap_node(node):
+    pass
     
     
 
