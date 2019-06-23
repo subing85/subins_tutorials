@@ -70,7 +70,6 @@ class Catalogue(QtWidgets.QWidget):
         self._ctrl_press = False
 
     def wheel_event(self, event):
-        print 'fffffffffffff'
         if not self.mouse_scroll:
             return
         icon_size = self.listWidget_catalogue.iconSize()
@@ -87,11 +86,11 @@ class Catalogue(QtWidgets.QWidget):
         self.zoom(self.listWidget_catalogue, self.sroll_size)
 
     def key_press_event(self, event):
-        if QtWidgets.QKeyEvent.key(event) == QtCore.Qt.Key_Control:
+        if QtGui.QKeyEvent.key(event) == QtCore.Qt.Key_Control:
             self.mouse_scroll = True
 
     def key_release_event(self, event):
-        if QtWidgets.QKeyEvent.key(event) == QtCore.Qt.Key_Control:
+        if QtGui.QKeyEvent.key(event) == QtCore.Qt.Key_Control:
             self.mouse_scroll = False
 
     def zoom(self, widget, ingrement):
