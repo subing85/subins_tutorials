@@ -1,0 +1,58 @@
+{
+    "created_by": "subin gopi", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "#copyright": "(c) 2018, Subin Gopi All rights reserved.", 
+    "date": "December:01:2018 - 09:20:01:PM",
+    "last_modified": "December:01:2018 - 09:20:01:PM",         
+    "comment": "asset categories", 
+    "description": "inputs of asset categories",    
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "valid": true,
+   	"type": "input_data",
+	"tag": "categories",   	
+    "data": {
+	    "character": {
+	        "order": 1, 
+	        "long_name": "character",
+	        "tooltip": "Character",
+	        "short_name": "chr",
+	        "enable": true
+	    }, 
+	    "prop": {
+	        "order": 2, 
+	        "long_name": "prop",
+	        "tooltip": "Prop",
+	        "short_name": "prp",
+	       	"enable": true
+	        
+	    }, 
+	    "environment": {
+	        "order": 3, 
+	        "long_name": "environment",
+	        "tooltip": "Environment",
+	        "short_name": "env",
+	       	"enable": true
+	    }, 
+	    "character_dress": {
+	        "order": 4, 
+	        "long_name": "character_dress",
+	        "tooltip": "Character Dress",
+	        "short_name": "chd",
+	       	"enable": true
+	    }, 
+	    "prop_dress": {
+	        "order": 5, 
+	        "long_name": "prop_dress",
+	        "tooltip": "Prop Dress",
+	        "short_name": "prd",
+	       	"enable": true
+	    }, 
+	    "environment_dress": {
+	        "order": 6, 
+	        "long_name": "environment_dress",
+	        "tooltip": "Environment Dress",
+	        "short_name": "end",
+	       	"enable": true	               
+	    }
+	}
+}
