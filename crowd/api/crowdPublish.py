@@ -77,22 +77,23 @@ class Connect(object):
         data = self.getPackages()
         for each_module in data:
             current_module = None
-            current_dict = each_module.__dict__
-            if 'VALID' not in current_dict:
+            if not hasattr(each_module, 'VALID'):
                 continue
-            if 'MODULE_TYPE' not in current_dict:
-                continue
+            if not hasattr(each_module, 'MODULE_TYPE'):           
+                continue        
+            if each_module.MODULE_TYPE!=self.type:
+                continue    
+            if not hasattr(each_module, 'BUNDLE_TYPE'):           
+                continue              
             if valid:
-                if not current_dict['VALID']:
+                if not each_module.VALID:
                     continue
-                current_module = each_module
+                current_module = each_module                
             else:
                 current_module = each_module
             if not current_module:
-                continue
-            bundle_type = 'unknown'
-            if 'BUNDLE_TYPE' in current_dict:
-                bundle_type = current_dict['BUNDLE_TYPE']
+                continue            
+            bundle_type = each_module.BUNDLE_TYPE
             module_data.setdefault(bundle_type, []).append(current_module)
         return module_data
 
@@ -107,7 +108,6 @@ class Connect(object):
             result, data, message = module.testRun()
         except Exception as except_error:
             result, data, message = 'runtime error', [], str(except_error)
-
         value = self.bundle_value[result][1]
         color = self.bundle_value[result][0]
         return result, value, color, data, message

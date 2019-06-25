@@ -1,6 +1,5 @@
 import logging
 
-
 from pymel import core
 
 
@@ -23,6 +22,20 @@ def create_puupet_data(data):
         pynode.addAttr('notes', dt='string')   
     pynode.setAttr('notes', data)
     return True
+
+
+def get_puupet_data():
+    nodes, message = skeleton.get_root_skeletons()    
+    if not nodes:
+        return None, message 
+    pynode = core.PyNode(nodes[0][0])   
+    if pynode.type() != generic.get_skeleton_type():
+        return None, 'Node type not match!...' 
+    if not core.objExists('%s.notes'%pynode.name()):        
+        return None, 'Wrong configure!...' 
+    data = pynode.getAttr('notes')
+    return data, 'success!...'
+   
 
 
     

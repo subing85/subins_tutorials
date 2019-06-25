@@ -4,39 +4,31 @@ ORDER = 0
 MODULE_TYPE = 'skeleton'
 BUNDLE_TYPE = 'validate'
 VALID = True
-LAST_MODIFIED = 'June 09, 2019'
+LAST_MODIFIED = 'June 24, 2019'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To check is it joints scene?'
-VERSION = 1.0
-CLASS = 'InputJoint'
+COMMENTS = 'To check is it joints in the scene?'
+VERSION = '0.0.1'
 
-from pymel import core
 
-from crowd.api import crowdPublish
 from crowd.core import skeleton
 
 
-class InputJoint(object):
+class InputJoints(object):
 
     def __init__(self, input=None):
         print '\n#<%s> <%s> <%s>' % (BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
         self.input = input
-        crowd_publish = crowdPublish.Connect()
-        self.result = self.check()
-
-    def check(self):
-        out, nodes, message = self.get_nodes()
-        return out, nodes, message
+        self.result = self.get_nodes()
 
     def get_nodes(self):
-        nodes, message = skeleton.get_root_skeletons()
-        if not nodes:
-            return 'failed', nodes, message
-        return 'success', nodes, message
+        node, message = skeleton.get_root_skeletons()
+        if not node:
+            return 'failed', node, message
+        return 'success', node, message
 
 
 def testRun():
-    input_joint = InputJoint()
+    input_joint = InputJoints()
     result, data, message = input_joint.result
-    print '\ntest run', result, data, message
+    print '\npublish run', result, data, message
     return result, data, message

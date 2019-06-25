@@ -1,16 +1,16 @@
 LONG_NAME = 'export joint'
 ICON = 'object_type'
 ORDER = 0
-MODULE_TYPE = 'skeleton'
+MODULE_TYPE = 'puppet'
 BUNDLE_TYPE = 'extract'
 VALID = True
-LAST_MODIFIED = 'June 24, 2019'
+LAST_MODIFIED = 'June 09, 2019'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To collect skeleton data!...'
+COMMENTS = 'To collect puppet configure data!...'
 VERSION = '0.0.1'
 
 
-from crowd.core import skeleton
+from crowd.core import puppet
 
 
 class JointData(object):
@@ -18,15 +18,13 @@ class JointData(object):
     def __init__(self, input=None):
         print '\n#<%s> <%s> <%s>' % (BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
         self.input = input
-        self.result = self.get_nodes()
+        self.result = self.get_configure_data()
 
-    def get_nodes(self):
-        from pymel import core        
-        joints = core.ls(type='joint')
-        if not joints:
-            return 'failed', None, 'not fount any joints' 
-        data = skeleton.get_skeleton_inputs(joints)
-        return 'success', data, 'skeleton'
+    def get_configure_data(self):
+        data, message = puppet.get_puupet_data()
+        if not data:
+            return 'failed', None, message
+        return 'success', data, 'puppet'
 
 
 def testRun():

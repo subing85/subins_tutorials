@@ -33,7 +33,6 @@ from crowd.core import generic
 reload(controls)
 reload(puppet)
 
-joint label repate error
 
 class Connect(QtGui.QWidget):
 
@@ -58,7 +57,7 @@ class Connect(QtGui.QWidget):
             return
 
         self.type_count = {'ik': 9, 'fk': 7}
-        self.added_nodes = []
+        self.include_nodes = []
         self.font_size = 10
 
         tool_kit = platforms.get_tool_kit()
@@ -104,22 +103,19 @@ class Connect(QtGui.QWidget):
         self.label_ik.setText(' IK')
         self.label_ik.setStyleSheet('background-color: #393939;')
         self.label_ik.setSizePolicy(sizepolicy)
-        self.verticallayout_ik.addWidget(self.label_ik)       
-                
+        self.verticallayout_ik.addWidget(self.label_ik)
         self.gridlayout_ik = QtGui.QGridLayout(None)
         self.gridlayout_ik.setObjectName('gridlayout_ik')
         self.gridlayout_ik.setSpacing(5)
         self.gridlayout_ik.setContentsMargins(30, 5, 5, 5)
-        self.verticallayout_ik.addLayout(self.gridlayout_ik) 
-        
+        self.verticallayout_ik.addLayout(self.gridlayout_ik)
         self.horizontallayout_ik = QtGui.QHBoxLayout()
-        self.horizontallayout_ik.setObjectName('horizontallayout_ik') 
-        self.horizontallayout_ik.setContentsMargins(30, 5, 5, 5)               
-        self.verticallayout_ik.addLayout(self.horizontallayout_ik)              
-               
+        self.horizontallayout_ik.setObjectName('horizontallayout_ik')
+        self.horizontallayout_ik.setContentsMargins(30, 5, 5, 5)
+        self.verticallayout_ik.addLayout(self.horizontallayout_ik)
         spaceritem_ik = QtGui.QSpacerItem(
             20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticallayout_ik.addItem(spaceritem_ik)        
+        self.verticallayout_ik.addItem(spaceritem_ik)
         self.scrollarea_fk = QtGui.QScrollArea(self)
         self.scrollarea_fk.setWidgetResizable(True)
         self.scrollarea_fk.setObjectName('scrollarea_fk')
@@ -136,21 +132,18 @@ class Connect(QtGui.QWidget):
         self.label_fk.setStyleSheet('background-color: #393939;')
         self.label_fk.setSizePolicy(sizepolicy)
         self.verticallayout_fk.addWidget(self.label_fk)
-        
         self.gridlayout_fk = QtGui.QGridLayout(None)
         self.gridlayout_fk.setObjectName('gridlayout_fk')
         self.gridlayout_fk.setSpacing(5)
         self.gridlayout_fk.setContentsMargins(30, 5, 5, 5)
-        self.verticallayout_fk.addLayout(self.gridlayout_fk)         
-        
+        self.verticallayout_fk.addLayout(self.gridlayout_fk)
         self.horizontallayout_fk = QtGui.QHBoxLayout()
         self.horizontallayout_fk.setObjectName('horizontallayout_fk')
         self.horizontallayout_fk.setContentsMargins(30, 5, 5, 5)
-        self.verticallayout_fk.addLayout(self.horizontallayout_fk)        
-               
+        self.verticallayout_fk.addLayout(self.horizontallayout_fk)
         spaceritem_fk = QtGui.QSpacerItem(
             20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticallayout_fk.addItem(spaceritem_fk)                
+        self.verticallayout_fk.addItem(spaceritem_fk)
         self.horizontallayout = QtGui.QHBoxLayout()
         self.horizontallayout.setObjectName('horizontallayout')
         spaceritem = QtGui.QSpacerItem(
@@ -186,7 +179,6 @@ class Connect(QtGui.QWidget):
 
     def create_addon(self, layout, type):
         row_count = layout.rowCount()
-
         button_remove = QtGui.QPushButton(None)
         button_remove.setObjectName('button_remove_%s_%s' % (type, row_count))
         button_remove.setMinimumSize(QtCore.QSize(35, 25))
@@ -194,20 +186,17 @@ class Connect(QtGui.QWidget):
         button_remove.setText(u'\u274C')
         button_remove.setStyleSheet('color: #FF0004;')
         layout.addWidget(button_remove, row_count, 0, 1, 1)
-        
         lineedits = []
         for x in range(1, self.type_count[type] - 5):
             lineedit = QtGui.QLineEdit(self)
             lineedit.setObjectName('lineedit_%s_%s' % (type, row_count))
             lineedit.setReadOnly(True)
             lineedit.setStyleSheet(
-                'font: %spt "Sans Serif";'%self.font_size)
-            lineedit.setMaximumSize(QtCore.QSize(16777215, 30))            
+                'font: %spt "Sans Serif";' % self.font_size)
+            lineedit.setMaximumSize(QtCore.QSize(16777215, 30))
             layout.addWidget(lineedit, row_count, x, 1, 1)
             lineedits.append(lineedit)
-            
         next_row = self.type_count[type] - 5
-        
         button_add = QtGui.QPushButton(None)
         button_add.setObjectName('button_add_%s_%s' % (type, row_count))
         button_add.setMinimumSize(QtCore.QSize(35, 25))
@@ -219,18 +208,17 @@ class Connect(QtGui.QWidget):
         label_control.setObjectName('label_size_%s_%s' % (type, row_count))
         label_control.setText('  Control > ')
         label_control.setStyleSheet(
-            'background-color: #393939; font: %spt "Sans Serif";'%self.font_size)
+            'background-color: #393939; font: %spt "Sans Serif";' % self.font_size)
         layout.addWidget(label_control, row_count, next_row + 1, 1, 1)
         combobox = QtGui.QComboBox(None)
         combobox.setObjectName('combobox_%s_%s' % (type, row_count))
-        combobox.addItems(control.controls())
-                    
+        combobox.addItems(controls.control_shapes())
         layout.addWidget(combobox, row_count, next_row + 2, 1, 1)
         label_size = QtGui.QLabel(None)
         label_size.setObjectName('label_size_%s_%s' % (type, row_count))
         label_size.setText('  Size > ')
         label_size.setStyleSheet(
-            'background-color: #393939; font: %spt "Sans Serif";'%self.font_size)        
+            'background-color: #393939; font: %spt "Sans Serif";' % self.font_size)
         layout.addWidget(label_size, row_count, next_row + 3, 1, 1)
         spinbox_size = QtGui.QDoubleSpinBox(None)
         spinbox_size.setObjectName('spinbox_size_%s_%s' % (type, row_count))
@@ -240,7 +228,6 @@ class Connect(QtGui.QWidget):
         spinbox_size.setMaximum(999999999.0)
         spinbox_size.setMaximumSize(QtCore.QSize(65, 16777215))
         layout.addWidget(spinbox_size, row_count, next_row + 4, 1, 1)
-
         widgets = [
             button_remove,
             button_add,
@@ -248,26 +235,25 @@ class Connect(QtGui.QWidget):
             combobox,
             label_size,
             spinbox_size
-            ] + lineedits
-        button_remove.clicked.connect(partial(self.remove_widgets, widgets))        
-        button_add.clicked.connect(partial(self.add_node, lineedits))        
-    
-    def remove_widgets(self, widgets): 
-        data = self.get_widget_value(widgets)               
+        ] + lineedits
+        button_remove.clicked.connect(partial(self.remove_widgets, widgets))
+        button_add.clicked.connect(partial(self.add_node, lineedits))
+
+    def remove_widgets(self, widgets):
+        data = self.get_widget_value(widgets)
         for widget in widgets:
-            widget.deleteLater()            
+            widget.deleteLater()
         if 'joints' not in data:
-            return            
-        for each_node in data['joints']:            
-            if each_node not in self.added_nodes:
+            return
+        for each_node in data['joints']:
+            if each_node not in self.include_nodes:
                 continue
-            self.added_nodes.remove(each_node)
-        pprint(data)
+            self.include_nodes.remove(each_node)
 
     def add_node(self, widgets):
         nodes = core.ls(sl=True)
         for node in nodes:
-            if node.name() not in self.added_nodes:
+            if node.name() not in self.include_nodes:
                 continue
             QtGui.QMessageBox.warning(
                 self,
@@ -278,10 +264,10 @@ class Connect(QtGui.QWidget):
             return
         if not nodes:
             for widget in widgets:
-                if widget.text() in self.added_nodes:
-                    self.added_nodes.remove(widget.text())
+                if widget.text() in self.include_nodes:
+                    self.include_nodes.remove(widget.text())
                 widget.setText('')
-            return        
+            return
         if len(nodes) < len(widgets):
             QtGui.QMessageBox.warning(
                 self,
@@ -292,16 +278,16 @@ class Connect(QtGui.QWidget):
             return
         for x in range(len(widgets)):
             widgets[x].setText(nodes[x].name())
-            self.added_nodes.append(nodes[x].name())
+            self.include_nodes.append(nodes[x].name())
         logging.info('Done!...')
-   
-    def reset(self):        
+
+    def reset(self):
         self.delete_widgets(self.gridlayout_ik)
         self.delete_widgets(self.gridlayout_fk)
-    
-    def delete_widgets(self, layout):        
+
+    def delete_widgets(self, layout):
         widgets = []
-        for index in range (layout.count()):
+        for index in range(layout.count()):
             item = layout.itemAt(index)
             if not item:
                 continue
@@ -312,9 +298,7 @@ class Connect(QtGui.QWidget):
                 widget.deleteLater()
             except Exception as result:
                 logging.warning('widget delete : {}'.format(result))
-        return widgets        
-        
-        
+        return widgets
 
     def apply(self):
         ik_data = self.get_widget_data(self.gridlayout_ik)
@@ -327,7 +311,6 @@ class Connect(QtGui.QWidget):
                 QtGui.QMessageBox.Ok
             )
             return
-
         data = {
             'ik': ik_data,
             'fk': fk_data
@@ -336,11 +319,11 @@ class Connect(QtGui.QWidget):
         try:
             puppet.create_puupet_data(json_data)
             QtGui.QMessageBox.information(
-                self, 'Information', 'Done!...', QtGui.QMessageBox.Ok)            
+                self, 'Information', 'Done!...', QtGui.QMessageBox.Ok)
         except Exception as error:
             QtGui.QMessageBox.critical(
                 self, 'Critical', str(error), QtGui.QMessageBox.Ok)
-        
+
     def get_widget_data(self, layout):
         data = {}
         for row in range(layout.rowCount()):
@@ -352,13 +335,13 @@ class Connect(QtGui.QWidget):
                 widget = layout.itemAtPosition(row, column).widget()
                 if not widget:
                     continue
-                widgets.append(widget)                
+                widgets.append(widget)
             if not widgets:
                 continue
-            widget_data = self.get_widget_value(widgets)            
-            if 'joints' not in widget_data:  
-                return None            
-            data.setdefault(row, widget_data) 
+            widget_data = self.get_widget_value(widgets)
+            if 'joints' not in widget_data:
+                return None
+            data.setdefault(row, widget_data)
         return data
 
     def get_widget_value(self, widgets):
@@ -367,15 +350,15 @@ class Connect(QtGui.QWidget):
             if isinstance(widget, QtGui.QLineEdit):
                 node = widget.text().encode()
                 if not node:
-                    continue                
-                side, joint_type, other_type = generic.get_joint_type(node)                
+                    continue
+                other_type = generic.get_joint_label(node)
                 data.setdefault('joints', []).append(other_type)
             if isinstance(widget, QtGui.QComboBox):
                 control = widget.currentText()
                 data.setdefault('control', control)
             if isinstance(widget, QtGui.QDoubleSpinBox):
                 radius = widget.value()
-                data.setdefault('radius', radius)        
+                data.setdefault('radius', radius)
         if 'joints' in data:
             if data['joints']:
                 current_node = data['joints'][0]
@@ -386,8 +369,7 @@ class Connect(QtGui.QWidget):
                             current_node).getParent().name().encode()
                     data.setdefault('parent', node_parent)
         return data
-    
-    
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

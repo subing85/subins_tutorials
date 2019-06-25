@@ -22,15 +22,24 @@ def get_joint_str_type():
     return data
 
 
-def get_joint_type(node):
+def get_joint_types(node):
     pynode = core.PyNode(node)
     if pynode.type() != get_skeleton_type():
         logging.warning('wrong node type!...')
-        return
+        return None, None, None
     side = pynode.getAttr('side')
     joint_type = pynode.getAttr('type')
     other_type = pynode.getAttr('otherType')
     return side, joint_type, other_type
+
+
+def get_joint_label(node):
+    pynode = core.PyNode(node)
+    if pynode.type() != get_skeleton_type():
+        logging.warning('wrong node type!...')
+        return None
+    other_type = pynode.getAttr('otherType')
+    return other_type
 
 
 def disable_attributes(node, attributs=None):

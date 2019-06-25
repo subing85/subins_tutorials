@@ -25,12 +25,15 @@ from crowd.utils import platforms
 from crowd.api import crowdPublish
 from crowd.resource.ui import comment_ui
 
+reload(crowdPublish)
+
 
 class Connect(QtGui.QWidget):
 
     def __init__(self, type, parent=None):
         super(Connect, self).__init__(parent)
         self.object_name = 'publish_widget_%s' % type
+        print '\nobject_name\t', self.object_name
         platforms.remove_exists_window(self.object_name)
         self.type = type
         self.heading = '[Subin CROwd]\t%s Publish' % (self.type)
@@ -172,13 +175,21 @@ class Connect(QtGui.QWidget):
 
     def load_validate(self):
         crowd_publish = crowdPublish.Connect(type=self.type)
-        validator_bundles = crowd_publish.getValidate(valid=True)
+        validator_bundles = crowd_publish.getValidate(valid=True)        
+        if not validator_bundles:
+            QtGui.QMessageBox.warning(
+                self, 'Warning', 'Not found any validate bundles', QtGui.QMessageBox.Ok)
+            return            
         self.validate_bundles = self.load_buldles(
             'validate', validator_bundles, self.gridlayout_validate)
 
     def load_extract(self):
         crowd_publish = crowdPublish.Connect(type=self.type)
         extract_bundles = crowd_publish.getExtract(valid=True)
+        if not extract_bundles:
+            QtGui.QMessageBox.warning(
+                self, 'Warning', 'Not found any extract bundles', QtGui.QMessageBox.Ok)
+            return            
         self.extract_bundles = self.load_buldles(
             'extract', extract_bundles, self.gridlayout_extract)
 
@@ -188,28 +199,27 @@ class Connect(QtGui.QWidget):
         bundle_data = {}
         for k, v in sorted_data.items():
             for each_data in v:
-                current_dict = each_data.__dict__
-                bundle_name = current_dict['LONG_NAME']
                 button_number = QtGui.QPushButton(self)
-                button_number.setObjectName('button_number%s' % bundle_name)
+                button_number.setObjectName('button_number%s' % each_data.LONG_NAME)
                 self.decorate_widget(
                     button_number, str(index + 1), [22, 22], [22, 22], 'Fixed')
                 layout.addWidget(button_number, ing - 1, 0, 1, 1)
                 button_name = QtGui.QPushButton(None)
-                button_name.setObjectName('button_name_%s' % bundle_name)
+                button_name.setObjectName('button_name_%s' % each_data.LONG_NAME)
                 button_name.setStyleSheet('Text-align:left;')
                 self.decorate_widget(
                     button_name,
-                    ' %s' % bundle_name, [22, 22], [16777215, 22],
+                    ' %s' % each_data.LONG_NAME, [22, 22], [16777215, 22],
                     'Preferred')
                 layout.addWidget(button_name, ing - 1, 1, 1, 1)
                 button_open = QtGui.QPushButton(self)
-                button_open.setObjectName('button_open_%s' % bundle_name)
+                button_open.setObjectName('button_open_%s' % each_data.LONG_NAME)
                 self.decorate_widget(
                     button_open, '+', [22, 22], [22, 22], 'Fixed')
                 layout.addWidget(button_open, ing - 1, 2, 1, 1)
                 textedit = QtGui.QTextEdit(self)
-                textedit.setObjectName('textedit_%s' % bundle_name)
+                textedit.setObjectName('textedit_%s' % each_data.LONG_NAME)
+                textedit.setStyleSheet('font: 9pt "Sans Serif";')
                 textedit.hide()
                 layout.addWidget(textedit, ing, 1, 1, 2)
                 button_name.clicked.connect(partial(
@@ -236,9 +246,7 @@ class Connect(QtGui.QWidget):
     def sorted_order(self, data):
         bundles = {}
         for each_data in data:
-            current_dict = each_data.__dict__
-            order = current_dict['ORDER']
-            bundles.setdefault(order, []).append(each_data)
+            bundles.setdefault(each_data.ORDER, []).append(each_data)
         return bundles
 
     def execute_bundle_detail(self, widget, textedit):

@@ -2,7 +2,7 @@
 from pymel import core
 
 
-def controls():    
+def control_shapes():    
     return ['cricle', 'cube']
 
 

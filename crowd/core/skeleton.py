@@ -1,4 +1,5 @@
 import logging
+
 from pymel import core
 from maya import OpenMaya
 
@@ -14,7 +15,7 @@ def get_root_skeletons():
     if len(nodes) == 0:
         logging.warning('#valueError: not found any hierarchy!..')
         return None, 'not found any hierarchy!..'
-    return nodes, 'good hierarchy!..'
+    return nodes[0], 'good hierarchy!..'
 
 
 def get_skeleton_inputs(joints):
