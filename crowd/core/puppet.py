@@ -15,7 +15,7 @@ def create_puupet_data(data):
     nodes = skeleton.get_root_skeletons()    
     if not nodes:
         return    
-    pynode = core.PyNode(nodes[0][0])   
+    pynode = core.PyNode(nodes[0])   
     if pynode.type() != generic.get_skeleton_type():
         return    
     if not core.objExists('%s.notes'%pynode.name()):        
@@ -24,11 +24,11 @@ def create_puupet_data(data):
     return True
 
 
-def get_puupet_data():
-    nodes, message = skeleton.get_root_skeletons()    
-    if not nodes:
+def get_puppet_data():
+    node, message = skeleton.get_root_skeletons()
+    if not node:
         return None, message 
-    pynode = core.PyNode(nodes[0][0])   
+    pynode = core.PyNode(node)   
     if pynode.type() != generic.get_skeleton_type():
         return None, 'Node type not match!...' 
     if not core.objExists('%s.notes'%pynode.name()):        

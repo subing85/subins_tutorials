@@ -16,19 +16,20 @@ from crowd.core import skeleton
 class InputJoints(object):
 
     def __init__(self, input=None):
-        print '\n#<%s> <%s> <%s>' % (BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
+        print '\n\t#<%s> <%s> <%s>' % (
+            BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
         self.input = input
         self.result = self.get_nodes()
 
     def get_nodes(self):
-        nodes, message = skeleton.get_root_skeletons()
-        if not nodes:
-            return 'failed', nodes, message
-        return 'success', nodes, message
+        node, message = skeleton.get_root_skeletons()
+        if not node:
+            return 'failed', node, message
+        return 'success', node, message
 
 
 def testRun():
     input_joint = InputJoints()
     result, data, message = input_joint.result
-    print '\npublish run', result, data, message
+    print '\t\tresult', result, data, message
     return result, data, message

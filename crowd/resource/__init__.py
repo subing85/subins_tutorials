@@ -59,6 +59,10 @@ def getPublishDirectory():
 
 def getDatabaseDirectory():
     return 'crowd', '/home/shreya/Documents/subin_crowd/database'
+
+
+def getFontSize():    
+    return 10, 'Sans Serif'
         
                   
         

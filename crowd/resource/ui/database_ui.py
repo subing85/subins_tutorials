@@ -14,7 +14,7 @@ Description
 '''
 
 import sys
-
+import logging
 
 from PySide import QtCore
 from PySide import QtGui
@@ -30,9 +30,7 @@ class Connect(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(Connect, self).__init__(parent)
         self.object_name = 'publish_mainwindow'
-
         self.heading = '[Subin CROwd]\t Publish Informations'
-
         valid = platforms.had_tool_valid()
         if not valid:
             message = '{}\n\nPlease download the proper version from\n{}'.format(
@@ -40,15 +38,15 @@ class Connect(QtGui.QMainWindow):
             QtGui.QMessageBox.critical(
                 self, 'Critical', message, QtGui.QMessageBox.Ok)
             return
-
         tool_kit = platforms.get_tool_kit()
         self.tool_kit_object, self.tool_kit_name, self.version = tool_kit['publish']
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
         self.width, self.height = [800, 600]
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
-
+        self.font_size, self.font_type = resource.getFontSize()
         self.setup_ui()
         self.modify_ui()
+        self.set_contex_menu()
 
     def setup_ui(self):
         self.setObjectName(self.object_name)
@@ -83,9 +81,13 @@ class Connect(QtGui.QMainWindow):
         self.horizontallayout_input.setContentsMargins(4, 30, 4, 4)
         self.combobox_input = QtGui.QComboBox(self.groupbox_input)
         self.combobox_input.setObjectName('comboBox_layout')
+        self.combobox_input.setStyleSheet(
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))
         self.horizontallayout_input.addWidget(self.combobox_input)
         self.lineedit_input = QtGui.QLineEdit(self.groupbox_input)
         self.lineedit_input.setObjectName('lineEdit_bundle')
+        self.lineedit_input.setStyleSheet(
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))
         self.horizontallayout_input.addWidget(self.lineedit_input)
         self.groupbox_records = QtGui.QGroupBox(self)
         self.groupbox_records.setObjectName('groupbox_records')
@@ -99,21 +101,49 @@ class Connect(QtGui.QMainWindow):
         self.treewidget = QtGui.QTreeWidget(self.centralwidget)
         self.treewidget.setAlternatingRowColors(True)
         self.treewidget.setObjectName('treewidget')
+        self.treewidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.treewidget.customContextMenuRequested.connect(
+            partial(self.on_context_menu, self.treewidget))
         self.verticallayout_records.addWidget(self.treewidget)
         self.combobox_input.currentIndexChanged.connect(
             partial(self.load_data, self.combobox_input, self.treewidget))
 
     def modify_ui(self):
-        db = database.Database()
+        db = database.Connect()
         tables = db.get_tables()
         tables = ['None'] + tables
         self.combobox_input.addItems(tables)
 
+    def on_context_menu(self, treewidget, point):
+        index = treewidget.indexAt(point)
+        if not index.isValid():
+            return
+        # self.contex_menu.exec_ (QtGui.QCursor.pos())
+        item = treewidget.indexAt(point)
+        self.contex_menu.exec_(treewidget.mapToGlobal(point))
+
+    def set_contex_menu(self):
+        self.contex_menu = QtGui.QMenu(self)
+        self.contex_menu.setObjectName('contex_menu')
+        self.contex_menu.setTitle('Edit')
+        self.action_reload = QtGui.QAction(self)
+        self.action_reload.setObjectName('action_reload')
+        self.action_reload.setText('Reload')
+        self.action_reload.triggered.connect(self.reload)
+        self.contex_menu.addAction(self.action_reload)      
+        self.action_remove = QtGui.QAction(self)
+        self.action_remove.setObjectName('action_remove')
+        self.action_remove.setText('Remove')
+        self.action_remove.triggered.connect(self.remove)
+        self.contex_menu.addAction(self.action_remove)
+        self.contex_menu.addSeparator()
+
     def load_data(self, combobox, treewidget, *args):
+        treewidget.clear()
         table = str(combobox.itemText(args[0]))
         if not table or table == 'None':
             return
-        db = database.Database(table=table)
+        db = database.Connect(table=table)
         columns = db.get_columns()
         if not columns:
             return
@@ -125,13 +155,60 @@ class Connect(QtGui.QMainWindow):
         treewidget.header().resizeSection(1, 200)
         treewidget.header().resizeSection(2, 200)
         treewidget.header().resizeSection(3, 300)
-
         contents = db.select()
-
         for content in contents:
             item = QtGui.QTreeWidgetItem(treewidget)
             for index, each in enumerate(content):
                 item.setText(index, str(each))
+                
+    def reload(self):
+        index = self.combobox_input.currentIndex()
+        self.load_data(self.combobox_input, self.treewidget, index)
+
+
+    def remove(self):
+        replay = QtGui.QMessageBox.question(
+            self,
+            'Question',
+            'Are you sure\nWant to reomve?...',
+            QtGui.QMessageBox.Yes,
+            QtGui.QMessageBox.No)
+        if replay == QtGui.QMessageBox.No:
+            logging.warning('abort!...')
+            return
+        table = str(self.combobox_input.currentText())
+        if not table or table == 'None':
+            QtGui.QMessageBox.warning(
+                self,
+                'Warning',
+                'Select the any one in the table and try!...',
+                QtGui.QMessageBox.Ok)
+            return
+        if not self.treewidget.selectedItems():
+            QtGui.QMessageBox.warning(
+                self,
+                'Warning',
+                'Select the any one in the items and try!...',
+                QtGui.QMessageBox.Ok)
+            return
+        select_items = self.treewidget.selectedItems()
+        result = True
+        for item in select_items:
+            id = str(item.text(0))
+            tag = str(item.text(1))
+            db = database.Connect(table=table)
+            try:
+                db.delete(id, tag)
+                result = True
+            except Exception as error:
+                QtGui.QMessageBox.warning(
+                    self, 'Warning', str(error), QtGui.QMessageBox.Ok)
+                result = False
+        if result:
+            logging.info('Remove success!...')
+        else:
+            logging.warning('Remove failed!...')
+        self.reload()
 
 
 if __name__ == '__main__':

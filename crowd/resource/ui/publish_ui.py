@@ -14,6 +14,8 @@ Description
 '''
 
 import sys
+import warnings
+import logging
 
 from pymel import core
 from PySide import QtCore
@@ -24,8 +26,11 @@ from crowd import resource
 from crowd.utils import platforms
 from crowd.api import crowdPublish
 from crowd.resource.ui import comment_ui
+from __builtin__ import True
 
 reload(crowdPublish)
+reload(comment_ui)
+reload(resource)
 
 
 class Connect(QtGui.QWidget):
@@ -33,7 +38,6 @@ class Connect(QtGui.QWidget):
     def __init__(self, type, parent=None):
         super(Connect, self).__init__(parent)
         self.object_name = 'publish_widget_%s' % type
-        print '\nobject_name\t', self.object_name
         platforms.remove_exists_window(self.object_name)
         self.type = type
         self.heading = '[Subin CROwd]\t%s Publish' % (self.type)
@@ -41,7 +45,7 @@ class Connect(QtGui.QWidget):
         self.extract_bundles = {}
         self.global_result = []
         self.global_extract = []
-
+        self.font_size, self.font_type = resource.getFontSize()
         valid = platforms.has_valid()
         if not valid:
             message = '{}\n\nPlease download the proper version from\n{}'.format(
@@ -49,15 +53,12 @@ class Connect(QtGui.QWidget):
             QtGui.QMessageBox.critical(
                 self, 'Critical', message, QtGui.QMessageBox.Ok)
             return
-
         tool_kit = platforms.get_tool_kit()
         self.tool_kit_object, self.tool_kit_name, self.version = tool_kit['publish']
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
         self.width, self.height = [500, 125]
         self.tool_kit_titile = '{} {}'.format(self.tool_kit_name, self.version)
-
         self.comment = comment_ui.Connect(parent=None)
-
         self.setup_ui()
         self.modify_ui()
         self.load_validate()
@@ -93,10 +94,17 @@ class Connect(QtGui.QWidget):
         self.horizontallayout_input.setContentsMargins(4, 30, 4, 4)
         self.combobox_input = QtGui.QComboBox(self.groupbox_input)
         self.combobox_input.setObjectName('comboBox_layout')
+        self.combobox_input.setStyleSheet(
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))
         self.horizontallayout_input.addWidget(self.combobox_input)
-        self.lineedit_input = QtGui.QLineEdit(self.groupbox_input)
-        self.lineedit_input.setObjectName('lineEdit_bundle')
-        self.horizontallayout_input.addWidget(self.lineedit_input)
+        self.combobox_tag = QtGui.QComboBox(self)
+        self.combobox_tag.setObjectName('combobox_type')
+        self.combobox_tag.setEditable(True)
+        self.combobox_tag.setInsertPolicy(QtGui.QComboBox.InsertAlphabetically)
+        self.combobox_tag.setDuplicatesEnabled(True)
+        self.combobox_tag.setStyleSheet(
+            'font: %spt "Sans Serif";' % self.font_size)
+        self.horizontallayout_input.addWidget(self.combobox_tag)
         self.groupbox_validate = QtGui.QGroupBox(self)
         self.groupbox_validate.setObjectName('groupbox_validate')
         self.groupbox_validate.setTitle('Validate')
@@ -110,6 +118,8 @@ class Connect(QtGui.QWidget):
         self.scrollarea_validate.setObjectName('scrollarea_validate')
         self.scrollarea_validate.setWidgetResizable(True)
         self.scrollarea_validate.setFrameShape(QtGui.QFrame.NoFrame)
+        self.scrollarea_validate.setStyleSheet(
+            'font: %spt "Sans Serif";' % self.font_size)
         self.verticallayout_validate.addWidget(self.scrollarea_validate)
         self.scrollwidget_validate = QtGui.QWidget()
         self.scrollwidget_validate.setObjectName('scrollwidget_validate')
@@ -131,6 +141,8 @@ class Connect(QtGui.QWidget):
         self.scrollarea_extract.setObjectName('scrollarea_validate')
         self.scrollarea_extract.setWidgetResizable(True)
         self.scrollarea_extract.setFrameShape(QtGui.QFrame.NoFrame)
+        self.scrollarea_extract.setStyleSheet(
+            'font: %spt "Sans Serif";' % self.font_size)
         self.verticallayout_extract.addWidget(self.scrollarea_extract)
         self.scrollwidget_extract = QtGui.QWidget()
         self.scrollwidget_extract.setObjectName('scrollwidget_validate')
@@ -172,14 +184,19 @@ class Connect(QtGui.QWidget):
         self.combobox_input.addItems(data)
         self.combobox_input.setCurrentIndex(data.index(self.type))
         self.combobox_input.setEnabled(False)
+        crowd_publish = crowdPublish.Connect(type=self.type)
+        crowd_publish.type = crowd_publish.getDependency()
+        tags = crowd_publish.getTags()
+        if tags:
+            self.combobox_tag.addItems([''] + tags)
 
     def load_validate(self):
         crowd_publish = crowdPublish.Connect(type=self.type)
-        validator_bundles = crowd_publish.getValidate(valid=True)        
+        validator_bundles = crowd_publish.getValidate(valid=True)
         if not validator_bundles:
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any validate bundles', QtGui.QMessageBox.Ok)
-            return            
+            return
         self.validate_bundles = self.load_buldles(
             'validate', validator_bundles, self.gridlayout_validate)
 
@@ -189,7 +206,7 @@ class Connect(QtGui.QWidget):
         if not extract_bundles:
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any extract bundles', QtGui.QMessageBox.Ok)
-            return            
+            return
         self.extract_bundles = self.load_buldles(
             'extract', extract_bundles, self.gridlayout_extract)
 
@@ -200,12 +217,14 @@ class Connect(QtGui.QWidget):
         for k, v in sorted_data.items():
             for each_data in v:
                 button_number = QtGui.QPushButton(self)
-                button_number.setObjectName('button_number%s' % each_data.LONG_NAME)
+                button_number.setObjectName(
+                    'button_number%s' % each_data.LONG_NAME)
                 self.decorate_widget(
                     button_number, str(index + 1), [22, 22], [22, 22], 'Fixed')
                 layout.addWidget(button_number, ing - 1, 0, 1, 1)
                 button_name = QtGui.QPushButton(None)
-                button_name.setObjectName('button_name_%s' % each_data.LONG_NAME)
+                button_name.setObjectName(
+                    'button_name_%s' % each_data.LONG_NAME)
                 button_name.setStyleSheet('Text-align:left;')
                 self.decorate_widget(
                     button_name,
@@ -213,7 +232,8 @@ class Connect(QtGui.QWidget):
                     'Preferred')
                 layout.addWidget(button_name, ing - 1, 1, 1, 1)
                 button_open = QtGui.QPushButton(self)
-                button_open.setObjectName('button_open_%s' % each_data.LONG_NAME)
+                button_open.setObjectName(
+                    'button_open_%s' % each_data.LONG_NAME)
                 self.decorate_widget(
                     button_open, '+', [22, 22], [22, 22], 'Fixed')
                 layout.addWidget(button_open, ing - 1, 2, 1, 1)
@@ -269,6 +289,7 @@ class Connect(QtGui.QWidget):
         self.global_result.append(value)
 
     def test_run(self):
+        print '\n%s\npublish module {' % ('#' * 100)
         self.global_result = []
         self.global_extract = []
         data = [self.validate_bundles, self.extract_bundles]
@@ -276,7 +297,12 @@ class Connect(QtGui.QWidget):
         for x, each_data in enumerate(data):
             for index, bundle_data in each_data.items():
                 self.execute_bundle(
-                    type[x], bundle_data[0], bundle_data[1], bundle_data[2])
+                    type[x],
+                    bundle_data[0],
+                    bundle_data[1],
+                    bundle_data[2]
+                )
+        print '\n}\n%s' % ('#' * 100)
 
     def publish(self):
         self.test_run()
@@ -285,9 +311,10 @@ class Connect(QtGui.QWidget):
                 self,
                 'Warning',
                 'Can not publish,\nfix the problems and try!...',
-                QtGui.QMessageBox.Ok)
+                QtGui.QMessageBox.Ok
+            )
+            logging.warning('Can not publish, fix the problems and try!...')
             return
-
         if not self.type:
             self.type = self.combobox_input.currentText()
         if self.type not in resource.getPublishTypes():
@@ -295,25 +322,53 @@ class Connect(QtGui.QWidget):
                 self,
                 'Warning',
                 'Can not find publish type called <%s>!...' % self.type,
-                QtGui.QMessageBox.Ok)
+                QtGui.QMessageBox.Ok
+            )
+            logging.warning(
+                'Can not find publish type called <%s>!...' % self.type,)
             return
-
-        tag = self.lineedit_input.text()
-        if not tag:
+        tag = str(self.combobox_tag.currentText())
+        if not tag or tag == '':
             QtGui.QMessageBox.warning(
                 self,
                 'Warning', 'Can not find name (tag)!...',
-                QtGui.QMessageBox.Ok)
+                QtGui.QMessageBox.Ok
+            )
+            logging.warning('Can not find name (tag)!...')
             return
+        
+        crowd_publish = crowdPublish.Connect(type=self.type)
+        
+        result = True
+        if crowd_publish.isExists(tag):
+            replay = QtGui.QMessageBox.question(
+                self,
+                'Question',
+                'Already exist <%s> in the data base!...%s' % (
+                    tag, '\nAre you sure to overwrite?...'),
+                QtGui.QMessageBox.Yes,
+                QtGui.QMessageBox.No
+            )
+            if replay == QtGui.QMessageBox.No:
+                logging.warning('Abort!...')
+                return False          
 
-        scene_name = core.sceneName()
+        if not result:
+            warnings.warn(
+                'Not able to replace exists publish <%s>'%tag,
+                Warning
+            )
+            return           
+                   
+        scene_name = str(core.sceneName())
         if not scene_name:
             QtGui.QMessageBox.warning(
                 self,
                 'Warning', 'Can not save your scene!...',
                 QtGui.QMessageBox.Ok)
+            logging.warning('Can not save your scene!...')
             return
-
+        
         description = 'This data contain information about <%s> publish' % self.type
         self.comment.type = self.type
         self.comment.tag = tag
@@ -322,6 +377,13 @@ class Connect(QtGui.QWidget):
         self.comment.extract = self.global_extract
         self.comment.show()
         self.close()
+        
+    
+
+    
+    
+          
+              
 
 
 if __name__ == '__main__':

@@ -58,7 +58,7 @@ class Connect(QtGui.QWidget):
 
         self.type_count = {'ik': 9, 'fk': 7}
         self.include_nodes = []
-        self.font_size = 10
+        self.font_size, self.font_type = resource.getFontSize()
 
         tool_kit = platforms.get_tool_kit()
         self.tool_kit_object, self.tool_kit_name, self.version = tool_kit['create']
@@ -192,7 +192,7 @@ class Connect(QtGui.QWidget):
             lineedit.setObjectName('lineedit_%s_%s' % (type, row_count))
             lineedit.setReadOnly(True)
             lineedit.setStyleSheet(
-                'font: %spt "Sans Serif";' % self.font_size)
+                'font: %spt \"%s\";' % (self.font_size, self.font_type))
             lineedit.setMaximumSize(QtCore.QSize(16777215, 30))
             layout.addWidget(lineedit, row_count, x, 1, 1)
             lineedits.append(lineedit)
@@ -208,17 +208,19 @@ class Connect(QtGui.QWidget):
         label_control.setObjectName('label_size_%s_%s' % (type, row_count))
         label_control.setText('  Control > ')
         label_control.setStyleSheet(
-            'background-color: #393939; font: %spt "Sans Serif";' % self.font_size)
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))
         layout.addWidget(label_control, row_count, next_row + 1, 1, 1)
         combobox = QtGui.QComboBox(None)
         combobox.setObjectName('combobox_%s_%s' % (type, row_count))
         combobox.addItems(controls.control_shapes())
+        combobox.setStyleSheet(
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))        
         layout.addWidget(combobox, row_count, next_row + 2, 1, 1)
         label_size = QtGui.QLabel(None)
         label_size.setObjectName('label_size_%s_%s' % (type, row_count))
         label_size.setText('  Size > ')
         label_size.setStyleSheet(
-            'background-color: #393939; font: %spt "Sans Serif";' % self.font_size)
+            'background-color: #393939; font: %spt \"%s\";' % (self.font_size, self.font_type))
         layout.addWidget(label_size, row_count, next_row + 3, 1, 1)
         spinbox_size = QtGui.QDoubleSpinBox(None)
         spinbox_size.setObjectName('spinbox_size_%s_%s' % (type, row_count))
@@ -227,6 +229,9 @@ class Connect(QtGui.QWidget):
         spinbox_size.setDecimals(2)
         spinbox_size.setMaximum(999999999.0)
         spinbox_size.setMaximumSize(QtCore.QSize(65, 16777215))
+        spinbox_size.setStyleSheet(
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))
+        
         layout.addWidget(spinbox_size, row_count, next_row + 4, 1, 1)
         widgets = [
             button_remove,
@@ -240,11 +245,15 @@ class Connect(QtGui.QWidget):
         button_add.clicked.connect(partial(self.add_node, lineedits))
 
     def remove_widgets(self, widgets):
-        data = self.get_widget_value(widgets)
+        data = self.get_widget_value(widgets)        
+        print json.dumps(data, indent=4)
         for widget in widgets:
             widget.deleteLater()
+            
         if 'joints' not in data:
             return
+        print self.include_nodes
+        
         for each_node in data['joints']:
             if each_node not in self.include_nodes:
                 continue
@@ -338,21 +347,25 @@ class Connect(QtGui.QWidget):
                 widgets.append(widget)
             if not widgets:
                 continue
-            widget_data = self.get_widget_value(widgets)
+            widget_data = self.get_widget_value(widgets, label=True)
             if 'joints' not in widget_data:
                 return None
             data.setdefault(row, widget_data)
         return data
 
-    def get_widget_value(self, widgets):
+    def get_widget_value(self, widgets, label=False):
         data = {}
         for widget in widgets:
             if isinstance(widget, QtGui.QLineEdit):
                 node = widget.text().encode()
                 if not node:
                     continue
-                other_type = generic.get_joint_label(node)
-                data.setdefault('joints', []).append(other_type)
+                if label:
+                    other_type = generic.get_joint_label(node)
+                    data.setdefault('joints', []).append(other_type)
+                else:
+                    data.setdefault('joints', []).append(node)
+                    
             if isinstance(widget, QtGui.QComboBox):
                 control = widget.currentText()
                 data.setdefault('control', control)

@@ -1,4 +1,6 @@
 import os
+import stat
+import time
 import json
 import tempfile
 import warnings
@@ -38,14 +40,17 @@ class Connect(object):
             'au': ['author', self.author],
             'wa': ['warning', '# WARNING! All changes made in this file will be lost!'],
             'ur': ['user', getpass.getuser()],
-            'su': ['source', None],
+            'rm': ['remote', None],
             'og': ['origin', None],
             'cp': ['components', None],
             'lo': ['location', None]
         }
         self.kwargs_data = self.get_input_data(long_names, kwargs)
         self.file_path = os.path.join(
-            self.kwargs_data['path'], self.kwargs_data['tag'], '%s.%s' % (self.kwargs_data['name'], self.kwargs_data['format']))
+            self.kwargs_data['path'],
+            self.kwargs_data['type'],
+            self.kwargs_data['tag'],
+            '%s.%s' % (self.kwargs_data['name'], self.kwargs_data['format']))
 
     def collect(self, input, type):
         result = {}
@@ -96,7 +101,7 @@ class Connect(object):
             return data['data']
         return data
 
-    def write(self, data, force=False):
+    def write(self, data, force=False, c_time=None):
         '''
         :param data <dict>
         :param force <boolen>
@@ -113,20 +118,24 @@ class Connect(object):
         if not force:
             if os.path.isfile(self.file_path):
                 warnings.warn(
-                    'already exists the file called %s' % self.file_path, Warning)
+                    'already exists the file called %s' % self.file_path,
+                    Warning
+                )
                 return
         if force:
             self.force()
-
         if not os.path.isdir(os.path.dirname(self.file_path)):
             os.makedirs(os.path.dirname(self.file_path))
-
         self.kwargs_data['data'] = data
         with open(self.file_path, 'w') as file:
             file.write(json.dumps(self.kwargs_data, indent=4))
+        if c_time:
+            os.utime(self.file_path, (c_time, c_time))
+            
         print 'write success!...', '<%s>' % self.file_path
+        return self.file_path
 
-    def commit(self, force=False):
+    def make_manifest(self, force=False, c_time=None):
         keys = [
             'description',
             'author',
@@ -141,31 +150,41 @@ class Connect(object):
             'comment',
             'valid'
         ]
-        pyton_data = []
+        
+        if not force:
+            if os.path.isfile(self.file_path):
+                warnings.warn(
+                    'already exists the file called %s' % self.file_path,
+                    Warning
+                )
+                return
+        if force:
+            self.force()                    
         dict_data = {}
         for each_key in keys:
             if each_key not in self.kwargs_data:
                 continue
-            pyton_data.append('%s = %s' %
-                              (each_key, self.kwargs_data[each_key]))
-            dict_data.setdefault(each_key, self.kwargs_data[each_key])
-
+            dict_data.setdefault(
+                each_key,
+                self.kwargs_data[each_key]
+            )
         if not os.path.isdir(os.path.dirname(self.file_path)):
             os.makedirs(os.path.dirname(self.file_path))
-
         with open(self.file_path, 'w') as file:
-            # file.write('\n'.join(pyton_data))
             file.write(json.dumps(dict_data, indent=4))
+        if c_time:
+            os.utime(self.file_path, (c_time, c_time))            
         print 'write success!...', '<%s>' % self.file_path
         return self.file_path
 
     def force(self):
-        if os.path.isfile(self.file_path):
-            try:
-                os.chmod(self.file_path, 0777)
-                os.remove(self.file_path)
-            except Exception as result:
-                print(result)
+        if not os.path.isfile(self.file_path):
+            return
+        try:
+            os.chmod(self.file_path, 0777)
+            os.remove(self.file_path)
+        except Exception as result:
+            print(result)
         if not os.path.isdir(os.path.dirname(self.file_path)):
             os.makedirs(os.path.dirname(self.file_path))
             return self.file_path

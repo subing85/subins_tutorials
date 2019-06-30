@@ -25,7 +25,7 @@
         <x>0</x>
         <y>0</y>
         <width>569</width>
-        <height>142</height>
+        <height>132</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -107,7 +107,7 @@
         <x>0</x>
         <y>0</y>
         <width>569</width>
-        <height>141</height>
+        <height>131</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -197,6 +197,38 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QComboBox" name="comboBox">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <property name="maxVisibleItems">
+      <number>2</number>
+     </property>
+     <property name="insertPolicy">
+      <enum>QComboBox::InsertAlphabetically</enum>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QComboBox::AdjustToContents</enum>
+     </property>
+     <property name="duplicatesEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>aaaa</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>aaaa</string>
+      </property>
+     </item>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

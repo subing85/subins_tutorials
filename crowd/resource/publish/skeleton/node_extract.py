@@ -16,7 +16,8 @@ from crowd.core import skeleton
 class JointData(object):
 
     def __init__(self, input=None):
-        print '\n#<%s> <%s> <%s>' % (BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
+        print '\n\t#<%s> <%s> <%s>' % (
+            BUNDLE_TYPE, MODULE_TYPE, COMMENTS)
         self.input = input
         self.result = self.get_nodes()
 
@@ -29,8 +30,8 @@ class JointData(object):
         return 'success', data, 'skeleton'
 
 
-def testRun():
+def execute():
     input_joint = JointData()
     result, data, message = input_joint.result
-    print '\npublish run', result, data, message
+    print '\t\tresult', result, data, message
     return result, data, message

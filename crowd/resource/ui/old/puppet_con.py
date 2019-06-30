@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/subins_tutorials/crowd/resource/ui/old/puppet_conf.ui'
 #
-# Created: Sat Jun 22 23:10:52 2019
+# Created: Tue Jun 25 21:56:00 2019
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,7 +33,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 569, 142))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 569, 132))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -71,7 +71,7 @@ class Ui_Form(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 569, 141))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 569, 131))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -104,6 +104,17 @@ class Ui_Form(object):
         self.pushButton_5.setObjectName(_fromUtf8("pushButton_5"))
         self.horizontalLayout.addWidget(self.pushButton_5)
         self.verticalLayout.addLayout(self.horizontalLayout)
+        self.comboBox = QtGui.QComboBox(Form)
+        self.comboBox.setEditable(True)
+        self.comboBox.setMaxVisibleItems(2)
+        self.comboBox.setInsertPolicy(QtGui.QComboBox.InsertAlphabetically)
+        self.comboBox.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToContents)
+        self.comboBox.setDuplicatesEnabled(True)
+        self.comboBox.setFrame(True)
+        self.comboBox.setObjectName(_fromUtf8("comboBox"))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.verticalLayout.addWidget(self.comboBox)
         spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem3)
 
@@ -120,4 +131,6 @@ class Ui_Form(object):
         self.pushButton_2.setText(_translate("Form", "Add", None))
         self.pushButton_6.setText(_translate("Form", "PushButton", None))
         self.pushButton_5.setText(_translate("Form", "PushButton", None))
+        self.comboBox.setItemText(0, _translate("Form", "aaaa", None))
+        self.comboBox.setItemText(1, _translate("Form", "aaaa", None))
 
