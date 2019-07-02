@@ -48,12 +48,8 @@ class Connect(object):
         return modules
     
     def do(self):
-        current_type = self.type
-        if self.type == 'puppet':
-            current_type = 'skeleton'
-                    
-        publish = crowdPublish.Connect(type=current_type, tag=self.tag)      
-        input_data = publish.getInputs(show=False)        
+        publish = crowdPublish.Connect(type=self.type, tag=self.tag)      
+        input_data = publish.getInputs(show=False)
         
         modules = self.getPackages()        
         for order, module in modules.items():
@@ -61,13 +57,11 @@ class Connect(object):
                 if not hasattr(each_module, 'MODULE_TYPE'):
                     continue    
                 if each_module.MODULE_TYPE not in input_data:
-                    continue
+                    continue                
                 print '\t', each_module.MODULE_TYPE
-                print '\t', self.tag
-                           
+                print '\t', self.tag                           
                 self.executeModule(
-                    each_module, self.tag, input_data[each_module.MODULE_TYPE])                
-                         
+                    each_module, self.tag, input_data[each_module.MODULE_TYPE])
 
     def executeModule(self, module, tag, inputs):
         if not module:
@@ -80,9 +74,8 @@ class Connect(object):
             result, data, message = module.testRun(tag, inputs)
         except Exception as except_error:
             result, data, message = 'runtime error', [], str(except_error)
-
         value = self.bundle_value[result][1]
-        color = self.bundle_value[result][0]        
+        color = self.bundle_value[result][0] 
         return result, value, color, data, message
     
     def getTypes(self):

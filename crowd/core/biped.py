@@ -5,19 +5,16 @@ from pymel import core
 
 from crowd import resource
 from crowd.core import cdata
-from crowd.core import control
+from crowd.core import controls
 from crowd.core import generic
 from crowd.core import skeleton
 from crowd.core import readWrite
-
-from pprint import pprint
-
 
 reload(generic)
 reload(readWrite)
 reload(skeleton)
 reload(resource)
-reload(control)
+reload(controls)
 
 
 def create(root=None):
@@ -50,6 +47,10 @@ def create_puppet(root, inputs):
             input = biped.get_input('biped')
             biped.create_puppet(roots[0][0], input)   
     '''
+    
+    
+    
+    print '\troot \t',  root
 
     if not isinstance(root, str):
         root = str(root)
@@ -66,7 +67,7 @@ def create_puppet(root, inputs):
     puppet = core.group(n='puppet', em=True)
     controls = core.group(n='controls', em=True)
 
-    world_ctrl = control.create_shape(
+    world_ctrl = controls.create_shape(
         'world_ctrl', shape='cricle', orientation=[0, 1, 0], raduis=4.0)
     generic.disable_attributes(world_ctrl, attributs=['v'])
     ik = core.group(n='ik', em=True)

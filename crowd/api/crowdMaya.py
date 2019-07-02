@@ -191,6 +191,26 @@ class Connect(object):
         anim_curve_data['breakdown'] = breakdown_list
         anim_curve_data['name'] = mfn_anim_curve.name().encode()
 
-        return anim_curve_data
-
+        return anim_curve_data    
+    
+    def addMessageAttribute(self, mobject, long, short, value=None):     
+        if isinstance(mobject, OpenMaya.MDagPath):
+            mobject = mobject.node()
+        if isinstance(mobject, str) or isinstance(mobject, unicode):
+            mobject = self.getMObject(mobject)                    
+        type_attribute = OpenMaya.MFnTypedAttribute()
+        attribute_mobject = OpenMaya.MObject()
+        attribute_mobject = type_attribute.create(long, short, OpenMaya.MFnData.kString)
+        type_attribute.setKeyable(False)
+        type_attribute.setWritable(True)
+        type_attribute.setReadable(False)
+        type_attribute.setStorable(True)
+        type_attribute.setChannelBox(True)
+        mfn_dependency_node = OpenMaya.MFnDependencyNode()  
+        mfn_dependency_node.setObject(mobject)
+        mfn_dependency_node.addAttribute(attribute_mobject)        
+        if value:        
+            mplug = mfn_dependency_node.findPlug(type_attribute.name())
+            mplug.setString(value)       
+        return mfn_dependency_node
 

@@ -190,7 +190,7 @@ class Connect(object):
         rw = readWrite.Connect(
             co=comment,
             de=description,
-            fm=self.format,
+            fm='man',
             pa=self.directory,
             ty=self.type,
             tg=self.tag,
@@ -205,9 +205,7 @@ class Connect(object):
         scene_file = self.pushScene(
             remote, origin_directory, current_time, force=True)
         os.chmod(scene_file, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
-
-
-
+        
     def pushScene(self, remote, origin_directory, current_time, force=False):
         if not force:
             if os.path.isfile(origin_directory):

@@ -13,7 +13,9 @@ CLASS = 'CreateNode'
 
 from pymel import core
 
-from crowd.core import skeleton
+from crowd.core import puppet
+
+reload(puppet)
 
 
 class CreateNode(object):
@@ -35,21 +37,23 @@ class CreateNode(object):
             self.position = kwargs['position']
         if 'parent' in kwargs:
             self.parent = kwargs['parent']
-        self.result = self.make()        
+        self.result = self.make()
 
-    def make(self):
-        try:
-            root_dag_path, parent_data = skeleton.create_skeleton(
-                self.tag, self.input, position=self.position, parent=self.parent)
-            return 'success', root_dag_path, parent_data
-        except Exception as error:
-            return 'failed', None, str(error)
+    def make(self):        
+        print 'puppet\t', puppet
+        reload(puppet)
+        puppet.create_puppet(self.tag, self.input)
         
-        print 'ddddddddddddddddddddd'
+        print '\nDone.....................'
+        #try:
+        # root_dag_path, parent_data = puppet.create_puppet(self.tag, self.input)
+        #    return 'success', root_dag_path, parent_data
+        #except Exception as error:
+        #    return 'failed', None, str(error)
 
 
 def testRun(*args):
     input_joint = CreateNode(tag=args[0], input=args[1])
     result, data, message = input_joint.result
-    print '\nssssssssssssssssstest run', result, data, message
+    print '\t\tresult', result, data, message    
     return result, data, message

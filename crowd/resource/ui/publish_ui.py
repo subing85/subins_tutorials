@@ -26,7 +26,6 @@ from crowd import resource
 from crowd.utils import platforms
 from crowd.api import crowdPublish
 from crowd.resource.ui import comment_ui
-from __builtin__ import True
 
 reload(crowdPublish)
 reload(comment_ui)
@@ -336,9 +335,28 @@ class Connect(QtGui.QWidget):
             )
             logging.warning('Can not find name (tag)!...')
             return
-        
+
         crowd_publish = crowdPublish.Connect(type=self.type)
-        
+        crowd_publish.type = crowd_publish.getDependency()
+        dependency_tags = crowd_publish.getTags()
+
+        # to check find dependency publish
+        if self.type != crowd_publish.type:
+            # self.type = 'puppet'
+            # crowd_publish.type = 'skeleton'
+            # dependency_tags = ['biped', 'man', 'woman', 'girl'] (skeleton tags)
+            # tag = 'girl' (puppet tags)
+            if tag not in dependency_tags:
+                replay = QtGui.QMessageBox.warning(
+                    self,
+                    'Warning',
+                    'Not found dependency publish called type <%s> tag <%s>' % (
+                        crowd_publish.type, tag),
+                    QtGui.QMessageBox.Ok
+                )
+                return
+
+        crowd_publish.type = self.type
         result = True
         if crowd_publish.isExists(tag):
             replay = QtGui.QMessageBox.question(
@@ -351,15 +369,15 @@ class Connect(QtGui.QWidget):
             )
             if replay == QtGui.QMessageBox.No:
                 logging.warning('Abort!...')
-                return False          
+                return False
 
         if not result:
             warnings.warn(
-                'Not able to replace exists publish <%s>'%tag,
+                'Not able to replace exists publish <%s>' % tag,
                 Warning
             )
-            return           
-                   
+            return
+
         scene_name = str(core.sceneName())
         if not scene_name:
             QtGui.QMessageBox.warning(
@@ -368,7 +386,7 @@ class Connect(QtGui.QWidget):
                 QtGui.QMessageBox.Ok)
             logging.warning('Can not save your scene!...')
             return
-        
+
         description = 'This data contain information about <%s> publish' % self.type
         self.comment.type = self.type
         self.comment.tag = tag
@@ -377,13 +395,6 @@ class Connect(QtGui.QWidget):
         self.comment.extract = self.global_extract
         self.comment.show()
         self.close()
-        
-    
-
-    
-    
-          
-              
 
 
 if __name__ == '__main__':

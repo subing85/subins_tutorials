@@ -102,10 +102,7 @@ class Connect(QtGui.QWidget):
             partial(self.create, self.combobox_input))
 
     def modify_ui(self):
-        current_type = self.type
-        if self.type == 'puppet':
-            current_type = 'skeleton'
-        publish = crowdPublish.Connect(type=current_type)
+        publish = crowdPublish.Connect(type=self.type)
         tags = publish.getTags()
         if not tags:
             QtGui.QMessageBox.warning(
@@ -126,6 +123,7 @@ class Connect(QtGui.QWidget):
                 QtGui.QMessageBox.Ok
             )
             return
+        print '\t', self.type, current_tag
         c_create = crowdCreate.Connect(type=self.type, tag=current_tag)
         c_create.do()
 

@@ -9,7 +9,25 @@ class Connect(object):
 
     def __init__(self, node=None):        
         self.node = node            
-        self.getParentAttributes()
+        # self.getParentAttributes()
+        
+        self.input_attribute = 'module_type'
+        
+        
+    def setInputAttribute(self):
+        pass
+    
+    
+    def getInInputAttribute(self):
+        pass
+    
+    
+        
+        
+        
+
+
+
 
     def getPlugName(self):
         return 'crowdProxy'

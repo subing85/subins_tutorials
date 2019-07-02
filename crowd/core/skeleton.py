@@ -86,7 +86,6 @@ def create_skeleton(tag, inputs, position=None, parent=None):
                 node.set(values)
             except:
                 print 'error\t', attribute
-
     for k, v in parent_data.items():
         root = parent_data[k]
         if not inputs[k]['parent']:
