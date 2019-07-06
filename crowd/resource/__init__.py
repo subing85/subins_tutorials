@@ -52,6 +52,8 @@ def getCreateResource(type=None):
         return    
     return path
 
+def getPresetDirectory():
+    return '/home/shreya/Documents/subin_crowd'
 
 def getPublishDirectory():    
     # return os.path.join(CURRENT_PATH, 'show') 

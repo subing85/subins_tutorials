@@ -63,8 +63,10 @@ def search_data(key, input_data):
 def find_fk_skeletons(skeletons, data):
     fk_skeletons = {}
     for k, v in skeletons.items():
-        for each in v:
-            if each not in data:
+        for index, each in v.items():
+            print each
+            continue
+            if each['joint'] not in data:
                 continue
             fk_skeletons.setdefault(each, {})
             fk_skeletons[each].setdefault(k, []).append(v[each])
@@ -83,14 +85,21 @@ def find_ik_skeletons(skeletons, data):
         ik_skeletons.setdefault(each, side_skeletons)
     return ik_skeletons
 
+def get_lable_list(data):    
+    for index, v in data.items():
+        print v['joint']
+    
+    
+
 
 def get_skeletons(root, skeletons):
     current_data = {}
     for k, v in skeletons.items():
+        print root, k.name()
         if root != k.name():
             continue
         current_data = {k: v}
-        break
+        break    
     joints = []
     for k, v in current_data.items():
         joints.append(k)

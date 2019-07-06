@@ -14,8 +14,12 @@ Description
 '''
 
 import sys
+import os
+import glob
 import json
 import logging
+import warnings
+import time
 
 from pprint import pprint
 from pymel import core
@@ -29,9 +33,11 @@ from crowd.utils import platforms
 from crowd.core import controls
 from crowd.core import puppet
 from crowd.core import generic
+from crowd.core import readWrite
 
 reload(controls)
 reload(puppet)
+reload(resource)
 
 
 class Connect(QtGui.QWidget):
@@ -149,6 +155,16 @@ class Connect(QtGui.QWidget):
         spaceritem = QtGui.QSpacerItem(
             40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontallayout.addItem(spaceritem)
+
+        self.button_save = QtGui.QPushButton(self)
+        self.button_save.setObjectName('button_save')
+        self.button_save.setText('Save')
+        self.button_save.setMinimumSize(QtCore.QSize(150, 16777215))
+        self.button_save.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.button_save.customContextMenuRequested.connect(
+            self.on_context_menu)
+        self.horizontallayout.addWidget(self.button_save)
+
         self.button_reset = QtGui.QPushButton(self)
         self.button_reset.setObjectName('button_reset')
         self.button_reset.setText('Reset')
@@ -160,6 +176,7 @@ class Connect(QtGui.QWidget):
         self.button_apply.setMinimumSize(QtCore.QSize(150, 16777215))
         self.horizontallayout.addWidget(self.button_apply)
         self.verticallayout.addLayout(self.horizontallayout)
+        self.button_save.clicked.connect(self.save)
         self.button_reset.clicked.connect(self.reset)
         self.button_apply.clicked.connect(self.apply)
 
@@ -177,7 +194,7 @@ class Connect(QtGui.QWidget):
             516, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         parent.addItem(spaceritem_plus)
 
-    def create_addon(self, layout, type):
+    def create_addon(self, layout, type, input=None):
         row_count = layout.rowCount()
         button_remove = QtGui.QPushButton(None)
         button_remove.setObjectName('button_remove_%s_%s' % (type, row_count))
@@ -187,6 +204,9 @@ class Connect(QtGui.QWidget):
         button_remove.setStyleSheet('color: #FF0004;')
         layout.addWidget(button_remove, row_count, 0, 1, 1)
         lineedits = []
+        labels = None
+        if input:
+            labels = input['joints']
         for x in range(1, self.type_count[type] - 5):
             lineedit = QtGui.QLineEdit(self)
             lineedit.setObjectName('lineedit_%s_%s' % (type, row_count))
@@ -194,6 +214,8 @@ class Connect(QtGui.QWidget):
             lineedit.setStyleSheet(
                 'font: %spt \"%s\";' % (self.font_size, self.font_type))
             lineedit.setMaximumSize(QtCore.QSize(16777215, 30))
+            if labels:
+                lineedit.setText(labels[x - 1])
             layout.addWidget(lineedit, row_count, x, 1, 1)
             lineedits.append(lineedit)
         next_row = self.type_count[type] - 5
@@ -214,7 +236,10 @@ class Connect(QtGui.QWidget):
         combobox.setObjectName('combobox_%s_%s' % (type, row_count))
         combobox.addItems(controls.control_shapes())
         combobox.setStyleSheet(
-            'font: %spt \"%s\";' % (self.font_size, self.font_type))        
+            'font: %spt \"%s\";' % (self.font_size, self.font_type))
+        if input:
+            combobox.setCurrentIndex(
+                controls.control_shapes().index(input['control']))
         layout.addWidget(combobox, row_count, next_row + 2, 1, 1)
         label_size = QtGui.QLabel(None)
         label_size.setObjectName('label_size_%s_%s' % (type, row_count))
@@ -222,42 +247,56 @@ class Connect(QtGui.QWidget):
         label_size.setStyleSheet(
             'background-color: #393939; font: %spt \"%s\";' % (self.font_size, self.font_type))
         layout.addWidget(label_size, row_count, next_row + 3, 1, 1)
-        spinbox_size = QtGui.QDoubleSpinBox(None)
-        spinbox_size.setObjectName('spinbox_size_%s_%s' % (type, row_count))
-        spinbox_size.setButtonSymbols(QtGui.QAbstractSpinBox.NoButtons)
-        spinbox_size.setValue(1.00)
-        spinbox_size.setDecimals(2)
-        spinbox_size.setMaximum(999999999.0)
-        spinbox_size.setMaximumSize(QtCore.QSize(65, 16777215))
-        spinbox_size.setStyleSheet(
+        spinbox_radius = QtGui.QDoubleSpinBox(None)
+        spinbox_radius.setObjectName(
+            'spinbox_radius_%s_%s' % (type, row_count))
+        spinbox_radius.setButtonSymbols(QtGui.QAbstractSpinBox.NoButtons)
+        spinbox_radius.setValue(1.00)
+        spinbox_radius.setDecimals(2)
+        spinbox_radius.setMaximum(999999999.0)
+        spinbox_radius.setMaximumSize(QtCore.QSize(65, 16777215))
+        spinbox_radius.setStyleSheet(
             'font: %spt \"%s\";' % (self.font_size, self.font_type))
-        
-        layout.addWidget(spinbox_size, row_count, next_row + 4, 1, 1)
+        if input:
+            spinbox_radius.setValue(input['radius'])
+        layout.addWidget(spinbox_radius, row_count, next_row + 4, 1, 1)
         widgets = [
             button_remove,
             button_add,
             label_control,
             combobox,
             label_size,
-            spinbox_size
+            spinbox_radius
         ] + lineedits
         button_remove.clicked.connect(partial(self.remove_widgets, widgets))
         button_add.clicked.connect(partial(self.add_node, lineedits))
+        return widgets
 
     def remove_widgets(self, widgets):
-        data = self.get_widget_value(widgets)        
-        print json.dumps(data, indent=4)
+        data = self.get_widget_value(widgets)
         for widget in widgets:
             widget.deleteLater()
-            
         if 'joints' not in data:
             return
-        print self.include_nodes
-        
         for each_node in data['joints']:
             if each_node not in self.include_nodes:
                 continue
             self.include_nodes.remove(each_node)
+
+    def delete_widgets(self, layout):
+        widgets = []
+        for index in range(layout.count()):
+            item = layout.itemAt(index)
+            if not item:
+                continue
+            widget = item.widget()
+            if not widget:
+                continue
+            try:
+                widget.deleteLater()
+            except Exception as result:
+                logging.warning('widget delete : {}'.format(result))
+        return widgets
 
     def add_node(self, widgets):
         nodes = core.ls(sl=True)
@@ -290,29 +329,34 @@ class Connect(QtGui.QWidget):
             self.include_nodes.append(nodes[x].name())
         logging.info('Done!...')
 
+    def save(self):
+        name, ok = QtGui.QInputDialog.getText(
+            self, 'Input', 'Enter the name:', QtGui.QLineEdit.Normal)
+        if not ok:
+            warnings.warn('Abrot!...')
+
+        data = self.get_data(label=False)
+        directory = os.path.join(
+            resource.getPresetDirectory(), 'config')
+        current_time = time.time()
+        rw = readWrite.Connect(
+            co='%s preset' % name,
+            de='puppet configure preset',
+            pa=directory,
+            ty='puppet',
+            tg='preset',
+            na=str(name)
+        )
+        rw.write(data, force=True, c_time=current_time)        
+        QtGui.QMessageBox.information(self, 'Information', 'Success!...')
+
     def reset(self):
         self.delete_widgets(self.gridlayout_ik)
         self.delete_widgets(self.gridlayout_fk)
 
-    def delete_widgets(self, layout):
-        widgets = []
-        for index in range(layout.count()):
-            item = layout.itemAt(index)
-            if not item:
-                continue
-            widget = item.widget()
-            if not widget:
-                continue
-            try:
-                widget.deleteLater()
-            except Exception as result:
-                logging.warning('widget delete : {}'.format(result))
-        return widgets
-
-    def apply(self):
-        ik_data = self.get_widget_data(self.gridlayout_ik)
-        fk_data = self.get_widget_data(self.gridlayout_fk)
-        if not ik_data or not fk_data:
+    def apply(self):      
+        data = self.get_data(label=True)        
+        if not data['ik'] or not data['fk']:
             QtGui.QMessageBox.warning(
                 self,
                 'Warning',
@@ -320,10 +364,6 @@ class Connect(QtGui.QWidget):
                 QtGui.QMessageBox.Ok
             )
             return
-        data = {
-            'ik': ik_data,
-            'fk': fk_data
-        }
         json_data = json.dumps(data, indent=4)
         try:
             puppet.create_puupet_data(json_data)
@@ -333,10 +373,19 @@ class Connect(QtGui.QWidget):
             QtGui.QMessageBox.critical(
                 self, 'Critical', str(error), QtGui.QMessageBox.Ok)
 
-    def get_widget_data(self, layout):
+    def get_data(self, label=True):
+        ik_data = self.get_widget_data(self.gridlayout_ik, label=label)
+        fk_data = self.get_widget_data(self.gridlayout_fk, label=label)
+        data = {
+            'ik': ik_data,
+            'fk': fk_data
+        }
+        return data
+
+    def get_widget_data(self, layout, label=True):
         data = {}
+        index = 0
         for row in range(layout.rowCount()):
-            node = None
             widgets = []
             for column in range(layout.columnCount()):
                 if not layout.itemAtPosition(row, column):
@@ -347,14 +396,16 @@ class Connect(QtGui.QWidget):
                 widgets.append(widget)
             if not widgets:
                 continue
-            widget_data = self.get_widget_value(widgets, label=True)
-            if 'joints' not in widget_data:
-                return None
-            data.setdefault(row, widget_data)
+            widget_data = self.get_widget_value(widgets, label=label)
+            if not widget_data:
+                continue
+            data.setdefault(index, widget_data)
+            index += 1
         return data
 
     def get_widget_value(self, widgets, label=False):
         data = {}
+        joint_list = []
         for widget in widgets:
             if isinstance(widget, QtGui.QLineEdit):
                 node = widget.text().encode()
@@ -365,24 +416,57 @@ class Connect(QtGui.QWidget):
                     data.setdefault('joints', []).append(other_type)
                 else:
                     data.setdefault('joints', []).append(node)
-                    
+                joint_list.append(node)
             if isinstance(widget, QtGui.QComboBox):
                 control = widget.currentText()
                 data.setdefault('control', control)
             if isinstance(widget, QtGui.QDoubleSpinBox):
                 radius = widget.value()
                 data.setdefault('radius', radius)
-        if 'joints' in data:
-            if data['joints']:
-                current_node = data['joints'][0]
-                if core.objExists(current_node):
-                    node_parent = None
-                    if core.PyNode(current_node).getParent():
-                        node_parent = core.PyNode(
-                            current_node).getParent().name().encode()
-                    data.setdefault('parent', node_parent)
+        if not joint_list:
+            return None
+        if not core.objExists(joint_list[0]):
+            return None
+        parent_other_type = None
+        if core.PyNode(joint_list[0]).getParent():
+            parent_other_type = generic.get_joint_label(joint_list[0])
+        data.setdefault('parent', parent_other_type)
         return data
 
+    def load_preset_menu(self):
+        menu = QtGui.QMenu(self)
+        menu.setTitle('Preset')
+        menu.setObjectName('menu_preset')
+        directory = os.path.join(
+            resource.getPresetDirectory(), 'config', 'puppet', 'preset')
+        files = glob.glob('%s/*.json' % directory)
+        for file in files:
+            preset_name = os.path.basename(os.path.splitext(file)[0])
+            action = QtGui.QAction(self)
+            action.setObjectName('action_%s' % preset_name)
+            action.setText(preset_name)
+            action.triggered.connect(partial(self.load_preset, file))
+            menu.addAction(action)
+        return menu
+
+    def on_context_menu(self, paint):  # ContextMenu - treeWidget_folderList
+        menu = self.load_preset_menu()
+        menu.exec_(self.button_save.mapToGlobal(paint))
+
+    def load_preset(self, file):
+        self.reset()
+        rw = readWrite.Connect()
+        rw.file_path = file
+        data = rw.read()
+        
+        index_list = sorted(data['ik'].keys())
+        for index in index_list:
+            print data['ik'][index]
+            self.create_addon(self.gridlayout_ik, 'ik', input=data['ik'][index])
+            
+        index_list = sorted(data['fk'].keys())
+        for index in index_list:
+            self.create_addon(self.gridlayout_fk, 'fk', input=data['fk'][index])
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

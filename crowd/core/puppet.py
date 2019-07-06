@@ -1,5 +1,6 @@
 import ast
 import logging
+import warnings
 import json
 
 from pymel import core
@@ -16,20 +17,17 @@ reload(biped)
 
 
 
-def create_puppet(tag, input):
-    
+def create_puppet(tag, input):    
+    if 'puppet' not in input:
+        warnings.warn('valueError: Input data not valid!...')
+        return
     core.select(cl=True)
-    root_joints = getSkeletonWorld('skeletonType', tag)
-    
-    print root_joints
-    
+    root_joints = getSkeletonWorld('skeletonType', tag)     
+    print  'root_joints\t',  root_joints
     for each_root in root_joints:     
         if tag=='biped':
-            print 'tag', tag, each_root
-            biped.create_puppet(each_root, input)
-
-
-    
+            biped.create_puppet(each_root.name(), input['puppet'])   
+                   
 
 def getSkeletonWorld(parameter, value):    
     joints = core.ls(sl=True)    
@@ -45,9 +43,6 @@ def getSkeletonWorld(parameter, value):
         world_list.add(each.root())
     return list(world_list)        
     
-
-            
-    
 def create_puupet_data(data):    
     nodes = skeleton.get_root_skeletons()    
     if not nodes:
@@ -59,7 +54,6 @@ def create_puupet_data(data):
         pynode.addAttr('notes', dt='string')   
     pynode.setAttr('notes', data)
     return True
-
 
 def get_puppet_data():
     node, message = skeleton.get_root_skeletons()
