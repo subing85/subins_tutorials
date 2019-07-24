@@ -180,6 +180,7 @@ class Connect(object):
         components = {}
         for data, name in extract_bundle:
             rw.name = name
+            print data.keys()
             write_file = rw.write(data, force=True, c_time=current_time)
             components.setdefault(name, write_file)
             os.chmod(write_file, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)

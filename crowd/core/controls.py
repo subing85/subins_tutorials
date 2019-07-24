@@ -2,7 +2,7 @@
 from pymel import core
 
 
-def control_shapes():    
+def control_shapes():
     return ['cricle', 'cube']
 
 
@@ -15,7 +15,14 @@ def control_types():
     return control_type
 
 
-def create_shape(name, shape=None, orientation=[1,0,0], raduis=1.0):
+def snap(source, taget):
+    translate = core.xform(source, q=True, ws=True, t=True)
+    roatation = core.xform(source, q=True, a=True, ws=True, ro=True)
+    core.xform(taget, ws=True, t=translate)
+    core.xform(taget, ro=roatation)
+
+
+def create_shape(name, shape=None, orientation=[1, 0, 0], raduis=1.0):
     if shape == 'cricle':
         control_shape = core.circle(r=raduis, nr=orientation, ch=False)[0]
     elif shape == 'cube':
@@ -45,14 +52,14 @@ def create_shape(name, shape=None, orientation=[1,0,0], raduis=1.0):
         core.makeIdentity(control_shape, a=True, t=0, r=0, s=1, n=0, pn=1)
     else:
         control_shape = core.group(em=True)
-    
-    control_shape.rename(name)        
+
+    control_shape.rename(name)
     return control_shape
 
 
-def create(name, shape=None, raduis=1.0):
-    control_shape = create_shape(name, shape=shape, raduis=raduis)
+def create(name, shape=None, raduis=1.0, orientation=[1, 0, 0]):
+    control_shape = create_shape(
+        name, shape=shape, raduis=raduis, orientation=orientation)
     group = core.group(n='{}_group'.format(name), em=True)
-    
     control_shape.setParent(group)
     return control_shape, group

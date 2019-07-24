@@ -6,6 +6,8 @@ import tempfile
 import warnings
 import getpass
 
+from pprint import pprint
+
 from datetime import datetime
 
 from crowd import resource
@@ -17,6 +19,7 @@ class Connect(object):
 
     def __init__(self, **kwargs):
         super(Connect, self).__init__()
+        self._kwargs = kwargs
         self.comment = 'subin gopi tool kits Subin Crowds'
         self.created_date = datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p')
         self.description = 'This data contain information about subin gopi tool kits crowd'
@@ -26,7 +29,11 @@ class Connect(object):
         self.path = tempfile.gettempdir()
         self.format = 'json'
         self.name = 'test'
-        self.author = 'Subin Gopi'
+        self.author = 'Subin Gopi'        
+        self.set_file_path()
+        
+    
+    def update_kwargs(self):
         long_names = {
             'co': ['comment', self.comment],
             'cd': ['created_date', self.created_date],
@@ -45,12 +52,25 @@ class Connect(object):
             'cp': ['components', None],
             'lo': ['location', None]
         }
-        self.kwargs_data = self.get_input_data(long_names, kwargs)
+        return long_names
+    
+    def set_file_path(self):
+        long_names = self.update_kwargs()
+        self.kwargs_data = self.get_input_data(long_names, self._kwargs)
         self.file_path = os.path.join(
             self.kwargs_data['path'],
             self.kwargs_data['type'],
             self.kwargs_data['tag'],
-            '%s.%s' % (self.kwargs_data['name'], self.kwargs_data['format']))
+            '%s.%s' % (self.kwargs_data['name'], self.kwargs_data['format']))              
+
+    def get_input_data(self, long_names, input):
+        kwargs_data = {}
+        for k, v in long_names.items():
+            if k in input:
+                kwargs_data.setdefault(v[0], input[k])
+            else:
+                kwargs_data.setdefault(v[0], v[1])
+        return kwargs_data
 
     def collect(self, input, type):
         result = {}
@@ -73,15 +93,6 @@ class Connect(object):
         if not result or not orders:
             return None, None
         return result, orders
-
-    def get_input_data(self, long_names, input):
-        kwargs_data = {}
-        for k, v in long_names.items():
-            if k in input:
-                kwargs_data.setdefault(v[0], input[k])
-            else:
-                kwargs_data.setdefault(v[0], v[1])
-        return kwargs_data
 
     def read(self, all=False):
         '''
@@ -115,6 +126,7 @@ class Connect(object):
                 tg='biped')
             rw.write(data, force=True)
         '''
+        self.set_file_path()
         if not force:
             if os.path.isfile(self.file_path):
                 warnings.warn(
@@ -130,8 +142,7 @@ class Connect(object):
         with open(self.file_path, 'w') as file:
             file.write(json.dumps(self.kwargs_data, indent=4))
         if c_time:
-            os.utime(self.file_path, (c_time, c_time))
-            
+            os.utime(self.file_path, (c_time, c_time))            
         print 'write success!...', '<%s>' % self.file_path
         return self.file_path
 

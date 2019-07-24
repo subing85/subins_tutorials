@@ -413,7 +413,7 @@ class Connect(QtGui.QWidget):
                     continue
                 if label:
                     other_type = generic.get_joint_label(node)
-                    data.setdefault('joints', []).append(other_type)
+                    data.setdefault('labels', []).append(other_type)
                 else:
                     data.setdefault('joints', []).append(node)
                 joint_list.append(node)
@@ -428,8 +428,9 @@ class Connect(QtGui.QWidget):
         if not core.objExists(joint_list[0]):
             return None
         parent_other_type = None
-        if core.PyNode(joint_list[0]).getParent():
-            parent_other_type = generic.get_joint_label(joint_list[0])
+        pynode = core.PyNode(joint_list[0])
+        if pynode.getParent():
+            parent_other_type = generic.get_joint_label(pynode.getParent())
         data.setdefault('parent', parent_other_type)
         return data
 

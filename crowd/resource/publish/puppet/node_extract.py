@@ -26,10 +26,10 @@ class JointData(object):
         data, message = puppet.get_puppet_data()
         if not data:
             return 'failed', None, message
-        return 'success', data, 'puppet'
+        return 'success', data, 'input'
 
 
-def testRun():
+def execute():
     input_joint = JointData()
     result, data, message = input_joint.result
     print '\t\tresult', result, data, message

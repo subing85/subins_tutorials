@@ -11,6 +11,7 @@ VERSION = '0.0.1'
 
 
 from crowd.core import skeleton
+reload(skeleton)
 
 
 class InputJoints(object):
@@ -28,7 +29,7 @@ class InputJoints(object):
         return 'success', node, message
 
 
-def testRun():
+def execute():
     input_joint = InputJoints()
     result, data, message = input_joint.result
     print '\t\tresult', result, data, message

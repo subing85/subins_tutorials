@@ -342,10 +342,6 @@ class Connect(QtGui.QWidget):
 
         # to check find dependency publish
         if self.type != crowd_publish.type:
-            # self.type = 'puppet'
-            # crowd_publish.type = 'skeleton'
-            # dependency_tags = ['biped', 'man', 'woman', 'girl'] (skeleton tags)
-            # tag = 'girl' (puppet tags)
             if tag not in dependency_tags:
                 replay = QtGui.QMessageBox.warning(
                     self,

@@ -18,7 +18,7 @@ reload(biped)
 
 
 def create_puppet(tag, input):    
-    if 'puppet' not in input:
+    if 'input' not in input:
         warnings.warn('valueError: Input data not valid!...')
         return
     core.select(cl=True)
@@ -26,7 +26,7 @@ def create_puppet(tag, input):
     print  'root_joints\t',  root_joints
     for each_root in root_joints:     
         if tag=='biped':
-            biped.create_puppet(each_root.name(), input['puppet'])   
+            biped.create_puppet(each_root.name(), input['input'])   
                    
 
 def getSkeletonWorld(parameter, value):    
@@ -65,7 +65,8 @@ def get_puppet_data():
     if not core.objExists('%s.notes'%pynode.name()):        
         return None, 'Wrong configure!...' 
     data = pynode.getAttr('notes')
-    dict_data = ast.literal_eval(data)
+    # dict_data = ast.literal_eval(data)
+    dict_data = json.loads(data)
     return dict_data, 'success!...'
 
 

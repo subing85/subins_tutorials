@@ -1,5 +1,6 @@
 import logging
 import json
+import re
 
 from pymel import core
 
@@ -60,20 +61,77 @@ def search_data(key, input_data):
     return result
 
 
-def find_fk_skeletons(skeletons, data):
+def find_fk_skeletons(scene_skeletons, data, string=False):
     fk_skeletons = {}
-    for k, v in skeletons.items():
-        for index, each in v.items():
-            print each
-            continue
-            if each['joint'] not in data:
+    index = 0
+    for k, v in scene_skeletons.items():
+        for label, each in v.items():
+            x, content = search_joint_content(data, label)
+            if not x or not content:
                 continue
-            fk_skeletons.setdefault(each, {})
-            fk_skeletons[each].setdefault(k, []).append(v[each])
+            node_name = each
+            if string:
+                node_name = each.name().encode()
+            content_data = {
+                'joint': node_name,
+                'side': int(k),
+                'label': label,
+                'control': content['control'],
+                'radius': content['radius'],
+                'parent': content['parent']
+            }
+            fk_skeletons.setdefault(index, content_data)
+            index += 1
     return fk_skeletons
 
 
-def find_ik_skeletons(skeletons, data):
+def search_joint_content(data, label):
+    result = None, None
+    for index, content in data.items():
+        if label not in content['labels']:
+            continue
+        result = index, content
+        break
+    return result
+
+
+def search_joint(scene_skeletons, label):
+    joints = {}
+    for k, v in scene_skeletons.items():
+        for current_label, each in v.items():
+            if label != current_label:
+                continue
+            joints.setdefault(each, k)
+    return joints
+
+
+def find_ik_skeletons(scene_skeletons, data, string=False):
+    ik_skeletons = {}
+    index = 0
+    for k, v in data.items():
+        lable_joints = {}
+        for lable in v['labels']:
+            joints = search_joint(scene_skeletons, lable)
+            for joint, side in joints.items():
+                node_name = joint
+                if string:
+                    node_name = joint.name().encode()
+                lable_joints.setdefault(side, []).append(node_name)
+        for x, joints in lable_joints.items():            
+            content_data = {
+                'joints': joints,
+                'side': int(x),
+                'label': v['labels'],
+                'control': v['control'],
+                'radius': v['radius'],
+                'parent': v['parent']
+            }
+            ik_skeletons.setdefault(index, content_data)
+            index += 1
+    return ik_skeletons
+
+
+def _find_ik_skeletons(skeletons, data):
     ik_skeletons = {}
     for each in data:
         side_skeletons = {}
@@ -85,21 +143,19 @@ def find_ik_skeletons(skeletons, data):
         ik_skeletons.setdefault(each, side_skeletons)
     return ik_skeletons
 
-def get_lable_list(data):    
+
+def get_lable_list(data):
     for index, v in data.items():
         print v['joint']
-    
-    
 
 
 def get_skeletons(root, skeletons):
     current_data = {}
     for k, v in skeletons.items():
-        print root, k.name()
         if root != k.name():
             continue
         current_data = {k: v}
-        break    
+        break
     joints = []
     for k, v in current_data.items():
         joints.append(k)
@@ -120,10 +176,8 @@ def get_root_children():
     roots = get_root_joints()
     result = {}
     for each_root in roots:
-        print '\t', each_root
         children = get_children(each_root)
         result.setdefault(each_root, list(children))
-
     return result
 
 
@@ -177,3 +231,14 @@ def get_hierarchy(root, types=None):
         seen.add(node)
         index += 1
     return nodes
+
+
+def set_node_name(name):
+    if core.objExists(name):
+        nodes = core.ls(name)
+        ints = []
+        for node in nodes:
+            str_ints = map(int, re.findall(r'\d+', node.name()))
+            ints.append(str_ints[-1])
+        return '{}{}'.format(node.name(), max(ints) + 1)
+    return name
