@@ -4,11 +4,6 @@ from maya import OpenMaya
 
 
 class Connect(object):
-    '''
-        from uv_export.plugin import studioMaya
-        reload(studioMaya)
-        sm = studioMaya.Connect()
-    '''
 
     def __init__(self, **kwargs):
         self.node = None
@@ -36,13 +31,6 @@ class Connect(object):
         return mdag_path
 
     def getData(self, mdag_path):
-        '''
-            from uv_export.plugin import studioMaya
-            reload(studioMaya)
-            sm = studioMaya.Connect(node='pPlaneShape1')
-            mdag_path = sm.getDagPath()
-            sm.getData(mdag_path)       
-        '''
         mfn_mesh = OpenMaya.MFnMesh(mdag_path)
         set_names = []
         mfn_mesh.getUVSetNames(set_names)
@@ -62,10 +50,14 @@ class Connect(object):
                 'uv_ids': list(uv_ids)
             }
             uv_data.setdefault(index, current_set_data)
+        num_polygons, polygon_vertices = self.getFacesVertices(mfn_mesh)
         final_data = {
             'uv_sets': uv_data,
-            # 'shape_node': mfn_mesh.name().encode()
-            'shape_node': mdag_path.fullPathName()
+            'long_name': mdag_path.fullPathName().encode(),
+            'short_name': mdag_path.fullPathName().split('|')[-1],
+            'shape_node': mfn_mesh.name().encode(),
+            'num_polygons': num_polygons,
+            'polygon_vertices': polygon_vertices
         }
         return final_data
 
@@ -74,6 +66,13 @@ class Connect(object):
         uv_sets = data['uv_sets']
         mdag_path = self.getDagPath()
         mfn_mesh = OpenMaya.MFnMesh(mdag_path)
+        validate = self.validateData(mfn_mesh, data)
+        if not validate:
+            message = 'readError: not match from data <%s> to scene <%s> polygon' % (
+                data['shape_node'], mdag_path.fullPathName()
+            )
+            OpenMaya.MGlobal.displayWarning(message)
+            return False
         set_names = []
         mfn_mesh.getUVSetNames(set_names)
         self.delete_uv_sets(mfn_mesh, set_names[1:])
@@ -91,6 +90,29 @@ class Connect(object):
             mfn_mesh.setUVs(u_array, v_array, set_name)
             mfn_mesh.assignUVs(uv_counts, uv_ids, set_name)
         mfn_mesh.updateSurface()
+        return True
+
+    def validateData(self, mfn_mesh, data):
+        num_polygons, polygon_vertices = self.getFacesVertices(mfn_mesh)
+        if num_polygons != data['num_polygons']:
+            return False
+        if polygon_vertices != data['polygon_vertices']:
+            return False
+        return True
+
+    def getFacesVertices(self, mfn_mesh=None):
+        num_polygons = mfn_mesh.numPolygons()
+        polygon_vertices = []
+        for index in range(num_polygons):
+            mint_array = OpenMaya.MIntArray()
+            mfn_mesh.getPolygonVertices(index, mint_array)
+            polygon_vertices.append(list(mint_array))
+        return num_polygons, polygon_vertices
+    
+    def getMfnMesh(self):
+        mdag_path = self.getDagPath()
+        mfn_mesh = OpenMaya.MFnMesh(mdag_path)
+        return mfn_mesh
 
     def createFloatArray(self, python_list):
         mfloat_array = OpenMaya.MFloatArray()
@@ -115,24 +137,15 @@ class Connect(object):
         try:
             with open(path, 'w') as file:
                 file.write(json.dumps(data, indent=4))
-            OpenMaya.MGlobal.displayInfo('Write success!...')
+            OpenMaya.MGlobal.displayInfo('// Result: Write success!...')
         except Exception as error:
             OpenMaya.MGlobal.displayError(str(error))
 
-        #======================================================================
-        # OpenMaya.MGlobal.displayInfo('ssssssssssss')
-        # OpenMaya.MGlobal.displayWarning()
-        # OpenMaya.MGlobal.displayError()
-        #======================================================================
-        
     def read(self, path):
         try:
             with open(path, 'r') as file:
                 data = json.load(file)
-            OpenMaya.MGlobal.displayInfo('Read success!...')
+            OpenMaya.MGlobal.displayInfo('// Result: Read success!...')
             return data
         except Exception as error:
-            OpenMaya.MGlobal.displayError(str(error))        
-        
-        
-        
+            OpenMaya.MGlobal.displayError(str(error))
