@@ -6,32 +6,97 @@ from studio_uv.core import studioMaya
 
 
 def execute(*args):
-    if args[0] == 'export' and args[3] and not args[4] and not args[6]:
-        export_uv(args[2], args[3])
-    if args[0] == 'import' and args[3] and not args[4] and not args[6]:
-        import_uv(args[2], args[3], args[1])
-    if args[4] and args[5] == 'True' and args[3]:
-        get_influance_objects(args[3])
+    '''
+        :example 0 type, 1 repeat, 2 select, 3 directory, 4 query, 5 objects
+    '''
+    if args[0] == 'export' and args[3] and not args[4]:
+        export_uv(args[2], args[3], args[5])
     if args[0] == 'import' and args[3] and not args[4]:
-        import_uv(args[2], args[3], args[1])
+        import_uv(args[3], args[2], args[1], args[5])
+    if args[4] and args[5] == 'True' and args[3]:
+        nodes = get_influance_objects(args[3])
+        return nodes
 
 
-def export_uv(type, directory):
+def export_uv(type, directory, objects):
     if type in ['selected', 'all']:
         polygons = get_polygons(type)
-    else:
-        strips = type.replace(' ', '')
+    elif objects:
+        strips = objects.replace(' ', '')
         polygons = strips.split(',')
+    else:
+        core.displayWarning('wrong arguments or inputs!...')
+        return
+    if not polygons:
+        core.displayWarning('wrong arguments %s!...' % objects)
+        return
     studio_maya = studioMaya.Connect()
     uv_data_bundle = {}
+    exported_polygons = []
+    result = True
     for index, polygon in enumerate(polygons):
+        exported_polygons.append(polygon)
+        if not core.objExists(polygon):
+            core.displayWarning(
+                'not found the object called <%s>!...' % polygon)
+            result = False
+            continue
         studio_maya.node = polygon
         mdag_path = studio_maya.getDagPath()
         data = studio_maya.getData(mdag_path)
         uv_data_bundle.setdefault(index, data)
-    studio_maya.write(directory, uv_data_bundle)
+    studio_maya.write(directory, uv_data_bundle, result=False)
+    print '\npolygons\n\t', '\n\t'.join(exported_polygons)
     print '// Result:',  directory
+    if not result:
+        core.displayWarning('export not completed!...')
+        return
     core.displayInfo('export success!...')
+
+
+def import_uv(directory, entity, repeat, objects):
+    studio_maya = studioMaya.Connect()
+    data = studio_maya.read(directory, result=False)
+    if entity == 'matching':
+        uv_data = find_from_scene(data)
+    elif entity == 'selected':
+        polygons = core.ls(sl=True)
+        uv_data = find_from_scene(data, mode=True, polygons=polygons)
+    elif entity == 'all':
+        uv_data = find_from_data(data)
+    elif objects:
+        strips = entity.replace(' ', '')
+        polygons = strips.split(',')
+        uv_data = find_from_scene(data, polygons=polygons)
+    else:
+        uv_data = None
+        core.displayWarning('wrong arguments or inputs!...')
+        return
+    if not uv_data:
+        core.displayWarning('wrong arguments %s!...' % objects)
+        return
+    imported_result = {}
+    result = True
+    for index, contents in uv_data.items():
+        print len(contents)
+        uv_contents = contents[0:1]
+        if repeat:
+            uv_contents = contents
+        for content in uv_contents:
+            try:
+                set_data = studio_maya.setData(content)
+                imported_result.setdefault(
+                    True, []).append(content['shape_node'])
+            except Exception as error:
+                imported_result.setdefault(
+                    False, []).append(content['shape_node'])
+            if not set_data:
+                result = False
+    print '\npolygons\n', json.dumps(imported_result, indent=4)
+    if not result:
+        core.displayWarning('import not completed!...')
+        return
+    core.displayInfo('// Result: import success!...')
 
 
 def get_polygons(type):
@@ -49,40 +114,7 @@ def get_polygons(type):
     return polygons
 
 
-def import_uv(entity, directory, repeat):
-    studio_maya = studioMaya.Connect()
-    data = studio_maya.read(directory)
-    if entity == 'matching':
-        uv_data = find_from_scene(data)
-    elif entity == 'selected':
-        polygons = core.ls(sl=True)
-        uv_data = find_from_scene(data, polygons=polygons)
-    elif entity == 'all':
-        uv_data = find_from_data(data)
-    else:
-        strips = entity.replace(' ', '')
-        polygons = strips.split(',')
-        uv_data = find_from_scene(data, polygons=polygons)
-    result = True
-    for index, contents in uv_data.items():
-        uv_contents = contents[0:1]
-        if repeat:
-            uv_contents = contents
-        for content in uv_contents:
-            try:
-                set_data = studio_maya.setData(content)
-                print 'Success: node name - ', content['shape_node']
-            except Exception as error:
-                print 'Failed: node name - ', content['shape_node'], '\t', error
-            if not set_data:
-                result = False
-    if not result:
-        core.displayWarning('import not completed!...')
-        return
-    core.displayInfo('// Result: import success!...')
-
-
-def find_from_scene(data, polygons=None):
+def find_from_scene(data, mode=False, polygons=None):
     studio_maya = studioMaya.Connect()
     if not polygons:
         polygons = core.listTransforms(type='mesh')
@@ -91,6 +123,9 @@ def find_from_scene(data, polygons=None):
         for polygon in polygons:
             if isinstance(polygon, str) or isinstance(polygon, unicode):
                 polygon = core.PyNode(polygon)
+            if mode:
+                if contents['short_name'] != polygon.fullPath().split('|')[-1]:
+                    continue
             num_polygons_data = contents['num_polygons']
             polygon_vertices_data = contents['polygon_vertices']
             studio_maya.node = polygon.name()
@@ -109,18 +144,19 @@ def find_from_scene(data, polygons=None):
     return scene_polygons
 
 
-def find_from_data(data):
+def find_from_data(data, polygons=None):
     data_polygons = {}
     for index, contents in data.items():
         short_name = contents['short_name']
         long_name = contents['long_name']
         num_polygons = contents['num_polygons']
         polygon_vertices = contents['polygon_vertices']
-        current_node = None
         if core.objExists(long_name):
-            current_node = long_name
+            current_node = short_name
         elif core.objExists(short_name):
             current_node = short_name
+        else:
+            current_node = None
         if not current_node:
             continue
         node_instances = [each.fullPath() for each in core.ls(current_node)]

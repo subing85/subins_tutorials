@@ -9,19 +9,6 @@ class Connect(object):
         self.node = None
         if 'node' in kwargs:
             self.node = kwargs['node']
-        self.file_path = self.getDirectory()
-
-    def getDirectory(self):
-        mcommand_result = OpenMaya.MCommandResult()
-        OpenMaya.MGlobal.executeCommand(
-            'workspace -q -dir',
-            mcommand_result,
-            True,
-            True
-        )
-        results = []
-        mcommand_result.getResult(results)
-        return results[0]
 
     def getDagPath(self):
         mselection = OpenMaya.MSelectionList()
@@ -108,7 +95,7 @@ class Connect(object):
             mfn_mesh.getPolygonVertices(index, mint_array)
             polygon_vertices.append(list(mint_array))
         return num_polygons, polygon_vertices
-    
+
     def getMfnMesh(self):
         mdag_path = self.getDagPath()
         mfn_mesh = OpenMaya.MFnMesh(mdag_path)
@@ -133,19 +120,21 @@ class Connect(object):
             except Exception as error:
                 print '\nDeleteError', error
 
-    def write(self, path, data):
+    def write(self, path, data, result=True):
         try:
             with open(path, 'w') as file:
                 file.write(json.dumps(data, indent=4))
-            OpenMaya.MGlobal.displayInfo('// Result: Write success!...')
+            if result:
+                OpenMaya.MGlobal.displayInfo('// Result: Write success!...')
         except Exception as error:
             OpenMaya.MGlobal.displayError(str(error))
 
-    def read(self, path):
+    def read(self, path, result=True):
         try:
             with open(path, 'r') as file:
                 data = json.load(file)
-            OpenMaya.MGlobal.displayInfo('// Result: Read success!...')
+            if result:
+                OpenMaya.MGlobal.displayInfo('// Result: Read success!...')
             return data
         except Exception as error:
             OpenMaya.MGlobal.displayError(str(error))

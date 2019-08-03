@@ -130,7 +130,8 @@ examples
 	
 	# Import All Duplicated
 		import to all available polygons only matchs with exported data and the same name space (multi assign)
-		maya.cmds.studioUV(typ='import', s='selected', rp=True, dir='/tmp/my_uv_test.muv')
+	maya.cmds.studioUV(typ='import', s='all', rp=True, dir='/tmp/my_uv_test.muv')
+	
 	
 	# Import Selected
 		import only to selected polygons
@@ -138,7 +139,7 @@ examples
 	
 	# Import All Selected
 		import only to selected polygons with the same name space  (multi assign)
-	maya.cmds.studioUV(typ='import', s='selected', rp=False, dir='/tmp/my_uv_test.muv')
+	maya.cmds.studioUV(typ='import', s='selected', rp=True, dir='/tmp/my_uv_test.muv')
 	
 	# Import To All Matching Polygons
 		import to all available polygons with the same polygon counts (multi assign)
@@ -152,4 +153,4 @@ examples
 	maya.cmds.studioUV(q=True, obj=True, dir='/tmp/my_uv_test.muv')
 	
 	# Export the specific polygons
-	maya.cmds.studioUV(typ='export', obj='ball, bat' dir='/tmp/my_uv_test.muv')
+	maya.cmds.studioUV(typ='export', obj='ball, bat', dir='/tmp/my_uv_test.muv')
