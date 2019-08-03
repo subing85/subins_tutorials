@@ -94,7 +94,7 @@ studioUV(*args, **kwargs)
 		- directory : dir                (unicode or str)       create, edit and query
    			Set the type of the export output or import inputs directory.
 
-		- objects : obj                  (unicode or str)       create			
+		- objects : obj                  (unicode or str)       create and edit
   			Set the type of the export or import inputs polygon as s sting format.
 		
 		- repeat : rp                    (bool)          edit
@@ -106,7 +106,7 @@ studioUV(*args, **kwargs)
   			export "selected" or "all" 
   			import "selected" or "all" or "matching" 
 
-		- type : typ                     (unicode or str)       []
+		- type : typ                     (unicode or str)       create and edit
   			create and edit      		
 			Set the type of process called "export" or "import"
  	

@@ -1,3 +1,19 @@
+'''
+exim.py 0.0.1 
+Date: June 24, 2019
+Last modified: August 03, 2019
+Author: Subin. Gopi
+mail id: subing85@gmail.com
+
+# Copyright 2019, Subin Gopi https://www.subins-toolkits.com/ All rights reserved.
+https://www.subins-toolkits.com/
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None
+'''
+
 import copy
 import json
 
@@ -65,7 +81,7 @@ def import_uv(directory, entity, repeat, objects):
     elif entity == 'all':
         uv_data = find_from_data(data)
     elif objects:
-        strips = entity.replace(' ', '')
+        strips = objects.replace(' ', '')
         polygons = strips.split(',')
         uv_data = find_from_scene(data, polygons=polygons)
     else:
