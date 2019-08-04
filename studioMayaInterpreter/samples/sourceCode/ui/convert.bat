@@ -1,0 +1,1 @@
+pyuic4.bat smartMaya_ui.ui -o smartMaya_ui.py 

@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow_preference</class>
+ <widget class="QMainWindow" name="MainWindow_preference">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>616</width>
+    <height>248</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* ==============================================
+                QWidget
+=============================================== */
+QWidget
+{
+                font: 10pt &quot;Arial&quot;;
+}
+/* ==============================================
+                QLineEdit
+=============================================== */
+QLineEdit
+{
+                padding: 1px;
+                border: 1px solid #ffaa00;
+                border-radius: 2px;
+}
+ 
+QLineEdit::hover
+{
+                border: 1px solid #55aaff;
+}
+ 
+/* ==============================================
+                QPushButton
+=============================================== */
+QPushButton
+{
+                padding: 1px;
+                border: 1px solid #ffaa00;
+                border-radius: 2px;        
+ 
+}
+ 
+QPushButton::menu-indicator:open
+{
+                position: relative;          
+                top: 2px; left: 2px;
+}
+QPushButton::hover
+{
+                border: 1px solid #55aaff;
+}
+/* ==============================================
+                QLabel
+=============================================== */
+QLabel
+{
+                padding: 1px;
+                border: 1px solid #ffaa00;
+                border-radius: 2px;
+}
+ 
+QLabel::hover
+{
+                border: 1px solid #55aaff;
+}
+/* ==============================================
+                QTreeWidget
+=============================================== */
+QTreeWidget
+{
+                padding: 1px;
+                border: 1px solid #ffaa00;
+                border-radius: 2px;
+}
+ 
+QTreeWidget::hover
+{
+                border: 1px solid #55aaff;
+}
+/* ==============================================
+                QGroupBox
+=============================================== */
+QGroupBox
+{
+                padding: 1px;
+                border: 1px solid #ffaa00;
+                border-radius: 2px;
+}
+ 
+QGroupBox::hover
+{
+                border: 1px solid #55aaff;
+}
+/* ==============================================
+                QProgressBar
+=============================================== */
+QProgressBar::hover
+{
+                border: 1px solid #55aaff;
+}
+/* ==============================================
+                QTextEdit
+=============================================== */
+QTextEdit
+{
+                padding: 1px;
+                border: 1px solid #ffaa00;
+                border-radius: 2px;
+}
+ 
+QLabel::hover
+{
+                border: 1px solid #55aaff;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget_preference">
+   <layout class="QVBoxLayout" name="verticalLayout_preference">
+    <item>
+     <widget class="QTabWidget" name="tabWidget_preference">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="tab_general">
+       <attribute name="title">
+        <string>General</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_general">
+        <item>
+         <widget class="QGroupBox" name="groupBox_versions">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>Maya Versions</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_versions">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>15</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_versions">
+             <property name="leftMargin">
+              <number>40</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>15</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radioButton_maya2009">
+               <property name="text">
+                <string>Maya 2009</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="radioButton_maya2010">
+               <property name="text">
+                <string>Maya 2010</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="radioButton_maya2011">
+               <property name="text">
+                <string>Maya 2011</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QRadioButton" name="radioButton_maya2012">
+               <property name="text">
+                <string>Maya 2012</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_maya2013">
+               <property name="text">
+                <string>Maya 2013</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QRadioButton" name="radioButton_maya2014">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>Maya 2014</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QRadioButton" name="radioButton_maya2015">
+               <property name="text">
+                <string>Maya 2015</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QRadioButton" name="radioButton_maya2016">
+               <property name="text">
+                <string>Maya 2016</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_directory">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_directory">
+           <property name="margin">
+            <number>5</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_directory">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Maya Directory</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_directory"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_directory">
+             <property name="text">
+              <string>.....</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_mode">
+       <attribute name="title">
+        <string>Mode</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_tabMode">
+        <property name="topMargin">
+         <number>15</number>
+        </property>
+        <item>
+         <widget class="QGroupBox" name="groupBox_mode">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>Maya Mode</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_mode">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>25</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupBox_modeType">
+             <layout class="QHBoxLayout" name="horizontalLayout_modeType">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>60</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>15</number>
+              </property>
+              <property name="bottomMargin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QRadioButton" name="radioButton_edit">
+                <property name="text">
+                 <string>Edit And Quary</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_quarry">
+                <property name="text">
+                 <string>Quarry Only</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_type">
+             <layout class="QHBoxLayout" name="horizontalLayout_type">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>60</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>15</number>
+              </property>
+              <property name="bottomMargin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QRadioButton" name="radioButton_overwrite">
+                <property name="text">
+                 <string>Overwrite</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_version">
+                <property name="text">
+                 <string>Another version</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_none">
+                <property name="text">
+                 <string>None</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_apply">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_cancel">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_apply">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Apply</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
