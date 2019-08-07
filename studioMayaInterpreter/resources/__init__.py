@@ -22,6 +22,7 @@ CURRENT_PATH = os.path.dirname(__file__)
 def get_tool_kit():
     return 'Studio Maya Interpreter ', 'smi', '0.0.1'
 
+
 def getIconPath():
     return os.path.join(CURRENT_PATH, 'icons')
 
@@ -35,7 +36,27 @@ def getWorkspacePath():
         return os.path.abspath(
             os.getenv('USERPROFILE') + '/Documents').replace('\\', '/')
     if platform.system() == 'Linux':
-        return os.path.join(os.getenv('HOME'), 'Documents', 'MODULE')
+        # return os.path.join(os.getenv('HOME'), 'Documents', 'MODULE')
+        return '/venture/subins_tutorials/crowd/sample'
+
+
+def getFormats():
+    formats = {
+        'maya': ['.ma', '.mb'],
+        'python': ['.py', '.pyc', '.mel']
+    }
+    return formats
+
+
+def getImages():
+    images = {
+        '.ma': 'maya_ascii',
+        '.mb': 'maya_binary',
+        '.py': 'python',
+        '.pyc': 'Python_compile',
+        '.mel': 'mel'
+    }
+    return images
 
 
 def getToolKitLink():

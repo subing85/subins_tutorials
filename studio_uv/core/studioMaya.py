@@ -69,6 +69,7 @@ class Connect(object):
         uv_sets = data['uv_sets']
         mdag_path = self.getDagPath()
         mfn_mesh = OpenMaya.MFnMesh(mdag_path)
+
         validate = self.validateData(mfn_mesh, data)
         if not validate:
             message = 'readError: not match from data <%s> to scene <%s> polygon' % (
@@ -88,8 +89,11 @@ class Connect(object):
             uv_ids = self.createIntArray(uv_sets[index]['uv_ids'])
             if int(index) == 0:
                 set_name = set_names[0]
+                mfn_mesh.clearUVs(set_name)
             else:
                 set_name = mfn_mesh.createUVSetWithName(set_name)
+            # mfn_mesh.setCurrentUVSetName(set_name)
+            # mfn_mesh.setSomeUVs(uv_ids, u_array, v_array, set_name)
             mfn_mesh.setUVs(u_array, v_array, set_name)
             mfn_mesh.assignUVs(uv_counts, uv_ids, set_name)
         mfn_mesh.updateSurface()

@@ -94,7 +94,6 @@ def import_uv(directory, entity, repeat, objects):
     imported_result = {}
     result = True
     for index, contents in uv_data.items():
-        print len(contents)
         uv_contents = contents[0:1]
         if repeat:
             uv_contents = contents
@@ -106,6 +105,7 @@ def import_uv(directory, entity, repeat, objects):
             except Exception as error:
                 imported_result.setdefault(
                     False, []).append(content['shape_node'])
+                set_data = None
             if not set_data:
                 result = False
     print '\npolygons\n', json.dumps(imported_result, indent=4)

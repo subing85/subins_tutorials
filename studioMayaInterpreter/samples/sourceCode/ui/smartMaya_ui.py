@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/subins_tutorials/studioMayaInterpreter/samples/sourceCode/ui/smartMaya_ui.ui'
 #
-# Created: Sun Aug  4 22:20:07 2019
+# Created: Tue Aug  6 23:19:53 2019
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -166,11 +166,16 @@ class Ui_MainWindow_smartMaya(object):
         self.textEdit_result_2.setReadOnly(True)
         self.textEdit_result_2.setOverwriteMode(False)
         self.textEdit_result_2.setObjectName(_fromUtf8("textEdit_result_2"))
-        self.textEdit_result_3 = QtGui.QTextEdit(self.splitter_2)
-        self.textEdit_result_3.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
-        self.textEdit_result_3.setReadOnly(True)
-        self.textEdit_result_3.setOverwriteMode(False)
-        self.textEdit_result_3.setObjectName(_fromUtf8("textEdit_result_3"))
+        self.treeWidget = QtGui.QTreeWidget(self.splitter_2)
+        self.treeWidget.setLineWidth(10)
+        self.treeWidget.setAlternatingRowColors(True)
+        self.treeWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self.treeWidget.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.treeWidget.setColumnCount(3)
+        self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
+        self.treeWidget.headerItem().setText(0, _fromUtf8("NO"))
+        self.treeWidget.headerItem().setTextAlignment(0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter|QtCore.Qt.AlignCenter)
+        self.treeWidget.headerItem().setText(2, _fromUtf8("3"))
         self.horizontalLayout.addWidget(self.splitter_2)
         self.textEdit_result = QtGui.QTextEdit(self.splitter)
         self.textEdit_result.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
@@ -253,11 +258,9 @@ class Ui_MainWindow_smartMaya(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Arial\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
-        self.textEdit_result_3.setHtml(_translate("MainWindow_smartMaya", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Arial\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+        self.treeWidget.setSortingEnabled(True)
+        self.treeWidget.setProperty("type", _translate("MainWindow_smartMaya", "maya", None))
+        self.treeWidget.headerItem().setText(1, _translate("MainWindow_smartMaya", "New Column", None))
         self.textEdit_result.setHtml(_translate("MainWindow_smartMaya", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

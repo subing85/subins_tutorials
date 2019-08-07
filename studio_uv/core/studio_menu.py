@@ -51,7 +51,7 @@ def executeModule(module, *args):
         return
     try:
         result = module.execute()
-        core.displayWarning('Success!... %s' % result)
+        core.displayInfo('Success!... %s' % result)
     except Exception as error:
         core.displayWarning('Failed!... %s' % str(error))
 

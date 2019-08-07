@@ -3,10 +3,20 @@ import sys
 
 from PySide import QtGui
 from PySide import QtCore
+from functools import partial
+
+# from PyQt4 import QtGui
+# from PyQt4 import QtCore
 
 from studioMayaInterpreter import resources
+from studioMayaInterpreter.core import drag
+from studioMayaInterpreter.core import widgets
+from studioMayaInterpreter.core import stylesheet
 
 reload(resources)
+reload(drag)
+reload(stylesheet)
+reload(widgets)
 
 
 class MayaWindow(QtGui.QMainWindow):
@@ -15,15 +25,22 @@ class MayaWindow(QtGui.QMainWindow):
         super(MayaWindow, self).__init__(**kwargs)
 
         self.label, self.name, self.version = resources.get_tool_kit()
-        self.width, self.height = 600, 500
+        self.width, self.height = 900, 800
         
+
+        self.browse_path = resources.getWorkspacePath()
+
+        self.style = stylesheet.connect()
+
         self.setup_ui()
         self.modify_widgets()
         self.set_toolbar(self.horizontallayout_bar)
-        print self.splitter.sizes()
+        # print self.splitter.sizes()
 
     def setup_ui(self):
         self.setObjectName('maya_window')
+        self.setStyleSheet(self.style)
+
         self.setWindowTitle('{} {}'.format(self.label, self.version))
         self.resize(self.width, self.height)
 
@@ -46,7 +63,7 @@ class MayaWindow(QtGui.QMainWindow):
         self.horizontallayout_bar = QtGui.QHBoxLayout(self.groupbox_bar)
         self.horizontallayout_bar.setObjectName('horizontallayout_toolbar')
         self.horizontallayout_bar.setSpacing(10)
-        self.horizontallayout_bar.setContentsMargins(10, 10, 10, 10)
+        self.horizontallayout_bar.setContentsMargins(0, 0, 0, 0)
 
         self.splitter = QtGui.QSplitter(self.centralwidget)
         self.splitter.setObjectName('splitter')
@@ -68,11 +85,13 @@ class MayaWindow(QtGui.QMainWindow):
         self.splitter_input.setHandleWidth(5)
         self.horizontallayout_input.addWidget(self.splitter_input)
 
-        # trail
-        self.textEdit_result = QtGui.QTextEdit(self.splitter_input)
-        self.textEdit_result.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
-        self.textEdit_result = QtGui.QTextEdit(self.splitter_input)
-        self.textEdit_result.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
+        #======================================================================
+        # # trail
+        # self.textEdit_result = QtGui.QTextEdit(self.splitter_input)
+        # self.textEdit_result.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
+        # self.textEdit_result = QtGui.QTextEdit(self.splitter_input)
+        # self.textEdit_result.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
+        #======================================================================
 
         self.textedit_output = QtGui.QTextEdit(self.splitter)
         self.textedit_output.setObjectName('textedit_output')
@@ -93,6 +112,7 @@ class MayaWindow(QtGui.QMainWindow):
         self.label.setObjectName('label')
         self.label.setAlignment(
             QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label.setText('www.subin-toolkits.com\nsubing85@gmail.com')
         self.verticallayout.addWidget(self.label)
 
         self.menubar = QtGui.QMenuBar(self)
@@ -115,22 +135,22 @@ class MayaWindow(QtGui.QMainWindow):
         self.menu_help.setTitle('Help')
         self.action_new = QtGui.QAction(self)
         self.action_new.setObjectName('action_new')
-        self.action_new.setText('New')        
+        self.action_new.setText('New')
         self.action_open = QtGui.QAction(self)
         self.action_open.setObjectName('action_open')
-        self.action_open.setText('Open')        
+        self.action_open.setText('Open')
         self.action_save = QtGui.QAction(self)
         self.action_save.setObjectName('action_save')
-        self.action_save.setText('Save')        
+        self.action_save.setText('Save')
         self.action_saveAs = QtGui.QAction(self)
         self.action_saveAs.setObjectName('action_saveAs')
-        self.action_saveAs.setText('Save As...')        
+        self.action_saveAs.setText('Save As...')
         self.action_quit = QtGui.QAction(self)
         self.action_quit.setObjectName('action_quit')
         self.action_quit.setText('Quit')
         self.action_import_file = QtGui.QAction(self)
         self.action_import_file.setObjectName('action_import_file')
-        self.action_import_file.setText('Import Maya File')         
+        self.action_import_file.setText('Import Maya File')
         self.action_import_code = QtGui.QAction(self)
         self.action_import_code.setObjectName('action_import_code')
         self.action_import_code.setText('Import Mel/Python')
@@ -139,14 +159,15 @@ class MayaWindow(QtGui.QMainWindow):
         self.action_preference.setText('Preference')
         self.action_execute = QtGui.QAction(self)
         self.action_execute.setObjectName('action_execute')
-        self.action_execute.setText('Start To Execute')           
+        self.action_execute.setText('Start To Execute')
         self.action_about = QtGui.QAction(self)
         self.action_about.setObjectName('action_about')
-        self.action_about.setText('About Application')        
+        self.action_about.setText('About Application')
         self.menu_file.addAction(self.action_new)
         self.menu_file.addAction(self.action_open)
         self.menu_file.addAction(self.action_save)
         self.menu_file.addAction(self.action_saveAs)
+        self.menu_file.addSeparator()
         self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_quit)
         self.menu_edit.addAction(self.action_import_file)
@@ -160,45 +181,97 @@ class MayaWindow(QtGui.QMainWindow):
         self.menubar.addAction(self.menu_settings.menuAction())
         self.menubar.addAction(self.menu_run.menuAction())
         self.menubar.addAction(self.menu_help.menuAction())
-        
-        self.splitter.setSizes([500, 350])
+
+        self.treewidget_maya = drag.DropArea(type='maya')
+        self.treewidget_maya.setObjectName('treewidget_maya')
+        self.treewidget_maya.headerItem().setText(0, 'No')
+        self.treewidget_maya.headerItem().setText(1, 'Maya Files')
+        self.treewidget_maya.setSelectionMode(
+            QtGui.QAbstractItemView.ExtendedSelection)
+        self.splitter_input.addWidget(self.treewidget_maya)
+
+        self.treewidget_python = drag.DropArea(type='python')
+        self.treewidget_python.setObjectName('treewidget_python')
+        self.treewidget_python.headerItem().setText(0, 'No')
+        self.treewidget_python.headerItem().setText(1, 'Scripts')
+        self.treewidget_python.setSelectionMode(
+            QtGui.QAbstractItemView.SingleSelection)
+        self.splitter_input.addWidget(self.treewidget_python)
+ 
+        self.treewidget_maya.header().resizeSection(0, 80)
+        self.treewidget_maya.header().resizeSection(1, 80)
+        self.treewidget_python.header().resizeSection(0, 80)
+        self.treewidget_python.header().resizeSection(1, 80)
+        self.splitter.setSizes([545, 102])
+
+        self.action_new.triggered.connect(self.new)
+        self.action_import_file.triggered.connect(
+            partial(self.import_source, 'maya'))
+        self.action_import_code.triggered.connect(
+            partial(self.import_source, 'python'))
 
     def modify_widgets(self):
-        icon_path = resources.getIconPath()        
+        icon_path = resources.getIconPath()
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(icon_path, 'logo.png')))
         self.setWindowIcon(icon)
         qactions = self.findChildren(QtGui.QAction)
-        for qaction in qactions :
-            icon = QtGui.QIcon()            
-            label =  str(qaction.objectName()).split ('action_')[-1]
-            print label
+        for qaction in qactions:
+            icon = QtGui.QIcon()
+            label = str(qaction.objectName()).split('action_')[-1]
+            # print label
             if not label:
                 continue
             icon.addPixmap(
-                QtGui.QPixmap(os.path.join(icon_path, '%s.png'%label)),
+                QtGui.QPixmap(os.path.join(icon_path, '%s.png' % label)),
                 QtGui.QIcon.Normal,
                 QtGui.QIcon.Off
             )
-            qaction.setIcon(icon)  
+            qaction.setIcon(icon)
             # qaction.setIconSize(QtCore.QSize(140, 140))
-            
-    def set_toolbar (self, layout) :
+
+    def set_toolbar(self, layout):
         self.toolBar = QtGui.QToolBar()
         self.toolBar.addAction(self.action_new)
         self.toolBar.addAction(self.action_open)
         self.toolBar.addAction(self.action_save)
-        # self.toolBar.addAction(self.action_saveAs)        
+        # self.toolBar.addAction(self.action_saveAs)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.action_import_file)
         self.toolBar.addAction(self.action_import_code)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.action_preference)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.action_execute)       
-        layout.addWidget (self.toolBar)    
+        self.toolBar.addAction(self.action_execute)
+        layout.addWidget(self.toolBar)
+
+    def import_source(self, type):
+        formats = resources.getFormats()
+        
+        files = QtGui.QFileDialog.getOpenFileNames(
+            self,
+            'Import %s files'% type,
+            self.browse_path,
+            '%s file (%s)'%(type, '*%s'% ' *'.join(formats[type]))
+        )
+        # 'Maya file (*.ma *.mb)'
                 
-            
+        if files:
+            if not files[0]:
+                return                    
+        treewidget = self.treewidget_maya
+        if type=='python':
+            treewidget = self.treewidget_python        
+        for file in files[0]:
+            widgets.create_item(treewidget, type, file)            
+        self.browse_path = os.path.basename(files[0][-1])
+
+
+    def new(self):
+        print self.treewidget_python.header().size()
+        print self.splitter.sizes()
+
+
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = MayaWindow()
