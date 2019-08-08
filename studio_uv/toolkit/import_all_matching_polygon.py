@@ -15,7 +15,7 @@ Description
 '''
 
 NAME = 'Import To All Matching Polygons'
-ORDER = 6
+ORDER = 4
 VALID = True
 LAST_MODIFIED = 'July 28, 2019'
 OWNER = 'Subin Gopi'

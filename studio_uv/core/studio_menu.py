@@ -33,6 +33,9 @@ def create_menu():
     for index in sorted_index:
         for module in modules[index]:
             lable = module.NAME
+            if hasattr(module, 'SEPARATOR'):
+                if module.SEPARATOR:
+                    core.ui.MenuItem(d=True, p=studio_uv_menu)
             core.ui.MenuItem(
                 l=module.NAME,
                 p=studio_uv_menu,
@@ -51,7 +54,6 @@ def executeModule(module, *args):
         return
     try:
         result = module.execute()
-        core.displayInfo('Success!... %s' % result)
     except Exception as error:
         core.displayWarning('Failed!... %s' % str(error))
 

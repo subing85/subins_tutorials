@@ -20,6 +20,7 @@ VALID = True
 LAST_MODIFIED = 'July 28, 2019'
 OWNER = 'Subin Gopi'
 COMMENTS = 'To import the all uv sets!...'
+SEPARATOR = True
 
 
 def execute():

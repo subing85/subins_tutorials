@@ -15,12 +15,12 @@ Description
 '''
 
 NAME = 'Import To Selected Polygons'
-ORDER = 4
+ORDER = 3
 VALID = True
 LAST_MODIFIED = 'July 28, 2019'
 OWNER = 'Subin Gopi'
 COMMENTS = 'To import the selected uv sets!...'
-
+SEPARATOR = False
 
 def execute():
     from pymel import core

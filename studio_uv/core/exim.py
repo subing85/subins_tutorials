@@ -23,8 +23,10 @@ from studio_uv.core import studioMaya
 
 def execute(*args):
     '''
-        :example 0 type, 1 repeat, 2 select, 3 directory, 4 query, 5 objects
+        :example 0 type, 1 repeat, 2 select, 3 directory, 4 query, 5 objects, 6 clear
     '''
+    if args[6]:
+        clear_uvs(args[2], args[5])
     if args[0] == 'export' and args[3] and not args[4]:
         export_uv(args[2], args[3], args[5])
     if args[0] == 'import' and args[3] and not args[4]:
@@ -63,11 +65,10 @@ def export_uv(type, directory, objects):
         uv_data_bundle.setdefault(index, data)
     studio_maya.write(directory, uv_data_bundle, result=False)
     print '\npolygons\n\t', '\n\t'.join(exported_polygons)
-    print '// Result:',  directory
     if not result:
         core.displayWarning('export not completed!...')
         return
-    core.displayInfo('export success!...')
+    core.displayInfo('export success!... // Result: %s' % directory)
 
 
 def import_uv(directory, entity, repeat, objects):
@@ -77,7 +78,7 @@ def import_uv(directory, entity, repeat, objects):
         uv_data = find_from_scene(data)
     elif entity == 'selected':
         polygons = core.ls(sl=True)
-        uv_data = find_from_scene(data, mode=True, polygons=polygons)
+        uv_data = find_from_scene(data, mode=False, polygons=polygons)
     elif entity == 'all':
         uv_data = find_from_data(data)
     elif objects:
@@ -113,6 +114,18 @@ def import_uv(directory, entity, repeat, objects):
         core.displayWarning('import not completed!...')
         return
     core.displayInfo('// Result: import success!...')
+
+
+def clear_uvs(entity, objects):
+    if not objects:
+        objects = get_polygons(entity)
+    if not objects:
+        core.displayWarning('not found any input polygons!...')
+    studio_maya = studioMaya.Connect()
+    for object in objects:
+        studio_maya.node = object
+        studio_maya.clear()
+    core.displayInfo('// Result: clear success!...')
 
 
 def get_polygons(type):

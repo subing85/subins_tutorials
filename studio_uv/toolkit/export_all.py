@@ -20,7 +20,7 @@ VALID = True
 LAST_MODIFIED = 'July 28, 2019'
 OWNER = 'Subin Gopi'
 COMMENTS = 'To export the all uv sets!...'
-
+SEPARATOR = False
 
 def execute():
     from pymel import core

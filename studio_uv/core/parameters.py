@@ -32,6 +32,8 @@ class Connect(OpenMayaMPx.MPxCommand):
         self.k_directory = ['-dir', '-directory']
         self.k_query = ['-q', '-query']
         self.k_objects = ['-obj', '-objects']
+        self.k_clear = ['-cl', '-clear']
+
         self.type_values = ['import', 'export']
         self.select_values = ['all', 'selected', 'auto']
 
@@ -53,6 +55,8 @@ class Connect(OpenMayaMPx.MPxCommand):
             self.k_query[0], self.k_query[1], OpenMaya.MSyntax.kBoolean)
         syntax.addFlag(
             self.k_objects[0], self.k_objects[1], OpenMaya.MSyntax.kString)
+        syntax.addFlag(
+            self.k_clear[0], self.k_clear[1], OpenMaya.MSyntax.kBoolean)
         return syntax
 
     def doIt(self, args):
@@ -64,6 +68,7 @@ class Connect(OpenMayaMPx.MPxCommand):
         query = False
         objects = None
         match = False
+        clear = False
         if args_data.isFlagSet(self.k_type[0]):
             type = args_data.flagArgumentString(self.k_type[0], 0)
         if args_data.isFlagSet(self.k_select[0]):
@@ -76,4 +81,6 @@ class Connect(OpenMayaMPx.MPxCommand):
             query = args_data.flagArgumentBool(self.k_query[0], 0)
         if args_data.isFlagSet(self.k_objects[0]):
             objects = args_data.flagArgumentString(self.k_objects[0], 0)
-        exim.execute(type, repeat, select, directory, query, objects)
+        if args_data.isFlagSet(self.k_clear[0]):
+            clear = args_data.flagArgumentBool(self.k_clear[0], 0)
+        exim.execute(type, repeat, select, directory, query, objects, clear)

@@ -12,11 +12,13 @@ from studioMayaInterpreter import resources
 from studioMayaInterpreter.core import drag
 from studioMayaInterpreter.core import widgets
 from studioMayaInterpreter.core import stylesheet
+from studioMayaInterpreter.resources.ui import preference
 
 reload(resources)
 reload(drag)
 reload(stylesheet)
 reload(widgets)
+reload(preference)
 
 
 class MayaWindow(QtGui.QMainWindow):
@@ -25,12 +27,13 @@ class MayaWindow(QtGui.QMainWindow):
         super(MayaWindow, self).__init__(**kwargs)
 
         self.label, self.name, self.version = resources.get_tool_kit()
-        self.width, self.height = 900, 800
-        
+        self.width, self.height = 900, 800        
 
         self.browse_path = resources.getWorkspacePath()
 
         self.style = stylesheet.connect()
+        
+        self.preference = preference.Window(parent=self)
 
         self.setup_ui()
         self.modify_widgets()
@@ -38,7 +41,7 @@ class MayaWindow(QtGui.QMainWindow):
         # print self.splitter.sizes()
 
     def setup_ui(self):
-        self.setObjectName('maya_window')
+        self.setObjectName('maya_mainwindow')
         self.setStyleSheet(self.style)
 
         self.setWindowTitle('{} {}'.format(self.label, self.version))
@@ -210,6 +213,9 @@ class MayaWindow(QtGui.QMainWindow):
         self.action_import_code.triggered.connect(
             partial(self.import_source, 'python'))
 
+        self.action_preference.triggered.connect(self.show_preference)
+        
+
     def modify_widgets(self):
         icon_path = resources.getIconPath()
         icon = QtGui.QIcon()
@@ -266,6 +272,10 @@ class MayaWindow(QtGui.QMainWindow):
             widgets.create_item(treewidget, type, file)            
         self.browse_path = os.path.basename(files[0][-1])
 
+    def show_preference(self):
+        self.preference.show()
+        self.setEnabled(False)
+        print 'sssssssssssssss'
 
     def new(self):
         print self.treewidget_python.header().size()

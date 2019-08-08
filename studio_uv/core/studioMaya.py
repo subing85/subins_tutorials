@@ -99,6 +99,15 @@ class Connect(object):
         mfn_mesh.updateSurface()
         return True
 
+    def clear(self):
+        mdag_path = self.getDagPath()
+        mfn_mesh = OpenMaya.MFnMesh(mdag_path)
+        set_names = []
+        mfn_mesh.getUVSetNames(set_names)
+        self.delete_uv_sets(mfn_mesh, set_names[1:])
+        mfn_mesh.clearUVs()
+        mfn_mesh.updateSurface()
+
     def validateData(self, mfn_mesh, data):
         num_polygons, polygon_vertices = self.getFacesVertices(mfn_mesh)
         if num_polygons != data['num_polygons']:
