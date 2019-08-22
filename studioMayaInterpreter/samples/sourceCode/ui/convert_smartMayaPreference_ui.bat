@@ -1,1 +1,0 @@
-pyuic4.bat smartMayaPreference_ui.ui -o smartMayaPreference_ui.py 

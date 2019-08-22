@@ -1,0 +1,40 @@
+from maya import cmds
+
+import sys
+
+for a in sys.path:
+    print a
+
+# sys.path.append('/usr/autodesk/maya2016/lib/python2.7/site-packages')
+
+from PySide import QtGui
+
+#print 'hellooooooooooooooooooo'
+
+print help(QtGui)
+
+
+'''
+if cmds.window('smplayblast', q=1, ex=1)==1 :
+    cmds.deleteUI ('smplayblast')  
+    
+playbalst_window   = cmds.window(
+    'smplayblast', title='Studio Maya Playblast 0.0.1', iconName='Studio Maya Playblast 0.0.1', widthHeight=(100, 100))
+
+cmds.frameLayout(labelVisible=0, marginHeight=15, marginWidth=15)
+cmds.optionMenu(l='Camera', en=True);			
+cmds.menuItem(label='Yellow')
+cmds.menuItem(label='Purple')
+cmds.menuItem(label='Orange')
+cmds.separator(height=10, style='in')
+cmds.rowColumnLayout(nc=5, cs=[(2, 10),(3, 10),(4, 10),(5, 10)])       
+cmds.text(l='Start Frame :-')        
+cmds.intField('startFrame_intField', min=1)
+cmds.text(l='End Frame :- ')        
+cmds.intField('endFrame_intField', min=1)
+cmds.setParent('..')
+cmds.separator(height=10, style='in')
+cmds.button(l='Playblast')
+cmds.showWindow('smplayblast')
+cmds.window('smplayblast', e=True, widthHeight=(100, 100), s=True)
+'''

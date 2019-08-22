@@ -1,0 +1,31 @@
+//description: get the polygon information from the scenes 
+
+global proc get_data()
+    {
+        //Mesh 
+        string $seleMesh[] = `listTransforms "-type mesh"`; 
+        int $meshSize = `size $seleMesh`;
+        
+        //Polygon Count
+        int $polyCount[] = `polyEvaluate -v $seleMesh`;
+        string $studio = "http://www.subins-toolkits.com";				
+        string $line = "-----------------------------------------";
+        
+        string $geoInfo	 = "Total Geometry Information";
+        string $polyC = ("Total Polygon Count	: " + $meshSize);
+        string $verC = ("Total Vertex  Count	: " + $polyCount[0]);	
+        string $total_geoC	 = ("Total Geometry Count	: " + $meshSize);
+        string $message = "\r\n\t" + $line + "\r\n\t" + $studio + "\r\n\t" + $line + "\r\n";
+        
+        string $valiadte_message = "\t" + $geoInfo + "\r\n\r\n\t\t" 
+                + $polyC + "\r\n\t\t" +  $verC + "\r\n\r\n\t"
+                + $line + "\r\n\t\t" + $total_geoC + "\r\n\t"
+                + $line + "\r\n";	
+        print ($message);
+        print ($valiadte_message);
+        for ($obj in $seleMesh)
+            {
+            			print ("\t\t\t" + $obj + "\r\n"); 
+            }
+    }
+get_data();                
