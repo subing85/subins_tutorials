@@ -1,6 +1,16 @@
 '''
-:description: 
-    to set the all modelplanel (display)to nurbsCurves, nurbsSurfaces and polymeshes
+set_display.py 0.0.1 
+Date: August 05, 2019
+Last modified: August 05, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    to set the scene panels display to only the nurbsCurves, nurbsSurfaces and polymeshes
 '''
 
 
@@ -17,5 +27,5 @@ for panel in panels :
     cmds.modelEditor(panel, e=1, polymeshes=1)
     
 print 'Total panels', len(panels)
-print '\t', panels
+print panels
 print 'All panels display set into only the nurbsCurves, nurbsSurfaces and polymeshes!...'

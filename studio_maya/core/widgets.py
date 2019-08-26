@@ -32,13 +32,6 @@ def create_item(parent, type, path):
     item = QtGui.QTreeWidgetItem(parent)
     item.setText(1, os.path.basename(path))
     item.setToolTip(1, path)
-    item.setFlags(
-        QtCore.Qt.ItemIsEnabled |
-        QtCore.Qt.ItemIsEditable |
-        QtCore.Qt.ItemIsSelectable |
-        QtCore.Qt.ItemIsDropEnabled |
-        QtCore.Qt.ItemIsDragEnabled
-    )
     current_icon = os.path.join(
         icon_path, '%s.png' % images[format])
     icon = QtGui.QIcon()
@@ -48,6 +41,9 @@ def create_item(parent, type, path):
         QtGui.QIcon.Off
     )
     item.setIcon(1, icon)
+    if not os.path.isfile(path):
+        item.setFlags(QtCore.Qt.ItemIsDragEnabled)
+
     item_count = parent.topLevelItemCount()
     zeros = padding(item_count, padding_size)
     current_number = '%s%s' % (zeros, item_count)

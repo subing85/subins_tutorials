@@ -1,3 +1,19 @@
+'''
+get_scene_contest.py 0.0.1 
+Date: August 05, 2019
+Last modified: August 05, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    to find the maya objects details from the scenes.
+'''
+
+
 from pymel import core
 
 
@@ -7,7 +23,10 @@ def get_data():
     defaults = get_defaults()
     node_data = {}
     nodes = []
+    nodes_shapes = []
     for transform in transforms:
+        if transform.type() != 'transform':
+            continue
         shape = transform.getShape()
         if shape:
             shapes = [each.name() for each in transform.getShapes()]
@@ -19,24 +38,27 @@ def get_data():
         else:
             node_data.setdefault(transform.type(), []).append(transform.name())
         nodes.append(transform.name())
+        if shape:
+            nodes_shapes.append(shape.type())
     for content in contents:
         if content.name() in defaults:
             continue
         if content.name() in nodes:
             continue
+        if content.type() in nodes_shapes:
+            continue
         node_data.setdefault(content.type(), []).append(content.name())
-
     for nodetype, node_contents in node_data.items():
-        print '\nType: \t', nodetype
+        print '\nType : ', nodetype
         if isinstance(node_contents, dict):
             for each, shape_nodes in node_contents.items():
-                print '\tName:\t', each
+                print 'Name : ', each
                 for shape_node in shape_nodes['shapes']:
-                    print '\t\tshape:\t', shape_node
+                    print 'shape : ', shape_node
                 print '\n'
         else:
             for each in node_contents:
-                print '\tName:\t', each
+                print 'Name : ', each
     return node_data
 
 
@@ -60,5 +82,6 @@ def get_defaults():
         'sceneConfigurationScriptNode'
     ])
     return default
+
 
 get_data()

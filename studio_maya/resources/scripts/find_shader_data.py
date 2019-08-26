@@ -1,3 +1,19 @@
+'''
+find_shader_data.py 0.0.1 
+Date: August 05, 2019
+Last modified: August 05, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    to find the shader details from the scenes.
+'''
+
+
 import os
 import json
 import tempfile

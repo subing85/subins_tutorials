@@ -1,9 +1,26 @@
+'''
+find_reference.py 0.0.1 
+Date: August 05, 2019
+Last modified: August 05, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    to find the reference details from the scenes.
+'''
+
+
 import os
 import json
 import tempfile
 import webbrowser
 
 from maya import cmds
+
 
 def find(output_path=None, write=False):
     if not output_path:
@@ -30,22 +47,22 @@ def find(output_path=None, write=False):
             'namespace': namespace,
             'top_dag_node': world_node
         }
-        data.setdefault(index+1, current_data)                
-    print 'Reference informations'
+        data.setdefault(index + 1, current_data)
+    print '\nReference informations'
     for index, contents in data.items():
-        print '\t', index
-        print '\t\tsource_path :\t', contents['source_path'] 
-        print '\t\tnamespace :\t', contents['namespace'] 
-        print '\t\tTop level dag object :\t', contents['top_dag_node'], '\n' 
+        print index
+        print 'source_path :', contents['source_path']
+        print 'namespace :', contents['namespace']
+        print 'Top level dag object :', contents['top_dag_node'], '\n'
 
     if write:
         with (open(output_path, 'w')) as content:
-            content.write(json.dumps(data, indent=4))        
+            content.write(json.dumps(data, indent=4))
     return data, output_path
+
 
 data, path = find(write=True)
 try:
     webbrowser.open(path)
 except Exception as error:
     print str(error)
-

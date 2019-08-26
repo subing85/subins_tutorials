@@ -20,20 +20,13 @@ from studio_maya.core import widgets
 from studio_maya.core import stylesheet
 from studio_maya.resources.ui import preference
 
-# mel
-# qc
-# release
-# sample scripts
-# QLayout: Attempting to add QLayout "" to QGroupBox "groupbox_bar", which already has a layout
-
-
 
 class MayaWindow(QtGui.QMainWindow):
 
     def __init__(self, parent=None):
         super(MayaWindow, self).__init__(parent)
         self.label, self.name, self.version = resources.getToolKit()
-        self.width, self.height = 1000, 800
+        self.width, self.height = 1000, 900
         self.browse_path = resources.getWorkspacePath()
         self.preference_path = resources.getPreferenceFile()
         self.current_file = None
@@ -50,8 +43,8 @@ class MayaWindow(QtGui.QMainWindow):
         self.set_toolbar(self.horizontallayout_bar)
         self.set_maya_version()
         self.custom_console = console.Connect()
-        #self.custom_console.stdout().message_written.connect(
-        #    self.textedit_output.insertPlainText)
+        self.custom_console.stdout().message_written.connect(
+            self.textedit_output.insertPlainText)
 
     def setup_ui(self):
         self.setObjectName('maya_mainwindow')
@@ -259,7 +252,7 @@ class MayaWindow(QtGui.QMainWindow):
         self.treewidget_maya.header().resizeSection(1, 80)
         self.treewidget_code.header().resizeSection(0, 80)
         self.treewidget_code.header().resizeSection(1, 80)
-        self.splitter.setSizes([545, 102])
+        self.splitter.setSizes([468, 175])
         self.action_new.triggered.connect(self.new)
         self.action_open.triggered.connect(self.open)
         self.action_save.triggered.connect(self.save)
@@ -479,8 +472,16 @@ class MayaWindow(QtGui.QMainWindow):
         maya_version = input_data['current_version']['name']
         query = input_data['mode']['query_only']
         overwrite = input_data['mode']['overwrite']
-        codes = self.treewidget_code.selectedItems()
         maya_files = self.treewidget_maya.selectedItems()
+        if not maya_files:
+            QtGui.QMessageBox.warning(
+                self, 'Warning', 'Select the maya files', QtGui.QMessageBox.Ok)
+            return
+        codes = self.treewidget_code.selectedItems()
+        if not codes:
+            QtGui.QMessageBox.warning(
+                self, 'Warning', 'Select the source code file', QtGui.QMessageBox.Ok)
+            return
         code_file = codes[-1].toolTip(1).encode()
         ing = len(maya_files) - 1
         if len(maya_files) < 1:
@@ -512,7 +513,6 @@ class MayaWindow(QtGui.QMainWindow):
             if self.pause:
                 with self.state:
                     self.state.wait()
-
             if not self.stop and not self.pause:
                 self.state = threading.Condition()
                 self.paly_thread = threading.Thread(
@@ -527,6 +527,8 @@ class MayaWindow(QtGui.QMainWindow):
                 self.paly_thread.daemon = True
                 self.paly_thread.start()
                 self.paly_thread.join()
+        progress.setValue(100)
+        progress.close()
 
         QtGui.QMessageBox.information(
             self,
@@ -552,7 +554,7 @@ class MayaWindow(QtGui.QMainWindow):
             'import initialize',
             'initialize.start(\'%s\', \'%s\', \'%s\')' % (maya, code, save)
         ]
-        command = mayapy + ' -c \"' + '; '.join(commands) + '\"'       
+        command = mayapy + ' -c \"' + '; '.join(commands) + '\"'
         process = subprocess.Popen(
             [command], shell=True, stdout=subprocess.PIPE)
         process.wait()
@@ -564,56 +566,9 @@ class MayaWindow(QtGui.QMainWindow):
         pprint(output)
         print '\n'
 
-    def create_py(self, temp_files, maya_file, code_file, query, overwrite):
-        code_dirname = os.path.dirname(code_file)
-        code_name = os.path.splitext(os.path.basename(code_file))[0]
-        save = None
-        if not query and overwrite:
-            save = 'core.saveAs(\"%s\", f=True, iv=True, pmt=True)' % maya_file
-        elif not query:
-            next_maya = generic.next_version(maya_file)
-            save = 'core.saveAs(\"%s\", f=True, iv=True, pmt=True)' % next_maya
-        pre_commands = [
-            'import sys',
-            'path = \"%s\"' % code_dirname,
-            'if path not in sys.path:',
-            '\tsys.path.append(path)',
-            'from maya import standalone',
-            'standalone.initialize(name=\"python\")',
-            'from pymel import core',
-            'core.openFile(\"%s\", f=True)' % maya_file,
-            'import %s' % code_name,
-            save
-        ]
-        if not save:
-            pre_commands = pre_commands[0:-1]
-
-        clear = self.clear_cache(temp_files)
-        if not clear:
-            return
-        try:
-            with open(temp_files, 'w') as file:
-                file.write('\n'.join(pre_commands))
-        except Exception as error:
-            warnings.warn(str(error), Warning)
-            return None
-        return temp_files
-
-    def clear_cache(self, file=None):
-        if not file:
-            file = resources.getTempCodeFile()
-        if not os.path.isfile(file):
-            return True
-        try:
-            os.chmod(file, 0777)
-            os.remove(file)
-        except Exception, error:
-            warnings.warn(str(error), Warning)
-            return None
-        return True
-
     def about(self):
-        webbrowser.open(resources.getToolKitHelpLink())
+        print self.splitter.sizes()
+        # webbrowser.open(resources.getToolKitHelpLink())
 
     def subin_toolkit(self):
         webbrowser.open(resources.getToolKitLink())
