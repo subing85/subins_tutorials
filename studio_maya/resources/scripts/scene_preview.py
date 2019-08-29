@@ -377,6 +377,7 @@ def create(engine, render_camera, width, height, output, light):
     current_camera = get_camera(render_camera)
     set_camera(current_camera)
     movie = batch_render(output)
+    print "\nhttp://www.subins-toolkits.com", '\n', '-'*41     
     print '\nMovie path: ', movie
     return movie
 

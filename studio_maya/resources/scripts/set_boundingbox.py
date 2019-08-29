@@ -21,6 +21,7 @@ panels = cmds.getPanel(type='modelPanel')
 for panel in panels:
     cmds.modelEditor(panel, e=1, displayAppearance='boundingBox')
 
+print "\nhttp://www.subins-toolkits.com", '\n', '-'*41 
 print 'Total panels', len(panels)
 print panels
 print 'All panels display set into "BoundingBox"'

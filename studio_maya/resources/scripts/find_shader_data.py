@@ -120,6 +120,7 @@ def validateo(output_path=None, write=False):
 
 
 data, path = validateo(write=True)
+print "\nhttp://www.subins-toolkits.com", '\n', '-'*41
 print json.dumps(data, indent=4)
 try:
     webbrowser.open(path)

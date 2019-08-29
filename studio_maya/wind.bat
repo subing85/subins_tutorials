@@ -1,5 +1,11 @@
+cd "C:/Users/shreya/Desktop/tmp/"
+
+set my_python_path=C:/Python27
+
 set STUDIO_PATH=%cd%
-set PYTHONPATH=%cd%
+set PYTHONPATH=%cd%;%my_python_path%;%PYTHONPATH%
+
+echo PYTHONPATH
 
 echo ""
 echo "Studio Maya"
@@ -8,4 +14,5 @@ echo "www.subins-toolkits.comm"
 echo "subing85@gmail.com"
 echo ""
 
-"C:/Program Files/Autodesk/Maya2016/bin/mayapy.exe" %cd%"/studio_maya/__init__.py"
+
+"C:/Python27/python.exe" %cd%"/studio_maya/__init__.py"

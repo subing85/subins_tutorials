@@ -51,7 +51,7 @@ def getRootPath():
 def getEditor():
     operating_system = getOperatingSystem()
     if operating_system == 'Windows':
-        return ''
+        return 'start wordpad'
     if operating_system == 'Linux':
         return 'kwrite'
 

@@ -25,7 +25,8 @@ for panel in panels :
     cmds.modelEditor(panel, e=1, nurbsCurves=1)
     cmds.modelEditor(panel, e=1, nurbsSurfaces=1)
     cmds.modelEditor(panel, e=1, polymeshes=1)
-    
+
+print "\nhttp://www.subins-toolkits.com", '\n', '-'*41 
 print 'Total panels', len(panels)
 print panels
 print 'All panels display set into only the nurbsCurves, nurbsSurfaces and polymeshes!...'

@@ -37,6 +37,8 @@ def find(output_path=None, write=False):
             print str(error)
     references = cmds.file(q=True, r=True)
     data = {}
+    print "\nhttp://www.subins-toolkits.com", '\n', '-'*41         
+    print '\nReference informations'    
     for index, reference in enumerate(references):
         namespace = cmds.file(reference, q=True, ns=True).encode()
         source_path = cmds.referenceQuery(reference, filename=True, wcn=True)
@@ -48,13 +50,10 @@ def find(output_path=None, write=False):
             'top_dag_node': world_node
         }
         data.setdefault(index + 1, current_data)
-    print '\nReference informations'
-    for index, contents in data.items():
         print index
-        print 'source_path :', contents['source_path']
-        print 'namespace :', contents['namespace']
-        print 'Top level dag object :', contents['top_dag_node'], '\n'
-
+        print '\tsource_path :', source_path
+        print '\tnamespace :', namespace
+        print '\tTop level dag object :', world_node, '\n'
     if write:
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(data, indent=4))
