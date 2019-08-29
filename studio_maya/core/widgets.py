@@ -1,3 +1,18 @@
+'''
+widgets.py 0.0.1 
+Date: August 15, 2019
+Last modified: August 27, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
+
 import os
 import warnings
 
@@ -43,7 +58,6 @@ def create_item(parent, type, path):
     item.setIcon(1, icon)
     if not os.path.isfile(path):
         item.setFlags(QtCore.Qt.ItemIsDragEnabled)
-
     item_count = parent.topLevelItemCount()
     zeros = padding(item_count, padding_size)
     current_number = '%s%s' % (zeros, item_count)
@@ -73,6 +87,8 @@ def set_item_contents(type, data, treewidget):
 
 def set_maya_version(path, *args):
     input_data = generic.read_preset(path)
+    if not input_data:
+        return
     maya_version = input_data['current_version']['name']
     args[0].setPixmap(QtGui.QPixmap(
         os.path.join(resources.getIconPath(), 'maya%s.png' % maya_version)))

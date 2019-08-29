@@ -13,6 +13,7 @@ Description
     to find the maya objects details from the scenes.
 '''
 
+import json
 
 from pymel import core
 
@@ -84,4 +85,5 @@ def get_defaults():
     return default
 
 
-get_data()
+data = get_data()
+print json.dumps(data, indent=4)

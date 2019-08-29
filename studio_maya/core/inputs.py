@@ -1,3 +1,18 @@
+'''
+inputs.py 0.0.1 
+Date: August 15, 2019
+Last modified: August 27, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
+
 import os
 import json
 import warnings

@@ -1,3 +1,18 @@
+'''
+preference.py 0.0.1 
+Date: August 15, 2019
+Last modified: August 27, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
+
 import os
 import sys
 import warnings
@@ -11,7 +26,7 @@ from studio_maya.core import inputs
 from studio_maya.core import generic
 from studio_maya.core import widgets
 from studio_maya.core import stylesheet
-
+reload(generic)
 
 class Window(QtGui.QWidget):
 
@@ -20,7 +35,7 @@ class Window(QtGui.QWidget):
         self.main_window = parent
         self.label, self.name, self.version = resources.getToolKit()
         self.preference_path = resources.getPreferenceFile()
-        self.roo_path, self.mayapy_type = resources.getRootPath()
+        self.roo_path, self.tag, self.mayapy_type = resources.getRootPath()
         self.brows_directory = self.roo_path
         self.labels = []
         if 'lables' in kwargs:
@@ -296,7 +311,6 @@ class Window(QtGui.QWidget):
             'Information',
             'Success!...',
             QtGui.QMessageBox.Ok)
-
         self.labels
         widgets.set_maya_version(
             self.preference_path, self.labels[0], self.labels[1])

@@ -22,13 +22,11 @@ def getLogo():
 
 
 def getWorkspacePath():
-    path = os.path.join(
-        os.getenv('HOME'),
-        'Documents',
-        'studio_toolkits',
-        getModuleName()
-    )
-    return path
+    if platform.system() == 'Windows':
+        return os.path.join(
+            os.getenv('USERPROFILE'), 'Documents', 'studio_toolkits', getModuleName())
+    if platform.system() == 'Linux':
+        return os.path.join(os.getenv('HOME'), 'Documents', 'studio_toolkits', getModuleName())
 
 
 def getPreferenceFile():
@@ -45,9 +43,9 @@ def getOperatingSystem():
 def getRootPath():
     operating_system = getOperatingSystem()
     if operating_system == 'Windows':
-        return 'c:/', 'mayapy.exe'
+        return 'C:/', 'Autodesk/Maya', 'mayapy.exe'
     if operating_system == 'Linux':
-        return '/', 'mayapy'
+        return '/', 'autodesk/maya', 'mayapy'
 
 
 def getEditor():
@@ -82,7 +80,7 @@ def getTempCodeFile():
 
 
 def getInputPath():
-    path = os.path.join(CURRENT_PATH, 'inputs')
+    path = os.path.join(CURRENT_PATH, 'inputs').replace('\\', '/')
     return path
 
 
@@ -96,8 +94,8 @@ def getToolKitLink():
 
 
 def getToolKitHelpLink():
-    return 'https://vimeo.com/322552816'
+    return 'https://www.subins-toolkits.com/studio-maya'
 
 
 def getDownloadLink():
-    return 'https://www.subins-toolkits.com/asset-library'
+    return 'https://www.subins-toolkits.com/studio-maya'

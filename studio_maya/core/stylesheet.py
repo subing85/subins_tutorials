@@ -1,15 +1,23 @@
+'''
+stylesheet.py 0.0.1 
+Date: August 15, 2019
+Last modified: August 27, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
 
 def connect():
     widget_stypes = [
         'QWidget {font:14pt;}',
-        #'QLabel {padding: 1px; border: 1px solid #ffaa00; border-radius: 2px;}',
-        #'QLabel::hover {padding: 1px solid #55aaff;}'
-        #'QTreeWidget {padding: 1px; border: 1px solid #ffaa00; border-radius: 2px;}',
-        #'QTreeWidget::hover {border: 1px solid #55aaff;}'
         'QTextEdit {padding: 1px; border: 1px solid #ffaa00; border-radius: 2px;}',
         'QTextEdit::hover {border: 1px solid #55aaff;}'
-        #'QToolBar {padding: 1px; border: 1px solid #ffaa00; border-radius: 2px;}',
-        #'QToolBar::hover {border: 1px solid #55aaff;}'
         'QGroupBox {padding: 1px; border: 1px solid #ffaa00; border-radius: 2px;}',
         'QGroupBox::hover {border: 1px solid #55aaff;}'
         'QMenu {padding: 1px; border: 1px solid #ffaa00; border-radius: 2px;}',

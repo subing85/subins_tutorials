@@ -1,7 +1,21 @@
+'''
+main.py 0.0.1 
+Date: August 15, 2019
+Last modified: August 27, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
+
 import os
 import sys
 import json
-import time
 import warnings
 import threading
 import subprocess
@@ -33,6 +47,7 @@ class MayaWindow(QtGui.QMainWindow):
         self.current_treewidget = None
         self.pause = False
         self.stop = False
+        self.operating_system = resources.getOperatingSystem()
         self.thread_status = []
         self.style = stylesheet.connect()
         self.setup_ui()
@@ -97,6 +112,7 @@ class MayaWindow(QtGui.QMainWindow):
         self.textedit_output = QtGui.QTextEdit(self.splitter)
         self.textedit_output.setObjectName('textedit_output')
         self.textedit_output.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
+        self.textedit_output.setStyleSheet('font: 11pt')
         self.textedit_output.setReadOnly(True)
         self.progressbar = QtGui.QProgressBar(self.centralwidget)
         self.progressbar.setObjectName('progressbar')
@@ -278,7 +294,7 @@ class MayaWindow(QtGui.QMainWindow):
     def modify_widgets(self):
         icon_path = resources.getIconPath()
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(os.path.join(icon_path, 'logo.png')))
+        icon.addPixmap(QtGui.QPixmap(os.path.join(icon_path, 'title.png')))
         self.setWindowIcon(icon)
         qactions = self.findChildren(QtGui.QAction)
         for qaction in qactions:
@@ -454,7 +470,7 @@ class MayaWindow(QtGui.QMainWindow):
             warnings.warn('Not selected any items', Warning)
             return
         code_path = items[-1].toolTip(1).encode()
-        print 'Source code path:', code_path
+        print 'source code :', code_path
         generic.open_editer(code_path)
 
     def set_stop(self):
@@ -467,34 +483,35 @@ class MayaWindow(QtGui.QMainWindow):
             self.pause = True
 
     def execute(self):
+        self.textedit_output.clear()
         input_data = generic.read_preset(self.preference_path)
-        mayapy = input_data['current_version']['path']
+        mayapy = input_data['current_version']['path'].replace('\\', '/')
         maya_version = input_data['current_version']['name']
         query = input_data['mode']['query_only']
         overwrite = input_data['mode']['overwrite']
         maya_files = self.treewidget_maya.selectedItems()
         if not maya_files:
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Select the maya files', QtGui.QMessageBox.Ok)
+                self, 'Warning', 'select the maya files', QtGui.QMessageBox.Ok)
             return
         codes = self.treewidget_code.selectedItems()
         if not codes:
             QtGui.QMessageBox.warning(
-                self, 'Warning', 'Select the source code file', QtGui.QMessageBox.Ok)
+                self, 'Warning', 'select the source code file', QtGui.QMessageBox.Ok)
             return
-        code_file = codes[-1].toolTip(1).encode()
+        code_file = codes[-1].toolTip(1).encode().replace('\\', '/')
         ing = len(maya_files) - 1
         if len(maya_files) < 1:
             ing = 1
         progress = QtGui.QProgressDialog(self)
-        progress.setWindowTitle('Progress Result')
+        progress.setWindowTitle('Progress')
         progress.setLabelText('Executing \tplease wait .....')
         progress.setMaximum(ing)
         progress.setAutoClose(True)
         progress.setValue(10)
         progress.show()
         for index, each in enumerate(maya_files):
-            maya_file = each.toolTip(1).encode()
+            maya_file = each.toolTip(1).encode().replace('\\', '/')
             progress.setLabelText(
                 'Executing \tplease wait!...\n%s' % each.text(1))
             progress.setValue(index)
@@ -506,7 +523,6 @@ class MayaWindow(QtGui.QMainWindow):
             elif not query:
                 next_maya = generic.next_version(maya_file)
                 save = next_maya
-
             if self.stop:
                 self.stop = False
                 break
@@ -527,14 +543,21 @@ class MayaWindow(QtGui.QMainWindow):
                 self.paly_thread.daemon = True
                 self.paly_thread.start()
                 self.paly_thread.join()
+                print index + 1
+                print '\tmaya file :'.expandtabs(5), maya_file
+                print '\tmayapy :'.expandtabs(5), mayapy
+                print '\tsource code file :'.expandtabs(5), code_file
+                print '\tsaved file :'.expandtabs(5), save
+
         progress.setValue(100)
         progress.close()
 
         QtGui.QMessageBox.information(
             self,
             'Information',
-            'Done!...\nMore details look at output widget',
+            'Done!...\nMore details, please check < Konsole >',
             QtGui.QMessageBox.Ok)
+        print '\nDone!...\nMore details, please check < Konsole >'
 
     def os_process(self, mayapy, maya, code, save):
         commands = [
@@ -544,7 +567,14 @@ class MayaWindow(QtGui.QMainWindow):
             'initialize.start(\'%s\', \'%s\', \'%s\')' % (
                 maya, code, save)
         ]
-        command = mayapy + ' -c \"' + '; '.join(commands) + '\"'
+        command = None
+        if self.operating_system == 'Linux':
+            command = "\"" + mayapy + '\"' + \
+                ' -c \"' + '; '.join(commands) + '\"'
+        if self.operating_system == 'Windows':
+            if 'Program Files' in mayapy:
+                mayapy = mayapy.replace('Program Files', '\"Program Files\"')
+            command = mayapy + ' -c ' + '\"' + '; '.join(commands) + '\"'
         os.system(command)
 
     def sub_process(self, mayapy, maya, code, save):
@@ -554,21 +584,20 @@ class MayaWindow(QtGui.QMainWindow):
             'import initialize',
             'initialize.start(\'%s\', \'%s\', \'%s\')' % (maya, code, save)
         ]
-        command = mayapy + ' -c \"' + '; '.join(commands) + '\"'
-        process = subprocess.Popen(
-            [command], shell=True, stdout=subprocess.PIPE)
-        process.wait()
-        messages = process.stdout.readlines()
-        communicate = process.communicate()
-        result = process.returncode
-        output = generic.decode_message(messages, maya, code, save)
-        print '.' * 80
-        pprint(output)
-        print '\n'
+        process = None
+        if self.operating_system == 'Linux':
+            command = mayapy + ' -c \"' + '; '.join(commands) + '\"'
+            process = subprocess.Popen([command], shell=True)
+        if self.operating_system == 'Windows':
+            process = subprocess.Popen(
+                [mayapy, '-c', '; '.join(commands)], shell=True)
+        if process:
+            process.wait()
+            communicate = process.communicate()
+        # result = process.returncode
 
     def about(self):
-        print self.splitter.sizes()
-        # webbrowser.open(resources.getToolKitHelpLink())
+        webbrowser.open(resources.getToolKitHelpLink())
 
     def subin_toolkit(self):
         webbrowser.open(resources.getToolKitLink())

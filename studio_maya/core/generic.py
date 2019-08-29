@@ -1,3 +1,18 @@
+'''
+generic.py 0.0.1 
+Date: August 15, 2019
+Last modified: August 27, 2019
+Author: Subin. Gopi(subing85@gmail.com)
+
+# Copyright(c) 2019, Subin Gopi
+# All rights reserved.
+
+# WARNING! All changes made in this file will be lost!
+
+Description
+    None.
+'''
+
 import os
 import glob
 import ast
@@ -9,18 +24,19 @@ from studio_maya import resources
 
 
 def get_mayapy(version, progress=None):
-    root_path, mayapy = resources.getRootPath()
-    current_path = 'autodesk/maya%s' % version
+    root_path, tag, mayapy = resources.getRootPath()
     mayapy_path = None
     progress.setValue(0)
-    index = 0
+    index = 0    
+    current_tag = '%s%s'%(tag, version)
     for dirname, folder, files in os.walk(root_path):
         progress.setValue(index)
         progress.setMaximum(100 + index)
-        index += 1
-        if not dirname.endswith(current_path):
+        index += 1        
+        dirname = dirname.replace('\\', '/')        
+        if not dirname.endswith(current_tag):
             continue
-        mayapy_path = os.path.join(dirname, 'bin', mayapy)
+        mayapy_path = os.path.join(dirname, 'bin', mayapy).replace('\\', '/')
         break
     if not mayapy_path:
         return None
@@ -71,6 +87,8 @@ def write_preset(data, path):
 
 
 def read_preset(path):
+    if not os.path.isfile(path):
+        return
     label, name, version = resources.getToolKit()
     data = {}
     element = ElementTree.parse(path)
@@ -196,15 +214,22 @@ def next_version(file_path):
 
 def decode_message(messages, *args):
     status_message = 'Not able to read'
-    if '#&&#status&##&\n' in messages:
-        status = messages.index('#&&#status&##&\n')
+    
+    operating_system = resources.getOperatingSystem()
+    next = '\n'
+    if operating_system == 'Windows':
+        next = '\r\n'
+    if '#&&#status&##&%s'%next in messages:
+        status = messages.index('#&&#status&##&%s'%next)
         status_message = messages[status + 1].replace('\n', '')
     code_messages = 'Not able to read'
-    if '#&&#code&##&\n' in messages and '#&&#code_end&##&\n' in messages:
-        code_start = messages.index('#&&#code&##&\n')
-        code_end = messages.index('#&&#code_end&##&\n')
+    if '#&&#code&##&%s'%next in messages and '#&&#code_end&##&%s'%next in messages:
+        code_start = messages.index('#&&#code&##&%s'%next)
+        code_end = messages.index('#&&#code_end&##&%s'%next)
         code_messages = messages[code_start + 1: code_end]
-        code_messages = [each.replace('\n', '') for each in code_messages]
+        code_messages = [
+            each.replace('\n', '').replace('\r', '') for each in code_messages]
+        
     save = {'5. Not able to save': None}
     if status_message == 'success' or status_message == 'failed':
         save = {'5. Successfully read': args[0]}
@@ -228,8 +253,9 @@ def open_editer(file):
 
 def get_codes(path):
     files = []
-    for each in ['.py', '.pyc', '.mel']:
+    for each in ['.py', '.mel']:
         pattern = '%s/*%s' % (path, each)
         current_files = glob.glob(pattern)
         files.extend(current_files)
     return files
+
