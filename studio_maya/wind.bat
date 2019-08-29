@@ -1,5 +1,3 @@
-cd "C:/Users/shreya/Desktop/tmp/"
-
 set my_python_path=C:/Python27
 
 set STUDIO_PATH=%cd%
@@ -15,4 +13,4 @@ echo "subing85@gmail.com"
 echo ""
 
 
-"C:/Python27/python.exe" %cd%"/studio_maya/__init__.py"
+"%my_python_path%/python.exe" %cd%"/studio_maya/__init__.py"
