@@ -1,0 +1,82 @@
+{
+    "created_by": "subin gopi", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "#copyright": "(c) 2018, Subin Gopi All rights reserved.", 
+    "date": "October:20:2019 - 3:20:01:PM",
+    "last_modified": "October:20:2019 - 3:20:01:PM",         
+    "comment": "Pipeline tags is the child of subfield such as character, prop, etc", 
+    "description": "inputs of pipe tags",    
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "valid": true,
+   	"type": "input_data",
+	"tag": "subfield",   	
+    "data": {  
+		"character": {
+			"enable": true,
+			"order": 0,
+			"display": "Character",
+			"tooltip": "Character",
+			"short": "chr",
+			"parent": "asset"
+			},
+		"prop": {
+			"enable": true,
+			"order": 1,
+			"display": "Prop",
+			"tooltip": "Prop",
+			"short": "prp",
+			"parent": "asset"
+			},
+		"environment": {
+			"enable": true,
+			"order": 2,
+			"display": "Environment",
+			"tooltip": "Environment",
+			"short": "env",
+			"parent": "asset"
+			},
+		"vfx": {
+			"enable": true,
+			"order": 3,
+			"display": "Vfx",
+			"tooltip": "Vfx",
+			"short": "vfx",
+			"parent": "asset"
+			},
+		"camera": {
+			"enable": true,
+			"order": 4,
+			"display": "Camera",
+			"tooltip": "Camera",
+			"short": "cam",
+			"parent": "asset"
+			},				
+		"primary": {
+			"enable": false,
+			"order": 5,
+			"display": "Primary",
+			"tooltip": "Primary",
+			"short": "pry",
+			"parent": "scene"
+			},			
+		"secondary": {
+			"enable": false,
+			"order": 6,
+			"display": "Secondary",
+			"tooltip": "Secondary",
+			"short": "scy",
+			"parent": "scene"
+			}
+		}
+	}				
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+											

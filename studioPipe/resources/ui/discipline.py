@@ -16,6 +16,7 @@ import os
 
 import sys
 sys.path.append('/venture/subins_tutorials')
+import warnings
 
 from functools import partial
 from PySide import QtGui
