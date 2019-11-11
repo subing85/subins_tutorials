@@ -32,7 +32,8 @@ def get_tool_prity_name():
 
 def get_child(*args):
     tools = {
-        'publish': 'Publish'
+        'asset_publish': 'Asset Publish',
+        'publish': 'Publish'        
         }    
     if args[0] not in tools:
         return None    

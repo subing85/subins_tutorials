@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=AssetPublish_v0.0.1
+Comment=Run Asset Publish 0.0.1
+Exec=/venture/subins_tutorials/studio_usd_pipe/bin/publish.sh
+Icon=/venture/subins_tutorials/studio_usd_pipe/resources/icons/asset.png
+Categories=Application;Graphics;
+Version=0.0.1
+Type=Application
+Terminal=1

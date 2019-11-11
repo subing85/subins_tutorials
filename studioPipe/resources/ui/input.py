@@ -190,6 +190,8 @@ class Window(QtGui.QWidget):
                 resolution = [256, 256]
                 if 'resolution' in current_item:
                     resolution = current_item['resolution']
+                    
+                print 'hello', resolution
                 button_find.clicked.connect(
                     partial(self.find_paths, widget, current_item['type'], resolution, current_item['description']))
           
@@ -225,6 +227,7 @@ class Window(QtGui.QWidget):
 
 
     def snapshot(self, button, image_file, resolution):
+        print 'resolution\t', resolution
         self.studio_image = studioImage.ImageCalibration(imgae_file=image_file)
         self.q_image, self.q_image_path = self.studio_image.set_studio_size(
             width=resolution[0], height=resolution[1])

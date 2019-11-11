@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/subins_tutorials/dumps/main.ui'
 #
-# Created: Wed Oct 23 00:01:10 2019
+# Created: Sat Nov  2 21:27:27 2019
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,6 +39,7 @@ class Ui_MainWindow(object):
         self.treewidget.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.treewidget.setObjectName(_fromUtf8("treewidget"))
         self.treewidget.headerItem().setText(0, _fromUtf8("1"))
+        item_0 = QtGui.QTreeWidgetItem(self.treewidget)
         self.treewidget.header().setVisible(False)
         self.verticalLayout.addWidget(self.splitter)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -53,4 +54,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.treewidget.setSortingEnabled(True)
+        __sortingEnabled = self.treewidget.isSortingEnabled()
+        self.treewidget.setSortingEnabled(False)
+        self.treewidget.topLevelItem(0).setText(0, _translate("MainWindow", "abc", None))
+        item_0.setWhatsThis(0, _translate("MainWindow", "hellooooooooo", None))
+        self.treewidget.setSortingEnabled(__sortingEnabled)
 

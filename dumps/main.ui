@@ -38,6 +38,14 @@
          <string notr="true">1</string>
         </property>
        </column>
+       <item>
+        <property name="text">
+         <string>abc</string>
+        </property>
+        <property name="whatsThis">
+         <string>hellooooooooo</string>
+        </property>
+       </item>
       </widget>
      </widget>
     </item>

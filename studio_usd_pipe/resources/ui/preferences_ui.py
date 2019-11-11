@@ -11,6 +11,7 @@ from datetime import datetime
 
 from studio_usd_pipe import resources
 from studio_usd_pipe.core import inputs
+from studio_usd_pipe.core import widgets
 from studio_usd_pipe.utils import platforms
 from studio_usd_pipe.resources.ui import input_ui
 
@@ -20,6 +21,7 @@ class Connect(input_ui.Window):
     def __init__(self, parent=None, **kwargs):
         super(Connect, self).__init__(**kwargs)
         self.preferences_path = resources.getPreferencesPath()
+        self.resize(662, 386)
         self.set_current()
         self.button_create.clicked.connect(self.create)
 
@@ -42,11 +44,11 @@ class Connect(input_ui.Window):
 
         if 'icon' in input_data:
             qsize = input_data['icon']['widget'].minimumSize()
-            self.image_to_button(
+            widgets.image_to_button(
                 input_data['icon']['widget'],
                 qsize.width(),
                 qsize.height(),
-                bundle_data['data']['show_icon']
+                path=bundle_data['data']['show_icon']
             )
 
     def create(self):
@@ -67,13 +69,11 @@ class Connect(input_ui.Window):
             'user': getpass.getuser(),
             'data': input_data
         }
-
         if not os.path.isdir(os.path.dirname(self.preferences_path)):
             os.makedirs(os.path.dirname(self.preferences_path))
 
         with (open(self.preferences_path, 'w')) as open_data:
             open_data.write(json.dumps(bundle_data, indent=4))
-            open_data.close()
             message = '\nPreferences saved successfully!...'
             print json.dumps(bundle_data['data'], indent=4), message
             QtGui.QMessageBox.information(

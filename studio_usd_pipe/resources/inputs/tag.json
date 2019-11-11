@@ -7,9 +7,8 @@
     "comment": "Pipeline tags is the child of subfield such as character, prop, etc", 
     "description": "inputs of pipe tags",    
     "warning": "# WARNING! All changes made in this file will be lost!", 
-    "valid": true,
-   	"type": "input_data",
-	"tag": "subfield",   	
+    "enable": true,
+   	"type": "subfield",
     "data": {  
 		"character": {
 			"enable": true,

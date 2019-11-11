@@ -84,6 +84,9 @@ class ImageCalibration(object):
             output_path = os.path.join(
                 tempfile.gettempdir(), 'studio_image_snapshot.%s' % self.format)
         q_image.save(output_path)
+        a = QtGui.QImage()
+        a.setText('aaaa', '33333333333')
+        
         return q_image, output_path
     
     def keep_aspect_ratio(self, output_path=None, width=2048, height=2048):

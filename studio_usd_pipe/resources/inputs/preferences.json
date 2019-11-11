@@ -22,9 +22,9 @@
 				"image path"
 				],			
 			"description": "Browse your show icon/image file",
-			"resolution": [256, 144]	
+			"resolution": [256, 144],
+			"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)"
 			},    
-    
 		"shows_directory": {
 			"enable": true,
 			"type": "directory",
@@ -35,7 +35,8 @@
 			"values": null,
 			"example":[
 			],
-			"description": "Browse your Shows Directory"
+			"description": "Browse your Shows Directory",
+			"format": null
 			},
 		"database_directory": {
 			"enable": true,
@@ -47,7 +48,21 @@
 			"values": null,
 			"example":[
 			],
-			"description": "Browse your Python Directory"
-			}		
+			"description": "Browse your Python Directory",
+			"format": null
+			},
+		"mayapy_directory": {
+			"enable": true,
+			"type": "path",
+			"order": 2,
+			"display": "Mayapy Directory",
+			"tooltip": "Mayapy Directory",
+			"value": "",
+			"values": null,
+			"example":[
+			],
+			"description": "Browse your Python Directory",
+			"format": "(*mayapy*)"
+			}			
 		}
 	} 	

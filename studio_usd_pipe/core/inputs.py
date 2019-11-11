@@ -11,7 +11,7 @@ class Connect(object):
             resources.getInputPath(), '{}.json'.format(input))
         self.all_data = self.read()
         self.data = None
-        self.keys = None
+        self.keys = None        
         if self.all_data['enable']:
             self.data = self.all_data['data']
             self.keys = self.sort_input_data()
@@ -26,6 +26,8 @@ class Connect(object):
     def read(self):
         with (open(self.input_file, 'r')) as open_data:
             data = json.load(open_data)
+            if not data['enable']:
+                return None            
             for k, v in data['data'].items():
                 if v['enable']:
                     continue

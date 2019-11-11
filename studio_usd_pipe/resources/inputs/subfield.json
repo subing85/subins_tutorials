@@ -5,7 +5,7 @@
     "date": "October:20:2019 - 3:20:01:PM",
     "last_modified": "October:20:2019 - 3:20:01:PM",         
     "comment": "Pipeline subfield is the child of category such as model, animation, etc", 
-    "description": "inputs of pipe discipline",    
+    "description": "inputs of pipe subfield",    
     "warning": "# WARNING! All changes made in this file will be lost!", 
     "enable": true,
 	"type": "subfield",   	
