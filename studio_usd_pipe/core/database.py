@@ -53,7 +53,7 @@ class Connect(object):
     def config_column(self, inputs):  # make columns string
         key_container = []
         self._columns = sorted(inputs.keys())
-        self._columns.extend(['user', 'date'])
+        # self._columns.extend(['user', 'date'])
         for key in self._columns:
             if key == 'caption':
                 key_container.append('{} {} '.format(key, 'text PRIMARY KEY'))
@@ -86,24 +86,37 @@ class Connect(object):
             os.makedirs(os.path.dirname(self.db))
         self.config_column(kwargs)
         table = self.next_table()
+        
+        
+        print 'hello table', table
+        
+        print 'self.has_table(table)', self.has_table(table)
+        
         if not self.has_table(table):
             self.create_table(table)
-        kwargs.setdefault('user', utils.get_user())
-        kwargs.setdefault('date', utils.get_datetime())
+            
+            
+        # kwargs.setdefault('user', utils.get_user())
+        # kwargs.setdefault('date', utils.get_datetime())
         bundles = [kwargs[column] for column in self._columns]
+        print '\n\n', table, '\n', bundles
         self.insert(table, bundles)
 
     def create_table(self, table):
+        
+        print 'ggggggggggggggggggggggg'
+        
+        print json.dumps(self.column_data, indent=4)
         connect, cursor = self.connect()  # connect to sqlite3
-        try:
-            cursor.execute(
-                'CREATE TABLE if not exists {} ({})'.format(
-                    table, self.column_data))
-            result = 'DataBase initialized table called <%s>!...' % table
-        except Exception as error:
-            result = 'OperationalError: {}'.format(str(error))
-        finally:
-            self.close(connect)
+        #try:
+        cursor.execute(
+            'CREATE TABLE if not exists {} ({})'.format(
+                table, self.column_data))
+        result = 'DataBase initialized table called <%s>!...' % table
+        #except Exception as error:
+        #    result = 'OperationalError: {}'.format(str(error))
+        #finally:
+        self.close(connect)
         logging.info(result)
 
     def insert(self, table, bundles):
@@ -115,16 +128,16 @@ class Connect(object):
         column = ', '.join(self._columns)
 
         connect, cursor = self.connect()  # connect to sqlite3
-        try:
-            cursor.execute('INSERT INTO {}({}) VALUES({})'.format(
-                table, column, entitie), bundles)
-            result = True, 'Success!...'
-            logging.info('Insert the values successfully!...')
-        except Exception as error:
-            result = False, '%s!...' % str(error)
-            logging.warn('OperationalError: {}'.format(str(error)))
-        finally:
-            self.close(connect)
+        # try:
+        cursor.execute('INSERT INTO {}({}) VALUES({})'.format(
+            table, column, entitie), bundles)
+        result = True, 'Success!...'
+        logging.info('Insert the values successfully!...')
+        #-------------------------------------------- except Exception as error:
+            #----------------------------- result = False, '%s!...' % str(error)
+            #----------- logging.warn('OperationalError: {}'.format(str(error)))
+        #-------------------------------------------------------------- finally:
+        self.close(connect)
         logging.info(result)
 
     def select(self, table):
@@ -258,20 +271,35 @@ class Connect(object):
         captions.sort()
         return captions
 
+'''
+dbs = Connect('asset')
 
-#=========================================================================
-# dbs = Connect('asset')
-#
-# dbs.db_register(
-#     caption = 'batman',
-#     version = '0.1.1',
-#     subfield = 'model',
-#     # subfield = 'surfacing',
-#     # subfield = 'puppet',
-#     type = 'inractive',
-#     tag = 'character',
-#     path = '/venture/test_show/assets/batman/batman_0.0.2.mb'
-#     )
-# data = dbs.get_captions()
-# print '\n\n', '#'*50, '\n', json.dumps(data, indent=4), '\n', '#'*50
-#=========================================================================
+dbs.db_register(
+    caption = 'batman',
+    version = '0.1.1',
+    subfield = 'model',
+    type = 'inractive',
+    tag = 'character',
+    path = '/venture/test_show/assets/batman/batman_0.0.2.mb'
+    )
+
+dbs.db_register(
+    caption='batman',
+    version = '0.1.1',
+    subfield='model',
+    type='inractive',
+    tag='character',
+    #user='sgopi',
+    date='01-01-2110',
+    path='/venture/test_show/assets/batman/0.0.0'
+    )
+
+"caption text PRIMARY KEY ,
+path text , subfield text ,
+tag text , type text , version text , user text , date text "
+
+#data = dbs.get_captions()
+#print '\n\n', '#'*50, '\n', json.dumps(data, indent=4), '\n', '#'*50
+
+# print dbs.get_tables()
+'''

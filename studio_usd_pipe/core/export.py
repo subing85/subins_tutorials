@@ -15,7 +15,7 @@ from studio_usd_pipe.core import smaya
 reload(smaya)
 
 
-def pack_source_images(dirname, stamped_time=None, assign=True):
+def source_images(dirname, stamped_time=None, assign=True):
     mobjects = smaya.get_nodes(OpenMaya.MFn.kFileTexture)
     bundles = smaya.get_string_attribute_values(mobjects, 'fileTextureName')
     print '\n// Result: source images'
@@ -27,29 +27,22 @@ def pack_source_images(dirname, stamped_time=None, assign=True):
             os.utime(target_file, (stamped_time, stamped_time))
         if assign:
             mplug.setString(target_file)
+            
+            
+def static_usd(subfield, node, caption, dirname, stamped_time=None):
+    usd = os.path.join(dirname, '{}.usda'.format(caption))
+    if subfield=='model':
+        usd = model(node, usd, stamped_time=stamped_time)
+    if subfield=='uv':
+        usd = uv(node, usd, stamped_time=stamped_time)            
+    if subfield=='surfacing':
+        usd = surfacing(node, usd, stamped_time=stamped_time)            
+    if subfield=='puppet':
+        usd = puppet(node, usd, stamped_time=stamped_time)
+    return usd
 
 
-def pack_static_usd(node, dirname, stamped_time=None):
-    path = {
-        'model': os.path.join(dirname, 'model.usda'),
-        'uv': os.path.join(dirname, 'uv.usda'),
-        'shader': os.path.join(dirname, 'shader.usda')
-        }
-    model_usd = model(node, path['model'], stamped_time=stamped_time)
-    uv_usd = model(node, path['uv'], stamped_time=stamped_time)
-    shader_usd = model(node, path['shader'], stamped_time=stamped_time)
-    path['model'] = model_usd
-    path['uv'] = uv_usd
-    path['shader'] = shader_usd    
-    print '\n// Result: usd export\n', json.dumps(path, indent=4)    
-    return model_usd, uv_usd, shader_usd
-
-
-def pack_active_usd(node, path=None):
-    pass
-
-
-def static_usd(node, path=None):
+def common_static_usd(node, path=None):
     if not path:
         temp_usd = os.path.join(
             tempfile.gettempdir(), 'temp_static.usda')
@@ -67,7 +60,7 @@ def static_usd(node, path=None):
     return temp_usd
 
 
-def active_usd(node, path=None):
+def common_active_usd(node, path=None):
     pass
 
 
@@ -81,8 +74,14 @@ def set_default_prim(source, target):
 def model(node, path, stamped_time=None):
     if not smaya.has_exists(node):
         raise TypeError('No object matches name: {}'.format(node))
-    temp_usd = static_usd(node)
+    temp_usd = common_static_usd(node)
     stage = Usd.Stage.Open(temp_usd)
+    for prim in stage.TraverseAll():
+        if prim.GetTypeName()!='Mesh':
+            continue
+        prim.RemoveProperty('primvars:st')
+        prim.RemoveProperty('primvars:st:indices')
+    
     for prim in stage.TraverseAll():
         if prim.GetTypeName() != 'Scope':
             continue
@@ -106,7 +105,7 @@ def uv(node, path, stamped_time=None):
     '''
     if not smaya.has_exists(node):
         raise TypeError('No object matches name: {}'.format(node))
-    temp_usd = static_usd(node)
+    temp_usd = common_static_usd(node)
     usd_path = '{}.usd'.format(os.path.splitext(path)[0])
     static_stage = Usd.Stage.Open(temp_usd)
     layer = Sdf.Layer.CreateNew(usd_path, args={'format': 'usda'})
@@ -140,16 +139,16 @@ def uv(node, path, stamped_time=None):
     return usd_path
 
 
-def shader(node, path, stamped_time=None):
+def surfacing(node, path, stamped_time=None):
     '''
         from studio_usd_pipe.core import export
         node = 'Hires_Geo_Group'
         path = '/venture/test_show/test/shader.usda'
-        export.shader(node, path)      
+        export.surfacing(node, path)      
     '''
     if not smaya.has_exists(node):
         raise TypeError('No object matches name: {}'.format(node))
-    temp_usd = static_usd(node)
+    temp_usd = common_static_usd(node)
     stage = Usd.Stage.Open(temp_usd)
     for index, prim in enumerate(stage.TraverseAll()):
         if index < 1:
@@ -163,3 +162,30 @@ def shader(node, path, stamped_time=None):
         os.utime(usd_path, (stamped_time, stamped_time))
     print '# Saving stage', usd_path
     return usd_path
+
+
+def puppet(node, path, stamped_time=None):
+    pass
+
+
+
+#===============================================================================
+# def pack_common_static_usd(node, dirname, stamped_time=None):
+#     path = {
+#         'model': os.path.join(dirname, 'model.usda'),
+#         'uv': os.path.join(dirname, 'uv.usda'),
+#         'shader': os.path.join(dirname, 'shader.usda')
+#         }
+#     model_usd = model(node, path['model'], stamped_time=stamped_time)
+#     uv_usd = model(node, path['uv'], stamped_time=stamped_time)
+#     shader_usd = model(node, path['shader'], stamped_time=stamped_time)
+#     path['model'] = model_usd
+#     path['uv'] = uv_usd
+#     path['shader'] = shader_usd    
+#     print '\n// Result: usd export\n', json.dumps(path, indent=4)    
+#     return shader_usd, uv_usd, model_usd
+# 
+# 
+# def pack_active_usd(node, path=None):
+#     pass
+#===============================================================================

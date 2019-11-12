@@ -50,7 +50,8 @@ def getScriptPath():
 def getScriptSourceScripts(key=None):
     script_path = getScriptPath()
     source_scripts = {
-        'export_source_images': os.path.join(script_path, 'export_si.py')
+        'export_source_images': os.path.join(script_path, 'export_source_images.py'),
+        'export_asset_usd': os.path.join(script_path, 'export_asset_usd.py')
         }    
     if key in source_scripts:
         return source_scripts[key]    

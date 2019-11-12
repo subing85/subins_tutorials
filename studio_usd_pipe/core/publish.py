@@ -28,14 +28,17 @@ class Connect(publish_ui.Window):
             '.mb': 'Maya Binary'
         }
         self.brows_directory = self.input_dirname['shows_directory']
-        self.category = 'asset'        
+        self.category = 'asset'
 
         self.modify_widgets()
 
-        self.button_open.clicked.connect(partial(self.find_source_file, self.label_source))
-        self.button_thumbnail.clicked.connect(partial(self.find_caption_image, self.button_thumbnail))
+        self.button_open.clicked.connect(
+            partial(self.find_source_file, self.label_source))
+        self.button_thumbnail.clicked.connect(
+            partial(self.find_caption_image, self.button_thumbnail))
         self.combobox_caption.editTextChanged.connect(self.load_caption)
-        self.combobox_publishtype.currentIndexChanged.connect(self.load_publishtype)
+        self.combobox_publishtype.currentIndexChanged.connect(
+            self.load_publishtype)
         self.combobox_versions.currentIndexChanged.connect(self.load_version)
         self.button_publish.clicked.connect(self.start_publish)
 
@@ -51,33 +54,33 @@ class Connect(publish_ui.Window):
         for k, widget in widget_inputs.items():
             input = inputs.Connect(k)
             input.get(self.category)
-            widget.addItems(input.keys)            
+            widget.addItems(input.keys)
         self.set_version()
-        
+
     def clear_version_widgets(self):
         self.combobox_nextversion.clear()
-        self.combobox_nextversion.clearEditText ()
+        self.combobox_nextversion.clearEditText()
         self.combobox_latestversion.clear()
-        self.combobox_latestversion.clearEditText ()          
+        self.combobox_latestversion.clearEditText()
 
     def has_caption_valiadte(self):
         caption = self.combobox_caption.currentText()
-        if not caption:            
-            if self.combobox_publishtype.currentIndex()==0:
-                return            
+        if not caption:
+            if self.combobox_publishtype.currentIndex() == 0:
+                return
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any caption!...', QtGui.QMessageBox.Ok
-                )
+            )
             self.combobox_publishtype.setCurrentIndex(0)
             self.combobox_versions.setCurrentIndex(0)
             self.clear_version_widgets()
             return
         return True
-    
-    def load_caption(self, *args):
-        self.set_version()        
 
-    def load_publishtype(self, *args):        
+    def load_caption(self, *args):
+        self.set_version()
+
+    def load_publishtype(self, *args):
         valid = self.has_caption_valiadte()
         if not valid:
             return
@@ -94,9 +97,9 @@ class Connect(publish_ui.Window):
         if not valid:
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any caption!...', QtGui.QMessageBox.Ok
-                )            
+            )
             self.clear_version_widgets()
-            return        
+            return
         self.set_version(index=args[0])
 
     def set_version(self, caption=None, subfield=None, tag=None, index=None):
@@ -114,7 +117,7 @@ class Connect(publish_ui.Window):
         publish = studioPublish.Publish(self.category)
         latest_version = publish.get_latest_version(caption, subfield, tag)
         next_version = publish.get_next_version(index, caption, subfield, tag)
-        self.clear_version_widgets()        
+        self.clear_version_widgets()
         self.combobox_nextversion.addItem(next_version)
         self.combobox_latestversion.addItem(latest_version)
 
@@ -146,10 +149,9 @@ class Connect(publish_ui.Window):
         widgets.image_to_button(widget, 256, 180, path=current_link[0])
         widget.setToolTip(current_link[0])
         widget.setStatusTip(current_link[0])
-        
-    def collect_publish_data(self):        
+
+    def collect_publish_data(self):
         input_dict = {
-            'category': self.category,
             'caption': self.combobox_caption,
             'subfield': self.combobox_subfield,
             'type': self.combobox_type,
@@ -158,26 +160,26 @@ class Connect(publish_ui.Window):
             'source_file': self.label_source,
             'thumbnail': self.button_thumbnail,
             'description': self.textedit_description
-            }
-        
+        }
+
         input_data = {}
-        
+
         for k, v in input_dict.items():
-            if not v :
-                input_data.setdefault(k, None)                     
+            if not v:
+                input_data.setdefault(k, None)
             if isinstance(v, str):
-                input_data.setdefault(k, v)                
-            current_value = None                
+                input_data.setdefault(k, v)
+            current_value = None
             if isinstance(v, QtGui.QComboBox):
-                current_value = v.currentText()                
+                current_value = v.currentText()
             if isinstance(v, QtGui.QLabel):
-                current_value = v.toolTip()      
+                current_value = v.toolTip()
             if isinstance(v, QtGui.QLabel):
                 current_value = v.toolTip()
             if isinstance(v, QtGui.QPushButton):
                 current_value = v.statusTip()
             if isinstance(v, QtGui.QTextEdit):
-                current_value = v.toPlainText()                     
+                current_value = v.toPlainText()
             if not current_value:
                 input_data.setdefault(k, None)
             else:
@@ -187,36 +189,32 @@ class Connect(publish_ui.Window):
 
     def start_publish(self, **kwargs):
         input_data = self.collect_publish_data()
-        
+
         valid_keys = [
             input_data['caption'],
             input_data['version'],
             input_data['source_file']
-            ]
-        if None in valid_keys:            
+        ]
+        if None in valid_keys:
             QtGui.QMessageBox.critical(
                 self, 'Critical', 'In valid inputs.', QtGui.QMessageBox.Ok
-                )
+            )
             return
-        
+
         publish = studioPublish.Publish(
-            input_data['category'], standalone=self.standalone)
+            self.category, standalone=self.standalone)
         release_data = publish.pack(input_data)
-        
-        return
-        
+
         publish.release(data=release_data)
 
-        message = '{}{}\n{}{}\n{}{}\n{}\n{}{}\n{}{}'.format(
-            'category:\t',
-            input_data['category'],            
+        message = '{}{}\n{}{}\n{}{}\n{}{}\n{}{}'.format(
             'tag:\t',
-            input_data['tag'],            
+            input_data['tag'],
             'subfield:\t',
-            input_data['subfield'],            
+            input_data['subfield'],
             'type:\t',
-            input_data['type'],            
-            'caption:\t',             
+            input_data['type'],
+            'caption:\t',
             input_data['caption'],
             'version:\t',
             input_data['version'],
@@ -228,24 +226,8 @@ class Connect(publish_ui.Window):
             '{}\n\nPublish Success!...'.format(message),
             QtGui.QMessageBox.Ok
         )
+        self.set_version()
         return True
-    
-    
-    
-    
-    
-    
-    
-    
-            
-        
-        
-        
-        
-        
-        
-        
-        
 
     def add_caption(self, category):
         publish = studioPublish.Publish(category)
@@ -258,11 +240,7 @@ class Connect(publish_ui.Window):
                 'whatsthis': contents['tag'],
                 'icon': os.path.join(contents['tag'], '{}.png'.format(caption)),
             }
-
-            print json.dumps(contents, indent=4)
             # item = widgets.add_treewidget(parent, input_data)
-
-
 
     def load_current(self, *args):
         treewidget = args[0].treeWidget()
@@ -348,8 +326,6 @@ class Connect(publish_ui.Window):
 
     def reload(self, treewidget):
         pass
-
- 
 
 
 if __name__ == '__main__':

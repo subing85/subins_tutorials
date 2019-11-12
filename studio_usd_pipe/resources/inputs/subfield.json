@@ -17,10 +17,19 @@
 			"tooltip": "Model",
 			"short": "mod",
 			"parent": "asset"
-			},			
-		"surfacing": {
+			},
+		"uv": {
 			"enable": true,
 			"order": 1,
+			"display": "Uv",
+			"tooltip": "Uv",
+			"short": "uv",
+			"parent": "asset"
+			},			
+					
+		"surfacing": {
+			"enable": true,
+			"order": 2,
 			"display": "Surfacing",
 			"tooltip": "Surfacing",
 			"short": "sfc",
@@ -28,7 +37,7 @@
 			},
 		"puppet": {
 			"enable": true,
-			"order": 2,
+			"order": 3,
 			"display": "Puppet",
 			"tooltip": "Puppet/Rigging",
 			"short": "ppt",
@@ -36,7 +45,7 @@
 			},
 		"layout": {
 			"enable": true,
-			"order": 3,
+			"order": 4,
 			"display": "Layout",
 			"tooltip": "Layout",
 			"short": "lat",
@@ -44,7 +53,7 @@
 			},
 		"animation": {
 			"enable": true,
-			"order": 4,
+			"order": 5,
 			"display": "Animation",
 			"tooltip": "Animation",
 			"short": "ani",
@@ -52,7 +61,7 @@
 			},
 		"lighting": {
 			"enable": true,
-			"order": 5,
+			"order": 6,
 			"display": "Lighting",
 			"tooltip": "Lighting",
 			"short": "lgt",
@@ -60,7 +69,7 @@
 			},
 		"compositing": {
 			"enable": true,
-			"order": 6,
+			"order": 7,
 			"display": "Compositing",
 			"tooltip": "Compositing",
 			"short": "com",
