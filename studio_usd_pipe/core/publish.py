@@ -1,24 +1,24 @@
 import os
 import sys
+import ast
 import json
 import warnings
 
-from PySide import QtCore
-from PySide import QtGui
+from PySide2 import QtGui
+from PySide2 import QtCore
+from PySide2 import QtWidgets
+
 from functools import partial
-from distutils import version
-from pprint import pprint
 
 from studio_usd_pipe import resources
 from studio_usd_pipe.core import inputs
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.utils import platforms
+from studio_usd_pipe.core import subshell
 from studio_usd_pipe.api import studioPublish
-# from studio_usd_pipe.api import studioAsset
-from studio_usd_pipe.resources.ui import publish_ui
+from studio_usd_pipe.resources.ui import publish
 
 
-class Connect(publish_ui.Window):
+class Connect(publish.Window):
 
     def __init__(self, parent, standalone=True):
         super(Connect, self).__init__(parent)
@@ -29,6 +29,7 @@ class Connect(publish_ui.Window):
         }
         self.brows_directory = self.input_dirname['shows_directory']
         self.category = 'asset'
+        self.publish = studioPublish.Publish(self.category)
 
         self.modify_widgets()
 
@@ -37,14 +38,13 @@ class Connect(publish_ui.Window):
         self.button_thumbnail.clicked.connect(
             partial(self.find_caption_image, self.button_thumbnail))
         self.combobox_caption.editTextChanged.connect(self.load_caption)
-        self.combobox_publishtype.currentIndexChanged.connect(
-            self.load_publishtype)
+        self.combobox_subfield.currentIndexChanged.connect(self.load_subfield)
+
         self.combobox_versions.currentIndexChanged.connect(self.load_version)
         self.button_publish.clicked.connect(self.start_publish)
 
     def modify_widgets(self):
-        publish = studioPublish.Publish(self.category)
-        captions = ['None'] + publish.get_captions()
+        captions = ['None'] + self.publish.get_captions()
         self.combobox_caption.addItems(captions)
         widget_inputs = {
             'subfield': self.combobox_subfield,
@@ -63,40 +63,17 @@ class Connect(publish_ui.Window):
         self.combobox_latestversion.clear()
         self.combobox_latestversion.clearEditText()
 
-    def has_caption_valiadte(self):
-        caption = self.combobox_caption.currentText()
-        if not caption:
-            if self.combobox_publishtype.currentIndex() == 0:
-                return
-            QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not found any caption!...', QtGui.QMessageBox.Ok
-            )
-            self.combobox_publishtype.setCurrentIndex(0)
-            self.combobox_versions.setCurrentIndex(0)
-            self.clear_version_widgets()
-            return
-        return True
-
     def load_caption(self, *args):
         self.set_version()
 
-    def load_publishtype(self, *args):
-        valid = self.has_caption_valiadte()
-        if not valid:
-            return
-        self.combobox_versions.clear()
-        if args[0] == 0:
-            self.combobox_versions.addItems(self.sem_versions)
-            self.combobox_versions.setEnabled(True)
-        if args[0] == 1:
-            self.combobox_versions.addItem('None')
-            self.combobox_versions.setEnabled(False)
+    def load_subfield(self, *args):
+        self.set_version()
 
     def load_version(self, *args):
-        valid = self.has_caption_valiadte()
-        if not valid:
-            QtGui.QMessageBox.warning(
-                self, 'Warning', 'Not found any caption!...', QtGui.QMessageBox.Ok
+        caption = self.combobox_caption.currentText()
+        if caption == 'None' or not caption:
+            QtWidgets.QMessageBox.warning(
+                self, 'Warning', 'Not found any caption!...', QtWidgets.QMessageBox.Ok
             )
             self.clear_version_widgets()
             return
@@ -123,7 +100,7 @@ class Connect(publish_ui.Window):
 
     def find_source_file(self, widget):
         current_format = 'image {}'.format(resources.getMayaFormats())
-        current_link = QtGui.QFileDialog.getOpenFileName(
+        current_link = QtWidgets.QFileDialog.getOpenFileName(
             self, 'Browse your source file', self.brows_directory, current_format)
         if not current_link[0]:
             print 'abort!...'
@@ -136,12 +113,38 @@ class Connect(publish_ui.Window):
         widget.setText('\"{}\"\n< {} >'.format(name, current_format))
         widget.setToolTip(current_link[0])
         self.brows_directory = os.path.dirname(current_link[0])
+        self.load_scene_nodes(self.combobox_dagpath, current_link[0])
         print os.path.splitext(current_link[0])
+
+    def load_scene_nodes(self, combobox, source_file):
+        nodes = None
+        if self.standalone:
+            result = subshell.sub_process(
+                self.publish.mayapy_path,
+                resources.getScriptSourceScripts('read_scene_dagpth'),
+                args=[
+                    source_file.encode(),
+                ]
+            )
+            nodes = ast.literal_eval(result[-1])
+        else:
+            from studio_usd_pipe.core import smaya
+            nodes = smaya.get_scene_nodes()
+
+        combobox.clear()
+        combobox.clearEditText()
+        combobox.addItems(nodes)
+        for index in range(combobox.count()):
+            if combobox.itemText(index) != self.publish.node:
+                continue
+            combobox.setCurrentIndex(index)
+            break
+        return nodes
 
     def find_caption_image(self, widget):
         self.brows_directory = '/mnt/bkp/reference'
         current_format = 'image {}'.format(resources.getImageFormats())
-        current_link = QtGui.QFileDialog.getOpenFileName(
+        current_link = QtWidgets.QFileDialog.getOpenFileName(
             self, 'Browse your source file', self.brows_directory, current_format)
         if not current_link[0]:
             print 'abort!...'
@@ -152,6 +155,7 @@ class Connect(publish_ui.Window):
 
     def collect_publish_data(self):
         input_dict = {
+            'dagpath': self.combobox_dagpath,
             'caption': self.combobox_caption,
             'subfield': self.combobox_subfield,
             'type': self.combobox_type,
@@ -170,15 +174,15 @@ class Connect(publish_ui.Window):
             if isinstance(v, str):
                 input_data.setdefault(k, v)
             current_value = None
-            if isinstance(v, QtGui.QComboBox):
+            if isinstance(v, QtWidgets.QComboBox):
                 current_value = v.currentText()
-            if isinstance(v, QtGui.QLabel):
+            if isinstance(v, QtWidgets.QLabel):
                 current_value = v.toolTip()
-            if isinstance(v, QtGui.QLabel):
+            if isinstance(v, QtWidgets.QLabel):
                 current_value = v.toolTip()
-            if isinstance(v, QtGui.QPushButton):
+            if isinstance(v, QtWidgets.QPushButton):
                 current_value = v.statusTip()
-            if isinstance(v, QtGui.QTextEdit):
+            if isinstance(v, QtWidgets.QTextEdit):
                 current_value = v.toPlainText()
             if not current_value:
                 input_data.setdefault(k, None)
@@ -191,19 +195,22 @@ class Connect(publish_ui.Window):
         input_data = self.collect_publish_data()
 
         valid_keys = [
+            input_data['dagpath'],
             input_data['caption'],
             input_data['version'],
             input_data['source_file']
         ]
         if None in valid_keys:
-            QtGui.QMessageBox.critical(
-                self, 'Critical', 'In valid inputs.', QtGui.QMessageBox.Ok
+            QtWidgets.QMessageBox.critical(
+                self, 'Critical', 'In valid inputs.', QtWidgets.QMessageBox.Ok
             )
             return
 
         publish = studioPublish.Publish(
             self.category, standalone=self.standalone)
         release_data = publish.pack(input_data)
+
+        return
 
         publish.release(data=release_data)
 
@@ -220,116 +227,18 @@ class Connect(publish_ui.Window):
             input_data['version'],
         )
 
-        QtGui.QMessageBox.information(
+        QtWidgets.QMessageBox.information(
             self,
             'Information',
             '{}\n\nPublish Success!...'.format(message),
-            QtGui.QMessageBox.Ok
+            QtWidgets.QMessageBox.Ok
         )
         self.set_version()
         return True
 
-    def add_caption(self, category):
-        publish = studioPublish.Publish(category)
-        captions = publish.get_caption()
-        for caption, contents in captions.items():
-            input_data = {
-                'display': caption,
-                'statustip': caption,
-                'tooltip': 'published caption name',
-                'whatsthis': contents['tag'],
-                'icon': os.path.join(contents['tag'], '{}.png'.format(caption)),
-            }
-            # item = widgets.add_treewidget(parent, input_data)
-
-    def load_current(self, *args):
-        treewidget = args[0].treeWidget()
-        caption = args[0].statusTip(0)
-        tag = args[0].whatsThis(0)
-        category = self.get_category(args[0])
-
-        self.combobox_subfield.clear()
-        self.combobox_tag.clear()
-
-        input = inputs.Connect('subfield')
-        input.get(category)
-        self.combobox_subfield.addItems(input.keys)
-        self.combobox_subfield.setToolTip(
-            '{} < {} >'.format(category, caption))
-        input = inputs.Connect('tag')
-        input.get(category)
-        self.combobox_tag.addItems(input.keys)
-        self.combobox_tag.setToolTip('{} < {} >'.format(category, caption))
-        if tag in input.keys:
-            self.combobox_tag.setCurrentIndex(input.keys.index(tag))
-        self.set_version(category, tag, caption)
-
-    def _load_version(self, treewidget, *args):
-        if not treewidget.selectedItems():
-            QtGui.QMessageBox.warning(
-                self,
-                'Warning',
-                'Not found any selection\nSelect the item and try',
-                QtGui.QMessageBox.Ok
-            )
-            return
-        current_item = treewidget.selectedItems()[-1]
-        category = self.get_category(current_item)
-        tag = current_item.whatsThis(0)
-        caption = current_item.statusTip(0)
-        self.set_version(category, tag, caption)
-
-    def _set_version(self, category, tag, caption):
-        subfield = self.combobox_subfield.currentText()
-        version_index = self.combobox_version.currentIndex()
-        publish = studioPublish.Publish(category)
-        latest_version = publish.get_latest_version(tag, caption, subfield)
-        next_version = publish.get_next_version(
-            version_index, tag, caption, subfield)
-        self.label_current_version.setText(next_version)
-        self.label_latest_version.setText(
-            'Latest Version ({})'.format(latest_version))
-
-    def add(self, treewidget):
-        if not treewidget.selectedItems():
-            warnings.warn(
-                'Not found any selection\nSelect the item and try', Warning)
-            return
-        parent_item = treewidget.selectedItems()[-1]
-        if treewidget.selectedItems()[-1].parent():
-            parent_item = treewidget.selectedItems()[-1].parent()
-        caption, ok = QtGui.QInputDialog.getText(
-            self, 'Input', 'Enter the name:', QtGui.QLineEdit.Normal)
-        if not ok:
-            warnings.warn('abort the add!...', Warning)
-            return
-        input_data = {
-            'display': caption,
-            'statustip': caption,
-            'tooltip': 'un published caption name',
-            'whatsthis': 'unknown',
-            'icon': os.path.join(self.icon_path, 'unknown.png'),
-        }
-        widgets.add_treewidget(parent_item, input_data)
-        treewidget.setItemExpanded(treewidget.selectedItems()[-1], 1)
-
-    def remove(self, treewidget):
-        if not treewidget.selectedItems():
-            warnings.warn(
-                'Not found any selection\nSelect the item and try', Warning)
-            return
-        items = treewidget.selectedItems()
-        for item in items:
-            if item.whatsThis(0) != 'unknown':
-                continue
-            item.removeChild(item)
-
-    def reload(self, treewidget):
-        pass
-
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = Connect(parent=None)
     window.show()
     sys.exit(app.exec_())

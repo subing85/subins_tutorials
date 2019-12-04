@@ -26,10 +26,15 @@ def sub_process(mayapy, source_code, **args):
     operating_system = resources.getOperatingSystem()
     if operating_system == 'Linux':
         command = ' '.join(commands)
-        process = subprocess.Popen([command], shell=True)
+        process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE)
     if operating_system == 'Windows':
         process = subprocess.Popen(
-            [mayapy, '-c', '; '.join(commands)], shell=True)
+            [mayapy, '-c', '; '.join(commands)], shell=True, stdout=subprocess.PIPE)
+    result = None
     if process:
         process.wait()
-        communicate = process.communicate()
+        result = process.stdout.readlines()
+        communicate = process.communicate()  
+    return result
+    # result = subprocess.call(
+    # bash_file, stdout=None, shell=True, stderr=None)   

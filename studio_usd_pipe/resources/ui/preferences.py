@@ -5,18 +5,19 @@ import shutil
 import getpass
 import warnings
 
-from PySide import QtGui
-from PySide import QtCore
+from PySide2 import QtGui
+from PySide2 import QtCore
+from PySide2 import QtWidgets
 from datetime import datetime
 
 from studio_usd_pipe import resources
 from studio_usd_pipe.core import inputs
 from studio_usd_pipe.core import widgets
 from studio_usd_pipe.utils import platforms
-from studio_usd_pipe.resources.ui import input_ui
+from studio_usd_pipe.resources.ui import inputs
 
 
-class Connect(input_ui.Window):
+class Connect(inputs.Window):
 
     def __init__(self, parent=None, **kwargs):
         super(Connect, self).__init__(**kwargs)
@@ -76,8 +77,8 @@ class Connect(input_ui.Window):
             open_data.write(json.dumps(bundle_data, indent=4))
             message = '\nPreferences saved successfully!...'
             print json.dumps(bundle_data['data'], indent=4), message
-            QtGui.QMessageBox.information(
-                self, 'Information', message, QtGui.QMessageBox.Ok)
+            QtWidgets.QMessageBox.information(
+                self, 'Information', message, QtWidgets.QMessageBox.Ok)
             self.close()
 
     def update_show_icon(self, destination):
@@ -97,7 +98,7 @@ class Connect(input_ui.Window):
 
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = Connect(
         parent=None,
         type='preferences',
@@ -108,3 +109,4 @@ if __name__ == '__main__':
     )
     window.show()
     sys.exit(app.exec_())
+

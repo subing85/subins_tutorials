@@ -1,7 +1,8 @@
 import os
 
-from PySide import QtGui
-from PySide import QtCore
+from PySide2 import QtGui
+from PySide2 import QtCore
+from PySide2 import QtWidgets
 
 from studio_usd_pipe import resources
 
@@ -19,7 +20,7 @@ def image_to_button(button, width, height, path=None):
     
 
 def add_treewidget(parent, input_data):
-    item = QtGui.QTreeWidgetItem(parent)
+    item = QtWidgets.QTreeWidgetItem(parent)
     item.setText(0, input_data['display'])
     item.setStatusTip(0, input_data['statustip'])
     item.setToolTip(0, input_data['tooltip'])

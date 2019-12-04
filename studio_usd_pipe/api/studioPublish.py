@@ -34,11 +34,53 @@ class Publish(database.Connect):
 
         self.sem_versions = ['major', 'minor', 'patch']
         self.publish_types = ['versions', 'variations']
+        self.shader_subfileds = ['surfacing', 'puppet']
 
         self.node = 'Hires_Geo_Group'
 
+    def time_stamp(self, path):
+        if not os.path.exists(path):
+            return
+        os.utime(path, (self.stamped_time, self.stamped_time))
+
+    def reomve_dirname(self, dirname):
+        if not os.path.isdir(dirname):
+            return
+        os.chmod(dirname, 0777)
+        try:
+            shutil.rmtree(dirname)
+        except Exception as OSError:
+            print OSError
+
+    def make_root(self, bundle):
+        package_path = os.path.join(
+            self.show_path,
+            self.parent,
+            bundle['caption'],
+            bundle['subfield'],
+            bundle['version'])
+        if os.path.isdir(package_path):
+            self.reomve_dirname(package_path)
+        os.makedirs(package_path, 0755)
+        self.time_stamp(package_path)
+        return package_path
+
+    def get_packed_data(self, bundle, dirname_to):
+        self.packed_data = {
+            'caption': bundle['caption'],
+            'version': bundle['version'],
+            'subfield': bundle['subfield'],
+            'type': bundle['type'],
+            'tag': bundle['tag'],
+            'user': utils.get_user(),
+            'date': self.register_date,
+            'path': dirname_to
+        }
+
     def pack(self, bundle):
         self.subfield = bundle['subfield']
+        self.node = bundle['dagpath']
+        # bundle.pop('dagpath')
         if self.parent == 'asset':
             self.asset_pack(bundle)
         if self.parent == 'scene':
@@ -64,52 +106,11 @@ class Publish(database.Connect):
         dirname_to = self.make_root(bundle)
         if not self.subfield:
             raise ValueError('null subfiled')
-
-        if self.subfield == 'model':
-            self.model(dirname_to, bundle)
-        if self.subfield == 'uv':
-            self.uv(dirname_to, bundle)
-        if self.subfield == 'surfacing':
-            self.surfacing(dirname_to, bundle)
-        if self.subfield == 'puppet':
-            self.puppet(dirname_to, bundle)
-
-        self.get_packed_data(bundle, dirname_to)
-
-
-#=========================================================================
-#         maya_file = self.make_maya_file(
-#             dirname_to, bundle['source_file'], bundle['caption'])
-#         thumbnail = self.make_thumbnail(
-#             dirname_to, bundle['thumbnail'], bundle['caption'])
-#         source_images_path = self.make_source_images(maya_file, dirname_to)
-#
-#         static_usd = self.make_static_usd(
-#             bundle['source_file'], dirname_to, bundle['caption'])
-#         active_usd = self.make_active_usd(
-#             bundle['source_file'], dirname_to, bundle['caption'])
-#
-#         bundle['maya_file'] = maya_file
-#         bundle['thumbnail'] = 'image_file'
-#         bundle['maya_used_file'] = static_usd
-#         bundle['maya_puppet_usd_file'] = active_usd
-#         bundle['source_images_path'] = source_images_path
-#         bundle['thumbnail'] = thumbnail
-#
-#         manifest_file = self.make_manifest(dirname_to, bundle)
-#=========================================================================
-
-    def get_packed_data(self, bundle, dirname_to):
-        self.packed_data = {
-            'caption': bundle['caption'],
-            'version': bundle['version'],
-            'subfield': bundle['subfield'],
-            'type': bundle['type'],
-            'tag': bundle['tag'],
-            'user': utils.get_user(),
-            'date': self.register_date,
-            'path': dirname_to
-        }
+        # self.make_asset_pack(dirname_to, bundle)
+        self.model(dirname_to, bundle)
+        
+    def scene_pack(self, bundle):
+        pass
 
     def model(self, dirname_to, bundle):
         maya_file = self.make_maya_file(
@@ -123,41 +124,41 @@ class Publish(database.Connect):
         bundle['maya'] = maya_file
         bundle['static_usd'] = static_usd
         bundle['active_usd'] = active_usd
-        bundle['thumbnail'] = thumbnail
+        bundle['thumbnail'] = thumbnail       
 
         manifest_file = self.make_manifest(dirname_to, bundle)
         self.get_packed_data(bundle, dirname_to)
         return self.packed_data
 
-    def uv(self):
-        pass
 
-    def surfacing(self):
-        pass
 
-    def puppet(self):
-        pass
+    def make_asset_pack(self, dirname_to, bundle):
+        maya_file = self.make_maya_file(
+            dirname_to, bundle['source_file'], bundle['caption'])
+        thumbnail = self.make_thumbnail(
+            dirname_to, bundle['thumbnail'], bundle['caption'])
 
-    def scene_pack(self, bundle):
-        pass
+        source_images_path = None
+        #if self.subfield in self.shader_subfileds:
+        #    source_images_path = self.make_source_images(maya_file, dirname_to)
 
-    def make_root(self, bundle):
-        package_path = os.path.join(
-            self.show_path,
-            self.parent,
-            bundle['caption'],
-            bundle['subfield'],
-            bundle['version'])
-        if os.path.isdir(package_path):
-            self.reomve_dirname(package_path)
-        os.makedirs(package_path, 0755)
-        self.time_stamp(package_path)
-        return package_path
+        static_usd = self.make_static_usd(
+            bundle['source_file'], dirname_to, bundle['caption'])
+        active_usd = self.make_active_usd(
+            bundle['source_file'], dirname_to, bundle['caption'])
+
+        bundle['maya'] = maya_file
+        bundle['static_usd'] = static_usd
+        bundle['active_usd'] = active_usd
+        bundle['thumbnail'] = thumbnail
+        bundle['source_image'] = source_images_path
+
+        manifest_file = self.make_manifest(dirname_to, bundle)
+        self.get_packed_data(bundle, dirname_to)
 
     def make_maya_file(self, dirname, maya_file, caption):
         format = os.path.splitext(maya_file)[-1]
         target_path = os.path.join(dirname, '{}{}'.format(caption, format))
-        print 'target_path\t', target_path
         shutil.copy2(maya_file, target_path)
         self.time_stamp(target_path)
         return target_path
@@ -170,6 +171,30 @@ class Publish(database.Connect):
             output_path=target_path, width=256, height=180)
         self.time_stamp(image_path)
         return image_path
+    
+    def make_source_images(self, source_file, dirname_to):
+        source_images_path_to = os.path.join(dirname_to, 'source_images')
+        self.reomve_dirname(source_images_path_to)
+        os.makedirs(source_images_path_to, 0755)
+        self.time_stamp(source_images_path_to)
+
+        if self.standalone:
+            subshell.sub_process(
+                self.mayapy_path,
+                resources.getScriptSourceScripts('export_source_images'),
+                args=[
+                    source_file.encode(),
+                    source_images_path_to.encode(),
+                    self.stamped_time
+                ]
+            )
+        else:
+            from studio_usd_pipe.core import smaya
+            from studio_usd_pipe.core import export
+            export.source_images(
+                dirname_to, stamped_time=self.stamped_time)
+            smaya.save_file(source_file, stamped_time=self.stamped_time)
+        return source_images_path_to    
 
     def make_static_usd(self, source_file, dirname_to, caption):
         if self.standalone:
@@ -199,29 +224,7 @@ class Publish(database.Connect):
             dirname_to, '{}.{}'.format(caption, 'usda'))
         return target_path
 
-    def make_source_images(self, source_file, dirname_to):
-        source_images_path_to = os.path.join(dirname_to, 'source_images')
-        self.reomve_dirname(source_images_path_to)
-        os.makedirs(source_images_path_to, 0755)
-        self.time_stamp(source_images_path_to)
 
-        if self.standalone:
-            subshell.sub_process(
-                self.mayapy_path,
-                resources.getScriptSourceScripts('export_source_images'),
-                args=[
-                    source_file.encode(),
-                    source_images_path_to.encode(),
-                    self.stamped_time
-                ]
-            )
-        else:
-            from studio_usd_pipe.core import smaya
-            from studio_usd_pipe.core import export
-            export.source_images(
-                dirname_to, stamped_time=self.stamped_time)
-            smaya.save_file(source_file, stamped_time=self.stamped_time)
-        return source_images_path_to
 
     def make_manifest(self, dirname, bundle):
         target_path = os.path.join(dirname, '.manifest')
@@ -241,19 +244,6 @@ class Publish(database.Connect):
             return target_path
         return None
 
-    def time_stamp(self, path):
-        if not os.path.exists(path):
-            return
-        os.utime(path, (self.stamped_time, self.stamped_time))
-
-    def reomve_dirname(self, dirname):
-        if not os.path.isdir(dirname):
-            return
-        os.chmod(dirname, 0777)
-        try:
-            shutil.rmtree(dirname)
-        except Exception as OSError:
-            print OSError
 
 #=========================================================================
 # bundle = {

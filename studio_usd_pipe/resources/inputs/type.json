@@ -18,12 +18,12 @@
 			"short": "ira",
 			"parent": "asset"
 			},
-		"static": {
+		"non-intractive": {
 			"enable": true,
 			"order": 1,
-			"display": "Static",
+			"display": "Non Intractive",
 			"tooltip": "Static assets",
-			"short": "sac",
+			"short": "nra",
 			"parent": "asset"
 			}
 		}
