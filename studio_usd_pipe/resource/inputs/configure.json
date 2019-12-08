@@ -20,7 +20,7 @@
 		},
 		"tool": {
 			"name": "studio_usd_pipe",
-			"pretty": "studio_usd_pipe",
+			"pretty": "Studio USD PIPE",
 			"version": "0.0.1"
 		}
 	}

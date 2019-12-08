@@ -5,6 +5,7 @@ import platform
 
 from studio_usd_pipe import utils
 
+
 CURRENT_PATH = os.path.dirname(__file__)
 
 
@@ -54,3 +55,4 @@ def getWorkspacePath():
     if platform.system() == 'Linux':
         return os.path.join(os.getenv('HOME'), 'Documents')
 
+ 

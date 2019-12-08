@@ -18,7 +18,7 @@ class Connect(object):
         
     def get(self, parent):
         for k, v in self.data.items():
-            if v['parent'] == parent:
+            if v['parent']==parent:
                 continue
             self.data.pop(k)
             self.keys.remove(k)
@@ -52,3 +52,10 @@ class Connect(object):
                 x += 1
             index += 1
         return result    
+
+
+#input = Connect('tag')
+#print input.keys
+#print json.dumps(input.data, indent=4)
+# input.get('scene')
+

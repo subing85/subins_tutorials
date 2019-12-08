@@ -1,7 +1,10 @@
 import os
 import json
 import shutil
+import getpass
 import warnings
+
+from datetime import datetime
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import configure
@@ -14,6 +17,7 @@ class Preference(object):
         self.toolkit = 'subins-toolkits'
         self.file_name = '.pref'
         self.config = configure.Configure()
+        self.config.tool()     
         self.pref_path = self.get_path()
 
     def has_valid(self, input, argments):
@@ -29,7 +33,6 @@ class Preference(object):
     
     def get_path(self):
         workspace = resource.getWorkspacePath()        
-        self.config.tool()        
         path = os.path.join(
             workspace, self.toolkit, self.config.name, self.file_name)
         return path        
@@ -38,7 +41,7 @@ class Preference(object):
         '''
             pre = Preference()
             pre.create(
-                shows_directory = '/venture/shows/my_hero',
+                show_directory = '/venture/shows/my_hero',
                 show_icon = '/local/references/images/batman.png',
                 database_directory = '/venture/shows/my_hero/db',
                 mayapy_directory = '/usr/autodesk/maya2018/bin/mayapy'
@@ -48,25 +51,39 @@ class Preference(object):
         valid, reason = self.has_valid(input_data, kwargs)
         if not valid:
             raise ValueError(reason)        
-        bundle = {}                        
+        data = {}                        
         for key in input_data:
-            bundle.setdefault(key, kwargs[key])
-        data = {
-            'data': bundle,
-            'enable': True
-            }
-        dirname = os.path.dirname(self.pref_path)
-        if not os.path.isdir(dirname):
-            os.makedirs(dirname)
+            data.setdefault(key, kwargs[key])
+            
         resolution = input_data['show_icon']['resolution']
         show_icon = self.update_show_icon(
             kwargs['show_directory'], kwargs['show_icon'], resolution)        
-        bundle['show_icon'] = show_icon        
+        data['show_icon'] = show_icon
+        
+        bundle = {
+            'comment': 'subin gopi tool kits',
+            'last_modified': datetime.now().strftime('%Y/%d/%B - %I:%M:%S:%p'),
+            'author': 'Subin Gopi',
+            '#copyright': '(c) 2019, Subin Gopi All rights reserved.',
+            'warning': '# WARNING! All changes made in this file will be lost!',
+            'description': 'This data contain information about {} preferences'.format(self.config.pretty),
+            'type': 'preferences_inputs',
+            'enable': True,
+            'user': getpass.getuser(),
+            'data': data
+        }
+        
+        dirname = os.path.dirname(self.pref_path)
+        if not os.path.isdir(dirname):
+            os.makedirs(dirname)
+                      
         with (open(self.pref_path, 'w')) as open_data:
-            open_data.write(json.dumps(data, indent=4))
+            open_data.write(json.dumps(bundle, indent=4))
             print json.dumps(data, indent=4)
             print self.pref_path
             print 'Preferences saved successfully!...'
+        
+        return True
     
     def get(self):
         '''
