@@ -14,5 +14,6 @@ echo "www.subins-toolkits.comm"
 echo "subing85@gmail.com"
 echo ""
 
+echo $STUDIO_PATH"/studio_usd_pipe/bin/publish.py"
 python $STUDIO_PATH"/studio_usd_pipe/bin/publish.py"
 # End: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :

@@ -1,8 +1,7 @@
 import sys
 
-
-from studio_usd_pipe.core import initialize
 from studio_usd_pipe.core import smaya
+from studio_usd_pipe.core import initialize
 
 
 def export_source_images(source_file):

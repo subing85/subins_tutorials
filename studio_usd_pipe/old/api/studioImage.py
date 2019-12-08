@@ -18,7 +18,7 @@ import tempfile
 from PySide2 import QtGui
 from PySide2 import QtCore
 
-from studio_usd_pipe import resource
+from studio_usd_pipe import resources
 
 class ImageCalibration(object):
 
@@ -28,7 +28,7 @@ class ImageCalibration(object):
         self.file_name = file_name
         self.format = format                
         self.unknown_icon = os.path.join(
-            resource.getIconPath(), 'unknown.png')
+            resources.getIconPath(), 'unknown.png')
 
     def create(self, width=2048, height=2048):
         try:
@@ -81,8 +81,6 @@ class ImageCalibration(object):
         if not output_path:
             output_path = os.path.join(
                 tempfile.gettempdir(), 'studio_image_snapshot.%s' % self.format)
-        if not os.path.isdir(os.path.dirname(output_path)):
-            os.makedirs(os.path.dirname(output_path))            
         q_image.save(output_path)
         return q_image, output_path
     

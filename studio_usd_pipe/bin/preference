@@ -1,0 +1,137 @@
+#!/usr/bin/python
+
+import json
+import optparse
+
+from studio_usd_pipe.core import preference
+
+
+def pipe():
+    pref = preference.Preference()
+    print 'release', pref.config.name, pref.config.version   
+    parser = optparse.OptionParser(
+        usage='usage: %prog [options] create studio usd pipe preference',
+        version=pref.config.version)   
+    
+    parser.add_option(
+        '-q', '--query',
+        action='store_true',
+        dest='query',
+        default=False,
+        help='to query'
+        )
+
+    parser.add_option(
+        '-c', '--create',
+        action='store_true',
+        dest='create',
+        default=False,
+        help='to create preference'
+        )
+
+    parser.add_option(
+        '-a', '--all',
+        action='store_true',
+        dest='pAll',
+        default=False,
+        help='to query all directory'
+        )    
+    
+    parser.add_option(
+        '-s', '--show',
+        action='store',
+        dest='pShow',
+        default=False,
+        help='show directory'
+        ) 
+       
+    parser.add_option(
+        '-i', '--showicon',
+        action='store',
+        dest='pIcon',
+        default=False,
+        help='show icon directory'
+        ) 
+        
+    parser.add_option(
+        '-d', '--database',
+        action='store',
+        dest='pDataBase',
+        default=False,
+        help='database directory'
+        )  
+    
+    parser.add_option(
+        '-p', '--mayapy',
+        action='store',
+        dest='pMayapy',
+        default=False,
+        help='mayapy directory'
+        )  
+    
+    parser.add_option(
+        '-e', '--example',
+        action='store_true',
+        dest='example',
+        default=False,
+        help='example of preference'
+        )  
+        
+    (options, args) = parser.parse_args()
+
+    if options.query:
+        data = pref.get()
+        if options.pAll:
+            print json.dumps(data, indent=4)
+        if options.pShow and options.pShow == 'True':
+            print data['show_directory']
+        if options.pIcon and options.pIcon == 'True':
+            print data['show_icon'] 
+        if options.pDataBase and options.pDataBase == 'True':
+            print data['database_directory'] 
+        if options.pMayapy and options.pMayapy == 'True':
+            print data['mayapy_directory'] 
+        
+    if options.create:
+        if not options.pShow:
+            raise ValueError('-s -show option requires an argument')
+        if not options.pIcon:
+            raise ValueError('-i --showicon option requires an argument')
+        if not options.pDataBase:
+            raise ValueError('-d -database option requires an argument')
+        if not options.pMayapy:
+            raise ValueError('-p --mayapy option requires an argument')
+                
+        inputs = {
+            'show_directory': options.pShow,
+            'show_icon': options.pIcon,
+            'database_directory': options.pDataBase,
+            'mayapy_directory': options.pMayapy
+            }
+        
+        pref = preference.Preference()
+        pref.create(
+            show_directory=options.pShow,
+            show_icon=options.pIcon,
+            database_directory=options.pDataBase,
+            mayapy_directory=options.pMayapy            
+            )
+        
+    if options.example:
+        flags = [
+            '-c',
+            '-s /venture/shows/my_hero',
+            '-i local/references/images/batman.png',
+            '-d /venture/shows/my_hero/db',
+            '-p /usr/autodesk/maya2018/bin/mayapy'
+        ]
+        print 'create preference\t- preference {}'.format(' '.join(flags))
+        print 'get all data \t\t- preference -q -a'
+        print 'get all show \t\t- preference -q -s True'
+        print 'get all show icon \t- preference -q -i True'
+        print 'get all database data \t- preference -q -d True'
+        print 'get all mayapy \t\t- preference -q -p True'
+
+
+if __name__ == '__main__':
+    pipe()
