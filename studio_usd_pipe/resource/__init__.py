@@ -46,8 +46,8 @@ def get_input_data(path):
         if not data['enable']:
             return None
         return data['data']
-    
-    
+
+        
 def getWorkspacePath():
     if platform.system() == 'Windows':
         return os.path.abspath(

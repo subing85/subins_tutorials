@@ -121,7 +121,7 @@ def valid_attribute():
     return attr_types
 
 
-def getShadingNodeTypes():
+def get_shading_node_types():
     shader_types = core.listNodeTypes('shader')
     texture_types = core.listNodeTypes('texture')
     utility_types = core.listNodeTypes('utility')

@@ -89,12 +89,9 @@ class Preference(object):
         '''
             pre = Preference()
             pre.get()
-        '''        
-        with (open(self.pref_path, 'r')) as open_data:
-            data = json.load(open_data)
-            if not data['enable']:
-                return None
-            return data['data']
+        '''
+        data = resource.get_input_data(self.pref_path)
+        return data
     
     def get_inputs(self):
         data = resource.getPreferenceData(type='input')        
