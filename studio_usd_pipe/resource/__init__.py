@@ -17,16 +17,12 @@ def getInputPath():
     return os.path.join(CURRENT_PATH, 'inputs')
 
 
-def getPreferenceData(type='input'):
-    '''
-    :param type <str> input from resource, output from current show
-    '''    
-    if type not in ['input', 'output']:
-        raise ValueError('# \"type\" argument value should be <input> or <output>')    
-    path = None
-    if type == 'input':
-        path = os.path.join(getInputPath(), 'preferences.json')
-    if type == 'output':
+def getPreferenceFormat():    
+    return '.pref'
+
+
+def getPreferenceData(path=None):  
+    if not path:
         path = os.path.join(getInputPath(), 'preferences.json')
     data = get_input_data(path)
     return data
@@ -36,7 +32,19 @@ def getConfigureData():
     path = os.path.join(getInputPath(), 'configure.json')
     data = get_input_data(path)
     return data
+
+
+def getAssetIDData():
+    path = os.path.join(getInputPath(), 'assetid.json')
+    data = get_input_data(path)
+    return data
+
         
+def getWroldData():
+    path = os.path.join(getInputPath(), 'world.json')
+    data = get_input_data(path)
+    return data
+
         
 def get_input_data(path):
     if not path:

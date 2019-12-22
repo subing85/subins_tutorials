@@ -18,8 +18,9 @@ import tempfile
 from PySide2 import QtGui
 from PySide2 import QtCore
 
-from studio_usd_pipe import resourc
-e
+from studio_usd_pipe import resource
+
+
 class ImageCalibration(object):
 
     def __init__(self, imgae_file=None, dirname=None, file_name=None, format='png'):

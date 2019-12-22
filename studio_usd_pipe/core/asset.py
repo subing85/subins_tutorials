@@ -1,7 +1,10 @@
 import os
 import shutil
 
+
 from studio_usd_pipe.api import studioImage
+from studio_usd_pipe.core import mayapack
+from studio_usd_pipe.core import preference
 
 
 class Asset(object):
@@ -10,53 +13,133 @@ class Asset(object):
         
         self.subfield = subfield
         self.width, self.height = 640, 400
+        self.entity = 'assets'
+        
+        self.set_inputs()
+        
+    def set_inputs(self):
+        pref = preference.Preference()
+        self.input_data = pref.get()        
+        self.db_directory = self.input_data['database_directory']   
+        self.show_icon = self.input_data['show_icon']
+        self.mayapy = self.input_data['mayapy_directory']
+        self.show_path = self.input_data['show_directory']
     
-    def pack(self, bundle):        
+    def pack(self, bundle):
+        '''
+        import time
+        from studio_usd_pipe.core import asset
+        reload(asset)        
+        asset = asset.Asset(subfield='model')        
+        bundle = {
+            'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma',
+            'version': '0.0.0',
+            'caption': 'batman',
+            'thumbnail': '/local/references/images/btas_batmodel_03.jpg',
+            'time_stamp': time.time()
+            }        
+        asset.pack(bundle)          
+        '''
+             
         self.source_maya = bundle['source_file']
-        self.publish_path = bundle['publish_path']
-        self.caption = bundle['caption']        
+        self.caption = bundle['caption']
+        self.version = bundle['version'] 
         self.thumbnail = bundle['thumbnail']
+        self.time_stamp = bundle['time_stamp']
+        self.type = bundle['time_stamp']
+        self.tag = bundle['tag']
+        self.description = bundle['description']        
         
-        self.make_root(self.publish_path)
+        self.publish_path = os.path.join(
+            self.show_path,
+            self.entity,
+            self.caption,
+            self.subfield,
+            self.version
+            )        
+        self.make_root()
         
-        self.make_maye()
-        self.make_thumbnail()
-        
-        if self.subfield=='model':
+        if self.subfield == 'model':
+            self.make_maya_model()
+            self.make_thumbnail()            
             self.make_model()
             self.make_model_usd()
             self.make_model_active_usd()
             
-        if self.subfield=='uv':
+        if self.subfield == 'uv':
+            self.make_maye()
+            self.make_thumbnail()            
             self.make_uv()
             self.make_uv_usd()
             self.make_uv_active_usd()
             
-        if self.subfield=='surface':
+        if self.subfield == 'surface':
+            self.make_maye()
+            self.make_thumbnail()            
             self.make_surface()
             self.make_surface_usd()
             self.make_surface_active_usd()  
                       
-        if self.subfield=='puppet':
+        if self.subfield == 'puppet':
+            self.make_maye()
+            self.make_thumbnail()            
             self.make_puppet()
             self.make_puppet_usd()
             self.make_puppet_active_usd()
+            
+        if self.subfield == 'layout':
+            pass
+        
+        if self.subfield == 'animation':
+            pass
+        
+        if self.subfield == 'render':
+            pass
+        
+        if self.subfield == 'composting':
+            pass
                     
     def release(self, bundle, stamped_time):
         pass    
+    
+    
+    def make_maya_model(self):
+        model_id_data = {
+            'sentity': self.entity,
+            'scaption': self.caption,
+            'stype': self.type,
+            'stag': self.tag,
+            'sversion': self.version,
+            'smodified': self.time_stamp,
+            'spath': self.publish_path,
+            'sdescription': self.description
+            }
+        mpack = mayapack.Pack()
+        mpack.create_model(model_id_data)  
+        
+
     
     def make_maye(self):
         target_path = self.copy_to(self.source_maya)
         return target_path
     
+
+        
+        
+         
+    
     def make_thumbnail(self):
+        output_path = os.path.join(
+            self.publish_path,
+            '{}.png'.format(self.caption)
+            )        
         image = studioImage.ImageCalibration(imgae_file=self.thumbnail)
         image, image_path = image.set_studio_size(
-            output_path=self.thumbnail,
+            output_path=output_path,
             width=self.width,
             height=self.height
             )
-        self.time_stamp(image_path)
+        self.set_time_stamp(image_path)
         return image_path
 
     def make_source_images(self):
@@ -102,7 +185,7 @@ class Asset(object):
         if os.path.isdir(self.publish_path):
             self.reomve_dirname(self.publish_path)            
         os.makedirs(self.publish_path, 0755)
-        self.time_stamp(self.publish_path)
+        self.set_time_stamp(self.publish_path)
         return self.publish_path    
 
     def reomve_dirname(self, dirname):
@@ -114,16 +197,16 @@ class Asset(object):
         except Exception as OSError:
             print OSError
 
-    def time_stamp(self, path):
+    def set_time_stamp(self, path):
         if not os.path.exists(path):
             return
-        os.utime(path, (self.stamped_time, self.stamped_time)) 
+        os.utime(path, (self.time_stamp, self.time_stamp)) 
               
     def copy_to(self, source):
         format = os.path.splitext(source)[-1]        
         target_path = os.path.join(
             self.publish_path, '{}{}'.format(self.caption, format))
         shutil.copy2(source, target_path)
-        self.time_stamp(target_path)
+        self.set_time_stamp(target_path)
         return target_path
           

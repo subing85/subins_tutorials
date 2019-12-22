@@ -15,10 +15,9 @@ class Preference(object):
     
     def __init__(self):
         self.toolkit = 'subins-toolkits'
-        self.file_name = '.pref'
         self.config = configure.Configure()
         self.config.tool()     
-        self.pref_path = self.get_path()
+        self.preference_path = self.get_path()
 
     def has_valid(self, input, argments):
         source = sorted(input)
@@ -32,9 +31,12 @@ class Preference(object):
         return True, None
     
     def get_path(self):
-        workspace = resource.getWorkspacePath()        
         path = os.path.join(
-            workspace, self.toolkit, self.config.name, self.file_name)
+            resource.getWorkspacePath(),
+            self.toolkit,
+            self.config.name,
+            resource.getPreferenceFormat
+            )
         return path        
     
     def create(self, **kwargs):
@@ -66,21 +68,22 @@ class Preference(object):
             'author': 'Subin Gopi',
             '#copyright': '(c) 2019, Subin Gopi All rights reserved.',
             'warning': '# WARNING! All changes made in this file will be lost!',
-            'description': 'This data contain information about {} preferences'.format(self.config.pretty),
+            'description': 'This data contain information about {} preferences'.format(
+                self.config.pretty),
             'type': 'preferences_inputs',
             'enable': True,
             'user': getpass.getuser(),
             'data': data
         }
         
-        dirname = os.path.dirname(self.pref_path)
+        dirname = os.path.dirname(self.preference_path)
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
                       
-        with (open(self.pref_path, 'w')) as open_data:
+        with (open(self.preference_path, 'w')) as open_data:
             open_data.write(json.dumps(bundle, indent=4))
             print json.dumps(data, indent=4)
-            print self.pref_path
+            print self.preference_path
             print 'Preferences saved successfully!...'
         
         return True
@@ -90,11 +93,11 @@ class Preference(object):
             pre = Preference()
             pre.get()
         '''
-        data = resource.get_input_data(self.pref_path)
+        data = resource.get_input_data(self.preference_path)
         return data
     
     def get_inputs(self):
-        data = resource.getPreferenceData(type='input')        
+        data = resource.getPreferenceData(path=None)        
         return data       
         
     def update_show_icon(self, show_path, source_image, resoultion): 
