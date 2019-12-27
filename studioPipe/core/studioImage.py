@@ -99,6 +99,8 @@ class ImageCalibration(object):
             x = (sq_scaled.width()-width)/2
             y = 0
         copy = sq_scaled.copy(x, y, width, height)
+        
+        print width, height
         if output_path:
             copy.save(output_path)
         return True, copy
