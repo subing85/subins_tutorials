@@ -9,11 +9,15 @@ from studio_usd_pipe.core import preference
 
 class Asset(object):
     
-    def __init__(self, subfield=None):
+    def __init__(self, subfield=None):       
+        
+        self.standalone = False
         
         self.subfield = subfield
         self.width, self.height = 640, 400
         self.entity = 'assets'
+        
+        self.mpack = mayapack.Pack()
         
         self.set_inputs()
         
@@ -61,27 +65,28 @@ class Asset(object):
         
         if self.subfield == 'model':
             self.make_maya_model()
-            self.make_thumbnail()            
-            self.make_model()
+            self.make_thumbnail()
+            self.make_studio_model()                       
             self.make_model_usd()
             self.make_model_active_usd()
+            self.make_model()
             
         if self.subfield == 'uv':
-            self.make_maye()
+            self.make_maya_model()
             self.make_thumbnail()            
             self.make_uv()
             self.make_uv_usd()
             self.make_uv_active_usd()
             
         if self.subfield == 'surface':
-            self.make_maye()
+            self.make_maya_model()
             self.make_thumbnail()            
             self.make_surface()
             self.make_surface_usd()
             self.make_surface_active_usd()  
                       
         if self.subfield == 'puppet':
-            self.make_maye()
+            self.make_maya_model()
             self.make_thumbnail()            
             self.make_puppet()
             self.make_puppet_usd()
@@ -113,10 +118,37 @@ class Asset(object):
             'smodified': self.time_stamp,
             'spath': self.publish_path,
             'sdescription': self.description
-            }
-        mpack = mayapack.Pack()
-        mpack.create_model(model_id_data)  
-        
+            }        
+        self.mpack.create_model(model_id_data)
+        self.set_perspective_view()
+         
+    def make_thumbnail(self):     
+        output_path = os.path.join(
+            self.publish_path,
+            '{}.png'.format(self.caption)
+            ) 
+        width, height = 1024, 1024       
+        if self.standalone:
+            self.mpack.image_resize(
+                self.thumbnail, 
+                output_path,
+                time_stamp=self.time_stamp,
+                width=width,
+                height=height
+                )                 
+        else:
+            output_path, w, h = self.mpack.vieport_snapshot(
+                self.time_stamp,
+                output_path=output_path,
+                width=width,
+                height=height)
+        self.thumbnail = output_path        
+        return output_path    
+    
+    def make_studio_model(self):
+        directory = 
+        self.mpack.create_studio_model(inputs)     
+            
 
     
     def make_maye(self):
@@ -128,19 +160,7 @@ class Asset(object):
         
          
     
-    def make_thumbnail(self):
-        output_path = os.path.join(
-            self.publish_path,
-            '{}.png'.format(self.caption)
-            )        
-        image = studioImage.ImageCalibration(imgae_file=self.thumbnail)
-        image, image_path = image.set_studio_size(
-            output_path=output_path,
-            width=self.width,
-            height=self.height
-            )
-        self.set_time_stamp(image_path)
-        return image_path
+
 
     def make_source_images(self):
         pass

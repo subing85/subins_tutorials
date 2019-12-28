@@ -3,7 +3,6 @@ import json
 
 from datetime import datetime
 
-from pymel import core
 from maya import OpenMaya
 
 
@@ -40,13 +39,30 @@ class Pack(studioMaya.Maya):
         return input_data
         
     def create_model(self, inputs):        
+        '''
+        :example
+            import time
+            from studio_usd_pipe.core import mayapack
+            mpack = mayapack.Pack()        
+            model_id_data = {
+                'sentity': 'asset',
+                'scaption': 'batman',
+                'stype': 'intractive',
+                'stag': 'character',
+                'sversion': '0.0.0',
+                'smodified': time.time(),
+                'spath': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'sdescription': 'test publish'
+                }                       
+            mpack.create_model(model_id_data)      
+        '''     
         # remove depend nodes
         depend_nodes = self.extract_depend_nodes(default=False)
         for x in range(depend_nodes.length()):
             self.remove_node(depend_nodes[x])  
                       
         # make model group             
-        mesh_mobjects = self.extract_transform_geometries()
+        mesh_mobjects = self.extract_transform_primitive(OpenMaya.MFn.kMesh)
         model_dag_node = self.create_group('model')        
           
         # make geometry hierarchy  
@@ -66,6 +82,7 @@ class Pack(studioMaya.Maya):
             
         # reset transforms
         for x in range (mesh_mobjects.length()):
+            self.delete_history(mesh_mobjects[x])
             self.freeze_transformations(mesh_mobjects[x])
             self.set_default_position(mesh_mobjects[x])        
         
@@ -79,6 +96,19 @@ class Pack(studioMaya.Maya):
         # make asset id
         input_data = self.make_packing_arguments(inputs)
         self.create_maya_id(model_dag_node.object(), input_data)
+        OpenMaya.MGlobal.clearSelectionList()
+        
+    def create_studio_model(self, output_path):
+        mobject = self.get_mobject('world')
+        hierarchy = self.extract_transform(mobject)
+        
+        transform_mesh = self.extract_transform_primitive(
+            OpenMaya.MFn.kMesh, root_mobject=mobject)
+        transform_curve = self.extract_transform_primitive(
+            OpenMaya.MFn.kCurve, root_mobject=mobject)
+        
+
+        
 
 
 
@@ -131,32 +161,7 @@ class Pack(studioMaya.Maya):
                 self.flatted_bundle.setdefault(index, data)
                 index+=1                                
        
-    def nested_travel(self, node, entity, locations=None):    
-        if not locations:
-            locations = [node]        
-        chidren = node.getChildren()       
-        if chidren:             
-            # avoid the multiple shape in the transform node, take fist shape node
-            chidren = self.get_shape_node(chidren)                       
-            for child in chidren:
-                temp_parent = locations + [child] 
-                self.nested_travel(child, entity, locations=temp_parent) 
-        else:
-            bundle = self.nested_bundle 
-            for location in locations: 
-                mobject = self.get_mobject(location.name())
-                entity_data = {}                        
-                if location.type()=='transform':
-                    entity_data = self.get_ktransform(mobject)                
-                if location.type()=='mesh' and entity=='kmesh':
-                    entity_data = self.get_kmesh(mobject)   
-                if location.type()=='mesh' and entity=='kuv':
-                    entity_data = self.get_kuv(mobject)
-                data = {
-                    'type': location.type(),
-                    'data': entity_data
-                    } 
-                bundle = bundle.setdefault(location.name(), data)
+
 
     def get_ktransform(self, mobject):
         mfn_transform = OpenMaya.MFnTransform(mobject)        
