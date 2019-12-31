@@ -45,6 +45,12 @@ def getWroldData():
     data = get_input_data(path)
     return data
 
+
+def getNodeData():
+    path = os.path.join(getInputPath(), 'nodes.json')
+    data = get_input_data(path)
+    return data
+
         
 def get_input_data(path):
     if not path:

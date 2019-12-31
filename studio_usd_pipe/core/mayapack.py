@@ -11,6 +11,9 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.api import studioMaya
 
 
+reload(studioMaya)
+
+
 class Pack(studioMaya.Maya):
     
     def __init__(self):

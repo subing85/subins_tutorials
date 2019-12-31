@@ -1,3 +1,5 @@
+import json
+
 import os
 import tempfile
 
@@ -9,14 +11,18 @@ from PySide2 import QtCore
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from __builtin__ import False
+
+reload(resource)
+reload(common)
 
 
 class Maya(object):
 
     def __init__(self):
         self.valid_shapes = [OpenMaya.MFn.kMesh]
-        self.scene_mobjects = OpenMaya.MObjectArray()
+        self.scene_mobjects = OpenMaya.MObjectArray()        
+        self.node_data = resource.getNodeData()
+
         
     def is_dagpath(self, mobject):           
         mobject = self.get_mobject(mobject)
@@ -42,7 +48,7 @@ class Maya(object):
         mselection.getDependNode(0, mobject)
         return mobject
 
-    def get_plug(self, node, attribute):
+    def get_mplug(self, node, attribute):
         mplug = OpenMaya.MPlug()
         mselection = OpenMaya.MSelectionList()
         mselection.add("%s.%s" % (node, attribute))
@@ -52,8 +58,6 @@ class Maya(object):
     def get_root_mobject(self, mobject):
         mfn_dagnode = OpenMaya.MFnDagNode(mobject) 
         full_name = mfn_dagnode.fullPathName() 
-        print  full_name      
-        # mobject = self.get_mobject(full_name.split('|')[0])
         return mobject
     
     def get_name(self, maya_object):
@@ -62,72 +66,37 @@ class Maya(object):
         if isinstance(maya_object, OpenMaya.MObject):
             mfn_dependency_node = OpenMaya.MFnDependencyNode(maya_object)
             return mfn_dependency_node.name().encode()
-        
-    def create_mpoint_array(self, array):
-        m_point_array = OpenMaya.MPointArray()
-        for x, y, z, w in array:
-            m_point_array.append(x, y, z, w)
-        return m_point_array
     
-    def create_mdouble_array(self, array):
-        mdouble_array = OpenMaya.MDoubleArray()
-        for x in array:
-            mdouble_array.append(x)
-        return mdouble_array
-        
-    def get_default_nodes(self, type=True):
-        mcommand_result = OpenMaya.MCommandResult()
-        OpenMaya.MGlobal.executeCommand(
-            'ls -defaultNodes', mcommand_result, True, True)
-        nodes = []
-        mcommand_result.getResult(nodes)
-        cameras = [
-            'persp',
-            'top',
-            'front',
-            'side',
-            'perspShape',
-            'topShape',
-            'frontShape',
-            'sideShape',
-            'lightLinker1',
-            'shapeEditorManager',
-            'poseInterpolatorManager',
-            'layerManager',
-            'defaultLayer',
-            'renderLayerManager',
-            'defaultRenderLayer',
-            'ikSCsolver',
-            'ikRPsolver',
-            'ikSplineSolver',
-            'hikSolver'            
-            ]          
-        nodes.extend(cameras) 
-        nodes = list(set(nodes))       
-        mobjects = []
-        if type:      
-            mobjects = OpenMaya.MObjectArray()     
-        for node in nodes:
+    def get_default_nodes(self):        
+        nodes = []        
+        for node in self.node_data['default_nodes']:
             if not self.object_exists(node):
-                continue
+                continue            
             mobject = self.get_mobject(node)
-            mobjects.append(mobject)
-        return mobjects        
-        
-    def object_exists(self, mobject):
-        if isinstance(mobject, unicode) :
-            mobject = mobject.encode()        
-        if not isinstance(mobject, str) :
-            mobject = self.get_name(mobject)
+            nodes.append(mobject)
+        return nodes    
+    
+    def get_unknown_types(self):
+        return self.node_data['unknown_types']           
+
+    def get_node_type(self, node):
         mcommand_result = OpenMaya.MCommandResult()
-        mel_command = 'objExists \"%s\"' % mobject
-        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, True, True)
-        script_util = OpenMaya.MScriptUtil()
-        index_ptr = script_util.asIntPtr()        
-        mcommand_result.getResult(index_ptr)
-        value = script_util.getInt(index_ptr)
-        data = {0: False, 1: True}
-        return data[value]  
+        mel_command = 'nodeType \"%s\"' % node
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, False)
+        return mcommand_result.stringResult()
+    
+    def object_exists(self, object_nmae):
+        if isinstance(object_nmae, OpenMaya.MObject):
+            mfn_dependency_node = OpenMaya.MFnDependencyNode(object_nmae)
+            object_nmae = mfn_dependency_node.name()
+        mit_dependency_nodes = OpenMaya.MItDependencyNodes()
+        while not mit_dependency_nodes.isDone():
+            mobject =  mit_dependency_nodes.item()
+            mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)
+            if mfn_dependency_node.name() == object_nmae:
+                return True       
+            mit_dependency_nodes.next()
+        return False
           
     def remove_node(self, mobject):
         #=======================================================================
@@ -164,7 +133,7 @@ class Maya(object):
         mfn_dag_node = OpenMaya.MFnDagNode(child)    
         root_node = mfn_dag_node.fullPathName().split('|')[1]            
         child_mobject = self.get_mobject(root_node)
-        if root!=child_mobject:
+        if root != child_mobject:
             return False
         return True
                   
@@ -239,7 +208,6 @@ class Maya(object):
         for mobject in mobjects:
             mobject_array.append(mobject)
         return mobject_array   
-          
         
     def extract_top_transforms(self, default=False):
         default_nodes = []
@@ -313,7 +281,7 @@ class Maya(object):
         mplug_z = parent_node.findPlug('boundingBoxMaxZ')        
         radius = max([mplug_x.asFloat(), mplug_z.asFloat()])
         world_data = resource.getWroldData()
-        world_node = self.set_kcurve(world_data, radius=radius + 0.5, name='world') 
+        world_node = self.create_kcurve(world_data, radius=radius + 0.5, name='world') 
         if parent:
             children = OpenMaya.MObjectArray()
             for x in range (mfn_dag_node.childCount()): 
@@ -403,55 +371,6 @@ class Maya(object):
         mel_command = 'bakePartialHistory -preCache \"%s\"' % node 
         OpenMaya.MGlobal.executeCommand(mel_command)
 
-            
-    def set_perspective_view(self):  
-        OpenMaya.MGlobal.executeCommand('setNamedPanelLayout \"Single Perspective View\";') 
-        OpenMaya.MGlobal.executeCommand('fitPanel -selectedNoChildren;')
-        position = {
-            'translateX': 10, 'translateY': 10, 'translateZ': 30,            
-            'rotateX': -10, 'rotateY': 20, 'rotateZ': 0,
-            'scaleX': 1, 'scaleY': 1, 'scaleZ': 1
-            }        
-        for k, v in position.items():
-            mplug = self.get_plug('persp', k)
-            mplug.setFloat(v)        
-        
-    def vieport_snapshot(self, time_stamp, output_path=None, width=2048, height=2048):
-        m3d_view = OpenMayaUI.M3dView.active3dView()
-        if not m3d_view.isVisible():
-            OpenMaya.MGlobal.displayWarning('Active 3d View not visible!...')
-            return   
-        m3d_view.refresh(True, True, True)
-        m_image = OpenMaya.MImage()
-        m3d_view.readColorBuffer(m_image, True)        
-        if not output_path:
-            output_path = os.path.join(
-                tempfile.gettempdir(),
-                'studio_pipe_temp.png'
-            )            
-        format = os.path.splitext(output_path)[-1].replace('.', '')        
-        if not format:
-            format = 'png'                    
-        m_image.writeToFileWithDepth(output_path, format, False)         
-        self.image_resize(output_path, output_path, time_stamp=None, width=width, height=height)
-        os.utime(output_path, (time_stamp, time_stamp))
-        return output_path, width, height    
-    
-    def image_resize(self, image_path, output_path, time_stamp=None, width=2048, height=2048):
-        q_image = QtGui.QImage(image_path)
-        sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 
-        if sq_scaled.width() <= sq_scaled.height():
-            x = 0
-            y = (sq_scaled.height()-height)/2
-        elif sq_scaled.width() >= sq_scaled.height():
-            x = (sq_scaled.width()-width)/2
-            y = 0
-        copy = sq_scaled.copy(x, y, width, height) 
-        copy.save(output_path)
-        if time_stamp:
-            os.utime(output_path, (time_stamp, time_stamp))
-        return image_path
-    
     def assign_shading_engine(self, mobject, shading_group=None):
         if not shading_group:            
             shading_group = 'initialShadingGroup'
@@ -480,7 +399,68 @@ class Maya(object):
             current_item = dependency_graph.currentItem()
             shading_engines.append(current_item)
             dependency_graph.next()
-        return shading_engines
+        return shading_engines    
+
+    def get_assigned_components(self, mobject):
+        mfn_set = OpenMaya.MFnSet(mobject)
+        selection_list = OpenMaya.MSelectionList()
+        mfn_set.getMembers(selection_list, False)
+        components = []
+        selection_list.getSelectionStrings(components)
+        return components
+
+    def get_assigned_objects(self, mobject):
+        mfn_set = OpenMaya.MFnSet(mobject)
+        selection_list = OpenMaya.MSelectionList()
+        mfn_set.getMembers(selection_list, False)
+        components = []
+        for index in range(selection_list.length()):
+            m_dag_path = OpenMaya.MDagPath()
+            selection_list.getDagPath(index, m_dag_path)
+            node = m_dag_path.partialPathName()
+            if node in components:
+                continue
+            components.append(node)
+        return components
+    
+    def get_kshader_networks(self, mobject):        
+        mit_dependency_graph = OpenMaya.MItDependencyGraph(
+            mobject,
+            OpenMaya.MItDependencyGraph.kUpstream,
+            OpenMaya.MItDependencyGraph.kPlugLevel
+            )
+        default_nodes = self.get_default_nodes()
+        unknown_types = self.get_unknown_types()
+        components = self.get_assigned_objects(mobject)
+        mobject_array = OpenMaya.MObjectArray()
+        while not mit_dependency_graph.isDone():       
+            current_item = mit_dependency_graph.currentItem()
+            mfn_dependency_node = OpenMaya.MFnDependencyNode(current_item)
+            if mfn_dependency_node.object() in default_nodes:
+                mit_dependency_graph.next()
+                continue                   
+            if mfn_dependency_node.typeName() in unknown_types:
+                mit_dependency_graph.next()
+                continue 
+            if mfn_dependency_node.name() in components:
+                mit_dependency_graph.next()
+                continue     
+            mobject_array.append(current_item)
+            mit_dependency_graph.next()
+        return mobject_array
+
+ 
+    def create_mpoint_array(self, array):
+        m_point_array = OpenMaya.MPointArray()
+        for x, y, z, w in array:
+            m_point_array.append(x, y, z, w)
+        return m_point_array
+    
+    def create_mdouble_array(self, array):
+        mdouble_array = OpenMaya.MDoubleArray()
+        for x in array:
+            mdouble_array.append(x)
+        return mdouble_array                
                             
     def create_float_array(self, python_list):
         mfloat_array = OpenMaya.MFloatArray()
@@ -507,6 +487,54 @@ class Maya(object):
                 dictionary[contents]['order'], []).append(contents)
         order = sum(sorted_data.values(), [])
         return order   
+        
+    def set_perspective_view(self):  
+        OpenMaya.MGlobal.executeCommand('setNamedPanelLayout \"Single Perspective View\";') 
+        OpenMaya.MGlobal.executeCommand('fitPanel -selectedNoChildren;')
+        position = {
+            'translateX': 10, 'translateY': 10, 'translateZ': 30,
+            'rotateX':-10, 'rotateY': 20, 'rotateZ': 0,
+            'scaleX': 1, 'scaleY': 1, 'scaleZ': 1
+            }        
+        for k, v in position.items():
+            mplug = self.get_mplug('persp', k)
+            mplug.setFloat(v)        
+        
+    def vieport_snapshot(self, time_stamp, output_path=None, width=2048, height=2048):
+        m3d_view = OpenMayaUI.M3dView.active3dView()
+        if not m3d_view.isVisible():
+            OpenMaya.MGlobal.displayWarning('Active 3d View not visible!...')
+            return   
+        m3d_view.refresh(True, True, True)
+        m_image = OpenMaya.MImage()
+        m3d_view.readColorBuffer(m_image, True)        
+        if not output_path:
+            output_path = os.path.join(
+                tempfile.gettempdir(),
+                'studio_pipe_temp.png'
+            )            
+        format = os.path.splitext(output_path)[-1].replace('.', '')        
+        if not format:
+            format = 'png'                    
+        m_image.writeToFileWithDepth(output_path, format, False)         
+        self.image_resize(output_path, output_path, time_stamp=None, width=width, height=height)
+        os.utime(output_path, (time_stamp, time_stamp))
+        return output_path, width, height    
+    
+    def image_resize(self, image_path, output_path, time_stamp=None, width=2048, height=2048):
+        q_image = QtGui.QImage(image_path)
+        sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 
+        if sq_scaled.width() <= sq_scaled.height():
+            x = 0
+            y = (sq_scaled.height() - height) / 2
+        elif sq_scaled.width() >= sq_scaled.height():
+            x = (sq_scaled.width() - width) / 2
+            y = 0
+        copy = sq_scaled.copy(x, y, width, height) 
+        copy.save(output_path)
+        if time_stamp:
+            os.utime(output_path, (time_stamp, time_stamp))
+        return image_path
         
     def get_kcurve(self, mobject):        
         mfn_curve = OpenMaya.MFnNurbsCurve(mobject)                
@@ -640,7 +668,7 @@ class Maya(object):
             v_array = self.create_float_array(contents['v_array'])
             uv_counts = self.create_int_array(contents['uv_counts'])
             uv_ids = self.create_int_array(contents['uv_ids'])            
-            if index==0:
+            if index == 0:
                 mfn_mesh.clearUVs(set_name)
                 mfn_mesh.renameUVSet(set_names[0], set_name)
             else:
@@ -650,30 +678,303 @@ class Maya(object):
         mfn_mesh.updateSurface()
         return mfn_mesh
     
-    
     def get_kpreviewshader(self, mobject):
-        mobject_array = self.get_shading_engine(mobject)
+        '''
+            :param mobject <OpenMaya.MObject> shading engine
+        '''
+        shader, attribute = self.get_surface(mobject)
+        mobject = self.get_mobject(shader)
+        mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)
         
-        if not mobject_array.length():
-            raise Exception('can not found any assignment to shading engine!...')
- 
+        attributes = {
+            'color': 'fileTextureName'
+            }
         
+        for k, v  in attributes.items():
+            if not mfn_dependency_node.hasAttribute(k):
+                continue        
+            k_mplug = mfn_dependency_node.findPlug(k)    
+            if k_mplug.isConnected():
+                mplug_array = OpenMaya.MPlugArray()
+                k_mplug.connectedTo(mplug_array, True, False)
+                file_dependency_node = OpenMaya.MFnDependencyNode(mplug_array[0].node())
+                if file_dependency_node.hasAttribute(v):
+                    v_mplug = file_dependency_node.findPlug(v)
+                    value = v_mplug.asString()
+                    return 'image', value  
+            else:
+                value = []
+                for x in range(k_mplug.numChildren()):
+                    child = k_mplug.child(x)
+                    value.append(child.asFloat())
+                return 'rgb', value 
+        return None, None 
+
+    def get_kshader(self, mobject, default=False):
+        '''
+            :param mobject <OpenMaya.MObject> shading engine
+        '''
+        mobject_array = self.get_kshader_networks(mobject)
+        
+        node_data = {} 
+        for x in range (mobject_array.length()):
+            mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject_array[x])
+            attribute_data = self.get_attributes(mfn_dependency_node.name(), default=default)
+            connection_data = self.get_connections(mfn_dependency_node.name())
+            contents = {}
+            if attribute_data:
+                contents['parameters'] = attribute_data
+            if connection_data:
+                contents['connections'] = connection_data
+            contents['type'] = mfn_dependency_node.typeName()
+            contents['name'] = mfn_dependency_node.name()
+            node_data.setdefault(mfn_dependency_node.name(), contents)
+        shader, attribute = self.get_surface(mobject)
+        data ={
+            'nodes': node_data,
+            'surface': {
+                'shader': shader,
+                'attribute': attribute
+                }            
+            }
+        return data
     
+    
+    def get_surface(self, mobject):
+        '''
+            :param mobject <OpenMaya.MObject> shading engine
+        '''        
+        mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)
+        surface_mplug = mfn_dependency_node.findPlug('surfaceShader')
+        
+        if not surface_mplug.isConnected():
+            return None
+        
+        mplug_array = OpenMaya.MPlugArray()        
+        surface_mplug.connectedTo(mplug_array, True, False)
+        if not mplug_array.length():
+            return None        
+        shader, attribute = mplug_array[0].name().split('.')
+        return shader, attribute
+      
+    
+    
+            
+    def get_connections(self, node):        
+        inputs = self.input_connections(node)
+        data = {}
+        for input in inputs:            
+            output = self.output_connections(input)            
+            output_attribute = output.split('.')[1]
+            input_node, input_attribute = input.split('.')            
+            data[output_attribute] = {
+                'type': 'StringAttr',
+                'value': '{}@{}'.format(input_attribute, input_node)
+                }
+        return data    
+    
+    
+    
+    def input_connections(self, node):                           
+        mcommand_result = OpenMaya.MCommandResult()
+        mel_command = 'listConnections -s on -d off -p on \"%s\"' % (node)
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, True, True)
+        inputs = []
+        mcommand_result.getResult(inputs)
+        return inputs         
+         
+    def output_connections(self, node):
+        mcommand_result = OpenMaya.MCommandResult()
+        mel_command = 'listConnections -s off -d on -p on \"%s\"' % (node)
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, True, True)
+        outputs = []
+        mcommand_result.getResult(outputs)
+        if outputs:        
+            return outputs[0]
+        return None
+            
+    def get_attributes(self, object, default=False):
+        '''
+            :param mobject <str> shading dependency node
+            :param default <bool> False ignore default value 
+        '''        
+        attribute_types = {
+            'distance': [
+                OpenMaya.MFn.kDoubleLinearAttribute,
+                OpenMaya.MFn.kFloatLinearAttribute
+                ],
+            'angle': [    
+                OpenMaya.MFn.kDoubleAngleAttribute,
+                OpenMaya.MFn.kFloatAngleAttribute
+                ],
+            'typed': [
+                OpenMaya.MFn.kTypedAttribute
+                ],
+            'matrix': [
+                OpenMaya.MFn.kMatrixAttribute
+                ],
+            'numeric': [
+                OpenMaya.MFn.kNumericAttribute
+                ],
+            'enum': [   
+                OpenMaya.MFn.kEnumAttribute
+                ]
+            }        
+        valid =  sum(attribute_types.values(), [])
+        data = {}
+        mplug_array = self.get_mplug_attributes(object, valid) 
+        for x in range(mplug_array.length()):
+            value, type = 'null', None
+            attribute = mplug_array[x].attribute()
+            api_type = attribute.apiType() 
+            if api_type in attribute_types['distance']:
+                value, type = self.klinear_attribute(mplug_array[x], default=default)
+                
+                
+            if api_type in attribute_types['angle']:
+                value, type = self.kangle_attribute(mplug_array[x], default=default)   
+            if api_type in attribute_types['typed']:
+                value, type = self.ktyped_attribute(mplug_array[x], attribute, default=default)  
+            if api_type in attribute_types['matrix']:
+                value, type = self.kmatrix_attribute(mplug_array[x], default=default)
+            if api_type in attribute_types['numeric']:
+                value, type = self.knumeric_attribute(mplug_array[x], attribute, default=default)            
+            if api_type in attribute_types['enum']:
+                value, type = self.kenum_attribute(mplug_array[x], default=default)
+                
+            if value=='null':
+                continue            
+            attribute_name = mplug_array[x].name().split('.')[1]
+            data[attribute_name] = {
+                'value': value,
+                'type': type
+                }      
+        return data    
+    
+    def get_mplug_attributes(self, object, valid):        
+        mplug_array = OpenMaya.MPlugArray()
+        attributes = self.list_attributes(object)
+        for attribute in attributes:
+            mplug = self.get_mplug(object, attribute)
+            api_type = mplug.attribute().apiType()
+            if api_type not in valid:
+                continue
+            mplug_array.append(mplug)
+        return mplug_array
+    
+    def list_attributes(self, node):
+        mcommand_result = OpenMaya.MCommandResult()       
+        mel_command = 'listAttr -r -w -u -m -hd  \"%s\"' % node 
+        OpenMaya.MGlobal.executeCommand(
+            mel_command, mcommand_result, True, True)
+        attributes = []
+        mcommand_result.getResult(attributes)
+        return attributes            
+            
+    def kenum_attribute(self, mplug, default=False):        
+        if not default:
+            if mplug.isDefaultValue():
+                return 'null', None   
+        value = mplug.asInt()
+        return value, 'IntAttr'
+    
+    def kmatrix_attribute(self, mplug, default=False):
+        if not default:
+            if mplug.isDefaultValue():
+                return 'null', None                   
+        mfn_matrix = OpenMaya.MFnMatrixData(mplug.asMObject())
+        value = mfn_matrix.matrix()
+        return value, 'FloatAttr'
+        
+    def kangle_attribute(self, mplug, default=False):        
+        if not default:
+            if mplug.isDefaultValue():
+                return 'null', None    
+        value = mplug.asMAngle().value()
+        return value, 'FloatAttr'
+    
+    def klinear_attribute(self, mplug, default=False):
+        if not default:
+            if mplug.isDefaultValue():
+                return 'null', None       
+        value = mplug.asMDistance().value()        
+        return value, 'FloatAttr'
+
+    def knumeric_attribute(self, mplug, attribute, default=False):    
+        mfn_numeric_attribute = OpenMaya.MFnNumericAttribute(attribute)
+        unit_type = mfn_numeric_attribute.unitType()
+        if unit_type == OpenMaya.MFnNumericData.kBoolean:
+            if not default:
+                if mplug.isDefaultValue():
+                    return 'null', None                
+            value = mplug.asBool()          
+            return value, 'IntAttr'        
+        int_data = [
+            OpenMaya.MFnNumericData.kShort,
+            OpenMaya.MFnNumericData.kInt,
+            OpenMaya.MFnNumericData.kLong,
+            OpenMaya.MFnNumericData.kByte
+            ]                   
+        if unit_type in int_data:
+            if not default:
+                if mplug.isDefaultValue():
+                    return 'null', None   
+            value = mplug.asInt()          
+            return value, 'IntAttr'   
+        double_data = [
+            OpenMaya.MFnNumericData.kFloat,
+            OpenMaya.MFnNumericData.kDouble,
+            OpenMaya.MFnNumericData.kAddr
+            ]            
+        if unit_type in double_data:
+            if not default:
+                if mplug.isDefaultValue():
+                    return 'null', None   
+            value = mplug.asDouble()          
+            return value, 'FloatAttr'
+        return 'null', None      
+        
+    def ktyped_attribute(self, mplug, attribute, default=False):  
+        mfn_typed_attribute = OpenMaya.MFnTypedAttribute(attribute)
+        attribute_type = mfn_typed_attribute.attrType()        
+        if attribute_type == OpenMaya.MFnData.kMatrix: # matrix
+            if not default:
+                if mplug.isDefaultValue():
+                    return 'null', None                
+            mfn_matrix_data = OpenMaya.MFnMatrixData(mplug.asMObject())
+            value = mfn_matrix_data.matrix()
+            return value, 'FloatAttr'
+        if attribute_type == OpenMaya.MFnData.kString: # string
+            if not default:
+                if mplug.isDefaultValue():
+                    return 'null', None   
+            value = mplug.asString()      
+            return value, 'StringAttr'
+        return 'null', None         
+                
+        
     
     def create_kshader(self, data):
         pass
     
-
-
     
     
     
     
     
-          
-        
-        
-                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
             
     #===========================================================================
     # def get_shadingengine(self, mobject):
