@@ -13,6 +13,13 @@ from studio_usd_pipe.core import preference
 class Connect(object):
     
     def __init__(self, subfield, **kwargs):
+        '''
+        assetPublish > 
+            asset > self.my_asset
+                mayapack > self.mpack
+                mayarelease
+
+        '''
         self.subfiled = subfield            
         self.bundle = kwargs
         self.publish_path = self.get_pulish_path()     

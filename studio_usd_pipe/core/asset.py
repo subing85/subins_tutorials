@@ -91,25 +91,31 @@ class Asset(object):
             self.make_puppet()
             self.make_puppet_usd()
             self.make_puppet_active_usd()
-            
-        if self.subfield == 'layout':
-            pass
-        
-        if self.subfield == 'animation':
-            pass
-        
-        if self.subfield == 'render':
-            pass
-        
-        if self.subfield == 'composting':
-            pass
+
                     
     def release(self, bundle, stamped_time):
         pass    
     
     
     def make_maya_model(self):
-        model_id_data = {
+        '''
+            import time
+            from studio_usd_pipe.core import mayapack
+            reload(mayapack)
+            mpack = mayapack.Pack()        
+            model_id_data = {
+                'sentity': 'asset',
+                'scaption': 'batman',
+                'stype': 'intractive',
+                'stag': 'character',
+                'sversion': '0.0.0',
+                'smodified': time.time(),
+                'spath': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'sdescription': 'test publish'
+                }                       
+            mpack.create_model(model_id_data)        
+        '''
+        input_data = {
             'sentity': self.entity,
             'scaption': self.caption,
             'stype': self.type,
@@ -119,37 +125,28 @@ class Asset(object):
             'spath': self.publish_path,
             'sdescription': self.description
             }        
-        self.mpack.create_model(model_id_data)
-        self.set_perspective_view()
+        self.mpack.create_model(input_data)
          
-    def make_thumbnail(self):     
-        output_path = os.path.join(
-            self.publish_path,
-            '{}.png'.format(self.caption)
-            ) 
-        width, height = 1024, 1024       
-        if self.standalone:
-            self.mpack.image_resize(
-                self.thumbnail, 
-                output_path,
-                time_stamp=self.time_stamp,
-                width=width,
-                height=height
-                )                 
-        else:
-            output_path, w, h = self.mpack.vieport_snapshot(
-                self.time_stamp,
-                output_path=output_path,
-                width=width,
-                height=height)
-        self.thumbnail = output_path        
-        return output_path    
-    
-    def make_studio_model(self):
-        directory = 
-        self.mpack.create_studio_model(inputs)     
-            
+    def make_thumbnail(self):
+        input_data = {
+            'standalone': self.standalone,            
+            'publish_path': self.publish_path,
+            'caption': self.caption,
+            'thumbnail': self.thumbnail,
+            'time_stamp': self.time_stamp,
+            'width': 1024,
+            'height': 1024
+            } 
+        self.thumbnail = self.mpack.create_thumbnail(input_data)     
 
+    def make_studio_model(self):
+        input_data = {
+            'publish_path': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            }       
+        self.studio_model = self.mpack.create_studio_model(input_data)
+ 
     
     def make_maye(self):
         target_path = self.copy_to(self.source_maya)
