@@ -8,8 +8,7 @@ reload(resource)
 class Nurbscurve(studioMaya.Maya):
     
     def __init__(self):
-        studioMaya.Maya.__init__(self)
-        
+        studioMaya.Maya.__init__(self)        
         
     def create_world(self, mfn_dag_node, parent=False):
         parent_node = OpenMaya.MFnDependencyNode(mfn_dag_node.object())
@@ -25,15 +24,24 @@ class Nurbscurve(studioMaya.Maya):
             for x in range(children.length()):                
                 self.set_parent(children[x], world_node.object())   
             self.set_parent(world_node.object(), mfn_dag_node.object())
-        return world_node    
+        return world_node 
     
-    
-    def get_kcurve(self, mobject):        
+    def get_kcurve(self, mobject):
         mfn_curve = OpenMaya.MFnNurbsCurve(mobject)                
         cvs_array = OpenMaya.MPointArray()        
         mfn_curve.getCVs(cvs_array, OpenMaya.MSpace.kObject)
         knots_array = OpenMaya.MDoubleArray()
-        mfn_curve.getKnots(knots_array)
+        mfn_curve.getKnots(knots_array)        
+        knots_array = [int(knots_array[x]) for x in range(knots_array.length())]
+        
+        bounding_box = mfn_curve.boundingBox()
+        min_mpoint = bounding_box.min()
+        max_mpoint = bounding_box.max()
+        bounding_value = {
+            'min': [min_mpoint.x, min_mpoint.y, min_mpoint.z],
+            'max': [max_mpoint.x, max_mpoint.y, max_mpoint.z]
+            }
+                
         vertices = []
         for x in range(cvs_array.length()):
             array = [
@@ -44,11 +52,13 @@ class Nurbscurve(studioMaya.Maya):
             ]            
             vertices.append(array)
         data = {
-            'control_vertices': vertices,
+            'points': vertices,
             'knots': list(knots_array),
             'degree': mfn_curve.degree(),
             'form': mfn_curve.form(),
-            'name': mfn_curve.name()  
+            'name': mfn_curve.name(),
+            'num_cvs': mfn_curve.numCVs(),
+            'bounding': bounding_value,
             }        
         return data
         
@@ -74,5 +84,15 @@ class Nurbscurve(studioMaya.Maya):
         mplug_y.setFloat(radius)
         mplug_z.setFloat(radius)
         self.freeze_transformations(mfn_dependency_node.object())
-        return mfn_dependency_node    
+        return mfn_dependency_node
+
+    def get_data(self, mobject):
+        transform_curve = self.extract_transform_primitive(
+            OpenMaya.MFn.kCurve, root_mobject=mobject)               
+        data = {}            
+        for x in range(transform_curve.length()):
+            curve_data = self.get_kcurve(transform_curve[x])
+            curve_data['order'] = x
+            data.setdefault(transform_curve[x].fullPathName(), curve_data)              
+        return data          
     

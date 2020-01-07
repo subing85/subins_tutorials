@@ -36,7 +36,7 @@ class Model(studioMaya.Maya):
         return data 
         
     def get_kmodel(self, mobject):
-        mfn_mesh = OpenMaya.MFnMesh(mobject)
+        mfn_mesh = OpenMaya.MFnMesh(mobject)        
         point_array = OpenMaya.MFloatPointArray()
         mfn_mesh.getPoints(point_array, OpenMaya.MSpace.kObject)
         vertex_count = OpenMaya.MIntArray()
@@ -46,13 +46,26 @@ class Model(studioMaya.Maya):
         for index in range(point_array.length()):
             points = point_array[index]
             vertice_list.append((points.x, points.y, points.z, points.w))
+        ds_mplug = mfn_mesh.findPlug('doubleSided')
+        bounding_box = mfn_mesh.boundingBox()
+        min_mpoint = bounding_box.min()
+        max_mpoint = bounding_box.max()
+        bounding_value = {
+            'min': [min_mpoint.x, min_mpoint.y, min_mpoint.z],
+            'max': [max_mpoint.x, max_mpoint.y, max_mpoint.z]
+            }
+        mesh_smooth = OpenMaya.MMeshSmoothOptions()
+        mfn_mesh.getSmoothMeshDisplayOptions(mesh_smooth)
         data = {
             'vertices': vertice_list,
             'vertex_count': list(vertex_count),
             'vertex_list': list(vertex_array),
             'num_vertices': mfn_mesh.numVertices(),
             'num_polygons': mfn_mesh.numPolygons(),
+            'double_sided': ds_mplug.asInt(),
+            'bounding': bounding_value,
             'shape':  mfn_mesh.name(),
+            'subdmesh': mesh_smooth.divisions()
             }
         return data    
     
@@ -126,3 +139,12 @@ class Model(studioMaya.Maya):
             except Exception as error:
                 print '\nDeleteError', error
                                   
+    def get_data(self, mobject):
+        transform_mesh = self.extract_transform_primitive(
+            OpenMaya.MFn.kMesh, root_mobject=mobject)
+        data = {}
+        for x in range(transform_mesh.length()):
+            model_data = self.get_kmodel(transform_mesh[x])
+            model_data['order'] = x
+            data.setdefault(transform_mesh[x].fullPathName(), model_data)            
+        return data    

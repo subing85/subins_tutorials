@@ -15,13 +15,14 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.api import studioModel
 from studio_usd_pipe.api import studioShader
 from studio_usd_pipe.api import studioNurbscurve
+from studio_usd_pipe.api import studioUsd
 
 from studio_usd_pipe.core import image
 
-# reload(studioMaya)
 reload(studioModel)
 reload(studioShader)
 reload(studioNurbscurve)
+reload(studioUsd)
 
 
 class Pack(studioModel.Model):
@@ -29,7 +30,7 @@ class Pack(studioModel.Model):
     def __init__(self):
         studioModel.Model.__init__(self)
         self.shader = studioShader.Shader()
-        self.nurbscurve = studioNurbscurve.Nurbscurve()
+        self.nurbscurve = studioNurbscurve.Nurbscurve()        
         
         
         self.nested_bundle = {}
@@ -94,7 +95,8 @@ class Pack(studioModel.Model):
         for x in range (mesh_mobjects.length()):
             self.delete_history(mesh_mobjects[x])
             self.freeze_transformations(mesh_mobjects[x])
-            self.set_default_position(mesh_mobjects[x])      
+            self.set_default_position(mesh_mobjects[x])
+            
         # create world control   
         world_dependency_node = self.nurbscurve.create_world(model_dag_node, parent=True) 
         # set the name
@@ -147,8 +149,7 @@ class Pack(studioModel.Model):
                 height=inputs['height'])
             
         self.thumbnail = output_path        
-        return output_path    
-    
+        return output_path
         
     def create_studio_model(self, inputs):
         '''
@@ -165,32 +166,58 @@ class Pack(studioModel.Model):
             mpack.create_studio_model(input_data)    
         '''            
         mobject = self.get_mobject('model')
-        transform_mesh = self.extract_transform_primitive(
-            OpenMaya.MFn.kMesh, root_mobject=mobject)
-        transform_curve = self.extract_transform_primitive(
-            OpenMaya.MFn.kCurve, root_mobject=mobject)
-               
-        mesh_data = {}
-        for x in range(transform_mesh.length()):
-            data = self.get_kmodel(transform_mesh[x])
-            mesh_data.setdefault(transform_mesh[x].fullPathName(), data)
+        mesh_data = self.get_data(mobject)
+        curve_data = self.nurbscurve.get_data(mobject)
         final_data = {
             'mesh': mesh_data, 
-            'curve': {}
-            }
-        
+            'curve': curve_data
+            }      
         output_path = os.path.join(
             inputs['output_path'],
             '{}.model'.format(inputs['caption'])
             ) 
         with (open(output_path, 'w')) as content:
-            content.write(json.dumps(final_data))
-           
-        return output_path
+            content.write(json.dumps(final_data, indent=4))
+            os.utime(output_path, (inputs['time_stamp'], inputs['time_stamp']))           
+        return output_path, final_data
         
 
+    def create_model_usd(self, inputs):
+        '''
+            import time
+            from studio_usd_pipe.core import mayapack
+            reload(mayapack)
+            mpack = mayapack.Pack()
+            
+            input_data = {
+                'output_path': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'caption': 'batman',
+                'time_stamp': time.time(),
+                }     
+            mpack.create_model_usd(input_data)       
+        '''
+        mobject = self.get_mobject('model')
+        mesh_data = self.get_data(mobject)
+        curve_data = self.nurbscurve.get_data(mobject)
+        final_data = {
+            'mesh': mesh_data, 
+            'curve': curve_data
+            }        
         
+        output_path = os.path.join(
+            inputs['output_path'],
+            '{}_static.usd'.format(inputs['caption'])
+            ) 
+        
+        susd = studioUsd.Susd(path=output_path)                
+        susd.create_model_usd('model', final_data, inputs['time_stamp'])
+        os.utime(output_path, (inputs['time_stamp'], inputs['time_stamp']))           
 
+        # root, data, time_stamp, stage=None, show=False
+        
+    def create_maya(self, inputs):
+        
+        pass
 
 
 

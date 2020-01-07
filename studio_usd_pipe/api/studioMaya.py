@@ -252,8 +252,6 @@ class Maya(object):
         dag_path_array = OpenMaya.MDagPathArray()
         for dag_path in dag_paths:
             dag_path_array.append(dag_path)
-            print dag_path.fullPathName()
-            
         return dag_path_array           
        
 

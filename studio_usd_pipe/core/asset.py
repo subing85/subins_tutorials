@@ -5,6 +5,7 @@ import shutil
 from studio_usd_pipe.api import studioImage
 from studio_usd_pipe.core import mayapack
 from studio_usd_pipe.core import preference
+from __builtin__ import None
 
 
 class Asset(object):
@@ -52,7 +53,12 @@ class Asset(object):
         self.time_stamp = bundle['time_stamp']
         self.type = bundle['time_stamp']
         self.tag = bundle['tag']
-        self.description = bundle['description']        
+        self.description = bundle['description']   
+        
+        self.studio_model = None
+        self.static_usd  = None
+        self.active_usd = None
+           
         
         self.publish_path = os.path.join(
             self.show_path,
@@ -69,7 +75,7 @@ class Asset(object):
             self.make_studio_model()                       
             self.make_model_usd()
             self.make_model_active_usd()
-            self.make_model()
+            self.make_maya()
             
         if self.subfield == 'uv':
             self.make_maya_model()
@@ -145,10 +151,30 @@ class Asset(object):
             'caption': self.caption,
             'time_stamp': self.time_stamp,
             }       
-        self.studio_model = self.mpack.create_studio_model(input_data)
+        self.studio_model, data = self.mpack.create_studio_model(input_data)
  
+    def make_model_usd(self):
+        input_data = {
+            'publish_path': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            }        
+        self.static_usd = self.mpack.create_model_usd(input_data)
     
+    def make_model_active_usd(self):
+        pass
+    
+        
     def make_maye(self):
+        input_data = {
+            'publish_path': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            }
+        
+        self.maya_file = self.mpack.create_maya(input_data)
+                
+        
         target_path = self.copy_to(self.source_maya)
         return target_path
     
@@ -174,9 +200,7 @@ class Asset(object):
     def make_puppet(self):
         pass
     
-    def make_model_usd(self):
-        pass
-    
+
     def make_uv_usd(self):
         pass
         
@@ -186,8 +210,7 @@ class Asset(object):
     def make_puppet_usd(self):
         pass    
     
-    def make_model_active_usd(self):
-        pass
+
 
     def make_uv_active_usd(self):
         pass
