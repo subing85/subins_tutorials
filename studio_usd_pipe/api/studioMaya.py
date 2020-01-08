@@ -113,7 +113,6 @@ class Maya(object):
             mel_command, mcommand_result, True, True)
         results = []
         mcommand_result.getResult(results)
-        
     
     def remove_nodes(self, mobject_arry):
         nodes = []
@@ -130,7 +129,6 @@ class Maya(object):
             mel_command, mcommand_result, True, True)
         results = []
         mcommand_result.getResult(results)        
-        
         
     def create_mpoint_array(self, array):
         m_point_array = OpenMaya.MPointArray()
@@ -214,7 +212,7 @@ class Maya(object):
             if root_mobject:
                 root = mfn_dag_node.fullPathName().split('|')[1]    
                 current_root_mobject = self.get_mobject(root)
-                if current_root_mobject!=root_mobject:
+                if current_root_mobject != root_mobject:
                     mit_dependency_nodes.next()
                     continue        
             dag_path = OpenMaya.MDagPath()
@@ -237,7 +235,7 @@ class Maya(object):
             if root_mobject:
                 root = mfn_dag_node.fullPathName().split('|')[1]    
                 current_root_mobject = self.get_mobject(root)
-                if current_root_mobject!=root_mobject:
+                if current_root_mobject != root_mobject:
                     mit_dependency_nodes.next()
                     continue  
             p_mobject = mfn_dag_node.parent(0)       
@@ -253,7 +251,6 @@ class Maya(object):
         for dag_path in dag_paths:
             dag_path_array.append(dag_path)
         return dag_path_array           
-       
 
     def extract_top_transforms(self, default=False):
         default_nodes = []
@@ -315,6 +312,8 @@ class Maya(object):
                 )  
             
     def set_locked(self, mobject, attributes=None, locked=True):
+        
+        print '\n-------------', mobject, '\n-------------------'
         if not attributes:
             attributes = [
                 'translateX', 'translateY', 'translateZ',
@@ -412,14 +411,14 @@ class Maya(object):
         for k, v in position.items():
             mplug = self.get_mplug('persp', k)
             attribute = mplug.attribute()
-            if attribute.apiType()==OpenMaya.MFn.kDoubleAngleAttribute:
+            if attribute.apiType() == OpenMaya.MFn.kDoubleAngleAttribute:
                 value = OpenMaya.MAngle(v, OpenMaya.MAngle.kDegrees)
                 mplug.setMAngle(value)
             else:   
                 mplug.setFloat(v)  
         OpenMaya.MGlobal.executeCommand('fitPanel -selectedNoChildren;')
         
-    def vieport_snapshot(self, time_stamp, output_path=None, width=2048, height=2048):
+    def vieport_snapshot(self, output_path=None, width=2048, height=2048):
         m3d_view = OpenMayaUI.M3dView.active3dView()
         if not m3d_view.isVisible():
             OpenMaya.MGlobal.displayWarning('Active 3d View not visible!...')
@@ -436,8 +435,7 @@ class Maya(object):
         if not format:
             format = 'png'                    
         m_image.writeToFileWithDepth(output_path, format, False) 
-        image.image_resize(output_path, output_path, time_stamp=None, width=width, height=height)
-        os.utime(output_path, (time_stamp, time_stamp))
+        image.image_resize(output_path, output_path, width=width, height=height)
         return output_path, width, height
         
     def get_connections(self, node):        
@@ -625,5 +623,27 @@ class Maya(object):
                     return 'null', None   
             value = mplug.asString()      
             return value, 'StringAttr'
-        return 'null', None         
-
+        return 'null', None
+    
+    def export_selected(self, node, output_path, **kwargs):
+        format='mayaAscii'
+        preserve_references=False
+        force = False               
+        if 'format' in kwargs:
+            format = kwargs['format']
+        if 'preserve_references' in kwargs:
+            preserve_references = kwargs['preserve_references']
+        if 'force' in kwargs:
+            force = kwargs['force']            
+               
+        if os.path.isfile(output_path):      
+            if not force:
+                raise IOError('Cannot save, already file found <%s>'%output_path)            
+            os.chmod(output_path, 0777)
+            try:
+                os.remove(output_path)
+            except Exception as error:
+                raise error                  
+                                
+        OpenMaya.MGlobal.selectByName(node)
+        OpenMaya.MFileIO.exportSelected(output_path, format, preserve_references) 

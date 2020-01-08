@@ -2,10 +2,11 @@ import os
 import shutil
 
 
-from studio_usd_pipe.api import studioImage
 from studio_usd_pipe.core import mayapack
 from studio_usd_pipe.core import preference
-from __builtin__ import None
+
+reload(mayapack)
+reload(preference)
 
 
 class Asset(object):
@@ -13,6 +14,7 @@ class Asset(object):
     def __init__(self, subfield=None):       
         
         self.standalone = False
+        self.data = {}
         
         self.subfield = subfield
         self.width, self.height = 640, 400
@@ -32,33 +34,31 @@ class Asset(object):
     
     def pack(self, bundle):
         '''
-        import time
-        from studio_usd_pipe.core import asset
-        reload(asset)        
-        asset = asset.Asset(subfield='model')        
-        bundle = {
-            'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma',
-            'version': '0.0.0',
-            'caption': 'batman',
-            'thumbnail': '/local/references/images/btas_batmodel_03.jpg',
-            'time_stamp': time.time()
-            }        
-        asset.pack(bundle)          
+            import time
+            from studio_usd_pipe.core import asset
+            reload(asset)        
+            asset = asset.Asset(subfield='model')        
+            bundle = {
+                'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma',
+                'caption': 'batman',
+                'version': '0.0.0',
+                'thumbnail': '/local/references/images/btas_batmodel_03.jpg',
+                'type': 'interactive',
+                'tag': 'character',
+                'description': 'test publish',
+                'time_stamp': time.time()
+                }        
+            asset.pack(bundle)         
         '''
              
         self.source_maya = bundle['source_file']
         self.caption = bundle['caption']
         self.version = bundle['version'] 
         self.thumbnail = bundle['thumbnail']
-        self.time_stamp = bundle['time_stamp']
-        self.type = bundle['time_stamp']
+        self.type = bundle['type']
         self.tag = bundle['tag']
         self.description = bundle['description']   
-        
-        self.studio_model = None
-        self.static_usd  = None
-        self.active_usd = None
-           
+        self.time_stamp = bundle['time_stamp']        
         
         self.publish_path = os.path.join(
             self.show_path,
@@ -74,8 +74,9 @@ class Asset(object):
             self.make_thumbnail()
             self.make_studio_model()                       
             self.make_model_usd()
-            self.make_model_active_usd()
+            # self.make_model_active_usd()
             self.make_maya()
+            print 'dddddddddddddddddddddddd'         
             
         if self.subfield == 'uv':
             self.make_maya_model()
@@ -97,6 +98,10 @@ class Asset(object):
             self.make_puppet()
             self.make_puppet_usd()
             self.make_puppet_active_usd()
+            
+            
+        for each in self.data:
+            os.utime(self.data[each], (self.time_stamp, self.time_stamp))       
 
                     
     def release(self, bundle, stamped_time):
@@ -106,22 +111,22 @@ class Asset(object):
     def make_maya_model(self):
         '''
             import time
-            from studio_usd_pipe.core import mayapack
-            reload(mayapack)
-            mpack = mayapack.Pack()        
-            model_id_data = {
-                'sentity': 'asset',
-                'scaption': 'batman',
-                'stype': 'intractive',
-                'stag': 'character',
-                'sversion': '0.0.0',
-                'smodified': time.time(),
-                'spath': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
-                'sdescription': 'test publish'
-                }                       
-            mpack.create_model(model_id_data)        
+            from studio_usd_pipe.core import asset
+            reload(asset)        
+            asset = asset.Asset(subfield='model')        
+            bundle = {
+                'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma',
+                'caption': 'batman',
+                'version': '0.0.0',
+                'thumbnail': '/local/references/images/btas_batmodel_03.jpg',
+                'type': 'interactive',
+                'tag': 'character',
+                'description': 'test publish',
+                'time_stamp': time.time()
+                }        
+            asset.pack(bundle)        
         '''
-        input_data = {
+        inputs = {
             'sentity': self.entity,
             'scaption': self.caption,
             'stype': self.type,
@@ -129,59 +134,64 @@ class Asset(object):
             'sversion': self.version,
             'smodified': self.time_stamp,
             'spath': self.publish_path,
-            'sdescription': self.description
+            'sdescription': self.description,
+            'node': 'model',
+            'world': 'world'
             }        
-        self.mpack.create_model(input_data)
+        self.mpack.create_model(inputs)
          
     def make_thumbnail(self):
-        input_data = {
+        inputs = {
             'standalone': self.standalone,            
-            'publish_path': self.publish_path,
+            'output_directory': self.publish_path,
             'caption': self.caption,
             'thumbnail': self.thumbnail,
             'time_stamp': self.time_stamp,
-            'width': 1024,
-            'height': 1024
+            'width': 512,
+            'height': 512,
+            'force': True
             } 
-        self.thumbnail = self.mpack.create_thumbnail(input_data)     
+        thumbnail = self.mpack.create_thumbnail(inputs)
+        self.data['thumbnail'] = thumbnail    
 
     def make_studio_model(self):
-        input_data = {
-            'publish_path': self.publish_path,
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
             'caption': self.caption,
             'time_stamp': self.time_stamp,
+            'force': True
             }       
-        self.studio_model, data = self.mpack.create_studio_model(input_data)
+        studio_model = self.mpack.create_studio_model(inputs)
+        self.data['studio_model'] = studio_model    
  
     def make_model_usd(self):
-        input_data = {
-            'publish_path': self.publish_path,
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
             'caption': self.caption,
             'time_stamp': self.time_stamp,
+            'force': True
             }        
-        self.static_usd = self.mpack.create_model_usd(input_data)
+        usd = self.mpack.create_model_usd(inputs)
+        self.data['usd'] = usd    
+        
     
     def make_model_active_usd(self):
         pass
     
         
-    def make_maye(self):
-        input_data = {
-            'publish_path': self.publish_path,
+    def make_maya(self):
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
             'caption': self.caption,
             'time_stamp': self.time_stamp,
-            }
+            'force': True
+            }        
+        maya_file = self.mpack.create_maya(inputs)
+        self.data['maya_file'] = maya_file    
         
-        self.maya_file = self.mpack.create_maya(input_data)
-                
-        
-        target_path = self.copy_to(self.source_maya)
-        return target_path
-    
-
-        
-        
-         
     
 
 

@@ -8,7 +8,6 @@ from datetime import datetime
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import configure
-from studio_usd_pipe.api import studioImage
  
 
 class Preference(object):
@@ -35,7 +34,7 @@ class Preference(object):
             resource.getWorkspacePath(),
             self.toolkit,
             self.config.name,
-            resource.getPreferenceFormat
+            resource.getPreferenceFormat()
             )
         return path        
     
