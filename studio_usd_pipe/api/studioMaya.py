@@ -42,10 +42,10 @@ class Maya(object):
         mselection.getDependNode(0, mobject)
         return mobject
 
-    def get_mplug(self, node, attribute):
+    def get_mplug(self, node_attribute):
         mplug = OpenMaya.MPlug()
         mselection = OpenMaya.MSelectionList()
-        mselection.add("%s.%s" % (node, attribute))
+        mselection.add(node_attribute)
         mselection.getPlug(0, mplug)
         return mplug   
      
@@ -110,7 +110,7 @@ class Maya(object):
         mcommand_result = OpenMaya.MCommandResult()       
         mel_command = 'delete \"%s\"' % mobject 
         OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, True, True)
+            mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
     
@@ -126,7 +126,7 @@ class Maya(object):
         
         print mel_command
         OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, True, True)
+            mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)        
         
@@ -357,7 +357,7 @@ class Maya(object):
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'parent \"%s\" \"%s\" ' % (child, parent)
         OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, True, True)
+            mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
         mobject = self.get_mobject(results[0])   
@@ -369,7 +369,7 @@ class Maya(object):
         mcommand_result = OpenMaya.MCommandResult()        
         mel_command = 'makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1 \"%s\"' % node
         OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, True, True)
+            mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
         return results         
@@ -409,7 +409,7 @@ class Maya(object):
             'scaleX': 1, 'scaleY': 1, 'scaleZ': 1
             }        
         for k, v in position.items():
-            mplug = self.get_mplug('persp', k)
+            mplug = self.get_mplug('persp.%s'%k)
             attribute = mplug.attribute()
             if attribute.apiType() == OpenMaya.MFn.kDoubleAngleAttribute:
                 value = OpenMaya.MAngle(v, OpenMaya.MAngle.kDegrees)
@@ -419,6 +419,7 @@ class Maya(object):
         OpenMaya.MGlobal.executeCommand('fitPanel -selectedNoChildren;')
         
     def vieport_snapshot(self, output_path=None, width=2048, height=2048):
+        OpenMaya.MGlobal.clearSelectionList()
         m3d_view = OpenMayaUI.M3dView.active3dView()
         if not m3d_view.isVisible():
             OpenMaya.MGlobal.displayWarning('Active 3d View not visible!...')
@@ -454,7 +455,7 @@ class Maya(object):
     def input_connections(self, node):                           
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'listConnections -s on -d off -p on \"%s\"' % (node)
-        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, True, True)
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         inputs = []
         mcommand_result.getResult(inputs)
         return inputs         
@@ -462,7 +463,7 @@ class Maya(object):
     def output_connections(self, node):
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'listConnections -s off -d on -p on \"%s\"' % (node)
-        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, True, True)
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         outputs = []
         mcommand_result.getResult(outputs)
         if outputs:        
@@ -490,96 +491,182 @@ class Maya(object):
                 OpenMaya.MFn.kMatrixAttribute
                 ],
             'numeric': [
-                OpenMaya.MFn.kNumericAttribute
+                OpenMaya.MFn.kNumericAttribute 
                 ],
             'enum': [   
                 OpenMaya.MFn.kEnumAttribute
+                ],
+            '3float': [
+                OpenMaya.MFn.kAttribute3Float,
+                OpenMaya.MFn.kAttribute3Double,
+                # OpenMaya.MFn.kCompoundAttribute                
                 ]
             }        
-        valid = sum(attribute_types.values(), [])
         data = {}
-        mplug_array = self.get_mplug_attributes(object, valid) 
+        mplug_array = self.get_mplug_attributes(object) 
+        
         for x in range(mplug_array.length()):
+            attribute = mplug_array[x].attribute()
+            
+            
+
+            #===================================================================
+            # ramp1.colorEntryList[0].color kAttribute3Float
+            # ramp1.colorEntryList[1].position kNumericAttribute
+            # ramp1.colorEntryList[1].color kAttribute3Float
+            # ramp1.colorEntryList[2].position kNumericAttribute
+            # ramp1.colorEntryList[2].color kAttribute3Float
+            # ramp1.colorEntryList[3].position kNumericAttribute
+            # ramp1.colorEntryList[3].color kAttribute3Float
+            # ramp1.uWave kNumericAttribute
+            # ramp1.vWave kNumericAttribute
+            #===================================================================
+
+
+     
             value, type = 'null', None
             attribute = mplug_array[x].attribute()
             api_type = attribute.apiType() 
             if api_type in attribute_types['distance']:
-                value, type = self.klinear_attribute(mplug_array[x], default=default)                
+                value, type = self.klinear_attribute(mplug_array[x])                
             if api_type in attribute_types['angle']:
-                value, type = self.kangle_attribute(mplug_array[x], default=default)   
+                value, type = self.kangle_attribute(mplug_array[x])   
             if api_type in attribute_types['typed']:
-                value, type = self.ktyped_attribute(mplug_array[x], attribute, default=default)  
+                value, type = self.ktyped_attribute(mplug_array[x], attribute)  
             if api_type in attribute_types['matrix']:
-                value, type = self.kmatrix_attribute(mplug_array[x], default=default)
+                value, type = self.kmatrix_attribute(mplug_array[x])
             if api_type in attribute_types['numeric']:
-                value, type = self.knumeric_attribute(mplug_array[x], attribute, default=default)            
+                value, type = self.knumeric_attribute(mplug_array[x], attribute)            
             if api_type in attribute_types['enum']:
-                value, type = self.kenum_attribute(mplug_array[x], default=default)
+                value, type = self.kenum_attribute(mplug_array[x])
+            if api_type in attribute_types['3float']:
+                value, type = self.k3folat_attribute(mplug_array[x])
             if value == 'null':
-                continue            
-            attribute_name = mplug_array[x].name().split('.')[1]
+                continue    
+            attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
             data[attribute_name] = {
                 'value': value,
                 'type': type
-                }      
+                }  
         return data    
     
-    def get_mplug_attributes(self, object, valid):        
-        mplug_array = OpenMaya.MPlugArray()
-        attributes = self.list_attributes(object)
-        for attribute in attributes:
-            mplug = self.get_mplug(object, attribute)
-            api_type = mplug.attribute().apiType()
-            if api_type not in valid:
+    def _get_mplug_attributes(self, object):        
+        attributes = self.list_attributes(object)        
+        normal_attributes = []
+        remove_attributes = []        
+        for attribute in attributes:   
+            mplug = self.get_mplug('%s.%s'%(object, attribute))
+            attr_mobject = mplug.attribute()            
+            if mplug.isElement():
+                for x in range (mplug.numChildren()):
+                    remove_attributes.append(mplug.child(x).name())
+            if mplug.isChild(): 
+                if attr_mobject.apiType() in [OpenMaya.MFn.kAttribute3Double, OpenMaya.MFn.kAttribute3Float]:
+                    if mplug.isDefaultValue():
+                        continue
+                    if mplug.name() in normal_attributes:
+                        continue                     
+                    normal_attributes.append(mplug.name())
+                if attr_mobject.apiType()==OpenMaya.MFn.kNumericAttribute:
+                    parent_mplug = mplug.parent()
+                    parent_mobject = parent_mplug.attribute()
+                    if parent_mobject.apiType()!=OpenMaya.MFn.kCompoundAttribute:
+                        continue
+                    # if mplug in normal_attributes:
+                    #     continue
+                    if mplug.isDefaultValue():
+                        continue                        
+                    normal_attributes.append(mplug.name())                    
                 continue
-            mplug_array.append(mplug)
+            if mplug.isDefaultValue():
+                continue               
+            if mplug.name() in normal_attributes:
+                continue        
+            normal_attributes.append(mplug.name())   
+        mplug_array = []
+        for attribute in normal_attributes:
+            if attribute in remove_attributes:
+                continue
+            mplug_array.append(attribute)  
         return mplug_array
+
+    def get_mplug_attributes(self, object):        
+        attributes = self.list_attributes(object)        
+        normal_attributes = []
+        remove_attributes = []        
+        for attribute in attributes:   
+            mplug = self.get_mplug('%s.%s'%(object, attribute))
+            attr_mobject = mplug.attribute()            
+            if mplug.isElement():
+                for x in range (mplug.numChildren()):
+                    remove_attributes.append(mplug.child(x))
+            if mplug.isChild(): 
+                if attr_mobject.apiType() in [OpenMaya.MFn.kAttribute3Double, OpenMaya.MFn.kAttribute3Float]:
+                    #if mplug in normal_attributes:
+                    #    continue            
+                    if mplug.isDefaultValue():
+                        continue
+                    normal_attributes.append(mplug)
+                if attr_mobject.apiType()==OpenMaya.MFn.kNumericAttribute:
+                    parent_mplug = mplug.parent()
+                    parent_mobject = parent_mplug.attribute()
+                    if parent_mobject.apiType()!=OpenMaya.MFn.kCompoundAttribute:
+                        continue
+                    # if mplug in normal_attributes:
+                    #     continue
+                    if mplug.isDefaultValue():
+                        continue                        
+                    normal_attributes.append(mplug)                    
+                continue
+            if mplug.isDefaultValue():
+                continue               
+            if mplug in normal_attributes:
+                continue        
+            normal_attributes.append(mplug)   
+        mplug_array = OpenMaya.MPlugArray()
+        for attribute in normal_attributes:
+            if attribute in remove_attributes:
+                continue
+            mplug_array.append(attribute)  
+        return mplug_array   
     
     def list_attributes(self, node):
         mcommand_result = OpenMaya.MCommandResult()       
-        mel_command = 'listAttr -r -w -u -m -hd  \"%s\"' % node 
+        mel_command = 'listAttr -r -c -w -o -u -m -hd  \"%s\"' % node 
         OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, True, True)
+            mel_command, mcommand_result, False, True)
         attributes = []
         mcommand_result.getResult(attributes)
         return attributes            
             
-    def kenum_attribute(self, mplug, default=False):        
-        if not default:
-            if mplug.isDefaultValue():
-                return 'null', None   
+    def kenum_attribute(self, mplug):        
         value = mplug.asInt()
         return value, 'IntAttr'
     
-    def kmatrix_attribute(self, mplug, default=False):
-        if not default:
-            if mplug.isDefaultValue():
-                return 'null', None                   
+    def kmatrix_attribute(self, mplug):
         mfn_matrix = OpenMaya.MFnMatrixData(mplug.asMObject())
         value = mfn_matrix.matrix()
         return value, 'FloatAttr'
         
-    def kangle_attribute(self, mplug, default=False):        
-        if not default:
-            if mplug.isDefaultValue():
-                return 'null', None    
+    def kangle_attribute(self, mplug):        
         value = mplug.asMAngle().value()
         return value, 'FloatAttr'
     
-    def klinear_attribute(self, mplug, default=False):
-        if not default:
-            if mplug.isDefaultValue():
-                return 'null', None       
+    def klinear_attribute(self, mplug):
         value = mplug.asMDistance().value()        
         return value, 'FloatAttr'
+    
+    def k3folat_attribute(self, mplug):    
+        value = []
+        for x in range(mplug.numChildren()):
+            child_mplug = mplug.child(x)
+            value.append(child_mplug.asFloat())
+        return value, '3FloatAttr'        
 
-    def knumeric_attribute(self, mplug, attribute, default=False):    
+    def knumeric_attribute(self, mplug, attribute):    
         mfn_numeric_attribute = OpenMaya.MFnNumericAttribute(attribute)
         unit_type = mfn_numeric_attribute.unitType()
         if unit_type == OpenMaya.MFnNumericData.kBoolean:
-            if not default:
-                if mplug.isDefaultValue():
-                    return 'null', None                
             value = mplug.asBool()          
             return value, 'IntAttr'        
         int_data = [
@@ -589,9 +676,6 @@ class Maya(object):
             OpenMaya.MFnNumericData.kByte
             ]                   
         if unit_type in int_data:
-            if not default:
-                if mplug.isDefaultValue():
-                    return 'null', None   
             value = mplug.asInt()          
             return value, 'IntAttr'   
         double_data = [
@@ -600,27 +684,18 @@ class Maya(object):
             OpenMaya.MFnNumericData.kAddr
             ]            
         if unit_type in double_data:
-            if not default:
-                if mplug.isDefaultValue():
-                    return 'null', None   
             value = mplug.asDouble()          
             return value, 'FloatAttr'
         return 'null', None      
         
-    def ktyped_attribute(self, mplug, attribute, default=False):  
+    def ktyped_attribute(self, mplug, attribute):  
         mfn_typed_attribute = OpenMaya.MFnTypedAttribute(attribute)
         attribute_type = mfn_typed_attribute.attrType()        
         if attribute_type == OpenMaya.MFnData.kMatrix:  # matrix
-            if not default:
-                if mplug.isDefaultValue():
-                    return 'null', None                
             mfn_matrix_data = OpenMaya.MFnMatrixData(mplug.asMObject())
             value = mfn_matrix_data.matrix()
             return value, 'FloatAttr'
         if attribute_type == OpenMaya.MFnData.kString:  # string
-            if not default:
-                if mplug.isDefaultValue():
-                    return 'null', None   
             value = mplug.asString()      
             return value, 'StringAttr'
         return 'null', None

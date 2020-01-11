@@ -9,28 +9,23 @@ from pxr import Usd
 from pxr import UsdGeom
 from maya import OpenMaya        
 
+
 class Susd(object):
     
     def __init__(self, path=None):
-        
         if path:
             path = '{}.usd'.format(os.path.splitext(path)[0])
-            
         self.usd_path = path
-        
-        
         self.up_axis = UsdGeom.Tokens.y
-        
         
     def make_defalt_prim(self, stage, location):
         stage.SetDefaultPrim(stage.GetPrimAtPath(location))
         UsdGeom.SetStageUpAxis(stage, self.up_axis)
         
-        
     def make_m_subdivision(self, define, data):
         subdivision = define.CreateSubdivisionSchemeAttr()        
         subdmesh = 'none'    
-        if data>0:
+        if data > 0:
             subdmesh = 'catmullClark'   
         subdivision.Set(subdmesh)
         
@@ -60,6 +55,25 @@ class Susd(object):
         xyz = [(x, y, z) for x, y, z, w in data]
         point_value = Vt.Vec3fArray(len(xyz), (xyz))
         points.Set(point_value)
+        
+    def make_uv_points_ids(self, define, set, data):    
+        uv_primvar = define.CreatePrimvar(
+            set,
+            Sdf.ValueTypeNames.Float2Array,
+            UsdGeom.Tokens.faceVarying
+            )
+        value = Vt.Vec2fArray(len(data), data[0])
+        uv_primvar.Set(value)
+        value = Vt.IntArray(data[1])
+        uv_primvar.SetIndices(value)                
+        
+    def make_uv_ids(self, define, set, data):
+        uv_indices = define.CreatePrimvar(
+            set,
+            Sdf.ValueTypeNames.IntArray
+            )
+        value = Vt.IntArray(data)
+        uv_indices.SetIndices(value)
         
     def make_c_vertex_counts(self, define, data):        
         vertex_counts = define.CreateCurveVertexCountsAttr()
@@ -97,34 +111,8 @@ class Susd(object):
         widths = define.CreateWidthsAttr()
         widths_value = Vt.FloatArray(data)
         widths.Set(widths_value)      
-        
-        
-    
-    def create_model_usd(self, root, data, show=False):
-        
-       
-        
-        stage = self.create_geometry(data['mesh'], stage=None)
-        
-        stage = self.create_uv(data['curve'], stage=stage)
-        
-        if show:
-            print stage.GetRootLayer().ExportToString()
-                    
-        stage.Save()
-        
-        #=======================================================================
-        # root_location = Sdf.Path('/{}'.format(root))       #   
-        # self.make_defalt_prim(stage, root_location)
-        # 
-        # stage.Save()
-        # os.utime(self.usd_path, (time_stamp, time_stamp))
-        # print '// Result:', self.usd_path 
-        # OpenMaya.MGlobal.displayInfo('create usd geometry success!...')
-        #=======================================================================
-        
-    
-    def create_uv(self, data, stage=None):
+
+    def create_curve(self, data, stage=None):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
@@ -136,7 +124,6 @@ class Susd(object):
             for path in sdf_path.GetPrefixes():
                 UsdGeom.Xform.Define(stage, path)
             curev_define = UsdGeom.NurbsCurves.Define(stage, sdf_path.GetPrefixes()[-1])
-
             self.make_c_vertex_counts(curev_define, [11])
             self.make_c_extent(curev_define, current_data['bounding'])
             self.make_c_knots(curev_define, current_data['knots'])
@@ -146,16 +133,11 @@ class Susd(object):
             self.make_c_widths(curev_define, [1])
             
         return stage
-        
-        
-            
-                        
-                            
-    def create_geometry(self, data, stage=None):
+          
+    def create_model(self, data, stage=None):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
-   
         geometries = self.sort_dictionary(data)
         for geometry in geometries:
             location = geometry.replace(':', '_')  
@@ -170,23 +152,59 @@ class Susd(object):
             self.make_m_face_vertex_counts(mesh_define, current_data['vertex_count'])
             self.make_m_face_vertex_indices(mesh_define, current_data['vertex_list'])
             self.make_m_points(mesh_define, current_data['vertices'])
+        return stage
 
-        return  stage
-            
-
+    def create_uv(self, data, stage=None):
+        if not stage:
+            layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
+            stage = Usd.Stage.Open(layer)
+        geometries = self.sort_dictionary(data)
+        for geometry in geometries:
+            location = geometry.replace(':', '_')  
+            sdf_path = Sdf.Path(location.replace('|', '/'))
+            current_data = data[geometry]
+            for path in sdf_path.GetPrefixes():
+                UsdGeom.Xform.Define(stage, path)
+            mesh_define = UsdGeom.Mesh.Define(stage, sdf_path.GetPrefixes()[-1])
+            uv_sets = self.sort_dictionary(current_data)
+            for index, uv_set in enumerate(uv_sets):
+                uv_d = current_data[uv_set]
+                uv_points = []
+                for x in range(len(uv_d['u_array'])):
+                    uv_points.append((uv_d['u_array'][x], uv_d['u_array'][x]))
+                current_set = 'st'
+                if index>0:
+                    current_set = uv_set
+                uv_data = [uv_points, uv_d['uv_ids']]
+                self.make_uv_points_ids(mesh_define, current_set, uv_data)
+        return stage  
 
     
     def create_preview_surface(self, data, output_path, time_stamp):
         pass
     
-    
     def create_surface(self, data, output_path, time_stamp):
         pass
     
+    def create_model_usd(self, root, data, show=False):
+        stage = self.create_model(data['mesh'], stage=None)
+        stage = self.create_curve(data['curve'], stage=stage)
+        if show:
+            print stage.GetRootLayer().ExportToString()
+        stage.Save()
+          
+    def create_uv_usd(self, root, data, show=False):
+        print 'sssssssssssssssssssssssssss'
+        stage = self.create_uv(data['mesh'], stage=None)
+        if show:
+            print stage.GetRootLayer().ExportToString()
+        stage.Save()       
 
     def sort_dictionary(self, dictionary):
         sorted_data = {}
         for contents in dictionary:
+            if not isinstance(dictionary[contents], dict):
+                continue
             sorted_data.setdefault(
                 dictionary[contents]['order'], []).append(contents)
         order = sum(sorted_data.values(), [])

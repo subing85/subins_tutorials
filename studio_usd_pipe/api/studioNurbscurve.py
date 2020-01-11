@@ -86,7 +86,7 @@ class Nurbscurve(studioMaya.Maya):
         self.freeze_transformations(mfn_dependency_node.object())
         return mfn_dependency_node
 
-    def get_data(self, mobject):
+    def get_curve_data(self, mobject):
         transform_curve = self.extract_transform_primitive(
             OpenMaya.MFn.kCurve, root_mobject=mobject)               
         data = {}            

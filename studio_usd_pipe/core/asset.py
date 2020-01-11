@@ -66,32 +66,34 @@ class Asset(object):
             self.caption,
             self.subfield,
             self.version
-            )        
+            )
+          
         self.make_root()
         
         if self.subfield == 'model':
-            self.make_maya_model()
+            self.make_maya_model(force=True)
             self.make_thumbnail()
             self.make_studio_model()                       
             self.make_model_usd()
             # self.make_model_active_usd()
             self.make_maya()
-            print 'dddddddddddddddddddddddd'         
             
         if self.subfield == 'uv':
-            self.make_maya_model()
+            self.make_maya_model(force=False)
             self.make_thumbnail()            
-            self.make_uv()
+            self.make_studio_uv()
             self.make_uv_usd()
-            self.make_uv_active_usd()
+            # self.make_uv_active_usd()
+            self.make_maya()
             
         if self.subfield == 'surface':
-            self.make_maya_model()
+            self.make_maya_model(force=False)
             self.make_thumbnail()            
-            self.make_surface()
+            self.make_studio_surface()
             self.make_surface_usd()
-            self.make_surface_active_usd()  
-                      
+            # self.make_surface_active_usd()  
+            self.make_maya()
+                     
         if self.subfield == 'puppet':
             self.make_maya_model()
             self.make_thumbnail()            
@@ -105,10 +107,31 @@ class Asset(object):
 
                     
     def release(self, bundle, stamped_time):
-        pass    
+        import json
+        from pymel import core
+        
+        attribute = core.PyNode('model.USD_UserExportedAttributesJson')
+        
+        data = {
+            "scaption": {
+                "usdAttrType": "primvar", 
+                "usdAttrName": "scaption", 
+                "interpolation": "uniform"
+            }, 
+            "hello": {
+                "translateMayaDoubleToUsdSinglePrecision": True, 
+                "usdAttrType": "primvar", 
+                "usdAttrName": "hello", 
+                "interpolation": "uniform"
+            }
+        }
+
+        attribute.set(json.dumps(data))
+
+  
     
     
-    def make_maya_model(self):
+    def make_maya_model(self, force=False):
         '''
             import time
             from studio_usd_pipe.core import asset
@@ -138,7 +161,7 @@ class Asset(object):
             'node': 'model',
             'world': 'world'
             }        
-        self.mpack.create_model(inputs)
+        self.mpack.create_model(inputs, force=force)
          
     def make_thumbnail(self):
         inputs = {
@@ -174,7 +197,7 @@ class Asset(object):
             'force': True
             }        
         usd = self.mpack.create_model_usd(inputs)
-        self.data['usd'] = usd    
+        self.data['model_usd'] = usd    
         
     
     def make_model_active_usd(self):
@@ -190,46 +213,50 @@ class Asset(object):
             'force': True
             }        
         maya_file = self.mpack.create_maya(inputs)
-        self.data['maya_file'] = maya_file    
+        self.data['maya_file'] = maya_file
         
-    
-
-
-    def make_source_images(self):
-        pass
-    
-    def make_model(self):
-        pass
-    
-    def make_uv(self):
-        pass
-    
-    def make_surface(self):
-        pass
-    
-    def make_puppet(self):
-        pass
-    
-
-    def make_uv_usd(self):
-        pass
+        
+    def make_studio_uv(self):
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            'force': True
+            }       
+        studio_uv = self.mpack.create_studio_uv(inputs)
+        self.data['studio_uv'] = studio_uv
+        
+    def make_uv_usd(self):   
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            'force': True
+            }        
+        usd = self.mpack.create_uv_usd(inputs)
+        print usd
+        self.data['uv_usd'] = usd
+        
+    def make_studio_surface(self):
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            'force': True
+            }       
+        studio_surface = self.mpack.create_studio_surface(inputs)
+        self.data['studio_surface'] = studio_surface     
+        
         
     def make_surface_usd(self):
-        pass  
-    
-    def make_puppet_usd(self):
-        pass    
-    
+        pass       
 
 
-    def make_uv_active_usd(self):
-        pass
-        
-    def make_surface_active_usd(self):
-        pass  
-    
-    def make_puppet_active_usd(self):
-        pass
+
+
     
     def make_root(self):
         if os.path.isdir(self.publish_path):

@@ -139,7 +139,7 @@ class Model(studioMaya.Maya):
             except Exception as error:
                 print '\nDeleteError', error
                                   
-    def get_data(self, mobject):
+    def get_model_data(self, mobject):
         transform_mesh = self.extract_transform_primitive(
             OpenMaya.MFn.kMesh, root_mobject=mobject)
         data = {}
@@ -147,4 +147,17 @@ class Model(studioMaya.Maya):
             model_data = self.get_kmodel(transform_mesh[x])
             model_data['order'] = x
             data.setdefault(transform_mesh[x].fullPathName(), model_data)            
-        return data    
+        return data
+    
+    def get_uv_data(self, mobject):
+        transform_mesh = self.extract_transform_primitive(
+            OpenMaya.MFn.kMesh, root_mobject=mobject)
+        data = {}
+        for x in range(transform_mesh.length()):
+            model_data = self.get_kuv(transform_mesh[x])
+            model_data['order'] = x
+            data.setdefault(transform_mesh[x].fullPathName(), model_data)            
+        return data
+    
+  
+          
