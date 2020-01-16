@@ -8,7 +8,9 @@ reload(studioMaya)
 class Shader(studioMaya.Maya):
     
     def __init__(self):
-        studioMaya.Maya.__init__(self)  
+        # studioMaya.Maya.__init__(self) 
+        super(Shader, self).__init__()
+         
 
     def assign_shading_engine(self, mobject, shading_group=None):
         if not shading_group:            
@@ -55,7 +57,7 @@ class Shader(studioMaya.Maya):
             components.append(node)
         return components    
     
-    def get_kshader_nodes(self, mobject):        
+    def get_kmaterial_nodes(self, mobject):        
         mit_dependency_graph = OpenMaya.MItDependencyGraph(
             mobject,
             OpenMaya.MItDependencyGraph.kUpstream,
@@ -81,11 +83,11 @@ class Shader(studioMaya.Maya):
             mit_dependency_graph.next()
         return mobject_array
     
-    def get_kpreviewshader(self, mobject):
+    def get_kpreviewmaterial(self, mobject):
         '''
             :param mobject <OpenMaya.MObject> shading engine
         '''
-        shader, attribute = self.get_material(mobject)
+        shader, attribute = self.get_shader(mobject)
         mobject = self.get_mobject(shader)
         mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)        
         attributes = {
@@ -115,7 +117,7 @@ class Shader(studioMaya.Maya):
         '''
             :param mobject <OpenMaya.MObject> shading engine
         '''
-        mobject_array = self.get_kshader_nodes(mobject)        
+        mobject_array = self.get_kmaterial_nodes(mobject)        
         node_data = {} 
         for x in range (mobject_array.length()):
             mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject_array[x])
@@ -129,7 +131,7 @@ class Shader(studioMaya.Maya):
             contents['type'] = mfn_dependency_node.typeName()
             contents['name'] = mfn_dependency_node.name()
             node_data.setdefault(mfn_dependency_node.name(), contents)
-        shader, attribute = self.get_material(mobject)
+        shader, attribute = self.get_shader(mobject)
         data = {
             'nodes': node_data,
             'surface': {
@@ -139,7 +141,7 @@ class Shader(studioMaya.Maya):
             }
         return data
     
-    def get_material(self, mobject):
+    def get_shader(self, mobject):
         '''
             :param mobject <OpenMaya.MObject> shading engine
         '''        
@@ -159,13 +161,18 @@ class Shader(studioMaya.Maya):
             OpenMaya.MFn.kMesh, root_mobject=mobject)
         data = {}
         for x in range(transform_mesh.length()):
-            print transform_mesh[x].fullPathName()
             child = self.get_shape_node(transform_mesh[x])
-            shader_engines = self.get_shading_engines(child.node())
-            print self.get_name(shader_engines[0])            
+            shader_engines = self.get_shading_engines(child.node())            
+            if not shader_engines.length():
+                continue            
+            mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_engines[0])
+            mfn_dependency_node.name()
+            if mfn_dependency_node.name() in data:
+                data[mfn_dependency_node.name()].setdefault(
+                    'geometries', []).append(transform_mesh[x].fullPathName())
+                continue
             model_data = self.get_kshader(shader_engines[0])
             model_data['order'] = x
-            data.setdefault(transform_mesh[x].fullPathName(), model_data) 
-            
-                       
+            model_data['geometries'] = [transform_mesh[x].fullPathName()]
+            data.setdefault(mfn_dependency_node.name(), model_data)
         return data          

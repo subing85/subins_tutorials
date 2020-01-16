@@ -7,7 +7,10 @@ from pxr import Gf
 from pxr import Sdf
 from pxr import Usd
 from pxr import UsdGeom
+from pxr import UsdShade
 from maya import OpenMaya        
+from __builtin__ import None
+from dns.rdataclass import NONE
 
 
 class Susd(object):
@@ -180,11 +183,59 @@ class Susd(object):
         return stage  
 
     
-    def create_preview_surface(self, data, output_path, time_stamp):
+    def create_preview_surface(self, data, stage=None):
         pass
-    
-    def create_surface(self, data, output_path, time_stamp):
-        pass
+
+            
+    def create_surface(self, root, data, stage=None):
+        if not stage:
+            layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
+            stage = Usd.Stage.Open(layer)
+        materials = self.sort_dictionary(data)
+        # make geomery hierarchy
+        for material in materials:
+            for geometry in data[material]['geometries']:
+                sdf_path = Sdf.Path(geometry.replace('|', '/'))                
+                for path in sdf_path.GetPrefixes():
+                    UsdGeom.Xform.Define(stage, path)
+                mesh_define = UsdGeom.Mesh.Define(stage, sdf_path.GetPrefixes()[-1])
+                
+        # make materials
+        look_path = Sdf.Path('/{}/Looks'.format(root))                     
+        UsdGeom.Scope.Define(stage, look_path)
+        for material in materials:
+            contents = data[material]
+            material_path = look_path.AppendPath(material)    
+            UsdShade.Material.Define(stage, material_path)
+            for node, node_contents in contents['nodes'].items():
+                shader_path = material_path.AppendPath(node)
+                shader_define = UsdShade.Shader.Define(stage, shader_path)
+                shader_define.CreateIdAttr(node_contents['type'])               
+                                     
+                if 'parameters' not in node_contents:
+                    continue            
+                print  '\n', node          
+                for parameter, parameter_contents in node_contents['parameters'].items():            
+                    current_type, current_value = self.get_prameter_values(
+                        parameter_contents['type'],
+                        parameter_contents['value']
+                        )
+                    if not current_type:
+                        print '\t', parameter, parameter_contents['type']
+                        print '\t', current_type, current_value
+                        print '\t', type(current_type)                
+                        raise Exception('function get_prameter_values need to update')
+            
+
+            
+            shader_define.CreateInput(parameter, current_type).Set(current_value)
+                  
+        
+                                             
+                                     
+                                     
+        print stage.GetRootLayer().ExportToString()
+
     
     def create_model_usd(self, root, data, show=False):
         stage = self.create_model(data['mesh'], stage=None)
@@ -194,12 +245,56 @@ class Susd(object):
         stage.Save()
           
     def create_uv_usd(self, root, data, show=False):
-        print 'sssssssssssssssssssssssssss'
         stage = self.create_uv(data['mesh'], stage=None)
         if show:
             print stage.GetRootLayer().ExportToString()
-        stage.Save()       
-
+        stage.Save()
+        
+    def create_surface_usd(self, root, data, show=False):
+        
+        return
+        stage = self.create_surface(root, data['surface'], stage=None)
+        
+        return
+        if show:
+            print stage.GetRootLayer().ExportToString()
+        stage.Save()
+        
+    
+    def get_prameter_values(self, type, value):
+        current_type = None
+        current_value = None   
+        
+        
+        if type=='StringAttr':
+            current_type = Sdf.ValueTypeNames.String
+            if os.path.isabs(value):
+                current_type = Sdf.ValueTypeNames.Asset
+            current_value = value 
+            
+        if  type=='IntAttr':
+            current_type = Sdf.ValueTypeNames.Int
+            current_value = value
+            
+        if  type=='FloatAttr':
+            current_type = Sdf.ValueTypeNames.Float
+            current_value = value
+               
+        if type=='2FloatAttr':
+            current_type = Sdf.ValueTypeNames.Float2
+            current_value =  Gf.Vec2f(value)     
+                       
+        if type=='3FloatAttr':
+            current_type = Sdf.ValueTypeNames.Color3f
+            current_value = Gf.Vec3f(value)
+        
+            
+        
+        return current_type, current_value
+        
+        
+        
+        
     def sort_dictionary(self, dictionary):
         sorted_data = {}
         for contents in dictionary:

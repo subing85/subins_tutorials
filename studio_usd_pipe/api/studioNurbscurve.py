@@ -8,7 +8,9 @@ reload(resource)
 class Nurbscurve(studioMaya.Maya):
     
     def __init__(self):
-        studioMaya.Maya.__init__(self)        
+        # studioMaya.Maya.__init__(self)  
+        super(Nurbscurve, self).__init__()
+      
         
     def create_world(self, mfn_dag_node, parent=False):
         parent_node = OpenMaya.MFnDependencyNode(mfn_dag_node.object())

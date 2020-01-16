@@ -10,7 +10,9 @@ reload(studioMaya)
 class Model(studioMaya.Maya):
     
     def __init__(self):
-        studioMaya.Maya.__init__(self)
+        # studioMaya.Maya.__init__(self)
+        super(Model, self).__init__()
+
          
     def get_ktransform(self, mobject):
         mfn_transform = OpenMaya.MFnTransform(mobject)        

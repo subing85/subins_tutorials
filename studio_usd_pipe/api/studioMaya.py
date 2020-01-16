@@ -508,6 +508,7 @@ class Maya(object):
         for x in range(mplug_array.length()):
             attribute = mplug_array[x].attribute()
             
+            print mplug_array[x].name(), attribute.apiTypeStr()
             
 
             #===================================================================
@@ -527,6 +528,7 @@ class Maya(object):
             value, type = 'null', None
             attribute = mplug_array[x].attribute()
             api_type = attribute.apiType() 
+            
             if api_type in attribute_types['distance']:
                 value, type = self.klinear_attribute(mplug_array[x])                
             if api_type in attribute_types['angle']:
@@ -594,7 +596,9 @@ class Maya(object):
         attributes = self.list_attributes(object)        
         normal_attributes = []
         remove_attributes = []        
-        for attribute in attributes:   
+        for attribute in attributes: 
+            if object=='file1':
+                print   attribute
             mplug = self.get_mplug('%s.%s'%(object, attribute))
             attr_mobject = mplug.attribute()            
             if mplug.isElement():
@@ -632,7 +636,8 @@ class Maya(object):
     
     def list_attributes(self, node):
         mcommand_result = OpenMaya.MCommandResult()       
-        mel_command = 'listAttr -r -c -w -o -u -m -hd  \"%s\"' % node 
+        # mel_command = 'listAttr -r -c -w -o -u -m -hd  \"%s\"' % node 
+        mel_command = 'listAttr -r -c -w -u -m -hd  \"%s\"' % node 
         OpenMaya.MGlobal.executeCommand(
             mel_command, mcommand_result, False, True)
         attributes = []

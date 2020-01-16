@@ -236,7 +236,6 @@ class Asset(object):
             'force': True
             }        
         usd = self.mpack.create_uv_usd(inputs)
-        print usd
         self.data['uv_usd'] = usd
         
     def make_studio_surface(self):
@@ -252,8 +251,15 @@ class Asset(object):
         
         
     def make_surface_usd(self):
-        pass       
-
+        inputs = {
+            'node': 'model',
+            'output_directory': self.publish_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            'force': True
+            }        
+        usd = self.mpack.create_surface_usd(inputs)
+        self.data['uv_usd'] = usd
 
 
 
