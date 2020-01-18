@@ -9,8 +9,6 @@ from pxr import Usd
 from pxr import UsdGeom
 from pxr import UsdShade
 from maya import OpenMaya        
-from __builtin__ import None
-from dns.rdataclass import NONE
 
 
 class Susd(object):
@@ -185,28 +183,29 @@ class Susd(object):
     
     def create_preview_surface(self, data, stage=None):
         pass
-
-            
+    
+           
     def create_surface(self, root, data, stage=None):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
-        materials = self.sort_dictionary(data)
+
         # make geomery hierarchy
-        for material in materials:
+        for material in data:            
             for geometry in data[material]['geometries']:
                 sdf_path = Sdf.Path(geometry.replace('|', '/'))                
                 for path in sdf_path.GetPrefixes():
                     UsdGeom.Xform.Define(stage, path)
                 mesh_define = UsdGeom.Mesh.Define(stage, sdf_path.GetPrefixes()[-1])
                 
-        # make materials
         look_path = Sdf.Path('/{}/Looks'.format(root))                     
         UsdGeom.Scope.Define(stage, look_path)
-        for material in materials:
+        materials = self.sort_dictionary(data)        
+        for material in materials: # make materials
             contents = data[material]
             material_path = look_path.AppendPath(material)    
             UsdShade.Material.Define(stage, material_path)
+            # make shader and attributes
             for node, node_contents in contents['nodes'].items():
                 shader_path = material_path.AppendPath(node)
                 shader_define = UsdShade.Shader.Define(stage, shader_path)
@@ -214,7 +213,7 @@ class Susd(object):
                                      
                 if 'parameters' not in node_contents:
                     continue            
-                print  '\n', node          
+
                 for parameter, parameter_contents in node_contents['parameters'].items():            
                     current_type, current_value = self.get_prameter_values(
                         parameter_contents['type'],
@@ -225,16 +224,47 @@ class Susd(object):
                         print '\t', current_type, current_value
                         print '\t', type(current_type)                
                         raise Exception('function get_prameter_values need to update')
-            
+                    shader_define.CreateInput(parameter, current_type).Set(current_value)
+                    
+        # shader connections
+        for material, contents in data.items():
+            for node, node_contents in contents['nodes'].items(): 
+                if 'connections' not in node_contents:
+                    continue               
+                for parameter, connection_contents in node_contents['connections'].items():
+                    source_attribute, source_node = connection_contents['value'].split('@')
+                    
+                    shader_path = look_path.AppendPath('%s/%s'%(material, node))
+                    source_path = look_path.AppendPath('%s/%s'%(material, source_node))
+                    shader_define = UsdShade.Shader.Define(stage, shader_path)
+                    source_define = UsdShade.Shader.Define(stage, source_path)
+                    
+                    current_type, current_value = self.get_prameter_values(
+                        connection_contents['type'],
+                        None
+                        )
+                    shader_input = shader_define.CreateInput(parameter, current_type)
+                    shader_input.ConnectToSource(source_define, source_attribute)
 
-            
-            shader_define.CreateInput(parameter, current_type).Set(current_value)
-                  
-        
-                                             
-                                     
-                                     
-        print stage.GetRootLayer().ExportToString()
+        for material in data:
+            # material assignments
+            material_path = look_path.AppendPath(material)    
+            material_define = UsdShade.Material.Define(stage, material_path)
+            for geometry in data[material]['geometries']:
+                sdf_path = Sdf.Path(geometry.replace('|', '/'))
+                mesh_define = UsdGeom.Mesh.Define(stage, sdf_path) 
+                UsdShade.MaterialBindingAPI(mesh_define).Bind(material_define)           
+                
+            # material to shader connection                        
+            shader = data[material]['surface']['shader']
+            attribute = data[material]['surface']['attribute']    
+            shader_path = look_path.AppendPath('%s/%s'%(material, shader))     
+            material_define = UsdShade.Material.Define(stage, material_path)
+            shader_define = UsdShade.Shader.Define(stage, shader_path)
+            shader_output = material_define.CreateOutput('ri:surface', Sdf.ValueTypeNames.Token)
+            shader_output.ConnectToSource(shader_define, attribute)
+    
+        return stage
 
     
     def create_model_usd(self, root, data, show=False):
@@ -251,13 +281,11 @@ class Susd(object):
         stage.Save()
         
     def create_surface_usd(self, root, data, show=False):
-        
-        return
         stage = self.create_surface(root, data['surface'], stage=None)
-        
-        return
+
         if show:
             print stage.GetRootLayer().ExportToString()
+        print stage.GetRootLayer().ExportToString()
         stage.Save()
         
     
@@ -268,25 +296,30 @@ class Susd(object):
         
         if type=='StringAttr':
             current_type = Sdf.ValueTypeNames.String
-            if os.path.isabs(value):
-                current_type = Sdf.ValueTypeNames.Asset
-            current_value = value 
+            if value:
+                if os.path.isabs(value):
+                    current_type = Sdf.ValueTypeNames.Asset
+                current_value = value 
             
         if  type=='IntAttr':
             current_type = Sdf.ValueTypeNames.Int
-            current_value = value
+            if value:
+                current_value = value
             
         if  type=='FloatAttr':
             current_type = Sdf.ValueTypeNames.Float
-            current_value = value
+            if value:
+                current_value = value
                
         if type=='2FloatAttr':
             current_type = Sdf.ValueTypeNames.Float2
-            current_value =  Gf.Vec2f(value)     
+            if value:
+                current_value =  Gf.Vec2f(value)     
                        
         if type=='3FloatAttr':
             current_type = Sdf.ValueTypeNames.Color3f
-            current_value = Gf.Vec3f(value)
+            if value:
+                current_value = Gf.Vec3f(value)
         
             
         

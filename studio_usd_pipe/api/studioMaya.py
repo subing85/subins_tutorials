@@ -18,6 +18,34 @@ class Maya(object):
         self.scene_mobjects = OpenMaya.MObjectArray()        
         self.node_data = resource.getNodeData()
         
+        self.attribute_types = {
+            'distance': [
+                OpenMaya.MFn.kDoubleLinearAttribute,
+                OpenMaya.MFn.kFloatLinearAttribute
+                ],
+            'angle': [    
+                OpenMaya.MFn.kDoubleAngleAttribute,
+                OpenMaya.MFn.kFloatAngleAttribute
+                ],
+            'typed': [
+                OpenMaya.MFn.kTypedAttribute
+                ],
+            'matrix': [
+                OpenMaya.MFn.kMatrixAttribute
+                ],
+            'numeric': [
+                OpenMaya.MFn.kNumericAttribute 
+                ],
+            'enum': [   
+                OpenMaya.MFn.kEnumAttribute
+                ],
+            '3float': [
+                OpenMaya.MFn.kAttribute3Float,
+                OpenMaya.MFn.kAttribute3Double,
+                # OpenMaya.MFn.kCompoundAttribute                
+                ]
+            }          
+        
     def is_dagpath(self, mobject):           
         mobject = self.get_mobject(mobject)
         result = None
@@ -123,8 +151,6 @@ class Maya(object):
             nodes.append(name)            
         mcommand_result = OpenMaya.MCommandResult()     
         mel_command = 'delete %s' % ' '.join(nodes) 
-        
-        print mel_command
         OpenMaya.MGlobal.executeCommand(
             mel_command, mcommand_result, False, True)
         results = []
@@ -312,8 +338,6 @@ class Maya(object):
                 )  
             
     def set_locked(self, mobject, attributes=None, locked=True):
-        
-        print '\n-------------', mobject, '\n-------------------'
         if not attributes:
             attributes = [
                 'translateX', 'translateY', 'translateZ',
@@ -444,10 +468,16 @@ class Maya(object):
         data = {}
         for input in inputs:            
             output = self.output_connections(input)            
+            output_mplug = self.get_mplug(output)
+            value, type = self.get_attribute_type(output_mplug)
+            
+            if not type:
+                continue
+            
             output_attribute = output.split('.')[1]
             input_node, input_attribute = input.split('.')            
             data[output_attribute] = {
-                'type': 'StringAttr',
+                'type': type,
                 'value': '{}@{}'.format(input_attribute, input_node)
                 }
         return data    
@@ -469,46 +499,50 @@ class Maya(object):
         if outputs:        
             return outputs[0]
         return None
+    
+    
+    def get_attribute_type(self, mplug):
+        attribute = mplug.attribute()
+        value, type = 'null', None        
+        if attribute.apiType() in self.attribute_types['distance']:
+            value, type = self.klinear_attribute(mplug)                
+        if attribute.apiType() in self.attribute_types['angle']:
+            value, type = self.kangle_attribute(mplug)   
+        if attribute.apiType() in self.attribute_types['typed']:
+            value, type = self.ktyped_attribute(mplug, attribute)  
+        if attribute.apiType() in self.attribute_types['matrix']:
+            value, type = self.kmatrix_attribute(mplug)
+        if attribute.apiType() in self.attribute_types['numeric']:
+            value, type = self.knumeric_attribute(mplug, attribute)            
+        if attribute.apiType() in self.attribute_types['enum']:
+            value, type = self.kenum_attribute(mplug)
+        if attribute.apiType() in self.attribute_types['3float']:
+            value, type = self.k3folat_attribute(mplug)
+        return value, type  
+            
             
     def get_attributes(self, object, default=False):
         '''
             :param mobject <str> shading dependency node
             :param default <bool> False ignore default value 
         '''        
-        attribute_types = {
-            'distance': [
-                OpenMaya.MFn.kDoubleLinearAttribute,
-                OpenMaya.MFn.kFloatLinearAttribute
-                ],
-            'angle': [    
-                OpenMaya.MFn.kDoubleAngleAttribute,
-                OpenMaya.MFn.kFloatAngleAttribute
-                ],
-            'typed': [
-                OpenMaya.MFn.kTypedAttribute
-                ],
-            'matrix': [
-                OpenMaya.MFn.kMatrixAttribute
-                ],
-            'numeric': [
-                OpenMaya.MFn.kNumericAttribute 
-                ],
-            'enum': [   
-                OpenMaya.MFn.kEnumAttribute
-                ],
-            '3float': [
-                OpenMaya.MFn.kAttribute3Float,
-                OpenMaya.MFn.kAttribute3Double,
-                # OpenMaya.MFn.kCompoundAttribute                
-                ]
-            }        
+      
         data = {}
         mplug_array = self.get_mplug_attributes(object) 
         
         for x in range(mplug_array.length()):
             attribute = mplug_array[x].attribute()
+            value, type = self.get_attribute_type(mplug_array[x])
+            if value=='null':
+                continue
+            attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
+            data[attribute_name] = {
+                'value': value,
+                'type': type
+                }  
+        return data          
             
-            print mplug_array[x].name(), attribute.apiTypeStr()
+            # print mplug_array[x].name(), attribute.apiTypeStr()
             
 
             #===================================================================
@@ -523,34 +557,6 @@ class Maya(object):
             # ramp1.vWave kNumericAttribute
             #===================================================================
 
-
-     
-            value, type = 'null', None
-            attribute = mplug_array[x].attribute()
-            api_type = attribute.apiType() 
-            
-            if api_type in attribute_types['distance']:
-                value, type = self.klinear_attribute(mplug_array[x])                
-            if api_type in attribute_types['angle']:
-                value, type = self.kangle_attribute(mplug_array[x])   
-            if api_type in attribute_types['typed']:
-                value, type = self.ktyped_attribute(mplug_array[x], attribute)  
-            if api_type in attribute_types['matrix']:
-                value, type = self.kmatrix_attribute(mplug_array[x])
-            if api_type in attribute_types['numeric']:
-                value, type = self.knumeric_attribute(mplug_array[x], attribute)            
-            if api_type in attribute_types['enum']:
-                value, type = self.kenum_attribute(mplug_array[x])
-            if api_type in attribute_types['3float']:
-                value, type = self.k3folat_attribute(mplug_array[x])
-            if value == 'null':
-                continue    
-            attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
-            data[attribute_name] = {
-                'value': value,
-                'type': type
-                }  
-        return data    
     
     def _get_mplug_attributes(self, object):        
         attributes = self.list_attributes(object)        
@@ -597,8 +603,8 @@ class Maya(object):
         normal_attributes = []
         remove_attributes = []        
         for attribute in attributes: 
-            if object=='file1':
-                print   attribute
+            # if object=='file1':
+            #     print   attribute
             mplug = self.get_mplug('%s.%s'%(object, attribute))
             attr_mobject = mplug.attribute()            
             if mplug.isElement():
