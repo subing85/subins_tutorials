@@ -1,7 +1,14 @@
+import os
+
+import warnings
+
 from maya import OpenMaya
 
+from studio_usd_pipe.core import image
 from studio_usd_pipe.api import studioMaya
 
+
+reload(image)
 reload(studioMaya)
 
 
@@ -9,8 +16,7 @@ class Shader(studioMaya.Maya):
     
     def __init__(self):
         # studioMaya.Maya.__init__(self) 
-        super(Shader, self).__init__()
-         
+        super(Shader, self).__init__()         
 
     def assign_shading_engine(self, mobject, shading_group=None):
         if not shading_group:            
@@ -171,8 +177,84 @@ class Shader(studioMaya.Maya):
                 data[mfn_dependency_node.name()].setdefault(
                     'geometries', []).append(transform_mesh[x].fullPathName())
                 continue
-            model_data = self.get_kshader(shader_engines[0])
-            model_data['order'] = x
-            model_data['geometries'] = [transform_mesh[x].fullPathName()]
-            data.setdefault(mfn_dependency_node.name(), model_data)
-        return data          
+            shader_data = self.get_kshader(shader_engines[0])
+            shader_data['order'] = x
+            shader_data['geometries'] = [transform_mesh[x].fullPathName()]
+            data.setdefault(mfn_dependency_node.name(), shader_data)
+        return data
+    
+    def get_source_image_data(self, mobject):
+        transform_mesh = self.extract_transform_primitive(
+            OpenMaya.MFn.kMesh, root_mobject=mobject)
+        data = {}        
+        for x in range(transform_mesh.length()):
+            child = self.get_shape_node(transform_mesh[x])
+            shader_engines = self.get_shading_engines(child.node())
+            if not shader_engines.length():
+                continue            
+            material_nodes = self.get_kmaterial_nodes(shader_engines[0])
+            for x in range (material_nodes.length()): 
+                mfn_dependency_node = OpenMaya.MFnDependencyNode(material_nodes[x])
+                attribute_data = self.get_source_images(mfn_dependency_node.name())
+                if not attribute_data:
+                    continue
+                data.setdefault(mfn_dependency_node.name(), attribute_data)
+        return data
+
+    def get_source_images(self, object):
+        attribute_data = {}        
+        mplug_array = self.get_mplug_attributes(object)  
+        for x in range(mplug_array.length()):
+            attribute = mplug_array[x].attribute()
+            if attribute.apiType()!=OpenMaya.MFn.kTypedAttribute:
+                continue
+            value, type = self.get_attribute_type(mplug_array[x])
+            if not os.path.isabs(value):
+                continue
+            attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
+            attribute_data[attribute_name] = {
+                'value': value,
+                'type': type
+                }                
+        return attribute_data 
+    
+    
+    def set_source_images(self, input_data, output_path):
+        data = {}
+        for node, node_contents in input_data.items():
+            for attribute, attribute_contents in node_contents.items():
+                source_image = os.path.basename(attribute_contents['value'])
+                target_path = os.path.join(output_path, source_image)
+                mplug = self.get_mplug('{}.{}'.format(node, attribute))
+                mplug.setString(target_path)
+                if node not in data:
+                    data.setdefault(node, {})
+                data[node][attribute] = {
+                    'value': target_path,
+                    'type': attribute_contents['type']
+                    }
+        return data
+    
+    
+    def create_lowres_source_images(self, input_data, output_path):
+        data = {}        
+        for node, node_contents in input_data.items():
+            for attribute, attribute_contents in node_contents.items():                
+                if not os.path.isfile(attribute_contents['value']):
+                    raise IOError('Cannot found, <%s>'%attribute_contents['value'])
+                source_image = '{}_lores.png'.format(
+                    os.path.splitext(os.path.basename(attribute_contents['value']))[0])
+                target_path = os.path.join(output_path, source_image)
+                target_path = image.image_resize(
+                    attribute_contents['value'],
+                    target_path,
+                    512,
+                    512,
+                    )          
+                if node not in data:
+                    data.setdefault(node, {})
+                data[node][attribute] = {
+                    'value': target_path,
+                    'type': attribute_contents['type']
+                    }
+        return data

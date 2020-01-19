@@ -43,7 +43,14 @@ class Maya(object):
                 OpenMaya.MFn.kAttribute3Float,
                 OpenMaya.MFn.kAttribute3Double,
                 # OpenMaya.MFn.kCompoundAttribute                
-                ]
+                ],
+            '2float': [
+                OpenMaya.MFn.kAttribute2Float,
+                OpenMaya.MFn.kAttribute2Double
+                ],
+            'ramp': [
+                OpenMaya.MFn.kCompoundAttribute                
+                ]      
             }          
         
     def is_dagpath(self, mobject):           
@@ -518,21 +525,32 @@ class Maya(object):
             value, type = self.kenum_attribute(mplug)
         if attribute.apiType() in self.attribute_types['3float']:
             value, type = self.k3folat_attribute(mplug)
-        return value, type  
+        if attribute.apiType() in self.attribute_types['2float']:
+            value, type = self.k2folat_attribute(mplug)
             
+        # add new attribute types          
+            
+        return value, type
+    
+    
+   
             
     def get_attributes(self, object, default=False):
         '''
             :param mobject <str> shading dependency node
             :param default <bool> False ignore default value 
-        '''        
-      
+        '''
+        
         data = {}
         mplug_array = self.get_mplug_attributes(object) 
         
         for x in range(mplug_array.length()):
+            print mplug_array[x].name()
+            
             attribute = mplug_array[x].attribute()
             value, type = self.get_attribute_type(mplug_array[x])
+            print '\t', value, '\t', type, '\t', mplug_array[x].attribute().apiTypeStr(), '\n'
+            
             if value=='null':
                 continue
             attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
@@ -541,21 +559,18 @@ class Maya(object):
                 'type': type
                 }  
         return data          
-            
-            # print mplug_array[x].name(), attribute.apiTypeStr()
-            
 
-            #===================================================================
-            # ramp1.colorEntryList[0].color kAttribute3Float
-            # ramp1.colorEntryList[1].position kNumericAttribute
-            # ramp1.colorEntryList[1].color kAttribute3Float
-            # ramp1.colorEntryList[2].position kNumericAttribute
-            # ramp1.colorEntryList[2].color kAttribute3Float
-            # ramp1.colorEntryList[3].position kNumericAttribute
-            # ramp1.colorEntryList[3].color kAttribute3Float
-            # ramp1.uWave kNumericAttribute
-            # ramp1.vWave kNumericAttribute
-            #===================================================================
+        #===================================================================
+        # ramp1.colorEntryList[0].color kAttribute3Float
+        # ramp1.colorEntryList[1].position kNumericAttribute
+        # ramp1.colorEntryList[1].color kAttribute3Float
+        # ramp1.colorEntryList[2].position kNumericAttribute
+        # ramp1.colorEntryList[2].color kAttribute3Float
+        # ramp1.colorEntryList[3].position kNumericAttribute
+        # ramp1.colorEntryList[3].color kAttribute3Float
+        # ramp1.uWave kNumericAttribute
+        # ramp1.vWave kNumericAttribute
+        #===================================================================
 
     
     def _get_mplug_attributes(self, object):        
@@ -672,7 +687,14 @@ class Maya(object):
         for x in range(mplug.numChildren()):
             child_mplug = mplug.child(x)
             value.append(child_mplug.asFloat())
-        return value, '3FloatAttr'        
+        return value, '3FloatAttr'   
+    
+    def k2folat_attribute(self, mplug):    
+        value = []
+        for x in range(mplug.numChildren()):
+            child_mplug = mplug.child(x)
+            value.append(child_mplug.asFloat())
+        return value, '2FloatAttr'            
 
     def knumeric_attribute(self, mplug, attribute):    
         mfn_numeric_attribute = OpenMaya.MFnNumericAttribute(attribute)

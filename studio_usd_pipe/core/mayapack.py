@@ -48,10 +48,10 @@ class Pack(studioMaya.Maya):
         input_data['smodified']['value'] = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p')          
         return input_data
     
-    def pack_exists(self, path, force):    
-        if os.path.isfile(path):      
+    def pack_exists(self, path, force): 
+        if os.path.exists(path):      
             if not force:
-                return False          
+                return True          
             os.chmod(path, 0777)
             try:
                 os.remove(path)
@@ -184,6 +184,45 @@ class Pack(studioMaya.Maya):
                 width=inputs['width'],
                 height=inputs['height'],
                 )            
+        return output_path
+    
+    def create_source_images(self, inputs):
+        '''
+            import time
+            from studio_usd_pipe.core import mayapack
+            reload(mayapack)
+            mpack = mayapack.Pack()
+            inputs = {
+                'node': 'model',
+                'output_directory': '/venture/shows/my_hero/assets/batman/surface/0.0.0/',
+                'caption': 'batman',
+                'force': True       
+                }     
+            mpack.create_source_images(inputs)          
+        '''
+        output_path = os.path.join(
+            inputs['output_directory'],
+            '{}.sourceimage'.format(inputs['caption'])
+            )  
+
+        premission = self.pack_exists(output_path, inputs['force'])
+        if not premission:
+            raise IOError('Cannot save, already file found <%s>'%output_path)
+        
+        source_image_path = os.path.join(
+            inputs['output_directory'], 'source_images')
+                
+        mobject = self.get_mobject(inputs['node'])
+        input_data = self.shader.get_source_image_data(mobject)
+        output_data = self.shader.set_source_images(input_data, source_image_path)
+        lowres_data = self.shader.create_lowres_source_images(input_data, source_image_path)  
+        final_data = {
+            'input': input_data,
+            'output': output_data,
+            'lowres': lowres_data
+            } 
+        with (open(output_path, 'w')) as content:
+            content.write(json.dumps(final_data, indent=4))
         return output_path
         
     def create_studio_model(self, inputs):

@@ -219,11 +219,16 @@ class Susd(object):
                         parameter_contents['type'],
                         parameter_contents['value']
                         )
-                    if not current_type:
-                        print '\t', parameter, parameter_contents['type']
+                    
+                    if not current_type or current_value=='null':
+                        print '#need to update attribute configure'
+                        print '\t', parameter, parameter_contents['type'], parameter_contents['value']
                         print '\t', current_type, current_value
                         print '\t', type(current_type)                
                         raise Exception('function get_prameter_values need to update')
+                    
+                    print '\t\t>>>>>', current_type, parameter_contents['value']
+                    
                     shader_define.CreateInput(parameter, current_type).Set(current_value)
                     
         # shader connections
@@ -289,45 +294,35 @@ class Susd(object):
         stage.Save()
         
     
-    def get_prameter_values(self, type, value):
+    def get_prameter_values(self, attribute_type, attribute_value):
         current_type = None
-        current_value = None   
-        
-        
-        if type=='StringAttr':
+        current_value = 'null'           
+        if attribute_type=='StringAttr':
             current_type = Sdf.ValueTypeNames.String
-            if value:
-                if os.path.isabs(value):
+            if attribute_value:
+                if os.path.isabs(attribute_value):
                     current_type = Sdf.ValueTypeNames.Asset
-                current_value = value 
-            
-        if  type=='IntAttr':
-            current_type = Sdf.ValueTypeNames.Int
-            if value:
-                current_value = value
-            
-        if  type=='FloatAttr':
+                current_value = attribute_value 
+        if  attribute_type=='IntAttr':
+            current_type = Sdf.ValueTypeNames.Int            
+            if isinstance(attribute_value, bool):
+                current_value = int(attribute_value)
+            else:
+                current_value = int(attribute_value)                
+        if  attribute_type=='FloatAttr':
             current_type = Sdf.ValueTypeNames.Float
-            if value:
-                current_value = value
-               
-        if type=='2FloatAttr':
+            if attribute_value:
+                current_value = attribute_value
+        if attribute_type=='2FloatAttr':
             current_type = Sdf.ValueTypeNames.Float2
-            if value:
-                current_value =  Gf.Vec2f(value)     
-                       
-        if type=='3FloatAttr':
+            if attribute_value:
+                current_value =  Gf.Vec2f(attribute_value)     
+        if attribute_type=='3FloatAttr':
             current_type = Sdf.ValueTypeNames.Color3f
-            if value:
-                current_value = Gf.Vec3f(value)
-        
-            
-        
+            if attribute_value:
+                current_value = Gf.Vec3f(attribute_value)
         return current_type, current_value
-        
-        
-        
-        
+
     def sort_dictionary(self, dictionary):
         sorted_data = {}
         for contents in dictionary:
