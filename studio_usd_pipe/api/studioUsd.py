@@ -111,7 +111,17 @@ class Susd(object):
     def make_c_widths(self, define, data):
         widths = define.CreateWidthsAttr()
         widths_value = Vt.FloatArray(data)
-        widths.Set(widths_value)      
+        widths.Set(widths_value)
+        
+        
+    def create_asset_ids(self, stage, root, data):
+        define = UsdGeom.Xform.Define(stage, '/{}'.format(root))
+        ids = self.sort_dictionary(data)
+        for id in ids:
+            primvar = define.CreatePrimvar(id, Sdf.ValueTypeNames.String)
+            primvar.Set(data[id]['value'])
+            primvar.SetInterpolation('constant')
+        return stage
 
     def create_curve(self, data, stage=None):
         if not stage:
@@ -270,27 +280,29 @@ class Susd(object):
             shader_output.ConnectToSource(shader_define, attribute)
     
         return stage
-
     
+    
+   
     def create_model_usd(self, root, data, show=False):
         stage = self.create_model(data['mesh'], stage=None)
         stage = self.create_curve(data['curve'], stage=stage)
+        stage = self.create_asset_ids(stage, root, data['asset_id'])
         if show:
             print stage.GetRootLayer().ExportToString()
         stage.Save()
           
     def create_uv_usd(self, root, data, show=False):
         stage = self.create_uv(data['mesh'], stage=None)
+        stage = self.create_asset_ids(stage, root, data['asset_id'])
         if show:
             print stage.GetRootLayer().ExportToString()
         stage.Save()
         
     def create_surface_usd(self, root, data, show=False):
         stage = self.create_surface(root, data['surface'], stage=None)
-
+        stage = self.create_asset_ids(stage, root, data['asset_id'])
         if show:
             print stage.GetRootLayer().ExportToString()
-        print stage.GetRootLayer().ExportToString()
         stage.Save()
         
     

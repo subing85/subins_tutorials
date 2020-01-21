@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import warnings
 
@@ -216,21 +217,25 @@ class Shader(studioMaya.Maya):
                 'value': value,
                 'type': type
                 }                
-        return attribute_data 
+        return attribute_data    
     
-    
-    def set_source_images(self, input_data, output_path):
+    def set_source_images(self, input_data, temp_output_path, output_path):
         data = {}
         for node, node_contents in input_data.items():
             for attribute, attribute_contents in node_contents.items():
                 source_image = os.path.basename(attribute_contents['value'])
                 target_path = os.path.join(output_path, source_image)
+                temp_target_path = os.path.join(temp_output_path, source_image)
+                if not os.path.isdir(os.path.dirname(temp_target_path)):
+                    os.makedirs(os.path.dirname(temp_target_path))
+                shutil.copy2(attribute_contents['value'], temp_target_path)
                 mplug = self.get_mplug('{}.{}'.format(node, attribute))
                 mplug.setString(target_path)
                 if node not in data:
                     data.setdefault(node, {})
                 data[node][attribute] = {
                     'value': target_path,
+                    'temp_value': temp_target_path,                    
                     'type': attribute_contents['type']
                     }
         return data

@@ -194,7 +194,8 @@ class Pack(studioMaya.Maya):
             mpack = mayapack.Pack()
             inputs = {
                 'node': 'model',
-                'output_directory': '/venture/shows/my_hero/assets/batman/surface/0.0.0/',
+                'publish_directory': '/venture/shows/my_hero/assets/batman/surface/0.0.0/',
+                'output_directory': '/usr/tmp/studio_asset'
                 'caption': 'batman',
                 'force': True       
                 }     
@@ -209,13 +210,16 @@ class Pack(studioMaya.Maya):
         if not premission:
             raise IOError('Cannot save, already file found <%s>'%output_path)
         
+        temp_source_image_path = os.path.join(
+            inputs['output_directory'], 'source_images')                       
+        
         source_image_path = os.path.join(
-            inputs['output_directory'], 'source_images')
-                
+            inputs['publish_directory'], 'source_images')
+                                
         mobject = self.get_mobject(inputs['node'])
         input_data = self.shader.get_source_image_data(mobject)
-        output_data = self.shader.set_source_images(input_data, source_image_path)
-        lowres_data = self.shader.create_lowres_source_images(input_data, source_image_path)  
+        output_data = self.shader.set_source_images(input_data, temp_source_image_path, source_image_path)
+        lowres_data = self.shader.create_lowres_source_images(input_data, temp_source_image_path)  
         final_data = {
             'input': input_data,
             'output': output_data,
@@ -223,7 +227,14 @@ class Pack(studioMaya.Maya):
             } 
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
-        return output_path
+        source_images = []        
+        for node in output_data:
+            for attribute in output_data[node]:
+                source_images.append(output_data[node][attribute]['temp_value'])
+        for node in lowres_data:
+            for attribute in lowres_data[node]:
+                source_images.append(lowres_data[node][attribute]['value']) 
+        return output_path, source_images
         
     def create_studio_model(self, inputs):
         '''
@@ -256,40 +267,8 @@ class Pack(studioMaya.Maya):
             }      
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
-        return output_path        
+        return output_path       
 
-    def create_model_usd(self, inputs):
-        '''
-            import time
-            from studio_usd_pipe.core import mayapack
-            reload(mayapack)
-            mpack = mayapack.Pack()
-            inputs = {
-                'node': 'model',
-                'output_directory': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
-                'caption': 'batman',
-                'force': True                
-                }     
-            mpack.create_model_usd(inputs)       
-        '''
-        output_path = os.path.join(
-            inputs['output_directory'],
-            '{}.usd'.format(inputs['caption'])
-            )         
-        premission = self.pack_exists(output_path, inputs['force'])
-        if not premission:
-            raise IOError('Cannot save, already file found <%s>'%output_path) 
-        mobject = self.get_mobject(inputs['node'])
-        mesh_data = self.model.get_model_data(mobject)
-        curve_data = self.nurbscurve.get_curve_data(mobject)
-        final_data = {
-            'mesh': mesh_data, 
-            'curve': curve_data
-            }        
-        susd = studioUsd.Susd(path=output_path)                
-        susd.create_model_usd(inputs['node'], final_data)
-        return output_path    
-    
     def create_maya(self, inputs):
         '''
             import time
@@ -343,38 +322,7 @@ class Pack(studioMaya.Maya):
             }      
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
-        return output_path                
-
-    def create_uv_usd(self, inputs):
-        '''
-            import time
-            from studio_usd_pipe.core import mayapack
-            reload(mayapack)
-            mpack = mayapack.Pack()
-            inputs = {
-                'node': 'model',
-                'output_directory': '/venture/shows/my_hero/assets/batman/uv/0.0.0/',
-                'caption': 'batman',
-                'force': True                
-                }     
-            mpack.create_uv_usd(inputs)       
-        '''
-        output_path = os.path.join(
-            inputs['output_directory'],
-            '{}.usd'.format(inputs['caption'])
-            )         
-        premission = self.pack_exists(output_path, inputs['force'])
-        if not premission:
-            raise IOError('Cannot save, already file found <%s>'%output_path) 
-        mobject = self.get_mobject(inputs['node'])
-        mesh_data = self.model.get_uv_data(mobject)
-        final_data = {
-            'mesh': mesh_data, 
-            }        
-        susd = studioUsd.Susd(path=output_path)                
-        susd.create_uv_usd(inputs['node'], final_data)
-        return output_path
-    
+        return output_path   
     
     def create_studio_surface(self, inputs):
         '''
@@ -399,6 +347,8 @@ class Pack(studioMaya.Maya):
             raise IOError('Cannot save, already file found <%s>'%output_path) 
         mobject = self.get_mobject(inputs['node'])
         mesh_data = self.shader.get_surface_data(mobject)
+        
+        
         final_data = {
             'surface': mesh_data, 
             }  
@@ -407,7 +357,87 @@ class Pack(studioMaya.Maya):
         return output_path
     
     
-    def create_surface_usd(self, inputs):
+    def get_asset_id_data(self, root, ids):
+        data = {}
+        if not ids:
+            return data
+        for index, id in enumerate(ids):
+            mplug = self.get_mplug('{}.{}'.format(root, id))
+            id_value = mplug.asString()
+            data[id] = {
+                'order': index,
+                'value': id_value
+            }
+        return data
+    
+    def create_model_usd(self, inputs, asset_ids=None):
+        '''
+            import time
+            from studio_usd_pipe.core import mayapack
+            reload(mayapack)
+            mpack = mayapack.Pack()
+            inputs = {
+                'node': 'model',
+                'output_directory': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'caption': 'batman',
+                'force': True                
+                }     
+            mpack.create_model_usd(inputs)       
+        '''
+        output_path = os.path.join(
+            inputs['output_directory'],
+            '{}.usd'.format(inputs['caption'])
+            )         
+        premission = self.pack_exists(output_path, inputs['force'])
+        if not premission:
+            raise IOError('Cannot save, already file found <%s>'%output_path) 
+        mobject = self.get_mobject(inputs['node'])
+        mesh_data = self.model.get_model_data(mobject)
+        curve_data = self.nurbscurve.get_curve_data(mobject)
+        asset_ids = self.get_asset_id_data(inputs['node'], asset_ids)
+        final_data = {
+            'mesh': mesh_data, 
+            'curve': curve_data,
+            'asset_id': asset_ids
+            }        
+        susd = studioUsd.Susd(path=output_path)                
+        susd.create_model_usd(inputs['node'], final_data)
+        return output_path    
+    
+
+    def create_uv_usd(self, inputs, asset_ids=None):
+        '''
+            import time
+            from studio_usd_pipe.core import mayapack
+            reload(mayapack)
+            mpack = mayapack.Pack()
+            inputs = {
+                'node': 'model',
+                'output_directory': '/venture/shows/my_hero/assets/batman/uv/0.0.0/',
+                'caption': 'batman',
+                'force': True                
+                }     
+            mpack.create_uv_usd(inputs)       
+        '''
+        output_path = os.path.join(
+            inputs['output_directory'],
+            '{}.usd'.format(inputs['caption'])
+            )         
+        premission = self.pack_exists(output_path, inputs['force'])
+        if not premission:
+            raise IOError('Cannot save, already file found <%s>'%output_path) 
+        mobject = self.get_mobject(inputs['node'])
+        mesh_data = self.model.get_uv_data(mobject)
+        asset_ids = self.get_asset_id_data(inputs['node'], asset_ids)
+        final_data = {
+            'mesh': mesh_data,
+            'asset_id': asset_ids
+            }        
+        susd = studioUsd.Susd(path=output_path)                
+        susd.create_uv_usd(inputs['node'], final_data)
+        return output_path
+        
+    def create_surface_usd(self, inputs, asset_ids=None):
         '''
             import time
             from studio_usd_pipe.core import mayapack
@@ -430,8 +460,10 @@ class Pack(studioMaya.Maya):
             raise IOError('Cannot save, already file found <%s>'%output_path) 
         mobject = self.get_mobject(inputs['node'])
         surface_data = self.shader.get_surface_data(mobject)
+        asset_ids = self.get_asset_id_data(inputs['node'], asset_ids)
         final_data = {
-            'surface': surface_data, 
+            'surface': surface_data,
+            'asset_id': asset_ids            
             }       
         susd = studioUsd.Susd(path=output_path)                
         susd.create_surface_usd(inputs['node'], final_data)

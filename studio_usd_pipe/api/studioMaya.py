@@ -545,11 +545,11 @@ class Maya(object):
         mplug_array = self.get_mplug_attributes(object) 
         
         for x in range(mplug_array.length()):
-            print mplug_array[x].name()
+            # print mplug_array[x].name()
             
             attribute = mplug_array[x].attribute()
             value, type = self.get_attribute_type(mplug_array[x])
-            print '\t', value, '\t', type, '\t', mplug_array[x].attribute().apiTypeStr(), '\n'
+            # print '\t', value, '\t', type, '\t', mplug_array[x].attribute().apiTypeStr(), '\n'
             
             if value=='null':
                 continue
