@@ -401,7 +401,7 @@ class MainWindow(QtGui.QMainWindow):
                 QtGui.QPixmap(icon_path),
                 QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item.setIcon(icon)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter |
+            item.setTextAlignment(QtCore.Qt.AlignHCenter | 
                                   QtCore.Qt.AlignBottom)
             thread.start_new_thread(
                 self.validte_model_publish, (each_file, item,))
@@ -412,7 +412,7 @@ class MainWindow(QtGui.QMainWindow):
         if valid:
             return
         item.setFlags(
-            QtCore.Qt.ItemIsSelectable |
+            QtCore.Qt.ItemIsSelectable | 
             QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
 
     def collect_child_items(self, parent):
@@ -445,7 +445,7 @@ class MainWindow(QtGui.QMainWindow):
             OpenMaya.MFn.kMesh)
         if not geometry_dag_paths.length():
             QtGui.QMessageBox.warning(
-                self, 
+                self,
                 'Warning',
                 'Not found any Polygon Geometry in your selection!...',
                 QtGui.QMessageBox.Ok)
@@ -461,7 +461,7 @@ class MainWindow(QtGui.QMainWindow):
                 QtGui.QMessageBox.Ok)
             OpenMaya.MGlobal.displayWarning(
                 'Not found the Name of the the Publish!...')
-            return        # add condition for mutlipe object
+            return  # add condition for mutlipe object
         studio_shader = studioShader.Shader(
             geometry_dag_path=geometry_dag_paths[0])
         if studio_shader.had_file(current_path, label):

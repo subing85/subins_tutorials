@@ -53,7 +53,7 @@ class Shader(studioMaya.Maya):
         data = rw.get_data()
         self.undoChunk('open')
         result = {True: None}
-        maya_objects = []
+        maya_objects = []        
         if assign:  # disconnect remove exists shading_engine
             for index, shader_data in data.items():
                 for objects in shader_data['geometries'].values():
@@ -68,12 +68,13 @@ class Shader(studioMaya.Maya):
                         each.name() for each in object.getShapes()]
                 except:
                     shape_nodes = []
-                maya_objects.extend(shape_nodes)
+                maya_objects.extend(shape_nodes) 
         if maya_objects:  # disconnect remove exists shading_engine
-            self.disconnect_shader(maya_objects)
+            self.disconnect_shader(maya_objects)            
         for index, shader_data in data.items():
             try:
-                self.create_shader_net(shader_data, maya_objects)
+                self.create_shader_net(
+                    shader_data, assign=assign, assign_components=maya_objects)
             except Exception as error:
                 result = {False: error}
         self.undoChunk('close')
@@ -196,35 +197,26 @@ class Shader(studioMaya.Maya):
         return shader_data
 
     def disconnect_shader(self, objects):
+        maya_objects = []
+        for each_object in objects:
+            if not core.objExists(each_object):
+                continue
+            maya_objects.append(each_object)
+        # self.assignToMaterial(maya_objects, 'initialShadingGroup')
         for each_object in objects:
             if not core.objExists(each_object):
                 continue
             m_object = self.getMObject(each_object)
             mobject_arrary = self.getObjectShadingEngine(m_object)
             for index in range(mobject_arrary.length()):
-                valid = self.hasValidShadingEngine(
-                    mobject_arrary[index], object=each_object)
-                if not valid:
-                    continue
                 mfn_set = OpenMaya.MFnSet(mobject_arrary[index])
-                try:
-                    mfn_set.removeMember(m_object)
-                except:
-                    set_pynode = core.PyNode(mfn_set.name())
-                    dag_members = set_pynode.attr(
-                        'dagSetMembers').listConnections(s=True, d=False, p=True)
-                    face_members = set_pynode.attr(
-                        'memberWireframeColor').listConnections(s=False, d=True, p=True)
-                    for each_member in dag_members + face_members:
-                        try:
-                            each_member.disconnect()
-                        except:
-                            pass
+                mfn_set.clear()                
 
-    def create_shader_net(self, shader_data, assign_components):
+    def create_shader_net(self, shader_data, assign=True, assign_components=None):
         node_data = shader_data['nodes']
         attribute_data = shader_data['attributes']
         connection_data = shader_data['connections']
+        geometry_data = shader_data['geometries']
         shading_engine = None
         py_nodes = {}
         for each_node, node_type in node_data.items():
@@ -232,7 +224,6 @@ class Shader(studioMaya.Maya):
             if shader_data['shading_engine'] == each_node:
                 shading_engine = current_node
             py_nodes.setdefault(each_node.encode(), current_node)
-
         for each_node, current_pynode in py_nodes.items():  # set attributes values
             if not attribute_data:
                 continue
@@ -247,7 +238,6 @@ class Shader(studioMaya.Maya):
                 except Exception as error:
                     print 'shader libaray warning \"set attri\" {}.{}\n\t{}'.format(
                         current_node, each_attribute, error)
-
         for each_node, current_pynode in py_nodes.items():  # set connections
             if not connection_data:
                 continue
@@ -270,14 +260,24 @@ class Shader(studioMaya.Maya):
                         print 'shader libaray warning \"connect attri\" {}\t{}\n\t{}'.format(
                             current_parent_attribute, each_child, error)
         if not shading_engine:
-            return True
-        if assign_components:
+            return True        
+        if assign:
+            assign_components = []
+            for index, components in geometry_data.items():
+                for each_component in components:
+                    if not core.objExists(each_component):
+                        continue
+                    assign_components.append(each_component)
+                    py_node = core.PyNode(each_component)
+            self.assignToMaterial(assign_components, shading_engine)
+        elif assign_components:
             self.assignToMaterial(assign_components, shading_engine)
         return True
 
     def create_node(self, type=None, name=None):
+        current_node = None
         if type == 'shadingEngine':
-            current_node = core.sets(r=True, nss=True, em=True, n=name)
+            current_node = core.sets(r=True, nss=True, n=name)
         elif type in self._node_types['shader']:
             current_node = core.shadingNode(type, asShader=True, n=name)
         elif type in self._node_types['utility']:
@@ -316,3 +316,4 @@ class Shader(studioMaya.Maya):
         return networks
 
 # end ####################################################################
+

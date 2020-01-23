@@ -69,6 +69,7 @@ class Catalogue(QtGui.QWidget):
         self._ctrl_press = False
 
     def wheel_event(self, event):
+        print 'fffffffffffff'
         if not self.mouse_scroll:
             return
         icon_size = self.listWidget_catalogue.iconSize()
