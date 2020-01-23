@@ -19,4 +19,4 @@ def get_conig():
 
 
 def get_tool_kit():
-    return 'render_library', 'Render Library', '0.0.1'
+    return 'shader_library', 'Shader Library', '0.0.1'
