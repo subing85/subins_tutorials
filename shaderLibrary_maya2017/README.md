@@ -34,7 +34,17 @@ How to run?
 
     > Run the following code in the Python script editor.
 
-import shaderLibrary_maya2017
-shaderLibrary_maya2017.show_window()
+    
+    
+
+    import shaderLibrary_maya2019
+
+    shaderLibrary_maya2019.show_window()
+    
+
+
+latest updates
+
+    > Bug fix for "Assign the specified shading group to renderable objects."
 
 
