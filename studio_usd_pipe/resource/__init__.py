@@ -17,6 +17,10 @@ def getInputPath():
     return os.path.join(CURRENT_PATH, 'inputs')
 
 
+def getToolKitPath():
+    return os.path.join(CURRENT_PATH, 'toolkit')
+
+
 def getPreferenceFormat():    
     return '.pref'
 

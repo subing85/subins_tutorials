@@ -130,22 +130,13 @@ class Maya(object):
         return False
           
     def remove_node(self, mobject):
-        #=======================================================================
-        # if not self.object_exists(mobject):
-        #     return
-        # try:
-        #     OpenMaya.MGlobal.deleteNode(mobject)            
-        # except:
-        #     pass
-        #=======================================================================
         if not isinstance(mobject, str):
             mobject = self.get_name(mobject)
         if not self.object_exists(mobject):
             return
         mcommand_result = OpenMaya.MCommandResult()       
         mel_command = 'delete \"%s\"' % mobject 
-        OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, False, True)
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
     
@@ -422,7 +413,7 @@ class Maya(object):
         node = dep.fullPathName()            
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'bakePartialHistory -preCache \"%s\"' % node 
-        OpenMaya.MGlobal.executeCommand(mel_command)            
+        OpenMaya.MGlobal.executeCommand(mel_command, False, True)            
 
     def sort_dictionary(self, dictionary):
         sorted_data = {}
@@ -433,7 +424,6 @@ class Maya(object):
         return order   
         
     def set_perspective_view(self):  
-        OpenMaya.MGlobal.executeCommand('setNamedPanelLayout \"Single Perspective View\";') 
         position = {
             'translateX': 32, 'translateY': 8, 'translateZ': 63,
             'rotateX':-6, 'rotateY': 27, 'rotateZ': 0,
@@ -446,8 +436,13 @@ class Maya(object):
                 value = OpenMaya.MAngle(v, OpenMaya.MAngle.kDegrees)
                 mplug.setMAngle(value)
             else:   
-                mplug.setFloat(v)  
-        OpenMaya.MGlobal.executeCommand('fitPanel -selectedNoChildren;')
+                mplug.setFloat(v)
+        mel_commands = [
+            'setNamedPanelLayout \"Single Perspective View\";',
+            'fitPanel -selectedNoChildren;'
+            ]
+        for mel_command in mel_commands:
+            OpenMaya.MGlobal.executeCommand(mel_command, False, True)                 
         
     def vieport_snapshot(self, output_path=None, width=2048, height=2048):
         OpenMaya.MGlobal.clearSelectionList()
@@ -467,7 +462,7 @@ class Maya(object):
         if not format:
             format = 'png'                    
         m_image.writeToFileWithDepth(output_path, format, False) 
-        image.image_resize(output_path, output_path, width=width, height=height)
+        image.image_resize(output_path, output_path, width=width, height=width)
         return output_path, width, height
         
     def get_connections(self, node):        
@@ -755,3 +750,4 @@ class Maya(object):
                                 
         OpenMaya.MGlobal.selectByName(node)
         OpenMaya.MFileIO.exportSelected(output_path, format, preserve_references) 
+        OpenMaya.MGlobal.clearSelectionList()
