@@ -19,12 +19,15 @@ from studio_usd_pipe.resource.ui import inputs
 
 class Connect(inputs.Window):
 
-    def __init__(self, parent=None, **kwargs):
-        super(Connect, self).__init__(**kwargs)        
+    def __init__(self, parent=None, **kwargs):        
+        super(Connect, self).__init__(parent, **kwargs)  
+        self.setObjectName('preference_widget')
         self.pref = preference.Preference()        
         self.preferences_path = self.pref.get_path()        
         self.set_current()
-        self.button_create.clicked.connect(self.create)
+        self.button_create.clicked.connect(self.create)        
+        pref = preference.Preference()
+        print 'release\t', pref.config.name, '\t', pref.config.version               
 
     def set_current(self):
         if not os.path.isfile(self.preferences_path):
@@ -42,7 +45,8 @@ class Connect(inputs.Window):
                 continue
             input_data[k]['widget'].setText(v)
         if 'icon' in input_data:
-            qsize = input_data['icon']['widget'].minimumSize()
+            qsize = input_data['icon']['widget'].minimumSize()            
+            print qsize.width(), qsize.height()
             widgets.image_to_button(
                 input_data['icon']['widget'],
                 qsize.width(),

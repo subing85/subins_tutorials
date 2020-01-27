@@ -1,4 +1,4 @@
-NAME = 'Asset Publish/Push'
+NAME = 'Asset Push/Publish'
 ORDER = 4
 VALID = True
 LAST_MODIFIED = 'January 25, 2020'

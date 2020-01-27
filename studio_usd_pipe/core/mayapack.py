@@ -14,11 +14,6 @@ from studio_usd_pipe.api import studioModel
 from studio_usd_pipe.api import studioShader
 from studio_usd_pipe.api import studioNurbscurve
 
-reload(studioMaya)
-reload(studioModel)
-reload(studioShader)
-reload(studioNurbscurve)
-reload(studioUsd)
 
 
 class Pack(studioMaya.Maya):

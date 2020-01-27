@@ -7,4 +7,7 @@ COMMENTS = 'Configure the subin\'s usd toolkit!...'
 SEPARATOR = True
 
 def execute():
-    return True
+    from studio_usd_pipe.gui import preference
+    preference.show_window(standalone=False)
+    
+

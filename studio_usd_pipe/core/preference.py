@@ -7,8 +7,9 @@ import warnings
 from datetime import datetime
 
 from studio_usd_pipe import resource
+from studio_usd_pipe.core import image
 from studio_usd_pipe.core import configure
- 
+
 
 class Preference(object):
     
@@ -100,14 +101,12 @@ class Preference(object):
         return data       
         
     def update_show_icon(self, show_path, source_image, resoultion): 
-        image = studioImage.ImageCalibration()
-        show_icon = os.path.join(show_path, 'icons', 'show.png')
-        width, height = resoultion[0], resoultion[1]
-        studio_image = studioImage.ImageCalibration(imgae_file=source_image)
-        image, image_path = studio_image.set_studio_size(
-            output_path=show_icon,
-            width=width,
-            height=height
-            )
+        show_icon = image.image_resize(
+            source_image,
+            os.path.join(show_path, 'icons', 'show.png'),
+            resoultion[0],
+            resoultion[1],
+            )         
         return show_icon
+    
 

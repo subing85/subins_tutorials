@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 
 from pprint import pprint
 
@@ -11,10 +12,10 @@ from functools import partial
 from datetime import datetime
 
 from studio_usd_pipe import resource
+from studio_usd_pipe.core import image
 from studio_usd_pipe.core import inputs
 from studio_usd_pipe.core import widgets
 from studio_usd_pipe.core import configure
-from studio_usd_pipe.api import studioImage
 from studio_usd_pipe.resource.ui import logo
 
 
@@ -111,9 +112,10 @@ class Window(QtWidgets.QWidget):
                 button_find = QtWidgets.QPushButton(self.groupbox)
                 button_find.setObjectName('button_find_%s' % each)
                 button_find.setText('...')
-                button_find.setStyleSheet('color: #0000FF;')
-                button_find.setMinimumSize(QtCore.QSize(35, 25))
-                button_find.setMaximumSize(QtCore.QSize(35, 25))
+                button_find.setStyleSheet(
+                    'color: #ff007f; border: 1px solid #000000; border-radius: 12px')
+                button_find.setMinimumSize(QtCore.QSize(25, 25))
+                button_find.setMaximumSize(QtCore.QSize(25, 25))                
             elif current_item['type'] == 'enum':
                 widget = QtWidgets.QComboBox(self.groupbox)
                 widget.setObjectName('combobox_%s' % each)
@@ -169,10 +171,15 @@ class Window(QtWidgets.QWidget):
             self.snapshot(self.button_show, current_link[0], resolution)
 
     def snapshot(self, button, image_file, resolution):
-        studio_image = studioImage.ImageCalibration(imgae_file=image_file)
-        q_image, q_image_path = studio_image.set_studio_size(
-            width=resolution[0], height=resolution[1])
-        if not q_image:
+        output_path = os.path.join(
+            tempfile.gettempdir(), 'studio_image_snapshot.png')
+        q_image_path = image.image_resize(
+            image_file,
+            output_path,
+            resolution[0],
+            resolution[1],
+            )  
+        if not q_image_path:
             QtWidgets.QMessageBox.warning(
                 self,
                 'Warning',
@@ -180,10 +187,12 @@ class Window(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.Ok
                 )
             return
+        
+                
         widgets.image_to_button(
             button, resolution[0], resolution[1], path=q_image_path)
         button.setStatusTip(q_image_path)
-        return q_image, q_image_path
+        return q_image_path
 
     def get_widget_data(self, layout):
         data = {}
