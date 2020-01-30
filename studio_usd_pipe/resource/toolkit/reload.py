@@ -58,8 +58,8 @@ def execute():
     from studio_usd_pipe.resource.ui import preference
     reload(preference)    
         
-    from studio_usd_pipe.utils import maya_utils
-    reload(maya_utils)
+    from studio_usd_pipe.utils import smaya
+    reload(smaya)
     
     #===========================================================================
     # import os

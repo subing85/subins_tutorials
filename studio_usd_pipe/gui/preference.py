@@ -4,14 +4,14 @@ import sys
 from PySide2 import QtWidgets
 from studio_usd_pipe.resource.ui import preference
 
-from studio_usd_pipe.utils import maya_utils
+from studio_usd_pipe.utils import smaya
 
 
 def show_window(standalone=False):    
     if not standalone:        
-        # main_window = maya_utils.get_qwidget()
+        # main_window = smaya.get_qwidget()
         main_window = None
-        maya_utils.remove_exists_window('preference_widget')        
+        smaya.remove_exists_window('preference_widget')        
         my_window = preference.Connect(
             parent=main_window,
             type='preferences',

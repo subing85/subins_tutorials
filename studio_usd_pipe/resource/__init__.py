@@ -28,7 +28,6 @@ def getPreferenceFormat():
 def getPreferenceData(path=None):  
     if not path:
         path = os.path.join(getInputPath(), 'preferences.json')
-    print path
     data = get_input_data(path)
     return data
 

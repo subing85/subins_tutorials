@@ -23,7 +23,6 @@ class Window(QtWidgets.QWidget):
 
     def __init__(self, parent=None, **kwargs):
         super(Window, self).__init__(parent)
-
         self.current_show = None
         if 'show' in kwargs:
             self.current_show = kwargs['show']             
@@ -36,8 +35,7 @@ class Window(QtWidgets.QWidget):
         self.config.tool()
         self.version = self.config.version
         self.label = self.config.pretty        
-        self.brows_directory = resource.getWorkspacePath()
-        
+        self.brows_directory = resource.getWorkspacePath()        
         self.brows_directory = '/local/references/images/'
         self.setup_ui()
         self.modify_widgets()
@@ -166,9 +164,13 @@ class Window(QtWidgets.QWidget):
         if not os.path.exists(current_link[0]):
             return False, None
         widget.setText(current_link[0])
-
         if types == 'path' and resolution:
-            self.snapshot(self.button_show, current_link[0], resolution)
+            qsize = self.button_show.minimumSize()
+            self.snapshot(
+                self.button_show,
+                current_link[0],
+                [qsize.width(), qsize.height()]
+                )
 
     def snapshot(self, button, image_file, resolution):
         output_path = os.path.join(
@@ -187,8 +189,6 @@ class Window(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.Ok
                 )
             return
-        
-                
         widgets.image_to_button(
             button, resolution[0], resolution[1], path=q_image_path)
         button.setStatusTip(q_image_path)
