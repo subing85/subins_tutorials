@@ -425,10 +425,10 @@ class Maya(object):
         
     def set_perspective_view(self):  
         position = {
-            'translateX': 32, 'translateY': 8, 'translateZ': 63,
+            'translateX': 19, 'translateY': 10, 'translateZ': 38,
             'rotateX':-6, 'rotateY': 27, 'rotateZ': 0,
             'scaleX': 1, 'scaleY': 1, 'scaleZ': 1
-            }        
+            } 
         for k, v in position.items():
             mplug = self.get_mplug('persp.%s'%k)
             attribute = mplug.attribute()
@@ -502,7 +502,6 @@ class Maya(object):
             return outputs[0]
         return None
     
-    
     def get_attribute_type(self, mplug):
         attribute = mplug.attribute()
         value, type = 'null', None        
@@ -535,17 +534,15 @@ class Maya(object):
             :param mobject <str> shading dependency node
             :param default <bool> False ignore default value 
         '''
-        
         data = {}
         mplug_array = self.get_mplug_attributes(object) 
         
         for x in range(mplug_array.length()):
             # print mplug_array[x].name()
-            
             attribute = mplug_array[x].attribute()
             value, type = self.get_attribute_type(mplug_array[x])
             # print '\t', value, '\t', type, '\t', mplug_array[x].attribute().apiTypeStr(), '\n'
-            
+
             if value=='null':
                 continue
             attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
@@ -738,7 +735,6 @@ class Maya(object):
             preserve_references = kwargs['preserve_references']
         if 'force' in kwargs:
             force = kwargs['force']            
-               
         if os.path.isfile(output_path):      
             if not force:
                 raise IOError('Cannot save, already file found <%s>'%output_path)            
@@ -747,7 +743,14 @@ class Maya(object):
                 os.remove(output_path)
             except Exception as error:
                 raise error                  
-                                
         OpenMaya.MGlobal.selectByName(node)
         OpenMaya.MFileIO.exportSelected(output_path, format, preserve_references) 
-        OpenMaya.MGlobal.clearSelectionList()
+        OpenMaya.MGlobal.clearSelectionList()        
+    
+    def set_bounding_box(self):
+        m3d_view = OpenMayaUI.M3dView()
+        for index in range (m3d_view.numberOf3dViews()):
+            view = OpenMayaUI.M3dView()
+            m3d_view.get3dView(index, view)
+            view.setDisplayStyle(0)
+            view.refresh()

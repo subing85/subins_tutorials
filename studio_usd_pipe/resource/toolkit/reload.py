@@ -6,7 +6,12 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'Relad modules!...'
 SEPARATOR = True
 
-def execute():
+def execute():    
+    # from maya import OpenMaya
+    # OpenMaya.MGlobal.executeCommand('unloadPlugin \"subins_usd_toolkits\"', False, True)           
+    #  OpenMaya.MGlobal.executeCommand('updatePluginDirectories', False, True)           
+    # OpenMaya.MGlobal.executeCommand('loadPlugin \"subins_usd_toolkits\"', False, True)           
+    
     from studio_usd_pipe.core import menu
     reload(menu)
     from studio_usd_pipe.core import asset
@@ -19,8 +24,7 @@ def execute():
     reload(database)
     from studio_usd_pipe.core import image
     reload(image)
-    from studio_usd_pipe.core import inputs
-    reload(inputs)
+
     from studio_usd_pipe.core import manifest
     reload(manifest)
     from studio_usd_pipe.core import mayapack
@@ -50,17 +54,19 @@ def execute():
     
     from studio_usd_pipe import resource
     reload(resource)
-    
-    from studio_usd_pipe.resource.ui import inputs
-    reload(inputs)
-    from studio_usd_pipe.resource.ui import logo
-    reload(logo)
-    from studio_usd_pipe.resource.ui import preference
-    reload(preference)    
         
     from studio_usd_pipe.utils import smaya
     reload(smaya)
     
+    from studio_usd_pipe.gui import preference
+    reload(preference)
+    
+    from studio_usd_pipe.resource.ui import inputs
+    reload(inputs) 
+       
+    from studio_usd_pipe.resource.ui import preference
+    reload(preference) 
+        
     #===========================================================================
     # import os
     # for a in os.listdir('/venture/subins_tutorials/studio_usd_pipe/resource/ui'):

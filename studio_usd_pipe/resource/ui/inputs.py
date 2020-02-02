@@ -1,176 +1,186 @@
+import json
+
 import os
 import sys
 import tempfile
-
-from pprint import pprint
 
 from PySide2 import QtCore
 from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 from functools import partial
-from datetime import datetime
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import image
-from studio_usd_pipe.core import inputs
-from studio_usd_pipe.core import widgets
 from studio_usd_pipe.core import configure
-from studio_usd_pipe.resource.ui import logo
+from studio_usd_pipe.core import widgets
+from studio_usd_pipe.core import image
 
 
 class Window(QtWidgets.QWidget):
 
     def __init__(self, parent=None, **kwargs):
-        super(Window, self).__init__(parent)
-        self.current_show = None
-        if 'show' in kwargs:
-            self.current_show = kwargs['show']             
+        super(Window, self).__init__(parent)           
         self.type = kwargs['type']
         self.value = kwargs['value']
         self.title = kwargs['title']
         self.width = kwargs['width']
         self.height = kwargs['height']        
-        self.config = configure.Configure()
-        self.config.tool()
-        self.version = self.config.version
-        self.label = self.config.pretty        
+        self.version, self.label = self.set_tool_context()               
         self.brows_directory = resource.getWorkspacePath()        
-        self.brows_directory = '/local/references/images/'
+        self.brows_directory = '/local/references/images/'        
         self.setup_ui()
-        self.modify_widgets()
-
+        self.modify_widgets(self.gridlayout)
+        
     def setup_ui(self):
-        self.setObjectName('input_widget')
-        self.setWindowTitle(
-            '{} ({} {})'.format(self.title, self.label, self.version))
-        self.resize(self.width, self.height)
+        self.setObjectName('widget_{}'.format(self.type))
+        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))
+        self.resize(self.width, self.height)        
         self.verticallayout = QtWidgets.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
-        self.verticallayout.setContentsMargins(5, 5, 5, 5)
+        self.verticallayout.setContentsMargins(5, 5, 5, 5)        
         self.groupbox = QtWidgets.QGroupBox(self)
         self.groupbox.setObjectName('groupbox_asset')
         self.groupbox.setTitle(self.label)  
-        self.verticallayout.addWidget(self.groupbox)
+        self.verticallayout.addWidget(self.groupbox)        
         self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
         self.verticallayout_item.setObjectName('verticallayout')
         self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)
+        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)        
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.verticallayout_item.addLayout(self.horizontalLayout)
-        studio_logo = logo.Connect(self.horizontalLayout)
-        self.button_show = studio_logo.button_show
+        self.verticallayout_item.addLayout(self.horizontalLayout)        
+        self.button_logo, self.button_show = widgets.set_header(
+            self.horizontalLayout, show_icon=None)        
         self.gridlayout = QtWidgets.QGridLayout(None)
         self.gridlayout.setObjectName('gridlayout')
         self.gridlayout.setSpacing(5)
         self.gridlayout.setContentsMargins(10, 0, 0, 0)
-        self.verticallayout_item.addLayout(self.gridlayout)
+        self.verticallayout_item.addLayout(self.gridlayout)        
         spacer_item = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticallayout.addItem(spacer_item)
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.horizontallayout.setSpacing(10)
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.verticallayout.addLayout(self.horizontallayout)
-        spacer_item = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontallayout.addItem(spacer_item)
-        self.button_cancel = QtWidgets.QPushButton(self)
-        self.button_cancel.setObjectName('button_cancel')
-        self.button_cancel.setText('Cancel')
-        self.horizontallayout.addWidget(self.button_cancel)
-        self.button_create = QtWidgets.QPushButton(self)
-        self.button_create.setObjectName('button_create')
-        self.button_create.setText('Create')
-        self.horizontallayout.addWidget(self.button_create)
-        self.button_cancel.clicked.connect(self.close)
 
-    def modify_widgets(self):
-        input = inputs.Connect(self.type)
-        str_bundle = ['str', 'path', 'directory']
-        for index, each in enumerate(input.keys):
-            current_item = input.data[each]
-            label = QtWidgets.QLabel(self.groupbox)
-            label.setObjectName('label_%s' % each)
-            label.setText(current_item['display'])
-            label.setStatusTip(current_item['tooltip'])
-            label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-            self.gridlayout.addWidget(label, index, 0, 1, 1)
-            widget = None
-            button_find = None
-            if current_item['type'] in str_bundle:
-                widget = QtWidgets.QLineEdit(self.groupbox)
-                widget.setObjectName('lineedit_%s' % each)
-                widget.setText(current_item['value'])
-                widget.setEnabled(current_item['enable'])
-                button_find = QtWidgets.QPushButton(self.groupbox)
-                button_find.setObjectName('button_find_%s' % each)
-                button_find.setText('...')
-                button_find.setStyleSheet(
-                    'color: #ff007f; border: 1px solid #000000; border-radius: 12px')
-                button_find.setMinimumSize(QtCore.QSize(25, 25))
-                button_find.setMaximumSize(QtCore.QSize(25, 25))                
-            elif current_item['type'] == 'enum':
-                widget = QtWidgets.QComboBox(self.groupbox)
-                widget.setObjectName('combobox_%s' % each)
-                if current_item['values']:
-                    widget.addItems(current_item['values'])
-                    widget.setCurrentIndex(current_item['value'])
-            elif current_item['type'] == 'add':
-                widget = QtWidgets.QPushButton(self.groupbox)
-                widget.setObjectName('button_add_%s' % each)
-                widget.setText(u'\u002B')
-                widget.setStyleSheet('color: #0000FF;')
-                widget.setMinimumSize(QtCore.QSize(20, 20))
-                widget.setMaximumSize(QtCore.QSize(20, 20))
-            if widget:
-                widget.setStatusTip(each)
-                self.gridlayout.addWidget(widget, index, 1, 1, 1)
-            if current_item['example']:
-                widget.setToolTip('\n'.join(current_item['example']))
-            if button_find:
-                description = None
-                if 'description' in current_item:
-                    description = current_item['description']
-                resolution = None
-                if 'resolution' in current_item:
-                    resolution = current_item['resolution']
-                format = current_item['format']
-                button_find.clicked.connect(
-                    partial(
-                        self.find_paths,
-                        widget,
-                        current_item['type'],
-                        description,
-                        resolution,
-                        format
-                        )
-                    )
-                self.gridlayout.addWidget(button_find, index, 2, 1, 1)
-
-    def find_paths(self, widget, types, title=None, resolution=None, format=None):
-        if types == 'path':
-            current_link = QtWidgets.QFileDialog.getOpenFileName(
-                self, title, self.brows_directory, format)
-            self.brows_directory = os.path.dirname(current_link[0])
-        if types == 'directory':
-            current_link = [QtWidgets.QFileDialog.getExistingDirectory(
-                self, 'Browser', self.brows_directory)]
-            self.brows_directory = current_link[0]
-        if not os.path.exists(current_link[0]):
-            return False, None
+    def set_tool_context(self):
+        config = configure.Configure()
+        config.tool()
+        return config.version, config.pretty 
+    
+    def get_input_data (self):  
+        input_path = os.path.join(
+            resource.getInputPath(), '{}.json'.format(self.type))       
+        input_data = resource.get_input_data(input_path)
+        return input_data
+        
+    def modify_widgets(self, layout):
+        input_data = self.get_input_data()
+        order_data = self.sort_dictionary(input_data)
+        for index, each in enumerate(order_data):
+            content = input_data[each]
+            if not content['enable']:
+                continue
+            if content['type'] == 'path':
+                self.make_path(each, index, layout, content)
+            if content['type'] == 'directory':
+                self.make_directory(each, index, layout, content)                
+                
+    def make_path(self, name, index, layout, content):        
+        lineedit, button = self.make_location(name, index, layout, content)
+        display = False
+        if name == 'show_icon':
+            display = True       
+        button.clicked.connect(partial(self.find_path, lineedit, content, display=display))
+        
+    def make_directory(self, name, index, layout, content):
+        lineedit, button = self.make_location(name, index, layout, content)
+        button.clicked.connect(partial(self.find_directory, lineedit, content))
+    
+    def make_location(self, name, index, layout, content):
+        label = QtWidgets.QLabel(self.groupbox)
+        label.setObjectName('label_%s' % name)
+        label.setText(content['display'])
+        label.setStatusTip(content['tooltip'])
+        label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        layout.addWidget(label, index, 0, 1, 1)
+        lineedit = QtWidgets.QLineEdit(self.groupbox)
+        lineedit.setObjectName('lineedit_%s' % name)
+        if 'value' in content:
+            lineedit.setText(content['value'])
+        lineedit.setStatusTip(name)        
+        layout.addWidget(lineedit, index, 1, 1, 1)   
+        button = QtWidgets.QPushButton(self.groupbox)
+        button.setObjectName('button_%s' % name)
+        button.setText('...')
+        button.setStyleSheet(
+            'color: #ff007f; border: 1px solid #000000; border-radius: 12px')
+        button.setMinimumSize(QtCore.QSize(25, 25))
+        button.setMaximumSize(QtCore.QSize(25, 25))      
+        layout.addWidget(button, index, 2, 1, 1)
+        return lineedit, button   
+                
+    def find_path(self, widget, content, display=False):    
+        current_link = QtWidgets.QFileDialog.getOpenFileName(
+            self, content['description'], self.brows_directory, content['format'])
+        self.brows_directory = os.path.dirname(current_link[0])
         widget.setText(current_link[0])
-        if types == 'path' and resolution:
+        if display:
             qsize = self.button_show.minimumSize()
-            self.snapshot(
-                self.button_show,
-                current_link[0],
-                [qsize.width(), qsize.height()]
-                )
+            resolution = [qsize.width(), qsize.height()]
+            self.snapshot(self.button_show, current_link[0], resolution)
+
+    def find_directory(self, widget, content):    
+        current_link = QtWidgets.QFileDialog.getExistingDirectory(
+            self, content['description'], self.brows_directory)
+        self.brows_directory = current_link
+        widget.setText(current_link)  
+
+    def sort_dictionary(self, dictionary):
+        sorted_data = {}
+        for contents in dictionary:
+            sorted_data.setdefault(
+                dictionary[contents]['order'], []).append(contents)
+        order = sum(sorted_data.values(), [])
+        return order
+    
+    def get_widget_data(self, layout):
+        data = {}
+        for row in range(layout.rowCount()):
+            widget = layout.itemAtPosition(row, 1).widget()
+            if not widget:
+                continue
+            if isinstance(widget, QtWidgets.QComboBox):
+                if not widget.isEditable():
+                    value = widget.currentIndex()
+                else:
+                    value = widget.currentText().encode()
+            else:
+                value = widget.text().encode()
+            values = {
+                'widget': widget,
+                'value': value
+                }
+            data.setdefault(widget.statusTip().encode(), values)
+        data.setdefault('icon', {'widget': self.button_show, 'value': None})
+        return data
+       
+    def get_data(self, layout):
+        data = {}
+        for row in range(layout.rowCount()):
+            widget = layout.itemAtPosition(row, 1).widget()
+            if not widget:
+                continue
+            if isinstance(widget, QtWidgets.QPushButton):
+                continue
+            if isinstance(widget, QtWidgets.QComboBox):
+                if not widget.isEditable():
+                    value = widget.currentIndex()
+                else:
+                    value = widget.currentText().encode()
+            else:
+                value = widget.text().encode()
+            data.setdefault(widget.statusTip().encode(), value)
+        return data   
 
     def snapshot(self, button, image_file, resolution):
         output_path = os.path.join(
@@ -194,46 +204,7 @@ class Window(QtWidgets.QWidget):
         button.setStatusTip(q_image_path)
         return q_image_path
 
-    def get_widget_data(self, layout):
-        data = {}
-        for row in range(layout.rowCount()):
-            widget = layout.itemAtPosition(row, 1).widget()
-            if not widget:
-                continue
-            if isinstance(widget, QtWidgets.QComboBox):
-                if not widget.isEditable():
-                    value = widget.currentIndex()
-                else:
-                    value = widget.currentText().encode()
-            else:
-                value = widget.text().encode()
-            values = {
-                'widget': widget,
-                'value': value
-                }
-            data.setdefault(widget.statusTip().encode(), values)
-        data.setdefault('icon', {'widget': self.button_show, 'value': None})
-        return data
-
-    def get_data(self, layout):
-        data = {}
-        for row in range(layout.rowCount()):
-            widget = layout.itemAtPosition(row, 1).widget()
-            if not widget:
-                continue
-            if isinstance(widget, QtWidgets.QPushButton):
-                continue
-            if isinstance(widget, QtWidgets.QComboBox):
-                if not widget.isEditable():
-                    value = widget.currentIndex()
-                else:
-                    value = widget.currentText().encode()
-            else:
-                value = widget.text().encode()
-            data.setdefault(widget.statusTip().encode(), value)
-        return data
     
-
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window(
@@ -241,8 +212,9 @@ if __name__ == '__main__':
         type='preferences',
         value=None,
         title='Show Inputs',
-        width=662,
-        height=380
+        width=572,
+        height=155
     )
     window.show()
     sys.exit(app.exec_())
+        

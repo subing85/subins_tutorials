@@ -17,7 +17,9 @@
 			"objExport",
 			"pxrUsd",			
 			"pxrUsdPreviewSurface",
-			"pxrUsdTranslators"
+			"pxrUsdTranslators",
+			"subins_usd_toolkits",
+			"RenderMan_for_Maya"						
     		]
 
 		}

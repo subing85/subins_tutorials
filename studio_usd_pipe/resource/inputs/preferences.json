@@ -16,14 +16,9 @@
 			"order": 0,
 			"display": "Show Icon/Image",
 			"tooltip": "Show Icon/Image",
-			"value": "",
-			"values": null,
-			"example": [
-				"image path"
-				],			
 			"description": "Browse your show icon/image file",
-			"resolution": [640, 400],
-			"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)"
+			"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
+			"resolution": [640, 400]
 			},    
 		"show_directory": {
 			"enable": true,
@@ -31,12 +26,7 @@
 			"order": 1,
 			"display": "Show Directory",
 			"tooltip": "Show Directory",
-			"value": "",
-			"values": null,
-			"example":[
-			],
-			"description": "Browse your Show Directory",
-			"format": null
+			"description": "Browse your Show Directory"
 			},
 		"database_directory": {
 			"enable": true,
@@ -44,23 +34,14 @@
 			"order": 2,
 			"display": "Data Base Directory",
 			"tooltip": "Data Base Directory",
-			"value": "",
-			"values": null,
-			"example":[
-			],
-			"description": "Browse your Python Directory",
-			"format": null
+			"description": "Browse your Python Directory"
 			},
 		"mayapy_directory": {
 			"enable": true,
 			"type": "path",
-			"order": 2,
+			"order": 3,
 			"display": "Mayapy Directory",
 			"tooltip": "Mayapy Directory",
-			"value": "",
-			"values": null,
-			"example":[
-			],
 			"description": "Browse your Python Directory",
 			"format": "(*mayapy*)"
 			}			

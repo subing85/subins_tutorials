@@ -7,11 +7,11 @@ from PySide2 import QtCore
 from PySide2 import QtWidgets
 from functools import partial
 
-from studio_usd_pipe import resources
+from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.utils import platforms
-from studio_usd_pipe.api import studioImage
-from studio_usd_pipe.resources.ui import logo
+# from studio_usd_pipe.utils import platforms
+#from studio_usd_pipe.api import studioImage
+from studio_usd_pipe.resource.ui.old import logo
 
 
 class Window(QtWidgets.QMainWindow):
@@ -19,9 +19,11 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self, parent=None, standalone=False):
         super(Window, self).__init__(parent)
         self.standalone = standalone
-        self.prity_name = platforms.get_child('asset_publish')
-        self.tool_prity_name = platforms.get_tool_prity_name()
-        self.version = platforms.get_tool_version()
+        #=======================================================================
+        # self.prity_name = platforms.get_child('asset_publish')
+        # self.tool_prity_name = platforms.get_tool_prity_name()
+        # self.version = platforms.get_tool_version()
+        #=======================================================================
         self.sem_versions = ['major', 'minor', 'patch']
         self.width, self.height = 623, 669
         self.setup_ui()
@@ -29,8 +31,8 @@ class Window(QtWidgets.QMainWindow):
     def setup_ui(self):
         self.setObjectName('main_window')
         self.resize(self.width, self.height)
-        self.setWindowTitle('{} <{}> {}'.format(
-            self.tool_prity_name, self.prity_name, self.version))
+        #self.setWindowTitle('{} <{}> {}'.format(
+        #    self.tool_prity_name, self.prity_name, self.version))
 
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
@@ -40,10 +42,10 @@ class Window(QtWidgets.QMainWindow):
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setContentsMargins(5, 5, 5, 5)
 
-        self.input_dirname = resources.getInputDirname()
+        #self.input_dirname = resource.getInputDirname()
 
-        logo.Connect(
-            self.verticallayout, show_icon=self.input_dirname['show_icon'])
+        #logo.Connect(
+        #   self.verticallayout, show_icon=self.input_dirname['show_icon'])
 
         self.groupbox_source = QtWidgets.QGroupBox(self.centralwidget)
         self.groupbox_source.setObjectName('groupbox_source')
@@ -61,7 +63,7 @@ class Window(QtWidgets.QMainWindow):
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.button_open.setSizePolicy(sizePolicy)
-        open_path = os.path.join(resources.getIconPath(), 'open.png')
+        open_path = os.path.join(resource.getIconPath(), 'open.png')
         widgets.image_to_button(self.button_open, 100, 100, path=open_path)
 
         self.horizontallayout_source.addWidget(self.button_open)
@@ -173,8 +175,8 @@ class Window(QtWidgets.QMainWindow):
         self.button_thumbnail.setSizePolicy(size_policy)
         self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
         self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
-        thumbnail_icon = os.path.join(resources.getIconPath(), 'thumbnail.png')
-        unknown_image = os.path.join(resources.getIconPath(), 'unknown.png')
+        thumbnail_icon = os.path.join(resource.getIconPath(), 'thumbnail.png')
+        unknown_image = os.path.join(resource.getIconPath(), 'unknown.png')
         widgets.image_to_button(
             self.button_thumbnail, 256, 180, path=thumbnail_icon)
         self.button_thumbnail.setStatusTip(unknown_image)

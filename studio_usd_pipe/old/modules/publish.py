@@ -11,7 +11,7 @@ from PySide2 import QtWidgets
 from functools import partial
 
 from studio_usd_pipe import resources
-from studio_usd_pipe.core import inputs
+from studio_usd_pipe.core import __inputs
 from studio_usd_pipe.core import widgets
 from studio_usd_pipe.core import subshell
 from studio_usd_pipe.api import studioPublish
@@ -52,7 +52,7 @@ class Connect(publish.Window):
             'tag': self.combobox_tag
         }
         for k, widget in widget_inputs.items():
-            input = inputs.Connect(k)
+            input = __inputs.Connect(k)
             input.get(self.category)
             widget.addItems(input.keys)
         self.set_version()
@@ -201,7 +201,7 @@ class Connect(publish.Window):
         ]
         if None in valid_keys:
             QtWidgets.QMessageBox.critical(
-                self, 'Critical', 'In valid inputs.', QtWidgets.QMessageBox.Ok
+                self, 'Critical', 'In valid __inputs.', QtWidgets.QMessageBox.Ok
             )
             return
 

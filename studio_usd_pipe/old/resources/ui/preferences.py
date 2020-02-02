@@ -11,13 +11,13 @@ from PySide2 import QtWidgets
 from datetime import datetime
 
 from studio_usd_pipe import resources
-from studio_usd_pipe.core import inputs
+from studio_usd_pipe.core import __inputs
 from studio_usd_pipe.core import widgets
 from studio_usd_pipe.utils import platforms
 from studio_usd_pipe.resources.ui import inputs
 
 
-class Connect(inputs.Window):
+class Connect(__inputs.Window):
 
     def __init__(self, parent=None, **kwargs):
         super(Connect, self).__init__(**kwargs)

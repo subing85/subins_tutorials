@@ -7,4 +7,6 @@ COMMENTS = 'set the maya project to respective shows!...'
 SEPARATOR = True
 
 def execute():
-    return True
+    from studio_usd_pipe.utils.smaya import show
+    reload(show)
+    show.set()

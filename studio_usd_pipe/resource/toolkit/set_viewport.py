@@ -6,5 +6,9 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'Set the currnet view to single perspective view!...'
 SEPARATOR = False
 
+
 def execute():
-    return True
+    from studio_usd_pipe.api import studioMaya
+    reload(studioMaya)
+    sm = studioMaya.Maya()
+    sm.set_perspective_view()

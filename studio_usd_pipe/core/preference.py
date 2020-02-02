@@ -108,5 +108,4 @@ class Preference(object):
             resoultion[1],
             )         
         return show_icon
-    
 

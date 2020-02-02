@@ -3,8 +3,6 @@ import os
 import json
 import platform
 
-from studio_usd_pipe import utils
-
 
 CURRENT_PATH = os.path.dirname(__file__)
 
@@ -37,6 +35,11 @@ def getConfigureData():
     data = get_input_data(path)
     return data
 
+def getPluginData(path=None):  
+    if not path:
+        path = os.path.join(getInputPath(), 'plugins.json')
+    data = get_input_data(path)
+    return data
 
 def getAssetIDData():
     path = os.path.join(getInputPath(), 'assetid.json')

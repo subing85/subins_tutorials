@@ -7,6 +7,9 @@ for file in os.listdir(PATH):
         continue
     source = os.path.join(PATH, file)
     target = '{}.py'.format(os.path.splitext(source)[0])
-    command = 'pyuic4 {} -o {}'.format(source, target)
+    # command = 'pyuic4 {} -o {}'.format(source, target)
+    command = 'pyside2-uic {} -o {}'.format(source, target)
+    
+    
     os.system(command)
     print target
