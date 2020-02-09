@@ -3,7 +3,6 @@ import sys
 from PySide2 import QtGui
 from PySide2 import QtCore
 from PySide2 import QtWidgets
-from datetime import datetime
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
@@ -11,10 +10,11 @@ from studio_usd_pipe.core import preference
 from studio_usd_pipe.resource.ui import inputs
 
 
-class Connect(inputs.Window):
+class Window(inputs.Window):
 
     def __init__(self, parent=None, **kwargs):        
-        super(Connect, self).__init__(parent, **kwargs)  
+        super(Window, self).__init__(parent, **kwargs)  
+        # self.setParent(parent)        
         self.pref = preference.Preference()
         self.set_current()
         self.update_ui()
@@ -76,7 +76,7 @@ class Connect(inputs.Window):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = Connect(
+    window = Window(
         parent=None,
         type='preferences',
         value=None,

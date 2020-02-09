@@ -11,8 +11,7 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
 # from studio_usd_pipe.utils import platforms
 #from studio_usd_pipe.api import studioImage
-from studio_usd_pipe.resource.ui.old import logo
-
+from studio_usd_pipe.old.resources.ui import logo
 
 class Window(QtWidgets.QMainWindow):
 

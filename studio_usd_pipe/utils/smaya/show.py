@@ -49,7 +49,7 @@ def set_workspace(path):
     
 def set_units():
     print '\nset units'
-    OpenMaya.MGlobal.setYAxisUp()
+    OpenMaya.MGlobal.executeCommand('setUpAxis \"y\"', False, True)  # OpenMaya.MGlobal.setYAxisUp()
     OpenMaya.MGlobal.executeCommand('currentUnit -linear \"centimeter\"', False, True)   
     OpenMaya.MGlobal.executeCommand('currentUnit -angle \"degree\"', False, True)           
     OpenMaya.MGlobal.executeCommand('currentUnit -time \"pal\"', False, True)           

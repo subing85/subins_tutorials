@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import shutil
@@ -7,10 +8,9 @@ import tempfile
 from studio_usd_pipe.core import mayapack
 from studio_usd_pipe.core import database
 from studio_usd_pipe.core import preference
+from bsddb import db
 
 reload(mayapack)
-reload(database)
-reload(preference)
 
 
 class Asset(object):
@@ -32,20 +32,59 @@ class Asset(object):
             'spath',
             'sdescription'
             ]
-        self.valid_subfields = [
-            'model',
-            'uv',
-            'surface',
-            'puppet'
-            ]
+
         self.mpack = mayapack.Pack()
         self.set_inputs()
-
-    def has_valid_subfield(self):        
-        if self.subfield in self.valid_subfields:
-            return True
-        return False
+        self.dbs = database.DataBase(self.entity)
         
+    def get(self):
+        data = self.dbs.get()        
+        db_data = {}
+        for table, contents in data.items():    
+            keys = {
+                'tag': contents['tag'],
+                'caption': contents['caption'],
+                'user': contents['user'],
+                'date': contents['date'],
+                'path': contents['path'],
+                'type': contents['type']        
+                }
+            if contents['caption'] not in db_data:
+                db_data.setdefault(contents['caption'], {})
+            if contents['subfield'] not in db_data[contents['caption']]:
+                db_data[contents['caption']].setdefault(contents['subfield'], {}) 
+            db_data[contents['caption']][contents['subfield']].setdefault(
+                contents['version'], keys)
+        return db_data
+    
+    def get_subfields(self, caption):
+        data = self.get()
+        subfield_data = {}
+        for k, v in data.items():    
+            if k!=caption:
+                continue        
+            subfield_data.update(v)  
+        return subfield_data
+    
+    def get_versions(self, caption, subfield):
+        data = self.get_subfields(caption)
+        version_data = {}
+        for k, v in data.items():    
+            if k!=subfield:
+                continue        
+            version_data.update(v)        
+        return version_data
+    
+    def get_asset_data(self, caption, subfield, version):        
+        data = self.get_subfields(caption)
+        if subfield not in data:
+            raise ValueError(
+                'Not found <{}> in the database'.format(subfield))
+        if version not in data[subfield]:
+            raise ValueError(
+                'Not found <{} {}> in the database'.format(subfield, version))
+        return data[subfield][version]
+
     def set_inputs(self):
         pref = preference.Preference()
         self.input_data = pref.get()        
@@ -79,7 +118,8 @@ class Asset(object):
         self.type = bundle['type']
         self.tag = bundle['tag']
         self.description = bundle['description']   
-        self.time_stamp = bundle['time_stamp']  
+        self.time_stamp = bundle['time_stamp'] 
+         
         self.publish_path = os.path.join(
             self.show_path,
             self.entity,
@@ -87,6 +127,7 @@ class Asset(object):
             self.subfield,
             self.version
             )
+        
         self.temp_pack_path = self.make_directory(
             os.path.join(tempfile.gettempdir(), self.temp_entity))         
         
@@ -160,9 +201,9 @@ class Asset(object):
                 'value': self.publish_path,
                 'order': 6
                 }
-            }                
-        dbs = database.DataBase(self.entity)
-        dbs.create(kwargs)
+            } 
+        
+        self.dbs.create(kwargs)
     
     def move_to_publish(self):   
         temp_pack_path = os.path.join(

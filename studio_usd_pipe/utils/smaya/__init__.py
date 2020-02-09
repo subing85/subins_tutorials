@@ -7,6 +7,13 @@ def get_qwidget():
     return main_window
 
 
+def get_main_window():
+    from maya import cmds
+    maya_windows = [each_win for each_win in cmds.lsUI(
+        wnd=True) if cmds.window(each_win, q=True, mw=True)]
+    return maya_windows[0]
+
+
 def remove_exists_window(object_name):
     from maya import OpenMaya
     from maya import OpenMayaUI

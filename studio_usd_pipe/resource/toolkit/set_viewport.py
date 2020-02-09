@@ -5,6 +5,7 @@ LAST_MODIFIED = 'January 25, 2020'
 OWNER = 'Subin Gopi'
 COMMENTS = 'Set the currnet view to single perspective view!...'
 SEPARATOR = False
+ICON = 'viewport.png'
 
 
 def execute():

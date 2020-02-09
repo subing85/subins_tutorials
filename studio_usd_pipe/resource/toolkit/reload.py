@@ -31,8 +31,7 @@ def execute():
     reload(mayapack)
     from studio_usd_pipe.core import preference
     reload(preference)
-    from studio_usd_pipe.core import publish
-    reload(publish)
+
     from studio_usd_pipe.core import widgets
     reload(widgets)
     
@@ -43,8 +42,8 @@ def execute():
     from studio_usd_pipe.api import studioUsd
     reload(studioUsd)
     
-    from studio_usd_pipe.api import assetPublish
-    reload(assetPublish)
+    from studio_usd_pipe.api import studioPublish
+    reload(studioPublish)
     from studio_usd_pipe.api import studioMaya
     reload(studioMaya)
     from studio_usd_pipe.api import studioModel
@@ -58,20 +57,20 @@ def execute():
     from studio_usd_pipe.utils import smaya
     reload(smaya)
     
-    from studio_usd_pipe.gui import preference
-    reload(preference)
-    
-    from studio_usd_pipe.resource.ui import inputs
-    reload(inputs) 
-       
-    from studio_usd_pipe.resource.ui import preference
-    reload(preference) 
+    #===========================================================================
+    # from studio_usd_pipe.gui import preference
+    # reload(preference)
+    #===========================================================================
         
     #===========================================================================
-    # import os
-    # for a in os.listdir('/venture/subins_tutorials/studio_usd_pipe/resource/ui'):
-    #     if '.pyc' in a:
-    #         continue
-    #     print  'from studio_usd_pipe.resource.ui import', a.split('.')[0]
-    #     print 'reload(%s)'% a.split('.')[0]
+    # from studio_usd_pipe.resource.ui import inputs
+    # reload(inputs) 
+    #    
+    # from studio_usd_pipe.resource.ui import preference
+    # reload(preference) 
+    #===========================================================================
+    
+    #===========================================================================
+    # from studio_usd_pipe.gui import asset_publish
+    # reload(asset_publish)    
     #===========================================================================

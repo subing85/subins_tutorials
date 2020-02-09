@@ -19,20 +19,22 @@ from studio_usd_pipe.core import image
 class Window(QtWidgets.QWidget):
 
     def __init__(self, parent=None, **kwargs):
-        super(Window, self).__init__(parent)           
-        self.type = kwargs['type']
+        super(Window, self).__init__(parent)
+        # self.setParent(parent)
+        self.setWindowFlags(QtCore.Qt.Window) 
+        self.mode = kwargs['mode']
         self.value = kwargs['value']
         self.title = kwargs['title']
         self.width = kwargs['width']
         self.height = kwargs['height']        
         self.version, self.label = self.set_tool_context()               
         self.brows_directory = resource.getWorkspacePath()        
-        self.brows_directory = '/local/references/images/'        
+        self.brows_directory = '/local/references/images/'  
         self.setup_ui()
         self.modify_widgets(self.gridlayout)
         
     def setup_ui(self):
-        self.setObjectName('widget_{}'.format(self.type))
+        self.setObjectName('widget_{}'.format(self.mode))
         self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))
         self.resize(self.width, self.height)        
         self.verticallayout = QtWidgets.QVBoxLayout(self)
@@ -41,18 +43,28 @@ class Window(QtWidgets.QWidget):
         self.verticallayout.setContentsMargins(5, 5, 5, 5)        
         self.groupbox = QtWidgets.QGroupBox(self)
         self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle(self.label)  
+        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
         self.verticallayout.addWidget(self.groupbox)        
         self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
         self.verticallayout_item.setObjectName('verticallayout')
         self.verticallayout_item.setSpacing(10)
         self.verticallayout_item.setContentsMargins(5, 5, 5, 5)        
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontalLayout.setObjectName('horizontalLayout')
-        self.verticallayout_item.addLayout(self.horizontalLayout)        
+        self.horizontallayout = QtWidgets.QHBoxLayout()
+        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
+        self.horizontallayout.setObjectName('horizontallayout')
+        self.verticallayout_item.addLayout(self.horizontallayout)   
+             
         self.button_logo, self.button_show = widgets.set_header(
-            self.horizontalLayout, show_icon=None)        
+            self.horizontallayout, show_icon=None)  
+        
+        
+        self.horizontallayout_input = QtWidgets.QHBoxLayout()
+        self.horizontallayout_input.setContentsMargins(5, 5, 5, 5)
+        self.horizontallayout_input.setObjectName('horizontallayout_input') 
+        self.verticallayout_item.addLayout(self.horizontallayout_input)   
+        
+               
+              
         self.gridlayout = QtWidgets.QGridLayout(None)
         self.gridlayout.setObjectName('gridlayout')
         self.gridlayout.setSpacing(5)
@@ -69,7 +81,7 @@ class Window(QtWidgets.QWidget):
     
     def get_input_data (self):  
         input_path = os.path.join(
-            resource.getInputPath(), '{}.json'.format(self.type))       
+            resource.getInputPath(), '{}.json'.format(self.mode))
         input_data = resource.get_input_data(input_path)
         return input_data
         
@@ -83,8 +95,14 @@ class Window(QtWidgets.QWidget):
             if content['type'] == 'path':
                 self.make_path(each, index, layout, content)
             if content['type'] == 'directory':
-                self.make_directory(each, index, layout, content)                
-                
+                self.make_directory(each, index, layout, content)
+            if content['type'] == 'combobox':
+                self.make_combobox(each, index, layout, content)
+            if content['type'] == 'imagebutton':
+                self.make_imagebutton(each, index, layout, content)                
+            if content['type'] == 'textedit':
+                self.make_textedit(each, index, layout, content)        
+                                
     def make_path(self, name, index, layout, content):        
         lineedit, button = self.make_location(name, index, layout, content)
         display = False
@@ -100,7 +118,6 @@ class Window(QtWidgets.QWidget):
         label = QtWidgets.QLabel(self.groupbox)
         label.setObjectName('label_%s' % name)
         label.setText(content['display'])
-        label.setStatusTip(content['tooltip'])
         label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         layout.addWidget(label, index, 0, 1, 1)
         lineedit = QtWidgets.QLineEdit(self.groupbox)
@@ -119,6 +136,64 @@ class Window(QtWidgets.QWidget):
         layout.addWidget(button, index, 2, 1, 1)
         return lineedit, button   
                 
+    def make_combobox(self, name, index, layout, content):
+        label = QtWidgets.QLabel(self.groupbox)
+        label.setObjectName('label_%s' % name)
+        label.setText(content['display'])
+        label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        layout.addWidget(label, index, 0, 1, 1)
+        combobox = QtWidgets.QComboBox(self.groupbox)
+        combobox.setObjectName('combobox_%s'% name)
+        combobox.setStatusTip(name)
+        combobox.setEditable(content['editable'])
+        enable = True
+        if 'readonly' in content:
+            enable_collection = {
+                True: False,
+                False: True
+                }
+            enable = enable_collection[content['readonly']]
+        combobox.setEnabled(enable)
+        combobox.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
+        layout.addWidget(combobox, index, 1, 1, 1)  
+        
+    def make_imagebutton(self, name, index, layout, content):
+        label = QtWidgets.QLabel(self.groupbox)
+        label.setObjectName('label_%s' % name)
+        label.setText(content['display'])
+        # label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVBottom)
+        label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTop|QtCore.Qt.AlignTrailing)
+        layout.addWidget(label, index, 0, 1, 1)
+        button = QtWidgets.QPushButton(self.groupbox)
+        button.setObjectName('button_%s'% name)
+        button.setStatusTip(name)
+        size_policy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        button.setSizePolicy(size_policy)
+        button.setMinimumSize(QtCore.QSize(content['wh'][0], content['wh'][1]))
+        button.setMaximumSize(QtCore.QSize(content['wh'][0], content['wh'][1]))
+        layout.addWidget(button, index, 1, 1, 1)  
+        
+    def make_textedit(self, name, index, layout, content):
+        label = QtWidgets.QLabel(self.groupbox)
+        label.setObjectName('label_%s' % name)
+        label.setText(content['display'])
+        # label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTop|QtCore.Qt.AlignTrailing)
+        
+        layout.addWidget(label, index, 0, 1, 1)
+        
+        textedit = QtWidgets.QTextEdit(self.groupbox)
+        textedit.setObjectName('textedit_%s' % name)
+        textedit.setStatusTip(name)        
+        size_policy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        textedit.setSizePolicy(size_policy)
+        textedit.setMinimumSize(QtCore.QSize(0, content['wh'][1]))
+        textedit.setMaximumSize(QtCore.QSize(16777215, content['wh'][1]))        
+        layout.addWidget(textedit, index, 1, 1, 1)  
+                
+                                                
     def find_path(self, widget, content, display=False):    
         current_link = QtWidgets.QFileDialog.getOpenFileName(
             self, content['description'], self.brows_directory, content['format'])
@@ -150,10 +225,11 @@ class Window(QtWidgets.QWidget):
             if not widget:
                 continue
             if isinstance(widget, QtWidgets.QComboBox):
-                if not widget.isEditable():
-                    value = widget.currentIndex()
-                else:
-                    value = widget.currentText().encode()
+                value = widget.currentText().encode()
+            elif isinstance(widget, QtWidgets.QTextEdit):
+                value = widget.toPlainText()
+            elif isinstance(widget, QtWidgets.QPushButton):    
+                value = widget.toolTip()
             else:
                 value = widget.text().encode()
             values = {
@@ -177,6 +253,8 @@ class Window(QtWidgets.QWidget):
                     value = widget.currentIndex()
                 else:
                     value = widget.currentText().encode()
+            elif isinstance(widget, QtWidgets.QTextEdit):
+                value = widget.toPlainText()                    
             else:
                 value = widget.text().encode()
             data.setdefault(widget.statusTip().encode(), value)
@@ -209,7 +287,7 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window(
         parent=None,
-        type='preferences',
+        mode='preferences',
         value=None,
         title='Show Inputs',
         width=572,

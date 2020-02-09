@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+
 from maya import OpenMaya
 from maya import OpenMayaUI
 
@@ -754,3 +755,11 @@ class Maya(object):
             m3d_view.get3dView(index, view)
             view.setDisplayStyle(0)
             view.refresh()
+            
+    def get_current_file(self):
+        mfileio = OpenMaya.MFileIO()
+        current_file = mfileio.currentFile() 
+        file_type = mfileio.fileType()
+        if os.path.isfile(current_file):
+            return current_file, file_type
+        return None, None

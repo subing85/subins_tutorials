@@ -1,3 +1,4 @@
+import os
 import pkgutil
 
 from pymel import core
@@ -9,23 +10,27 @@ MENU_LABEL = 'Subin\'s USD ToolKit'
 
 
 def create_menu():
-    tool_kit_path = resource.getToolKitPath()
-    print tool_kit_path
+    tool_kit_path = resource.getToolKitPath()    
+    icon_path = resource.getIconPath()
+
     modules = get_packages(tool_kit_path)
     studio_uv_menu = make_menu(
         MENU_NAME, MENU_LABEL)
     sorted_index = sorted(modules)
     
-    print modules
     for index in sorted_index:
         for module in modules[index]:
             lable = module.NAME
             if hasattr(module, 'SEPARATOR'):
                 if module.SEPARATOR:
                     core.ui.MenuItem(d=True, p=studio_uv_menu)
+            module_icon = 'unknown.png'     
+            if hasattr(module, 'ICON'):
+                module_icon = module.ICON
             core.ui.MenuItem(
                 l=module.NAME,
                 p=studio_uv_menu,
+                i=os.path.join(icon_path, module_icon),
                 c=partial(executeModule, module)
             )
     core.displayInfo('// Result: %s menu created' % MENU_LABEL)

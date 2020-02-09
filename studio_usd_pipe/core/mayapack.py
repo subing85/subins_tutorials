@@ -19,7 +19,10 @@ from studio_usd_pipe.api import studioNurbscurve
 class Pack(studioMaya.Maya):
     
     def __init__(self):
-        studioMaya.Maya.__init__(self)        
+        # studioMaya.Maya.__init__(self)  
+        super(Pack, self).__init__()
+        
+              
         self.model = studioModel.Model()
         self.shader = studioShader.Shader()
         self.nurbscurve = studioNurbscurve.Nurbscurve()   
