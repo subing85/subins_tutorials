@@ -203,6 +203,7 @@ class Susd(object):
         # make geomery hierarchy
         for material in data:            
             for geometry in data[material]['geometries']:
+                print '\t', geometry
                 sdf_path = Sdf.Path(geometry.replace('|', '/'))                
                 for path in sdf_path.GetPrefixes():
                     UsdGeom.Xform.Define(stage, path)

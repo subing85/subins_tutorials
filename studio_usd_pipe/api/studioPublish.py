@@ -118,7 +118,7 @@ class Publish(object):
             
     def release(self): 
         if self.mode=='asset':
-            self.my_asset.release()
+            self.my.release()
             #self.packed_bundle, self.stamped_time)
             
     def collect_packed(self):        
@@ -152,6 +152,39 @@ class Publish(object):
             )
         return package_path
     
+    def get(self):
+        data = self.my.get()
+        return data
+    
+    def get_subfields(self, caption):
+        subfield_data = self.my.get_subfields(caption)
+        return subfield_data
+    
+    def get_version_data(self, caption, subfield):
+        version_data = self.my.get_version_data(caption, subfield)
+        return version_data
+    
+    def get_versions(self, caption, subfield):
+        version_data = self.my.get_version_data(caption, subfield)
+        versions = version_data.keys()        
+        versions.sort(key=version.StrictVersion)
+        versions.reverse()    
+        return versions
+
+    def get_data(self, caption, subfield, version):        
+        data = self.my.get_asset_data(caption, subfield, version)
+        return data
+    
+    def get_latest_version(self, caption, subfield, version_data=None):
+        if not version_data:
+            version_data = self.get_versions(caption, subfield)
+        versions = version_data.keys()        
+        versions.sort(key=version.StrictVersion)
+        versions.reverse()
+        if not versions:
+            return None
+        return versions[0]
+    
     def get_next_version(self, latest_version, index):
         '''
             index 0, 1, 2 = MAJOR0, MINOR, PATCH
@@ -168,29 +201,3 @@ class Publish(object):
         if index == 2:
             n_version = '{}.{}.{}'.format(major, minor, int(patch) + 1)
         return n_version
-    
-    def get(self):
-        data = self.my.get()
-        return data
-    
-    def get_subfields(self, caption):
-        subfield_data = self.my.get_subfields(caption)
-        return subfield_data
-    
-    def get_versions(self, caption, subfield):
-        version_data = self.my.get_versions(caption, subfield)
-        return version_data
-
-    def get_data(self, caption, subfield, version):        
-        data = self.my.get_asset_data(caption, subfield, version)
-        return data
-    
-    
-    def get_latest_version(self, caption, subfield):
-        version_data = self.get_versions(caption, subfield)
-        versions = version_data.keys()        
-        versions.sort(key=version.StrictVersion)
-        versions.reverse()
-        if not versions:
-            return None
-        return versions[0]    

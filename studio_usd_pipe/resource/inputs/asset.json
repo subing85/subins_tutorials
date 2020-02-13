@@ -72,7 +72,7 @@
 			"order": 7,
 			"display": "Latest Version",
 			"tooltip": "Latest Version",
-			"editable": false,
+			"editable": true,
 			"readonly": true
 			},
 		"next_version": {

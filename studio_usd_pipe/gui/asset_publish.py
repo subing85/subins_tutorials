@@ -4,12 +4,20 @@ import sys
 from PySide2 import QtWidgets
 
 from studio_usd_pipe.utils import smaya
+from studio_usd_pipe.api import studioMaya
 from studio_usd_pipe.resource.ui import publish
-
-reload(publish)
 
 
 def show_window(standalone=False):    
+    studio_maya = studioMaya.Maya()
+    cfile, ctype = studio_maya.get_current_file()
+
+    if not cfile:    
+        message = 'Empty scene\nOpen the maya scene and try!...'
+        QtWidgets.QMessageBox.critical(
+            None, 'warning', message, QtWidgets.QMessageBox.Ok)
+        return
+      
     if not standalone:        
         main_window = smaya.get_qwidget()
         # main_window = None

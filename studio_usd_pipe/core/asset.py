@@ -8,7 +8,6 @@ import tempfile
 from studio_usd_pipe.core import mayapack
 from studio_usd_pipe.core import database
 from studio_usd_pipe.core import preference
-from bsddb import db
 
 reload(mayapack)
 
@@ -66,7 +65,7 @@ class Asset(object):
             subfield_data.update(v)  
         return subfield_data
     
-    def get_versions(self, caption, subfield):
+    def get_version_data(self, caption, subfield):
         data = self.get_subfields(caption)
         version_data = {}
         for k, v in data.items():    
@@ -74,7 +73,7 @@ class Asset(object):
                 continue        
             version_data.update(v)        
         return version_data
-    
+
     def get_asset_data(self, caption, subfield, version):        
         data = self.get_subfields(caption)
         if subfield not in data:
@@ -110,15 +109,24 @@ class Asset(object):
                 'time_stamp': time.time()
                 }        
             asset.pack(bundle)         
-        '''             
+        '''
+        
+        print json.dumps(bundle, indent=4)
+        
+        self.data = {}
+                   
         self.source_maya = bundle['source_file']
         self.caption = bundle['caption']
         self.version = bundle['version'] 
-        self.thumbnail = bundle['thumbnail']
+        self.thumbnail = None
+        if 'thumbnail' in bundle:
+            self.thumbnail = bundle['thumbnail']
         self.type = bundle['type']
         self.tag = bundle['tag']
         self.description = bundle['description']   
         self.time_stamp = bundle['time_stamp'] 
+        
+        print 'self.thumbnail\t', self.thumbnail
          
         self.publish_path = os.path.join(
             self.show_path,
@@ -141,7 +149,7 @@ class Asset(object):
             
         if self.subfield == 'uv':
             self.make_maya_model(force=False)
-            self.make_thumbnail()            
+            self.make_thumbnail()         
             self.make_studio_uv()
             self.make_uv_usd()
             self.make_maya()
@@ -149,7 +157,7 @@ class Asset(object):
             
         if self.subfield == 'surface':
             self.make_maya_model(force=False)
-            self.make_thumbnail()            
+            self.make_thumbnail()        
             self.make_source_images()
             self.make_studio_surface()            
             self.make_surface_usd()
@@ -158,13 +166,16 @@ class Asset(object):
                      
         if self.subfield == 'puppet':
             self.make_maya_model(force=False)
-            self.make_thumbnail()            
+            self.make_thumbnail()
+            self.make_studio_puppet()
             # self.make_source_images()                     
-            # self.make_puppet_usd()            
+            self.make_puppet_usd()            
             self.make_maya()
             self.make_manifest()
             
         for each in sum(self.data.values(), []):  # time stamp
+            if not each:
+                continue
             os.utime(each, (self.time_stamp, self.time_stamp))
 
     def release(self):  
@@ -210,6 +221,8 @@ class Asset(object):
             tempfile.gettempdir(), self.temp_entity)   
         self.make_directory(self.publish_path)               
         for each in sum(self.data.values(), []):
+            if not each:
+                continue
             path = each.replace(temp_pack_path, self.publish_path)
             if os.path.isdir(each):
                 if not os.path.isdir(path):
@@ -269,7 +282,7 @@ class Asset(object):
             'force': True
             } 
         thumbnail = self.mpack.create_thumbnail(inputs)
-        self.data['thumbnail'] = [thumbnail]       
+        self.data['thumbnail'] = [thumbnail]    
                          
     def make_maya(self):
         inputs = {
@@ -302,8 +315,12 @@ class Asset(object):
             'force': True
             }       
         studio_uv = self.mpack.create_studio_uv(inputs)
-        self.data['studio_uv'] = [studio_uv] 
+        self.data['studio_uv'] = [studio_uv]
         
+    
+    def make_studio_puppet(self):
+        self.data['studio_puppet'] = [None]
+                
     def make_source_images(self): 
         inputs = {
             'node': 'model',
@@ -362,6 +379,9 @@ class Asset(object):
             }        
         usd = self.mpack.create_surface_usd(inputs, asset_ids=self.asset_ids)
         self.data['usd_surface'] = [usd]
+        
+    def make_puppet_usd(self):
+        self.data['usd_puppet'] = [None]
     
     def make_manifest(self):        
         source_images = None
@@ -384,6 +404,11 @@ class Asset(object):
             'source_images': source_images,
             'force': True
             }
+        print '#'*50
+        import json
+        print json.dumps(inputs, indent=4)
+        
+        print '#'*50
         mainfest = self.mpack.create_manifest(inputs)
         self.data['mainfest'] = [mainfest]
             

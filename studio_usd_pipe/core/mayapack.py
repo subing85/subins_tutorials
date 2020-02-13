@@ -14,6 +14,8 @@ from studio_usd_pipe.api import studioModel
 from studio_usd_pipe.api import studioShader
 from studio_usd_pipe.api import studioNurbscurve
 
+reload(studioUsd)
+
 
 
 class Pack(studioMaya.Maya):
@@ -138,7 +140,6 @@ class Pack(studioMaya.Maya):
             mpack = mayapack.Pack()
             
             input_data = {
-                'standalone': False,            
                 'output_directory': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
                 'caption': 'batman',
                 'thumbnail': '/local/references/images/batman_art.jpg',
@@ -154,8 +155,11 @@ class Pack(studioMaya.Maya):
             )
         premission = self.pack_exists(output_path, inputs['force'])
         if not premission:
-            raise IOError('Cannot save, already file found <%s>' % output_path)          
-        if inputs['standalone']:            
+            raise IOError('Cannot save, already file found <%s>' % output_path)
+        
+        if inputs['thumbnail']:        
+            #if inputs['standalone']:
+                     
             image.image_resize(
                 inputs['thumbnail'],
                 output_path,

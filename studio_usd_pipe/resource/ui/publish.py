@@ -24,10 +24,7 @@ class Window(inputs.Window):
     def __init__(self, parent=None, **kwargs):  
         super(Window, self).__init__(parent, **kwargs)
         # self.setParent(parent)
-        self.smaya = studioMaya.Maya()
-        
         self.pub = studioPublish.Publish(self.mode)
-            
         self.pref = preference.Preference()
         self.set_current()
         self.update_ui()     
@@ -39,14 +36,16 @@ class Window(inputs.Window):
         self.horizontallayout.setContentsMargins(5, 5, 5, 5)
         self.verticallayout.addLayout(self.horizontallayout)
         
-        current_file, file_type = self.smaya.get_current_file()
+        studio_maya = studioMaya.Maya()
+        current_file, file_type = studio_maya.get_current_file()
+        
         source_file = 'Current File: {}\nFile Type: {}'.format(current_file, file_type)
         self.label_source = QtWidgets.QLabel()
         self.label_source.setObjectName('label_source')
         self.label_source.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.label_source.setStyleSheet('font: 12pt;')
         self.label_source.setText(source_file)
-        self.label_source.setToolTip(current_file)
+        self.label_source.setToolTip(file_type)
         self.horizontallayout_input.addWidget(self.label_source)        
         
         spacer_item = QtWidgets.QSpacerItem(
@@ -89,17 +88,19 @@ class Window(inputs.Window):
         self.tag_widget.addItems(self.pub.valid_modes[self.mode]['tag']) 
         self.version_widget.addItems(['major', 'minor', 'patch'])
        
-        
         # self.latest_version_widget.addItem('0.0.0')
-        self.next_version_widget.addItem('0.0.0')   
+        # self.next_version_widget.addItem('0.0.0')   
            
         thumbnail_icon = os.path.join(resource.getIconPath(), 'screenshot.png')
         unknown_image = os.path.join(resource.getIconPath(), 'unknown.png')
         widgets.image_to_button(
             self.thumbnail_widget, 256, 180, path=thumbnail_icon)           
-        self.thumbnail_widget.setToolTip(unknown_image)       
+        # self.thumbnail_widget.setToolTip(unknown_image)       
         self.thumbnail_widget.clicked.connect(partial(self.take_thumbnail, self.thumbnail_widget))
-            
+        # self.caption_widget.currentIndexChanged.connect(self.set_current_version)
+        self.caption_widget.editTextChanged.connect(self.set_current_version)
+        self.subfield_widget.currentIndexChanged.connect(self.set_current_version)
+        self.version_widget.currentIndexChanged.connect(self.set_current_version)
             
     def get_widgets(self, data):
         self.show_widget = data['icon']['widget']
@@ -130,17 +131,27 @@ class Window(inputs.Window):
         self.thumbnail_widget.setToolTip(output_path)
                 
             
+    def set_current_version(self):
+        caption = self.caption_widget.currentText()
+        subfield = self.subfield_widget.currentText()
+        semantic_version =  self.version_widget.currentIndex()
+        
+        self.latest_version_widget.clear() 
+        self.next_version_widget.clear()        
+
+        versions = self.pub.get_versions(caption, subfield)
+        if not versions:
+            versions = [None]
+        
+        self.latest_version_widget.addItems(versions)
+        next_version = self.pub.get_next_version(versions[0], semantic_version)
+        self.next_version_widget.addItem(next_version)
+            
+            
     def publish(self):
         data = self.get_widget_data(self.gridlayout)
         keys = self.pub.valid_publish_keys[self.mode]
 
-        #=======================================================================
-        # for k, v in data.items():
-        #     if k not in keys:
-        #         continue
-        #     print k, '\t', v['value']
-        #=======================================================================
-            
         self.pub.bundle = {
             'subfield': data['subfield']['value'],
             'type': data['type']['value'],
@@ -151,12 +162,9 @@ class Window(inputs.Window):
             'description': data['description']['value'],
             'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma'
             }
-
         self.pub.pack()   
-        self.pub.release()   
-        
-
-        
+        self.pub.release()
+        self.set_current_version()
         
         
         
