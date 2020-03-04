@@ -57,14 +57,11 @@ class Window(QtWidgets.QWidget):
         self.button_logo, self.button_show = widgets.set_header(
             self.horizontallayout, show_icon=None)  
         
-        
         self.horizontallayout_input = QtWidgets.QHBoxLayout()
         self.horizontallayout_input.setContentsMargins(5, 5, 5, 5)
         self.horizontallayout_input.setObjectName('horizontallayout_input') 
         self.verticallayout_item.addLayout(self.horizontallayout_input)   
         
-               
-              
         self.gridlayout = QtWidgets.QGridLayout(None)
         self.gridlayout.setObjectName('gridlayout')
         self.gridlayout.setSpacing(5)

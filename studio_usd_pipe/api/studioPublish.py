@@ -72,7 +72,7 @@ class Publish(object):
         
         self.my_step = None
         
-        if self.mode=='asset':
+        if self.mode=='asset_push' or self.mode=='asset_pull':
             self.my = asset.Asset()
             
         if self.mode=='shot':

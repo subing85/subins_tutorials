@@ -5,7 +5,7 @@ from PySide2 import QtWidgets
 
 from studio_usd_pipe.utils import smaya
 from studio_usd_pipe.api import studioMaya
-from studio_usd_pipe.resource.ui import publish
+from studio_usd_pipe.resource.ui import push
 
 
 def show_window(standalone=False):    
@@ -22,9 +22,9 @@ def show_window(standalone=False):
         main_window = smaya.get_qwidget()
         # main_window = None
         smaya.remove_exists_window('widget_asset')        
-        my_window = publish.Window(
+        my_window = push.Window(
             parent=main_window,
-            mode='asset',
+            mode='asset_push',
             value=None,
             title='Asset Publish',
             width=570,
@@ -34,9 +34,9 @@ def show_window(standalone=False):
     if standalone:
         # if __name__ == '__main__':
         app = QtWidgets.QApplication(sys.argv)
-        my_window = publish.Window(
+        my_window = push.Window(
             parent=None,
-            mode='asset',
+            mode='asset_push',
             value=None,
             title='Asset Publish',
             width=570,

@@ -83,6 +83,9 @@ class Window(inputs.Window):
         
         captions = [''] + pub_data.keys()
         self.caption_widget.addItems(captions)
+        
+        
+        return
         self.subfield_widget.addItems(self.pub.valid_modes[self.mode]['subfield'])
         self.type_widget.addItems(self.pub.valid_modes[self.mode]['type'])
         self.tag_widget.addItems(self.pub.valid_modes[self.mode]['tag']) 
@@ -150,7 +153,9 @@ class Window(inputs.Window):
             
     def publish(self):
         data = self.get_widget_data(self.gridlayout)
+        print data
         keys = self.pub.valid_publish_keys[self.mode]
+        print keys
 
         self.pub.bundle = {
             'subfield': data['subfield']['value'],
@@ -162,6 +167,16 @@ class Window(inputs.Window):
             'description': data['description']['value'],
             'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma'
             }
+        
+        for bundle in self.pub.bundle:
+            if self.pub.bundle[bundle]:
+                continue
+            message = 'None value in {}'.format(bundle)
+            QtWidgets.QMessageBox.critical(
+                None, 'warning', message, QtWidgets.QMessageBox.Ok)                
+            return
+            
+            
         self.pub.pack()   
         self.pub.release()
         self.set_current_version()
