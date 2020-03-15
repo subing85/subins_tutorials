@@ -163,3 +163,6 @@
 			* mirroAndFlipSymmetricalGeometry/mirror_flip_symmetrical.py
 	
 			https://vimeo.com/213423624
+			
+			
+	> studio usd pipeline
