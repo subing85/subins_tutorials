@@ -8,7 +8,6 @@ from studio_usd_pipe.core import preference
 
 def pipe():
     pref = preference.Preference()
-    print 'release', pref.config.name, pref.config.version   
     parser = optparse.OptionParser(
         usage='usage: %prog [options] create studio usd pipe preference',
         version=pref.config.version)   
@@ -80,6 +79,7 @@ def pipe():
     (options, args) = parser.parse_args()
 
     if options.query:
+        print 'release\t', pref.config.name, '\t', pref.config.version   
         data = pref.get()
         if options.pAll:
             print json.dumps(data, indent=4)
@@ -92,7 +92,8 @@ def pipe():
         if options.pMayapy and options.pMayapy == 'True':
             print data['mayapy_directory'] 
         
-    if options.create:
+    elif options.create:
+        print 'release\t', pref.config.name, '\t', pref.config.version   
         if not options.pShow:
             raise ValueError('-s -show option requires an argument')
         if not options.pIcon:
@@ -117,7 +118,8 @@ def pipe():
             mayapy_directory=options.pMayapy            
             )
         
-    if options.example:
+    elif options.example:
+        print 'release\t', pref.config.name, '\t', pref.config.version   
         flags = [
             '-c',
             '-s /venture/shows/my_hero',
@@ -131,7 +133,10 @@ def pipe():
         print 'get all show icon \t- preference -q -i True'
         print 'get all database data \t- preference -q -d True'
         print 'get all mayapy \t\t- preference -q -p True'
-
+    
+    else:
+        from studio_usd_pipe.gui import preference as pref
+        pref.show_window(standalone=True)
 
 if __name__ == '__main__':
     pipe()

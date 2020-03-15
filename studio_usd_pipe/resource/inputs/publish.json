@@ -10,27 +10,27 @@
     "enable": true,
 	"type": "preferences",   	
     "data": {
-		"show_icon": {
+		"subfield": {
 			"enable": true,
-			"type": "path",
+			"type": "enum",
 			"order": 0,
-			"display": "Show Icon/Image",
-			"tooltip": "Show Icon/Image",
-			"value": "",
-			"values": null,
+			"display": "Subfield",
+			"tooltip": "Subfield",
+			"value": 0,
+			"values": ["None", "Model", "UV", "Surface", "Puppet"],
 			"example": [
 				"image path"
 				],			
 			"description": "Browse your show icon/image file",
-			"resolution": [640, 400],
+			
 			"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)"
 			},    
-		"show_directory": {
+		"caption": {
 			"enable": true,
-			"type": "directory",
+			"type": "enum",
 			"order": 1,
-			"display": "Show Directory",
-			"tooltip": "Show Directory",
+			"display": "Caption",
+			"tooltip": "Caption",
 			"value": "",
 			"values": null,
 			"example":[
@@ -38,12 +38,12 @@
 			"description": "Browse your Show Directory",
 			"format": null
 			},
-		"database_directory": {
+		"type": {
 			"enable": true,
-			"type": "directory",
+			"type": "enum",
 			"order": 2,
-			"display": "Data Base Directory",
-			"tooltip": "Data Base Directory",
+			"display": "Type",
+			"tooltip": "Type",
 			"value": "",
 			"values": null,
 			"example":[
@@ -51,18 +51,48 @@
 			"description": "Browse your Python Directory",
 			"format": null
 			},
-		"mayapy_directory": {
+		"tag": {
 			"enable": true,
-			"type": "path",
-			"order": 2,
-			"display": "Mayapy Directory",
-			"tooltip": "Mayapy Directory",
+			"type": "enum",
+			"order": 3,
+			"display": "Tag",
+			"tooltip": "Tag",
 			"value": "",
 			"values": null,
 			"example":[
 			],
 			"description": "Browse your Python Directory",
 			"format": "(*mayapy*)"
+			},
+		"thumbnail": {
+			"enable": true,
+			"type": "snapshot_button",
+			"order": 4,
+			"display": "Thumbnail",
+			"tooltip": "Tag",
+			"value": "",
+			"values": null,
+			"resolution": [256, 180],
+			"example":[
+			],
+			"description": "Browse your Python Directory",
+			"format": "(*mayapy*)"
+			},
+		"description": {
+			"enable": true,
+			"type": "textedit",
+			"order": 5,
+			"display": "Description",
+			"tooltip": "Tag",
+			"value": "",
+			"values": null,
+			"resolution": [256, 180],
+			"example":[
+			],
+			"description": "Browse your Python Directory",
+			"format": "(*mayapy*)"
 			}			
+					
+					
 		}
 	} 	

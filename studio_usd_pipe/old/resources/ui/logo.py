@@ -4,7 +4,7 @@ from PySide2 import QtGui
 from PySide2 import QtCore
 from PySide2 import QtWidgets
 
-from studio_usd_pipe import resources
+from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
 
 

@@ -196,6 +196,7 @@ class Susd(object):
     
            
     def create_surface(self, root, data, stage=None):
+
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
@@ -203,7 +204,8 @@ class Susd(object):
         # make geomery hierarchy
         for material in data:            
             for geometry in data[material]['geometries']:
-                sdf_path = Sdf.Path(geometry.replace('|', '/'))                
+                location = geometry.replace(':', '_')  
+                sdf_path = Sdf.Path(location.replace('|', '/'))                
                 for path in sdf_path.GetPrefixes():
                     UsdGeom.Xform.Define(stage, path)
                 mesh_define = UsdGeom.Mesh.Define(stage, sdf_path.GetPrefixes()[-1])
@@ -224,21 +226,20 @@ class Susd(object):
                 if 'parameters' not in node_contents:
                     continue            
 
-                for parameter, parameter_contents in node_contents['parameters'].items():            
+                for parameter, parameter_contents in node_contents['parameters'].items():
                     current_type, current_value = self.get_prameter_values(
                         parameter_contents['type'],
                         parameter_contents['value']
                         )
-                    
                     if not current_type or current_value=='null':
                         print '#need to update attribute configure'
+                        print '\tmaterial', material, node, parameter
                         print '\t', parameter, parameter_contents['type'], parameter_contents['value']
                         print '\t', current_type, current_value
                         print '\t', type(current_type)                
                         raise Exception('function get_prameter_values need to update')
                     
                     print '\t\t>>>>>', current_type, parameter_contents['value']
-                    
                     shader_define.CreateInput(parameter, current_type).Set(current_value)
                     
         # shader connections
@@ -253,7 +254,7 @@ class Susd(object):
                     source_path = look_path.AppendPath('%s/%s'%(material, source_node))
                     shader_define = UsdShade.Shader.Define(stage, shader_path)
                     source_define = UsdShade.Shader.Define(stage, source_path)
-                    
+
                     current_type, current_value = self.get_prameter_values(
                         connection_contents['type'],
                         None
@@ -266,7 +267,8 @@ class Susd(object):
             material_path = look_path.AppendPath(material)    
             material_define = UsdShade.Material.Define(stage, material_path)
             for geometry in data[material]['geometries']:
-                sdf_path = Sdf.Path(geometry.replace('|', '/'))
+                location = geometry.replace(':', '_') 
+                sdf_path = Sdf.Path(location.replace('|', '/'))
                 mesh_define = UsdGeom.Mesh.Define(stage, sdf_path) 
                 UsdShade.MaterialBindingAPI(mesh_define).Bind(material_define)           
                 
@@ -299,6 +301,40 @@ class Susd(object):
         stage.Save()
         
     def create_surface_usd(self, root, data, show=False):
+        '''
+            from studio_usd_pipe.api import studioMaya
+            from studio_usd_pipe.api import studioShader
+            from studio_usd_pipe.core import mayapack
+            from studio_usd_pipe.api import studioUsd
+            
+            sm = studioMaya.Maya()
+            ss = studioShader.Shader()
+            mp = mayapack.Pack()
+            sud = studioUsd.Susd()
+            
+            asset_ids = [
+                'sentity',
+                'scaption',
+                'stype',
+                'stag',
+                'sversion',
+                'smodified',
+                'spath',
+                'sdescription'
+                ]
+            
+            mobject = sm.get_mobject('model')
+            surface_data = ss.get_surface_data(mobject)
+            asset_ids = mp.get_asset_id_data('model', asset_ids)
+            final_data = {
+                'surface': surface_data,
+                'asset_id': asset_ids            
+                }  
+                
+            output_path = '/venture/shows/my_hero/assets/batman/surface/0.0.0/hello.usd'         
+            susd = studioUsd.Susd(path=output_path)                
+            susd.create_surface_usd('model', final_data)        
+        '''
         stage = self.create_surface(root, data['surface'], stage=None)
         stage = self.create_asset_ids(stage, root, data['asset_id'])
         if show:
@@ -319,8 +355,9 @@ class Susd(object):
             current_type = Sdf.ValueTypeNames.Int            
             if isinstance(attribute_value, bool):
                 current_value = int(attribute_value)
-            else:
-                current_value = int(attribute_value)                
+            if isinstance(attribute_value, int):
+                current_value = int(attribute_value)
+                         
         if  attribute_type=='FloatAttr':
             current_type = Sdf.ValueTypeNames.Float
             if attribute_value:

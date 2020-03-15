@@ -3,8 +3,6 @@ import os
 import json
 import platform
 
-from studio_usd_pipe import utils
-
 
 CURRENT_PATH = os.path.dirname(__file__)
 
@@ -17,6 +15,10 @@ def getInputPath():
     return os.path.join(CURRENT_PATH, 'inputs')
 
 
+def getToolKitPath():
+    return os.path.join(CURRENT_PATH, 'toolkit')
+
+
 def getPreferenceFormat():    
     return '.pref'
 
@@ -24,7 +26,6 @@ def getPreferenceFormat():
 def getPreferenceData(path=None):  
     if not path:
         path = os.path.join(getInputPath(), 'preferences.json')
-    print path
     data = get_input_data(path)
     return data
 
@@ -34,6 +35,11 @@ def getConfigureData():
     data = get_input_data(path)
     return data
 
+def getPluginData(path=None):  
+    if not path:
+        path = os.path.join(getInputPath(), 'plugins.json')
+    data = get_input_data(path)
+    return data
 
 def getAssetIDData():
     path = os.path.join(getInputPath(), 'assetid.json')

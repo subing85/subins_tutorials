@@ -2,7 +2,6 @@ import os
 import json
 import platform
 
-from studio_usd_pipe.utils import platforms
 
 CURRENT_PATH = os.path.dirname(__file__)
 
