@@ -2,11 +2,11 @@ from maya import OpenMaya
 from maya import OpenMayaAnim
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 
 
 def set():
-    pref = preference.Preference()       
+    pref = preferences.Preference()       
     bundle_data = pref.get() 
     print '\n', '#' * 50, '\nsubin\'s tool kits show configure.'
     print 'release\n\tname:', pref.config.name

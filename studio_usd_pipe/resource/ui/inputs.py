@@ -19,14 +19,14 @@ from studio_usd_pipe.core import image
 class Window(QtWidgets.QWidget):
 
     def __init__(self, parent=None, **kwargs):
-        super(Window, self).__init__(parent)
+        super(Window, self).__init__(parent)        
         # self.setParent(parent)
-        self.setWindowFlags(QtCore.Qt.Window) 
+        self.setWindowFlags(QtCore.Qt.Window)         
         self.mode = kwargs['mode']
         self.value = kwargs['value']
         self.title = kwargs['title']
         self.width = kwargs['width']
-        self.height = kwargs['height']        
+        self.height = kwargs['height']
         self.version, self.label = self.set_tool_context()               
         self.brows_directory = resource.getWorkspacePath()        
         self.brows_directory = '/local/references/images/'  
@@ -140,7 +140,7 @@ class Window(QtWidgets.QWidget):
         label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         layout.addWidget(label, index, 0, 1, 1)
         combobox = QtWidgets.QComboBox(self.groupbox)
-        combobox.setObjectName('combobox_%s'% name)
+        combobox.setObjectName('combobox_%s' % name)
         combobox.setStatusTip(name)
         combobox.setEditable(content['editable'])
         enable = True
@@ -159,10 +159,10 @@ class Window(QtWidgets.QWidget):
         label.setObjectName('label_%s' % name)
         label.setText(content['display'])
         # label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVBottom)
-        label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTop|QtCore.Qt.AlignTrailing)
+        label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop | QtCore.Qt.AlignTrailing)
         layout.addWidget(label, index, 0, 1, 1)
         button = QtWidgets.QPushButton(self.groupbox)
-        button.setObjectName('button_%s'% name)
+        button.setObjectName('button_%s' % name)
         button.setStatusTip(name)
         size_policy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -176,7 +176,7 @@ class Window(QtWidgets.QWidget):
         label.setObjectName('label_%s' % name)
         label.setText(content['display'])
         # label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTop|QtCore.Qt.AlignTrailing)
+        label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop | QtCore.Qt.AlignTrailing)
         
         layout.addWidget(label, index, 0, 1, 1)
         
@@ -189,7 +189,6 @@ class Window(QtWidgets.QWidget):
         textedit.setMinimumSize(QtCore.QSize(0, content['wh'][1]))
         textedit.setMaximumSize(QtCore.QSize(16777215, content['wh'][1]))        
         layout.addWidget(textedit, index, 1, 1, 1)  
-                
                                                 
     def find_path(self, widget, content, display=False):    
         current_link = QtWidgets.QFileDialog.getOpenFileName(
@@ -254,6 +253,8 @@ class Window(QtWidgets.QWidget):
                 value = widget.toPlainText()                    
             else:
                 value = widget.text().encode()
+            if not value:
+                value = None
             data.setdefault(widget.statusTip().encode(), value)
         return data   
 
@@ -288,7 +289,7 @@ if __name__ == '__main__':
         value=None,
         title='Show Inputs',
         width=572,
-        height=155
+        height=314
     )
     window.show()
     sys.exit(app.exec_())

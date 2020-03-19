@@ -1,0 +1,22 @@
+[Desktop Entry]
+Categories=Application;Graphics;
+Comment[en_US]=Run Preferences 0.0.1
+Comment=Run Preferences 0.0.1
+Encoding=UTF-8
+Exec=/venture/source_code/subins_tutorials/studio_usd_pipe/bin/preferences.sh
+GenericName[en_US]=
+GenericName=
+Icon=/venture/source_code/subins_tutorials/studio_usd_pipe/resource/icons/preferences.png
+MimeType=
+Name[en_US]=Preferences_v0.0.1
+Name=Preferences_v0.0.1
+Path=
+StartupNotify=true
+Terminal=true
+TerminalOptions=
+Type=Application
+Version=0.0.1
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CURRENT_PATH=$(pwd -P)
-CURRENT_PATH="/venture/subins_tutorials"
+CURRENT_PATH="/venture/source_code/subins_tutorials"
 
 echo $CURRENT_PATH
 export STUDIO_PATH=$CURRENT_PATH
@@ -17,5 +17,5 @@ echo ""
 
 echo $STUDIO_PATH"/studio_usd_pipe/bin/publish.py"
 
-preference
+preferences
 # End: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :

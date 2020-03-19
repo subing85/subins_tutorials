@@ -9,15 +9,12 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 from studio_usd_pipe.api import studioMaya
 from studio_usd_pipe.api import studioPublish
 from studio_usd_pipe.resource.ui import inputs
 reload(studioPublish)
-reload(inputs)
-reload(studioMaya)
 
-from pprint import pprint
 
 class Window(inputs.Window):
 
@@ -25,7 +22,7 @@ class Window(inputs.Window):
         super(Window, self).__init__(parent, **kwargs)
         # self.setParent(parent)
         self.pub = studioPublish.Publish(self.mode)
-        self.pref = preference.Preference()
+        self.pref = preferences.Preferences()
         self.set_current()
         self.update_ui()     
         
@@ -62,7 +59,6 @@ class Window(inputs.Window):
         self.button_publish.clicked.connect(self.publish)        
         self.button_cancel.clicked.connect(self.close)  
         
-        
     def set_current(self, bundle_data=None): 
         data = self.get_widget_data(self.gridlayout)
         self.get_widgets(data) 
@@ -77,13 +73,11 @@ class Window(inputs.Window):
             qsize.height(),
             path=bundle_data['show_icon']
             )
-
         
         pub_data = self.pub.get()
         
         captions = [''] + pub_data.keys()
         self.caption_widget.addItems(captions)
-        
         
         return
         self.subfield_widget.addItems(self.pub.valid_modes[self.mode]['subfield'])
@@ -118,6 +112,7 @@ class Window(inputs.Window):
         self.next_version_widget = data['next_version']['widget'] 
         
     def take_thumbnail(self, button):
+        print 'sssssssssssssssssssss'
         smaya = studioMaya.Maya()
         output_path, w, h = smaya.vieport_snapshot(
             output_path=None,
@@ -132,12 +127,11 @@ class Window(inputs.Window):
             path=output_path
             )        
         self.thumbnail_widget.setToolTip(output_path)
-                
             
     def set_current_version(self):
         caption = self.caption_widget.currentText()
         subfield = self.subfield_widget.currentText()
-        semantic_version =  self.version_widget.currentIndex()
+        semantic_version = self.version_widget.currentIndex()
         
         self.latest_version_widget.clear() 
         self.next_version_widget.clear()        
@@ -149,7 +143,6 @@ class Window(inputs.Window):
         self.latest_version_widget.addItems(versions)
         next_version = self.pub.get_next_version(versions[0], semantic_version)
         self.next_version_widget.addItem(next_version)
-            
             
     def publish(self):
         data = self.get_widget_data(self.gridlayout)
@@ -163,7 +156,7 @@ class Window(inputs.Window):
             'tag': data['tag']['value'],
             'caption': data['caption']['value'],
             'version': data['next_version']['value'],
-            'thumbnail': data['thumbnail']['value'],     
+            'thumbnail': data['thumbnail']['value'],
             'description': data['description']['value'],
             'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma'
             }
@@ -176,12 +169,9 @@ class Window(inputs.Window):
                 None, 'warning', message, QtWidgets.QMessageBox.Ok)                
             return
             
-            
         self.pub.pack()   
         self.pub.release()
         self.set_current_version()
-        
-        
         
 
 if __name__ == '__main__':

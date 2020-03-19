@@ -8,14 +8,14 @@ import sqlite3
 from datetime import datetime
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 
 
 class DataBase(object):
     
     def __init__(self, entity):        
         self.entity = entity
-        self.pref = preference.Preference()
+        self.pref = preferences.Preferences()
         pref_data = resource.getPreferenceData(path=self.pref.preference_path)
         self.db = os.path.join(
             pref_data['database_directory'], '{}.db'.format(self.entity))
