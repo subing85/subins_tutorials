@@ -6,16 +6,17 @@ from PySide2 import QtWidgets
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 from studio_usd_pipe.resource.ui import inputs
 
 
 class Window(inputs.Window):
 
     def __init__(self, parent=None, **kwargs):        
-        super(Window, self).__init__(parent, **kwargs)  
+        super(Window, self).__init__(parent, **kwargs) 
+        
         # self.setParent(parent)        
-        self.pref = preference.Preference()
+        self.pref = preferences.Preferences()
         self.set_current()
         self.update_ui()
         
@@ -41,7 +42,9 @@ class Window(inputs.Window):
 
     def set_current(self, bundle_data=None):
         if not bundle_data:
-            bundle_data = self.pref.get() 
+            bundle_data = self.pref.get()        
+        if not bundle_data:
+            return
         input_data = self.get_widget_data(self.gridlayout)
         for k, v in bundle_data.items():
             if k not in input_data:
@@ -58,6 +61,10 @@ class Window(inputs.Window):
     
     def create(self):
         input_data = self.get_data(self.gridlayout)
+        if None in input_data.values():
+            QtWidgets.QMessageBox.warning(
+                self, 'Warning', 'Empty input!...', QtWidgets.QMessageBox.Ok)
+            return                    
         result = self.pref.create(
             show_directory=input_data['show_directory'],
             show_icon=input_data['show_icon'],
@@ -78,11 +85,11 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window(
         parent=None,
-        type='preferences',
+        mode='preferences',
         value=None,
         title='Preferences',
-        width=570,
-        height=314
+        width=572,
+        height=314        
     )
     window.show()
     sys.exit(app.exec_())

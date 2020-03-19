@@ -9,7 +9,7 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 from studio_usd_pipe.api import studioMaya
 from studio_usd_pipe.api import studioPublish
 from studio_usd_pipe.resource.ui import inputs
@@ -25,7 +25,7 @@ class Window(inputs.Window):
         super(Window, self).__init__(parent, **kwargs)
         # self.setParent(parent)
         self.pub = studioPublish.Publish(self.mode)
-        self.pref = preference.Preference()
+        self.pref = preferences.Preference()
         self.set_current()
         # self.update_ui()     
         

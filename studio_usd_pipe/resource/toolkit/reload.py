@@ -29,8 +29,8 @@ def execute():
     reload(manifest)
     from studio_usd_pipe.core import mayapack
     reload(mayapack)
-    from studio_usd_pipe.core import preference
-    reload(preference)
+    from studio_usd_pipe.core import preferences
+    reload(preferences)
 
     from studio_usd_pipe.core import widgets
     reload(widgets)
@@ -58,16 +58,16 @@ def execute():
     reload(smaya)
     
     #===========================================================================
-    # from studio_usd_pipe.gui import preference
-    # reload(preference)
+    # from studio_usd_pipe.gui import preferences
+    # reload(preferences)
     #===========================================================================
         
     #===========================================================================
     # from studio_usd_pipe.resource.ui import inputs
     # reload(inputs) 
     #    
-    # from studio_usd_pipe.resource.ui import preference
-    # reload(preference) 
+    # from studio_usd_pipe.resource.ui import preferences
+    # reload(preferences) 
     #===========================================================================
     
     #===========================================================================

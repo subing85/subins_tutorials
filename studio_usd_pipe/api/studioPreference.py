@@ -1,6 +1,6 @@
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 
-class Connect(preference.Preference):
+class Connect(preferences.Preference):
     
     def __init__(self):
   

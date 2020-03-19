@@ -5,10 +5,10 @@ LAST_MODIFIED = 'January 25, 2020'
 OWNER = 'Subin Gopi'
 COMMENTS = 'Configure the subin\'s usd toolkit!...'
 SEPARATOR = True
-ICON = 'preference.png'
+ICON = 'preferences.png'
 
 def execute():
-    from studio_usd_pipe.gui import preference
-    preference.show_window(standalone=False)
+    from studio_usd_pipe.gui import preferences
+    preferences.show_window(standalone=False)
     
 

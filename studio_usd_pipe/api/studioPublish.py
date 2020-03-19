@@ -11,7 +11,7 @@ from distutils import version
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import asset
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 
 reload(asset)
 
@@ -41,7 +41,7 @@ class Publish(object):
 
         '''
         self.mode = mode        
-        pref = preference.Preference()
+        pref = preferences.Preferences()
         input_dirname = pref.get() 
         self.show_path = input_dirname['show_directory']
         self.mayapy_path = input_dirname['mayapy_directory']  

@@ -7,9 +7,10 @@ import tempfile
 
 from studio_usd_pipe.core import mayapack
 from studio_usd_pipe.core import database
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 
 reload(mayapack)
+reload(database)
 
 
 class Asset(object):
@@ -85,7 +86,7 @@ class Asset(object):
         return data[subfield][version]
 
     def set_inputs(self):
-        pref = preference.Preference()
+        pref = preferences.Preferences()
         self.input_data = pref.get()        
         self.db_directory = self.input_data['database_directory']   
         self.show_icon = self.input_data['show_icon']

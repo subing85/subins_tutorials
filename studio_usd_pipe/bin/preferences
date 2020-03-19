@@ -3,13 +3,13 @@
 import json
 import optparse
 
-from studio_usd_pipe.core import preference
+from studio_usd_pipe.core import preferences
 
 
 def pipe():
-    pref = preference.Preference()
+    pref = preferences.Preferences()
     parser = optparse.OptionParser(
-        usage='usage: %prog [options] create studio usd pipe preference',
+        usage='usage: %prog [options] create studio usd pipe preferences',
         version=pref.config.version)   
     
     parser.add_option(
@@ -25,7 +25,7 @@ def pipe():
         action='store_true',
         dest='create',
         default=False,
-        help='to create preference'
+        help='to create preferences'
         )
 
     parser.add_option(
@@ -73,7 +73,7 @@ def pipe():
         action='store_true',
         dest='example',
         default=False,
-        help='example of preference'
+        help='example of preferences'
         )  
         
     (options, args) = parser.parse_args()
@@ -110,7 +110,7 @@ def pipe():
             'mayapy_directory': options.pMayapy
             }
         
-        pref = preference.Preference()
+        pref = preferences.Preferences()
         pref.create(
             show_directory=options.pShow,
             show_icon=options.pIcon,
@@ -127,15 +127,15 @@ def pipe():
             '-d /venture/shows/my_hero/db',
             '-p /usr/autodesk/maya2018/bin/mayapy'
         ]
-        print 'create preference\t- preference {}'.format(' '.join(flags))
-        print 'get all data \t\t- preference -q -a'
-        print 'get all show \t\t- preference -q -s True'
-        print 'get all show icon \t- preference -q -i True'
-        print 'get all database data \t- preference -q -d True'
-        print 'get all mayapy \t\t- preference -q -p True'
+        print 'create preferences\t- preferences {}'.format(' '.join(flags))
+        print 'get all data \t\t- preferences -q -a'
+        print 'get all show \t\t- preferences -q -s True'
+        print 'get all show icon \t- preferences -q -i True'
+        print 'get all database data \t- preferences -q -d True'
+        print 'get all mayapy \t\t- preferences -q -p True'
     
     else:
-        from studio_usd_pipe.gui import preference as pref
+        from studio_usd_pipe.gui import preferences as pref
         pref.show_window(standalone=True)
 
 if __name__ == '__main__':

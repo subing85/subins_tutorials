@@ -11,7 +11,7 @@ from studio_usd_pipe.core import image
 from studio_usd_pipe.core import configure
 
 
-class Preference(object):
+class Preferences(object):
     
     def __init__(self):
         self.toolkit = 'subins-toolkits'
@@ -92,7 +92,9 @@ class Preference(object):
         '''
             pre = Preference()
             pre.get()
-        '''
+        '''        
+        if not os.path.isfile(self.preference_path):
+            return None
         data = resource.get_input_data(self.preference_path)
         return data
     
