@@ -57,6 +57,16 @@ def execute():
     from studio_usd_pipe.utils import smaya
     reload(smaya)
     
+    from studio_usd_pipe.resource.ui import preferences
+    reload(preferences) 
+    
+    
+    from studio_usd_pipe.resource.ui import push
+    reload(push)
+
+    #from studio_usd_pipe.resource.ui import pull
+    #reload(pull)           
+    
     #===========================================================================
     # from studio_usd_pipe.gui import preferences
     # reload(preferences)

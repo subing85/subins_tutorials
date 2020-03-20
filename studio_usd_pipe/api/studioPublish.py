@@ -51,7 +51,7 @@ class Publish(object):
         # self.get_pulish_path()
        
         self.valid_modes = {
-            'asset': {
+            'assets': {
                 'subfield': ['model', 'uv', 'surface', 'puppet'],
                 'tag': ['character', 'prop', 'environment'],
                 'type': ['interactive', 'non-interactive']
@@ -62,17 +62,17 @@ class Publish(object):
             }
         
         self.valid_publish_keys = {
-            'asset': [
+            'assets': [
                 'subfield', 'caption', 'type', 'tag', 'thumbnail', 'description', 'next_version'
                 ],
-            'shot': [
+            'shots': [
                 'subfield', 'tag', 'type', 'caption', 'thumbnail', 'description', 'next_version'
                 ]
             }
         
         self.my_step = None
         
-        if self.mode=='asset_push' or self.mode=='asset_pull':
+        if self.mode=='assets':
             self.my = asset.Asset()
             
         if self.mode=='shot':
@@ -111,13 +111,13 @@ class Publish(object):
             pub.release()
         '''        
         self.collect_packed()
-        if self.mode=='asset':
+        if self.mode=='assets':
             self.my.subfield = self.bundle['subfield']
             # my_asset = asset.Asset(subfield=self.bundle['subfield']) 
             self.my.pack(self.packed_bundle)
             
     def release(self): 
-        if self.mode=='asset':
+        if self.mode=='assets':
             self.my.release()
             #self.packed_bundle, self.stamped_time)
             
