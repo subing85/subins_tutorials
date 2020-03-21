@@ -10,12 +10,13 @@ from PySide2 import QtWidgets
 
 from functools import partial
 
+
 from studio_usd_pipe import resource
-from studio_usd_pipe.api import studioMaya
-from studio_usd_pipe.api import studioPublish
-from studio_usd_pipe.core import configure
 from studio_usd_pipe.core import widgets
+from studio_usd_pipe.core import configure
 from studio_usd_pipe.core import preferences
+from studio_usd_pipe.api import studioPublish
+from studio_usd_pipe.api import studioMaya
 
 reload(studioPublish)
 
@@ -233,6 +234,7 @@ class Window(QtWidgets.QWidget):
         widgets.image_to_button(
             self.button_show, size.width(), size.height(), path=bundle_data['show_icon'])
         pub_data = self.pub.get()
+        print json.dumps(pub_data, indent=4)
         captions = [''] + pub_data.keys()
         self.combobox_caption.clear() 
         self.combobox_caption.addItems(captions)         
@@ -284,9 +286,7 @@ class Window(QtWidgets.QWidget):
             if isinstance(widget, QtWidgets.QTextEdit):
                 widget_value = widget.toPlainText().encode()
             if isinstance(widget, QtWidgets.QPushButton):
-                print widget.objectName()
                 widget_value = widget.toolTip().encode()
-                print 'widget_value', widget_value
             if not widget_value:
                 widget_value = None
             widget_data.setdefault(key, widget_value)

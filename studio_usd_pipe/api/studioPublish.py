@@ -16,6 +16,7 @@ from studio_usd_pipe.core import preferences
 reload(asset)
 
 
+
 class Publish(object):
     
     def __init__(self, mode, **kwargs):
@@ -73,8 +74,12 @@ class Publish(object):
         self.my_step = None
         
         if self.mode=='assets':
-            self.my = asset.Asset()
-            
+            try:
+                from studio_usd_pipe.core import asset
+                self.my = asset.Asset()
+            except:
+                pass
+             
         if self.mode=='shot':
             pass
            
@@ -174,6 +179,10 @@ class Publish(object):
     def get_data(self, caption, subfield, version):        
         data = self.my.get_asset_data(caption, subfield, version)
         return data
+    
+    def get_more_data(self, caption, subfield, version):
+        data = self.my.get_asset_more_data(caption, subfield, version)
+        return data            
     
     def get_latest_version(self, caption, subfield, version_data=None):
         if not version_data:

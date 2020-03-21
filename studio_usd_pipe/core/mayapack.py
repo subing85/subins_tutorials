@@ -23,7 +23,6 @@ class Pack(studioMaya.Maya):
     def __init__(self):
         # studioMaya.Maya.__init__(self)  
         super(Pack, self).__init__()
-        
               
         self.model = studioModel.Model()
         self.shader = studioShader.Shader()

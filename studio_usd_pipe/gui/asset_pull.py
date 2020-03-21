@@ -23,27 +23,14 @@ def show_window(standalone=False):
     if not standalone:        
         main_window = smaya.get_qwidget()
         # main_window = None
-        smaya.remove_exists_window('widget_asset')        
-        my_window = pull.Window(
-            parent=main_window,
-            mode='asset_pull',
-            value=None,
-            title='Asset Pull',
-            width=570,
-            height=314)
+        smaya.remove_exists_window('mainwindow_pull')        
+        my_window = pull.Window(parent=main_window, mode='assets')
         my_window.show()
             
     if standalone:
         # if __name__ == '__main__':
         app = QtWidgets.QApplication(sys.argv)
-        my_window = pull.Window(
-            parent=None,
-            mode='asset_pull',
-            value=None,
-            title='Asset Pull',
-            width=570,
-            height=314
-            )
+        my_window = pull.Window(parent=None, mode='assets')
         my_window.show()
         sys.exit(app.exec_())
     

@@ -5,6 +5,7 @@ import tempfile
 from maya import OpenMaya
 from maya import OpenMayaUI
 
+
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import image
 

@@ -1,10 +1,13 @@
-import json
+
 import os
+import copy
+import json
 import time
 import shutil
 import getpass
 import tempfile
 
+from studio_usd_pipe import resource
 from studio_usd_pipe.core import mayapack
 from studio_usd_pipe.core import database
 from studio_usd_pipe.core import preferences
@@ -84,6 +87,24 @@ class Asset(object):
             raise ValueError(
                 'Not found <{} {}> in the database'.format(subfield, version))
         return data[subfield][version]
+    
+    def get_asset_more_data(self, caption, subfield, version):
+        manifest_path = os.path.join(
+            self.show_path,
+            self.entity,
+            caption,
+            subfield,
+            version,
+            '{}.manifest'.format(caption)
+            )
+        data = resource.get_input_data(manifest_path)
+        sorted_data = copy.deepcopy(data)
+        extrude = ['caption', 'tag', 'user', 'date', 'path', 'type']
+        for each in data:
+            if each not in extrude:
+                continue
+            sorted_data.pop(each)
+        return sorted_data
 
     def set_inputs(self):
         pref = preferences.Preferences()
@@ -127,8 +148,6 @@ class Asset(object):
         self.description = bundle['description']   
         self.time_stamp = bundle['time_stamp'] 
         
-        print 'self.thumbnail\t', self.thumbnail
-         
         self.publish_path = os.path.join(
             self.show_path,
             self.entity,
@@ -214,7 +233,6 @@ class Asset(object):
                 'order': 6
                 }
             } 
-        
         self.dbs.create(kwargs)
     
     def move_to_publish(self):   
@@ -387,7 +405,13 @@ class Asset(object):
     def make_manifest(self):        
         source_images = None
         if 'source_images' in self.data:
-            source_images = self.data['source_images']        
+            source_images = self.data['source_images']
+
+        maya_file = [os.path.join(self.publish_path, os.path.basename(self.data['maya_file'][0]))]
+        studio_format = [os.path.join(self.publish_path, os.path.basename(self.data['studio_%s' % self.subfield][0]))]
+        usd = [os.path.join(self.publish_path, os.path.basename(self.data['usd_%s' % self.subfield][0]))]      
+        thumbnail = [os.path.join(self.publish_path, os.path.basename(self.data['thumbnail'][0]))]          
+
         inputs = {
             'output_directory': self.temp_pack_path,
             'location': self.publish_path,
@@ -398,17 +422,15 @@ class Asset(object):
             'description': self.description,
             'time_stamp': self.time_stamp,
             'source_file': self.source_maya,
-            'maya': self.data['maya_file'],
-            'studio_format': self.data['studio_%s' % self.subfield],
-            'usd': self.data['usd_%s' % self.subfield],
-            'thumbnail': self.data['thumbnail'],
+            'maya': maya_file,
+            'studio_format': studio_format,
+            'usd': usd,
+            'thumbnail': thumbnail,
             'source_images': source_images,
             'force': True
             }
         print '#'*50
-        import json
         print json.dumps(inputs, indent=4)
-        
         print '#'*50
         mainfest = self.mpack.create_manifest(inputs)
         self.data['mainfest'] = [mainfest]
