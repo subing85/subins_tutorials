@@ -15,6 +15,7 @@ from studio_usd_pipe.api import studioShader
 from studio_usd_pipe.api import studioNurbscurve
 
 reload(studioUsd)
+reload(studioMaya)
 
 
 
@@ -47,7 +48,7 @@ class Pack(studioMaya.Maya):
                 continue
             input_data[k]['value'] = arguments[k]         
         dt_object = datetime.fromtimestamp(arguments['smodified'])
-        input_data['smodified']['value'] = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p')          
+        input_data['smodified']['value'] = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p') 
         return input_data
     
     def pack_exists(self, path, force): 
@@ -76,7 +77,7 @@ class Pack(studioMaya.Maya):
                 'stag': 'character',
                 'sversion': '0.0.0',
                 'smodified': time.time(),
-                'spath': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'slocation': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
                 'sdescription': 'test publish',
                 'node': 'model',
                 'world': 'world'
@@ -129,7 +130,6 @@ class Pack(studioMaya.Maya):
         # OpenMaya.MGlobal.selectByName(model_dag_node.fullPathName())
         OpenMaya.MGlobal.clearSelectionList()
         self.set_perspective_view()
-
     
     def create_thumbnail(self, inputs):
         '''
@@ -473,5 +473,32 @@ class Pack(studioMaya.Maya):
             }        
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
-        return output_path   
+        return output_path
+
+    def import_maya(self, maya_file):
+        mfile = OpenMaya.MFileIO()
+        mfile.open(maya_file, 'mayaAscii', True, mfile.kLoadDefault, True)
+
+    def reference_maya(self, maya_file, locked=True):
+        mfile = OpenMaya.MFileIO()
+        namespace = os.path.basename(os.path.splitext(maya_file)[0])
+        mfile.reference(maya_file, True, locked, namespace)
+    
+    def import_usd(self, maya_file):
+        pass  
+      
+    def reference_usd(self, maya_file, locked=True):
+        mfile = OpenMaya.MFileIO()
+        namespace = os.path.basename(os.path.splitext(maya_file)[0])
+        mfile.reference(maya_file, True, locked, namespace)
+            
+    def open_maya(self, maya_file):
+        mfile = OpenMaya.MFileIO()
+        mfile.open(maya_file, 'mayaAscii', True, mfile.kLoadDefault, True)
+            
+    def pull_studio(self, maya_file, replace=True):
+        pass
+    
+    def open_location(self, maya_file):
+        pass      
 

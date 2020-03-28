@@ -32,7 +32,7 @@ class Asset(object):
             'stag',
             'sversion',
             'smodified',
-            'spath',
+            'slocation',
             'sdescription'
             ]
 
@@ -49,7 +49,7 @@ class Asset(object):
                 'caption': contents['caption'],
                 'user': contents['user'],
                 'date': contents['date'],
-                'path': contents['path'],
+                'location': contents['location'],
                 'type': contents['type']        
                 }
             if contents['caption'] not in db_data:
@@ -99,7 +99,7 @@ class Asset(object):
             )
         data = resource.get_input_data(manifest_path)
         sorted_data = copy.deepcopy(data)
-        extrude = ['caption', 'tag', 'user', 'date', 'path', 'type']
+        extrude = ['caption', 'tag', 'user', 'date', 'location', 'type']
         for each in data:
             if each not in extrude:
                 continue
@@ -228,7 +228,7 @@ class Asset(object):
                 'value': date,
                 'order': 5
                 },
-            'path': {
+            'location': {
                 'value': self.publish_path,
                 'order': 6
                 }
@@ -286,7 +286,11 @@ class Asset(object):
             self.asset_ids[7]: self.description,
             'node': 'model',
             'world': 'world'
-            }        
+            }
+        
+        import json
+        print 'hello'
+        print json.dumps(inputs, indent=4)       
         self.mpack.create_model(inputs, force=force)  
          
     def make_thumbnail(self):
@@ -373,7 +377,7 @@ class Asset(object):
             'caption': self.caption,
             'time_stamp': self.time_stamp,
             'force': True
-            }        
+            }
         usd = self.mpack.create_model_usd(inputs, asset_ids=self.asset_ids)
         self.data['usd_model'] = [usd]    
         

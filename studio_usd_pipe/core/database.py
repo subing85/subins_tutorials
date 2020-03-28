@@ -65,7 +65,7 @@ class DataBase(object):
                 'type': {'value': 'inractive', 'order': 3},
                 'tag': {'value': 'character', 'order': 4},
                 'date': {'value': '01-01-2110', 'order': 5},
-                'path': {'value': '/show/assets/batman/0.0.0', 'order': 6}
+                'location': {'value': '/show/assets/batman/0.0.0', 'order': 6}
                 }         
             dbs = DataBase('asset')
             dbs.create(kwargs)            
@@ -107,7 +107,7 @@ class DataBase(object):
                 'type': 'inractive',
                 'tag': 'character',
                 'date':'01-01-2110',
-                'path': '/venture/test_show/assets/batman/0.0.0',
+                'location': '/venture/test_show/assets/batman/0.0.0',
                 }
             dbs = DataBase('asset')                  
             dbs.update(1, kwargs)       

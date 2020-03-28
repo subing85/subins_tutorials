@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/main.ui'
 #
-# Created: Fri Mar 20 23:01:30 2020
+# Created: Sun Mar 22 00:39:01 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!

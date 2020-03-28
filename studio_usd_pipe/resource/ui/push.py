@@ -10,7 +10,6 @@ from PySide2 import QtWidgets
 
 from functools import partial
 
-
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
 from studio_usd_pipe.core import configure
@@ -35,10 +34,11 @@ class Window(QtWidgets.QWidget):
         self.pub = studioPublish.Publish(self.mode)                
         self.pref = preferences.Preferences()
         self.setup_ui()
-        self.set_current()
+        self.set_default()
+        self.icon_configure()
         
     def setup_ui(self):
-        self.setObjectName('widget_preferences')
+        self.setObjectName('widget_asset')
         self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))        
         self.resize(self.width, self.height)         
         self.verticallayout = QtWidgets.QVBoxLayout(self)
@@ -108,7 +108,6 @@ class Window(QtWidgets.QWidget):
         self.combobox_subfield.setEditable(True)
         self.combobox_subfield.setEnabled(True)
         self.combobox_subfield.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
-        self.combobox_subfield.addItems(self.pub.valid_modes[self.mode]['subfield'])
         self.gridlayout.addWidget(self.combobox_subfield, 1, 1, 1, 1)  
         self.label_type = QtWidgets.QLabel(self.groupbox)
         self.label_type.setObjectName('label_type')
@@ -120,7 +119,6 @@ class Window(QtWidgets.QWidget):
         self.combobox_type.setEditable(True)
         self.combobox_type.setEnabled(True)
         self.combobox_type.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
-        self.combobox_type.addItems(self.pub.valid_modes[self.mode]['type'])        
         self.gridlayout.addWidget(self.combobox_type, 2, 1, 1, 1)  
         self.label_tag = QtWidgets.QLabel(self.groupbox)
         self.label_tag.setObjectName('label_tag')
@@ -132,7 +130,6 @@ class Window(QtWidgets.QWidget):
         self.combobox_tag.setEditable(True)
         self.combobox_tag.setEnabled(True)
         self.combobox_tag.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
-        self.combobox_tag.addItems(self.pub.valid_modes[self.mode]['tag'])         
         self.gridlayout.addWidget(self.combobox_tag, 3, 1, 1, 1)          
         self.label_thumbnail = QtWidgets.QLabel(self.groupbox)
         self.label_thumbnail.setObjectName('label_thumbnail')
@@ -145,9 +142,8 @@ class Window(QtWidgets.QWidget):
         self.button_thumbnail.setSizePolicy(size_policy)
         self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
         self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
-        thumbnail_icon = os.path.join(resource.getIconPath(), 'screenshot.png')
         widgets.image_to_button(
-            self.button_thumbnail, 256, 180, path=thumbnail_icon)          
+            self.button_thumbnail, 256, 180, path=os.path.join(resource.getIconPath(), 'screenshot.png'))          
         self.button_thumbnail.clicked.connect(partial(self.take_thumbnail, self.button_thumbnail))
         self.gridlayout.addWidget(self.button_thumbnail, 4, 1, 1, 1)  
         self.label_description = QtWidgets.QLabel(self.groupbox)
@@ -172,7 +168,6 @@ class Window(QtWidgets.QWidget):
         self.combobox_version.setEditable(True)
         self.combobox_version.setEnabled(True)
         self.combobox_version.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
-        self.combobox_version.addItems(['major', 'minor', 'patch'])        
         self.gridlayout.addWidget(self.combobox_version, 6, 1, 1, 1)                  
         self.label_latest_version = QtWidgets.QLabel(self.groupbox)
         self.label_latest_version.setObjectName('label_latest_version')
@@ -187,7 +182,7 @@ class Window(QtWidgets.QWidget):
         self.gridlayout.addWidget(self.combobox_latest_version, 7, 1, 1, 1)
         self.label_next_version = QtWidgets.QLabel(self.groupbox)
         self.label_next_version.setObjectName('label_next_version')
-        self.label_next_version.setText('Caption')
+        self.label_next_version.setText('Next Version')
         self.label_next_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_next_version, 8, 0, 1, 1)
         self.combobox_next_version = QtWidgets.QComboBox(self.groupbox)
@@ -225,20 +220,50 @@ class Window(QtWidgets.QWidget):
         config.tool()
         return config.version, config.pretty          
         
-    def set_current(self):
-        bundle_data = self.pref.get()   
-        if not bundle_data:
-            warnings.warn('not found show icon', Warning)
-            return        
-        size = self.button_show.minimumSize()
-        widgets.image_to_button(
-            self.button_show, size.width(), size.height(), path=bundle_data['show_icon'])
+    def set_default(self):
+        self.combobox_caption.clear()
+        self.combobox_subfield.clear()
+        self.combobox_type.clear()
+        self.combobox_tag.clear()
+        self.textedit_description.clear()
+        self.combobox_version.clear()
+        self.combobox_latest_version.clear()
+        self.combobox_next_version.clear()
+        bundle_data = self.pref.get()
+        if bundle_data:  # set show icon 
+            show_icon = os.path.join(resource.getIconPath(), 'show.png')
+            if 'show_icon' in bundle_data:
+                show_icon = bundle_data['show_icon']
+            size = self.button_show.minimumSize()
+            widgets.image_to_button(
+                self.button_show,
+                size.width(),
+                size.height(),
+                path=show_icon
+                )            
         pub_data = self.pub.get()
-        print json.dumps(pub_data, indent=4)
-        captions = [''] + pub_data.keys()
-        self.combobox_caption.clear() 
-        self.combobox_caption.addItems(captions)         
-        
+        captions = ['']
+        if pub_data:  # add caption from database
+            captions = [''] + pub_data.keys()
+        self.combobox_caption.addItems(captions)
+        self.combobox_subfield.addItems(self.pub.valid_modes[self.mode]['subfield'])        
+        self.combobox_type.addItems(self.pub.valid_modes[self.mode]['type'])        
+        self.combobox_tag.addItems(self.pub.valid_modes[self.mode]['tag'])         
+        self.combobox_version.addItems(['major', 'minor', 'patch'])        
+        size = self.button_thumbnail.minimumSize()
+        widgets.image_to_button(
+            self.button_thumbnail,
+            size.width(),
+            size.height(),
+            path=os.path.join(resource.getIconPath(), 'screenshot.png')
+            )
+
+    def icon_configure (self):
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(os.path.join(resource.getIconPath(), 'push.png')))
+        self.setWindowIcon(icon)
+
+                   
     def take_thumbnail(self, button):
         smaya = studioMaya.Maya()
         output_path, w, h = smaya.vieport_snapshot(
@@ -304,7 +329,7 @@ class Window(QtWidgets.QWidget):
         print json.dumps(self.pub.bundle, indent=4)
         self.pub.pack()   
         self.pub.release()
-        self.set_current()       
+        self.set_default()       
         self.set_current_version()
         QtWidgets.QMessageBox.information(
             self, 'Success', 'Done!...', QtWidgets.QMessageBox.Ok)
