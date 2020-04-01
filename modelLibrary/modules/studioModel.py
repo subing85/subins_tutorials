@@ -14,6 +14,7 @@ Description
 '''
 
 import os
+import json
 
 from datetime import datetime
 
@@ -140,7 +141,7 @@ class Model(studioMaya.Maya):
         data['num_uvs'] = mfn_mesh.numUVs()
         data['num_vertices'] = mfn_mesh.numVertices()
         return data
-
+        
     def create_polygon_mesh(self, data, dag_path=None):
         vertex_array = self.createFloatPointArray(data['vertices'])
         vertex_count = self.createIntArray(data['vertex_count'])
@@ -151,7 +152,6 @@ class Model(studioMaya.Maya):
         if dag_path:
             if not isinstance(dag_path, OpenMaya.MDagPath):
                 dag_path = self.getDagPath(dag_path)
-
             mfn_mesh = OpenMaya.MFnMesh(dag_path)
             self.delete_all_uv_sets(dag_path)
         else:

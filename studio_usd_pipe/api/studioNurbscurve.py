@@ -18,7 +18,7 @@ class Nurbscurve(studioMaya.Maya):
         mplug_z = parent_node.findPlug('boundingBoxMaxZ')        
         radius = max([mplug_x.asFloat(), mplug_z.asFloat()])
         world_data = resource.getWroldData()
-        world_node = self.create_kcurve(world_data, radius=radius + 0.5, name='world') 
+        world_node = self.create_kcurve(world_data, 'world', radius=radius + 0.5) 
         if parent:
             children = OpenMaya.MObjectArray()
             for x in range (mfn_dag_node.childCount()): 
@@ -64,8 +64,8 @@ class Nurbscurve(studioMaya.Maya):
             }        
         return data
         
-    def create_kcurve(self, data, radius=1, name=None):
-        cv_array = self.create_mpoint_array(data['control_vertices'])
+    def create_kcurve(self, data, name, radius=1):
+        cv_array = self.create_mpoint_array(data['points'])
         knots_array = self.create_mdouble_array(data['knots'])
         mfn_curve = OpenMaya.MFnNurbsCurve()
         mfn_curve.create(

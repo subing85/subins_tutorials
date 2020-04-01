@@ -3,6 +3,7 @@ import math
 from maya import OpenMaya
 
 from studio_usd_pipe.api import studioMaya
+from __builtin__ import True, False
 
 reload(studioMaya)
 
@@ -58,25 +59,58 @@ class Model(studioMaya.Maya):
             }
         mesh_smooth = OpenMaya.MMeshSmoothOptions()
         mfn_mesh.getSmoothMeshDisplayOptions(mesh_smooth)
+        
+        num_polygons, polygon_vertices = self.get_kfacesvertices(mfn_mesh)
         data = {
             'vertices': vertice_list,
             'vertex_count': list(vertex_count),
             'vertex_list': list(vertex_array),
             'num_vertices': mfn_mesh.numVertices(),
-            'num_polygons': mfn_mesh.numPolygons(),
+            'num_polygons': num_polygons,
+            'polygon_vertices': polygon_vertices,
             'double_sided': ds_mplug.asInt(),
             'bounding': bounding_value,
             'shape':  mfn_mesh.name(),
             'subdmesh': mesh_smooth.divisions()
             }
-        return data    
+        return data
     
-    def create_kmodel(self, data):
+    def get_kfacesvertices(self, mfn_mesh):
+        num_polygons = mfn_mesh.numPolygons()
+        polygon_vertices = []
+        for index in range(num_polygons):
+            mint_array = OpenMaya.MIntArray()
+            mfn_mesh.getPolygonVertices(index, mint_array)
+            polygon_vertices.append(list(mint_array))
+        return num_polygons, polygon_vertices   
+    
+    def validate_mesh(self, mfn_mesh, num_polygons, polygon_vertices):
+        m_num_polygons, m_polygon_vertices = self.get_kfacesvertices(mfn_mesh)
+        if num_polygons != m_num_polygons:
+            return False
+        if polygon_vertices != m_polygon_vertices:
+            return False
+        return True
+            
+    def create_model(self, name, data, replace=False):
+        if replace:
+            mfn_mesh = self.update_kmodel(name, data)
+            if not mfn_mesh:
+                if self.object_exists(name):
+                    children = self.get_children(name)
+                    for x in range(children.length()):
+                        self.unparent(children[x])
+                    self.remove_node(name)                
+                mfn_mesh = self.create_kmodel(name, data)       
+        else:
+            mfn_mesh = self.create_kmodel(name, data)
+
+    def create_kmodel(self, name, data):
         num_vertices = data['num_vertices']
         num_polygons = data['num_polygons']
         vertex_array = self.create_floatpoint_array(data['vertices'])
         vertex_count = self.create_int_array(data['vertex_count'])
-        vertex_list = self.create_int_array(data['vertex_list'])        
+        vertex_list = self.create_int_array(data['vertex_list'])
         mfn_mesh = OpenMaya.MFnMesh()
         mfn_mesh.create(
             num_vertices,
@@ -84,11 +118,27 @@ class Model(studioMaya.Maya):
             vertex_array,
             vertex_count,
             vertex_list
-            )        
+            )            
         mfn_mesh.setName(data['shape'])        
-        parent_mobject = mfn_mesh.parent(0)
+        mfn_dag_node = OpenMaya.MFnDagNode(mfn_mesh.parent(0))
+        mfn_dag_node.setName(name)        
         mfn_mesh.updateSurface()
         return mfn_mesh
+
+    def update_kmodel(self, name, data):
+        num_polygons = data['num_polygons']
+        polygon_vertices = data['polygon_vertices']
+        vertex_array = self.create_floatpoint_array(data['vertices'])
+        if not self.object_exists(name):
+            return None
+        dag_path = self.get_dagpath(name)         
+        shape_dag_path = self.get_shape_node(dag_path)
+        mfn_mesh = OpenMaya.MFnMesh(shape_dag_path)
+        if not self.validate_mesh(mfn_mesh, num_polygons, polygon_vertices):
+            return None
+        mfn_mesh.setPoints(vertex_array, OpenMaya.MSpace.kObject)
+        return mfn_mesh
+        
     
     def get_kuv(self, mobject):
         mfn_mesh = OpenMaya.MFnMesh(mobject)
@@ -161,5 +211,11 @@ class Model(studioMaya.Maya):
             data.setdefault(transform_mesh[x].fullPathName(), model_data)            
         return data
     
-  
+
+
+
+        
+        
+        
+        
           

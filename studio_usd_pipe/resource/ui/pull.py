@@ -3,6 +3,7 @@ import sys
 import ast
 import copy
 import json
+import platform
 import warnings
 
 from PySide2 import QtGui
@@ -15,10 +16,15 @@ from distutils import version
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
 from studio_usd_pipe.core import configure
+from studio_usd_pipe.core import mayacreate
 from studio_usd_pipe.core import preferences
+
+from studio_usd_pipe.api import studioMaya 
 from studio_usd_pipe.api import studioPublish
 
 reload(studioPublish)
+reload(studioMaya)
+reload(mayacreate)
 
 
 class Window(QtWidgets.QMainWindow):
@@ -30,6 +36,12 @@ class Window(QtWidgets.QMainWindow):
         self.title = 'Asset Publish/Push'
         self.width = 572
         self.height = 622
+        self.maya_format = {
+            '.ma': 'mayaAscii',
+            '.mb': 'mayaBinary',
+            '.usd': 'pxrUsdImport',
+            '.usda': 'pxrUsdImport'
+            }
         self.version, self.label = self.set_tool_context()
         self.pub = studioPublish.Publish(self.mode)             
         self.pref = preferences.Preferences()        
@@ -67,7 +79,6 @@ class Window(QtWidgets.QMainWindow):
         self.line.setObjectName('line')        
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.verticallayout.addWidget(self.line)        
-        
         
         self.horizontallayout_toolbar = QtWidgets.QHBoxLayout()
         self.horizontallayout_toolbar.setSpacing(10)
@@ -199,8 +210,6 @@ class Window(QtWidgets.QMainWindow):
         self.label_location = QtWidgets.QLabel(self.groupbox_data)
         self.label_location.setObjectName('label_location')
         self.gridlayout_data.addWidget(self.label_location, 5, 1, 1, 1)
-                
-                                          
         
         self.label_description = QtWidgets.QLabel(self.groupbox_data)
         self.label_description.setObjectName('label_description')
@@ -225,13 +234,12 @@ class Window(QtWidgets.QMainWindow):
                 
         spaceritem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridlayout_data.addItem(spaceritem, 8, 0, 1, 1)
-        
     
     def setup_menu(self):        
-        #self.menubar = QtWidgets.QMenuBar(self)
-        #self.menubar.setGeometry(QtCore.QRect(0, 0, 1049, 23))
-        #self.menubar.setObjectName('menubar')
-        #self.setMenuBar(self.menubar)
+        # self.menubar = QtWidgets.QMenuBar(self)
+        # self.menubar.setGeometry(QtCore.QRect(0, 0, 1049, 23))
+        # self.menubar.setObjectName('menubar')
+        # self.setMenuBar(self.menubar)
         
         self.menu = QtWidgets.QMenu(self)
         self.menu.setObjectName('menu')
@@ -296,7 +304,6 @@ class Window(QtWidgets.QMainWindow):
         self.action_pull_replace.triggered.connect(partial(self.import_data, 5, self.treewidget))
         self.action_pull_normal.triggered.connect(partial(self.import_data, 6, self.treewidget))
         self.action_open_location.triggered.connect(partial(self.import_data, 7, self.treewidget))
-        
     
     def setup_toolbar(self):             
         self.toolbar = QtWidgets.QToolBar()
@@ -318,7 +325,6 @@ class Window(QtWidgets.QMainWindow):
         self.toolbar.addAction(self.action_open_location)
         self.toolbar.addSeparator()
         self.horizontallayout_toolbar.addWidget(self.toolbar)
-
 
     def icon_configure (self):
         icon = QtGui.QIcon()
@@ -378,8 +384,10 @@ class Window(QtWidgets.QMainWindow):
                     ver_contents = copy.deepcopy(contents[subfield][each])
                     more_contents = self.pub.get_more_data(caption, subfield, each)
                     ver_contents['hierarchy'] = '{}|{}|{}'.format(caption, subfield, each)
+                    ver_contents['subfield'] = subfield
                     ver_contents.update(more_contents)
                     version_item.setStatusTip(0, str(ver_contents))
+        self.treewidget.expandAll()
     
     def add_treewidget_item(self, parent, label, icon=None):
         item = QtWidgets.QTreeWidgetItem (parent)
@@ -425,7 +433,6 @@ class Window(QtWidgets.QMainWindow):
         thumbnail_icon = os.path.join(resource.getIconPath(), 'unknown.png')
         widgets.image_to_button(
             self.button_thumbnail, size.width(), size.height(), path=thumbnail_icon) 
-        
 
     def import_data(self, index, treewidget):
         current_items = treewidget.selectedItems()
@@ -453,51 +460,73 @@ class Window(QtWidgets.QMainWindow):
             #     'pull_normal': 6,
             #     'open_location': 7
             #     }
-            #===================================================================                    
-            if index==0:
+            #===================================================================                  
+            if index == 0:
                 self.import_maya(contents['maya'][0])                
-            if index==1:
+            if index == 1:
                 self.reference_maya(contents['maya'][0])                            
-            if index==2:
+            if index == 2:
                 self.import_maya(contents['usd'][0])             
-            if index==3:
+            if index == 3:
                 self.reference_maya(contents['usd'][0])
-            if index==4:
+            if index == 4:
                 self.open_maya(contents['source_file'])
-            if index==5:
-                self.pull_studio(contents['studio_format'][0], replace=True)                               
-            if index==6:
-                self.pull_studio(contents['studio_format'][0], replace=False)
-            if index==7:
+            if index == 5:
+                self.pull_studio(contents['studio_format'][0], contents['subfield'], replace=True)                               
+            if index == 6:
+                self.pull_studio(contents['studio_format'][0], contents['subfield'], replace=False)
+            if index == 7:
                 self.open_location(contents['location'])                                                    
+     
+    def open_maya(self, file):
+        file_type = self.maya_format[os.path.splitext(file)[-1]]
+        smaya = studioMaya.Maya()
+        smaya.open_maya(file, file_type=file_type)
+            
+    def import_maya(self, file):
+        file_type = self.maya_format[os.path.splitext(file)[-1]]
+        namespace = '{}_1'.format(
+            os.path.basename(os.path.splitext(file)[0]))
+        smaya = studioMaya.Maya()
+        smaya.import_maya(file, file_type=file_type, namespace=namespace)
+ 
+    def reference_maya(self, file):
+        namespace = os.path.basename(os.path.splitext(file)[0])
+        smaya = studioMaya.Maya()
+        smaya.reference_maya(file, locked=True, namespace=namespace)
+
+    def pull_studio(self, file, subfield, replace=True):
+        
+        if subfield=='model':
+            mcreate = mayacreate.Create(file)
+            mcreate.model(replace=replace)
+            
+        if subfield=='uv':
+            mcreate = mayacreate.Create(file)
+            mcreate.uv(replace=replace)            
+
+        if subfield=='surface':
+            mcreate = mayacreate.Create(file)
+            mcreate.surface(replace=replace)
+                 
+        if subfield=='puppet':
+            mcreate = mayacreate.Create(file)
+            mcreate.puppet(replace=replace)
+            
+
     
-#===============================================================================
-#     def import_maya(self, file):
-#         print file
-#         pass
-# 
-#     def reference_maya(self, file):
-#         pass
-#     
-#     def import_usd(self, file):
-#         pass  
-#       
-#     def reference_usd(self, file):
-#         pass
-#     
-#     def open_maya(self, file):
-#         pass 
-#     
-#     def pull_studio(self, file, replace=True):
-#         pass
-#     
-#     def open_location(self, file):
-#         pass
-#===============================================================================
-    
-    
-    
-    
+    def open_location(self, location):
+        if platform.system() == 'Windows':
+            try:
+                os.startfile(location)
+            except:
+                pass
+        if platform.system() == 'Linux':    
+            try:
+                os.system('xdg-open \"%s\"' % location)
+            except:
+                pass    
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

@@ -16,7 +16,8 @@ from studio_usd_pipe.api import studioNurbscurve
 
 reload(studioUsd)
 reload(studioMaya)
-
+reload(studioModel)
+reload(studioNurbscurve)
 
 
 class Pack(studioMaya.Maya):
@@ -475,30 +476,5 @@ class Pack(studioMaya.Maya):
             content.write(json.dumps(final_data, indent=4))
         return output_path
 
-    def import_maya(self, maya_file):
-        mfile = OpenMaya.MFileIO()
-        mfile.open(maya_file, 'mayaAscii', True, mfile.kLoadDefault, True)
-
-    def reference_maya(self, maya_file, locked=True):
-        mfile = OpenMaya.MFileIO()
-        namespace = os.path.basename(os.path.splitext(maya_file)[0])
-        mfile.reference(maya_file, True, locked, namespace)
     
-    def import_usd(self, maya_file):
-        pass  
-      
-    def reference_usd(self, maya_file, locked=True):
-        mfile = OpenMaya.MFileIO()
-        namespace = os.path.basename(os.path.splitext(maya_file)[0])
-        mfile.reference(maya_file, True, locked, namespace)
-            
-    def open_maya(self, maya_file):
-        mfile = OpenMaya.MFileIO()
-        mfile.open(maya_file, 'mayaAscii', True, mfile.kLoadDefault, True)
-            
-    def pull_studio(self, maya_file, replace=True):
-        pass
-    
-    def open_location(self, maya_file):
-        pass      
 

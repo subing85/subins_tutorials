@@ -1,10 +1,9 @@
 import os
+import json
 import tempfile
-
 
 from maya import OpenMaya
 from maya import OpenMayaUI
-
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import image
@@ -16,6 +15,8 @@ reload(image)
 class Maya(object):
 
     def __init__(self):
+        self.maya_format = 'mayaAscii'
+        # self.usd_format = 'pxrUsdImport'
         self.valid_shapes = [OpenMaya.MFn.kMesh]
         self.scene_mobjects = OpenMaya.MObjectArray()        
         self.node_data = resource.getNodeData()
@@ -57,7 +58,7 @@ class Maya(object):
         
     def is_dagpath(self, mobject):           
         mobject = self.get_mobject(mobject)
-        result = None
+        result = False
         try:
             OpenMaya.MFnDagNode(mobject)
             result = True        
@@ -130,8 +131,23 @@ class Maya(object):
                 return True       
             mit_dependency_nodes.next()
         return False
+    
+    def get_children(self, mobject):       
+        if not self.is_dagpath(mobject):
+            return None
+        dag_path = self.get_dagpath(mobject)
+        count = dag_path.childCount()
+        children = OpenMaya.MObjectArray()
+        for x in range(count):    
+            child = dag_path.child(x)    
+            if not child.hasFn(OpenMaya.MFn.kTransform):
+                continue
+            children.append(child)
+        return children
           
     def remove_node(self, mobject):
+        if isinstance(mobject, unicode):
+            mobject = mobject.encode()                    
         if not isinstance(mobject, str):
             mobject = self.get_name(mobject)
         if not self.object_exists(mobject):
@@ -300,7 +316,7 @@ class Maya(object):
             mit_dependency_nodes.next()            
         return dag_path_array   
     
-    def create_group(self, name):        
+    def create_group(self, name, replace=True):
         mfn_dag_node = OpenMaya.MFnDagNode()
         mfn_dag_node.create('transform')
         mfn_dag_node.setName(name)
@@ -371,7 +387,11 @@ class Maya(object):
             dg_modifier.disconnect(input_plugs[0], output_plug)
             dg_modifier.doIt() 
             
-    def set_parent(self, child, parent):    
+    def set_parent(self, child, parent):
+        if isinstance(child, unicode):
+            child = child.encode()
+        if isinstance(parent, unicode):
+            parent = parent.encode()            
         if not isinstance(child, str):
             mfn_dagpath = OpenMaya.MFnDagNode(child)
             child = mfn_dagpath.fullPathName()            
@@ -385,8 +405,15 @@ class Maya(object):
         results = []
         mcommand_result.getResult(results)
         mobject = self.get_mobject(results[0])   
-        return mobject         
-         
+        return mobject
+    
+    def unparent(self, mobject):        
+        if not isinstance(mobject, str):
+            mfn_dagpath = OpenMaya.MFnDagNode(mobject)
+            mobject = mfn_dagpath.fullPathName()            
+        mel_command = 'parent -w \"%s\"'% mobject                       
+        OpenMaya.MGlobal.executeCommand(mel_command, False, True)   
+                     
     def freeze_transformations(self, node): 
         if not isinstance(node, str):
             node = self.get_name(node)      
@@ -432,7 +459,7 @@ class Maya(object):
             'scaleX': 1, 'scaleY': 1, 'scaleZ': 1
             } 
         for k, v in position.items():
-            mplug = self.get_mplug('persp.%s'%k)
+            mplug = self.get_mplug('persp.%s' % k)
             attribute = mplug.attribute()
             if attribute.apiType() == OpenMaya.MFn.kDoubleAngleAttribute:
                 value = OpenMaya.MAngle(v, OpenMaya.MAngle.kDegrees)
@@ -527,9 +554,6 @@ class Maya(object):
         # add new attribute types          
             
         return value, type
-    
-    
-   
             
     def get_attributes(self, object, default=False):
         '''
@@ -545,7 +569,7 @@ class Maya(object):
             value, type = self.get_attribute_type(mplug_array[x])
             # print '\t', value, '\t', type, '\t', mplug_array[x].attribute().apiTypeStr(), '\n'
 
-            if value=='null':
+            if value == 'null':
                 continue
             attribute_name = '.'.join(mplug_array[x].name().split('.')[1:])
             data[attribute_name] = {
@@ -565,14 +589,13 @@ class Maya(object):
         # ramp1.uWave kNumericAttribute
         # ramp1.vWave kNumericAttribute
         #===================================================================
-
     
     def _get_mplug_attributes(self, object):        
         attributes = self.list_attributes(object)        
         normal_attributes = []
         remove_attributes = []        
         for attribute in attributes:   
-            mplug = self.get_mplug('%s.%s'%(object, attribute))
+            mplug = self.get_mplug('%s.%s' % (object, attribute))
             attr_mobject = mplug.attribute()            
             if mplug.isElement():
                 for x in range (mplug.numChildren()):
@@ -584,10 +607,10 @@ class Maya(object):
                     if mplug.name() in normal_attributes:
                         continue                     
                     normal_attributes.append(mplug.name())
-                if attr_mobject.apiType()==OpenMaya.MFn.kNumericAttribute:
+                if attr_mobject.apiType() == OpenMaya.MFn.kNumericAttribute:
                     parent_mplug = mplug.parent()
                     parent_mobject = parent_mplug.attribute()
-                    if parent_mobject.apiType()!=OpenMaya.MFn.kCompoundAttribute:
+                    if parent_mobject.apiType() != OpenMaya.MFn.kCompoundAttribute:
                         continue
                     # if mplug in normal_attributes:
                     #     continue
@@ -614,22 +637,22 @@ class Maya(object):
         for attribute in attributes: 
             # if object=='file1':
             #     print   attribute
-            mplug = self.get_mplug('%s.%s'%(object, attribute))
+            mplug = self.get_mplug('%s.%s' % (object, attribute))
             attr_mobject = mplug.attribute()            
             if mplug.isElement():
                 for x in range (mplug.numChildren()):
                     remove_attributes.append(mplug.child(x))
             if mplug.isChild(): 
                 if attr_mobject.apiType() in [OpenMaya.MFn.kAttribute3Double, OpenMaya.MFn.kAttribute3Float]:
-                    #if mplug in normal_attributes:
+                    # if mplug in normal_attributes:
                     #    continue            
                     if mplug.isDefaultValue():
                         continue
                     normal_attributes.append(mplug)
-                if attr_mobject.apiType()==OpenMaya.MFn.kNumericAttribute:
+                if attr_mobject.apiType() == OpenMaya.MFn.kNumericAttribute:
                     parent_mplug = mplug.parent()
                     parent_mobject = parent_mplug.attribute()
-                    if parent_mobject.apiType()!=OpenMaya.MFn.kCompoundAttribute:
+                    if parent_mobject.apiType() != OpenMaya.MFn.kCompoundAttribute:
                         continue
                     # if mplug in normal_attributes:
                     #     continue
@@ -728,8 +751,8 @@ class Maya(object):
         return 'null', None
     
     def export_selected(self, node, output_path, **kwargs):
-        format='mayaAscii'
-        preserve_references=False
+        format = self.maya_format
+        preserve_references = False
         force = False               
         if 'format' in kwargs:
             format = kwargs['format']
@@ -739,7 +762,7 @@ class Maya(object):
             force = kwargs['force']            
         if os.path.isfile(output_path):      
             if not force:
-                raise IOError('Cannot save, already file found <%s>'%output_path)            
+                raise IOError('Cannot save, already file found <%s>' % output_path)            
             os.chmod(output_path, 0777)
             try:
                 os.remove(output_path)
@@ -763,4 +786,28 @@ class Maya(object):
         file_type = mfileio.fileType()
         if os.path.isfile(current_file):
             return current_file, file_type
-        return None, None
+        return None, None    
+            
+    def open_maya(self, maya_file, file_type=None):
+        '''
+        :parm file_type <str> 'mayaAscii', 'mayaBinary', 'pxrUsdImport', 'OBJ'
+        '''        
+        mfile = OpenMaya.MFileIO()
+        mfile.open(maya_file, file_type, True, mfile.kLoadDefault, True)
+            
+    def import_maya(self, maya_file, file_type=None, namespace=None):
+        '''
+        :parm file_type <str> 'mayaAscii', 'mayaBinary', 'pxrUsdImport', 'OBJ'
+        '''
+        mfile = OpenMaya.MFileIO()
+        mfile.importFile(maya_file, file_type, True, namespace, True)
+
+    def reference_maya(self, maya_file, locked=True, namespace=None):
+        mfile = OpenMaya.MFileIO()        
+        mfile.reference(maya_file, True, locked, namespace)
+
+    def read_json(self, path):
+        data = None
+        with open(path, 'r') as file:
+            data = json.load(file)
+        return data
