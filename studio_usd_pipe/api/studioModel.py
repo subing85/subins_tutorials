@@ -3,6 +3,7 @@ import math
 from maya import OpenMaya
 
 from studio_usd_pipe.api import studioMaya
+from __builtin__ import True, False
 
 reload(studioMaya)
 
@@ -12,30 +13,6 @@ class Model(studioMaya.Maya):
     def __init__(self):
         # studioMaya.Maya.__init__(self)
         super(Model, self).__init__()
-
-         
-    def get_ktransform(self, mobject):
-        mfn_transform = OpenMaya.MFnTransform(mobject)        
-        m_matrix = mfn_transform.transformation()
-        # get translate      
-        mvector = m_matrix.translation(OpenMaya.MSpace.kWorld)        
-        translation = [mvector.x, mvector.y, mvector.z]
-        # get rotation   
-        m_euler = m_matrix.eulerRotation()
-        angles = [m_euler.x, m_euler.y, m_euler.z]
-        rotation = [math.degrees(angle) for angle in angles]
-        # get scale     
-        scale_util = OpenMaya.MScriptUtil()
-        scale_util.createFromList([0, 0, 0], 3)
-        double = scale_util.asDoublePtr()
-        m_matrix.getScale(double, OpenMaya.MSpace.kWorld)
-        scale = [OpenMaya.MScriptUtil.getDoubleArrayItem(double, x) for x in range(3)]
-        data = {
-            'translate': translation,
-            'rotate': rotation,
-            'scale': scale
-            }                 
-        return data 
         
     def get_kmodel(self, mobject):
         mfn_mesh = OpenMaya.MFnMesh(mobject)        
@@ -58,25 +35,64 @@ class Model(studioMaya.Maya):
             }
         mesh_smooth = OpenMaya.MMeshSmoothOptions()
         mfn_mesh.getSmoothMeshDisplayOptions(mesh_smooth)
+        
+        num_polygons, polygon_vertices = self.get_kfacesvertices(mfn_mesh)
+        transform_data = self.get_ktransform(mobject, world=True)
+
         data = {
             'vertices': vertice_list,
             'vertex_count': list(vertex_count),
             'vertex_list': list(vertex_array),
             'num_vertices': mfn_mesh.numVertices(),
-            'num_polygons': mfn_mesh.numPolygons(),
+            'num_polygons': num_polygons,
+            'polygon_vertices': polygon_vertices,
             'double_sided': ds_mplug.asInt(),
             'bounding': bounding_value,
             'shape':  mfn_mesh.name(),
-            'subdmesh': mesh_smooth.divisions()
+            'subdmesh': mesh_smooth.divisions(),
+            'translate': transform_data['translate'],
+            'rotate': transform_data['rotate'],
+            'scale': transform_data['scale']
             }
-        return data    
+        return data
     
-    def create_kmodel(self, data):
+    def get_kfacesvertices(self, mfn_mesh):
+        num_polygons = mfn_mesh.numPolygons()
+        polygon_vertices = []
+        for index in range(num_polygons):
+            mint_array = OpenMaya.MIntArray()
+            mfn_mesh.getPolygonVertices(index, mint_array)
+            polygon_vertices.append(list(mint_array))
+        return num_polygons, polygon_vertices   
+    
+    def validate_mesh(self, mfn_mesh, num_polygons, polygon_vertices):
+        m_num_polygons, m_polygon_vertices = self.get_kfacesvertices(mfn_mesh)
+        if num_polygons != m_num_polygons:
+            return False
+        if polygon_vertices != m_polygon_vertices:
+            return False
+        return True
+            
+    def create_model(self, name, data, replace=False):
+        if replace:
+            mfn_mesh = self.update_kmodel(name, data)
+            if not mfn_mesh:
+                if self.object_exists(name):
+                    children = self.get_children(name)
+                    for x in range(children.length()):
+                        self.unparent(children[x])
+                    self.remove_node(name)                
+                mfn_mesh = self.create_kmodel(name, data)       
+        else:
+            mfn_mesh = self.create_kmodel(name, data)
+        return mfn_mesh
+
+    def create_kmodel(self, name, data):
         num_vertices = data['num_vertices']
         num_polygons = data['num_polygons']
         vertex_array = self.create_floatpoint_array(data['vertices'])
         vertex_count = self.create_int_array(data['vertex_count'])
-        vertex_list = self.create_int_array(data['vertex_list'])        
+        vertex_list = self.create_int_array(data['vertex_list'])
         mfn_mesh = OpenMaya.MFnMesh()
         mfn_mesh.create(
             num_vertices,
@@ -84,10 +100,28 @@ class Model(studioMaya.Maya):
             vertex_array,
             vertex_count,
             vertex_list
-            )        
-        mfn_mesh.setName(data['shape'])        
-        parent_mobject = mfn_mesh.parent(0)
+            )            
+        # mfn_mesh.setName(data['shape'])        
+        mfn_dag_node = OpenMaya.MFnDagNode(mfn_mesh.parent(0))
+        self.set_ktransform(mfn_dag_node.object(), data) # set position
+        if '|' in name:
+            name = name.split('|')[-1]
+        mfn_dag_node.setName(name)   
         mfn_mesh.updateSurface()
+        return mfn_mesh
+
+    def update_kmodel(self, name, data):
+        num_polygons = data['num_polygons']
+        polygon_vertices = data['polygon_vertices']
+        vertex_array = self.create_floatpoint_array(data['vertices'])
+        if not self.object_exists(name):
+            return None
+        dag_path = self.get_dagpath(name)         
+        shape_dag_path = self.get_shape_node(dag_path)
+        mfn_mesh = OpenMaya.MFnMesh(shape_dag_path)
+        if not self.validate_mesh(mfn_mesh, num_polygons, polygon_vertices):
+            return None
+        mfn_mesh.setPoints(vertex_array, OpenMaya.MSpace.kObject)
         return mfn_mesh
     
     def get_kuv(self, mobject):
@@ -143,7 +177,7 @@ class Model(studioMaya.Maya):
                                   
     def get_model_data(self, mobject):
         transform_mesh = self.extract_transform_primitive(
-            OpenMaya.MFn.kMesh, root_mobject=mobject)
+            OpenMaya.MFn.kMesh, shape=False, parent_mobject=mobject)
         data = {}
         for x in range(transform_mesh.length()):
             model_data = self.get_kmodel(transform_mesh[x])
@@ -153,13 +187,32 @@ class Model(studioMaya.Maya):
     
     def get_uv_data(self, mobject):
         transform_mesh = self.extract_transform_primitive(
-            OpenMaya.MFn.kMesh, root_mobject=mobject)
+            OpenMaya.MFn.kMesh, shape=False, parent_mobject=mobject)
         data = {}
         for x in range(transform_mesh.length()):
             model_data = self.get_kuv(transform_mesh[x])
             model_data['order'] = x
             data.setdefault(transform_mesh[x].fullPathName(), model_data)            
-        return data
+        return data   
     
-  
+    def get_transform_data(self, mobject):
+        transforms = self.extract_null_transform(root_mobject=mobject)
+        data = {}
+        for x in range(transforms.length()):
+            transform_data = self.get_ktransform(transforms[x])
+            data.setdefault(transforms[x].fullPathName(), transform_data)            
+        return data   
+        
+    def create_transform(self, name, data, replace=False):
+        if replace:
+            if self.object_exists(name):
+                children = self.get_children(name)
+                for x in range(children.length()):
+                    self.unparent(children[x])
+                self.remove_node(name)                
+        mfn_transform = self.create_ktransform(name, data)
+        return mfn_transform     
+        
+        
+        
           

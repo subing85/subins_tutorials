@@ -9,6 +9,7 @@ ICON = 'preferences.png'
 
 def execute():
     from studio_usd_pipe.gui import preferences
+    reload(preferences)
     preferences.show_window(standalone=False)
     
 

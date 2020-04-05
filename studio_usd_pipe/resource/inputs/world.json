@@ -28,7 +28,7 @@
 	    "name": "nurbsCircleShape2", 
 	    "form": 3, 
 	    "degree": 3, 
-	    "control_vertices": [
+	    "points": [
 	        [
 	            0.783611624891225, 
 	            4.798237340988468e-17, 

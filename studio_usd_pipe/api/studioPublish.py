@@ -16,6 +16,7 @@ from studio_usd_pipe.core import preferences
 reload(asset)
 
 
+
 class Publish(object):
     
     def __init__(self, mode, **kwargs):
@@ -51,7 +52,7 @@ class Publish(object):
         # self.get_pulish_path()
        
         self.valid_modes = {
-            'asset': {
+            'assets': {
                 'subfield': ['model', 'uv', 'surface', 'puppet'],
                 'tag': ['character', 'prop', 'environment'],
                 'type': ['interactive', 'non-interactive']
@@ -62,19 +63,23 @@ class Publish(object):
             }
         
         self.valid_publish_keys = {
-            'asset': [
+            'assets': [
                 'subfield', 'caption', 'type', 'tag', 'thumbnail', 'description', 'next_version'
                 ],
-            'shot': [
+            'shots': [
                 'subfield', 'tag', 'type', 'caption', 'thumbnail', 'description', 'next_version'
                 ]
             }
         
         self.my_step = None
         
-        if self.mode=='asset_push' or self.mode=='asset_pull':
-            self.my = asset.Asset()
-            
+        if self.mode=='assets':
+            try:
+                from studio_usd_pipe.core import asset
+                self.my = asset.Asset()
+            except:
+                pass
+             
         if self.mode=='shot':
             pass
            
@@ -111,13 +116,13 @@ class Publish(object):
             pub.release()
         '''        
         self.collect_packed()
-        if self.mode=='asset':
+        if self.mode=='assets':
             self.my.subfield = self.bundle['subfield']
             # my_asset = asset.Asset(subfield=self.bundle['subfield']) 
             self.my.pack(self.packed_bundle)
             
     def release(self): 
-        if self.mode=='asset':
+        if self.mode=='assets':
             self.my.release()
             #self.packed_bundle, self.stamped_time)
             
@@ -174,6 +179,10 @@ class Publish(object):
     def get_data(self, caption, subfield, version):        
         data = self.my.get_asset_data(caption, subfield, version)
         return data
+    
+    def get_more_data(self, caption, subfield, version):
+        data = self.my.get_asset_more_data(caption, subfield, version)
+        return data            
     
     def get_latest_version(self, caption, subfield, version_data=None):
         if not version_data:

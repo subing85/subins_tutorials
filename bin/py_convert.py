@@ -1,6 +1,6 @@
 import os
 
-PATH = '/venture/subins_tutorials/dumps'
+PATH = '/venture/source_code/subins_tutorials/dumps'
 
 for file in os.listdir(PATH):    
     if not file.endswith('.ui'):
@@ -8,7 +8,8 @@ for file in os.listdir(PATH):
     source = os.path.join(PATH, file)
     target = '{}.py'.format(os.path.splitext(source)[0])
     # command = 'pyuic4 {} -o {}'.format(source, target)
-    command = 'pyside2-uic {} -o {}'.format(source, target)
+    command = 'pyside-uic {} -o {}'.format(source, target)
+    #command = 'pyside2-uic {} -o {}'.format(source, target)
     
     
     os.system(command)

@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/venture/subins_tutorials/dumps/test.ui',
-# licensing of '/venture/subins_tutorials/dumps/test.ui' applies.
+# Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/test.ui'
 #
-# Created: Tue Feb 18 14:53:53 2020
-#      by: pyside2-uic  running on PySide2 5.13.2
+# Created: Sun Mar 22 00:39:01 2020
+#      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide import QtCore, QtGui
 
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(331, 184)
-        self.gridLayout = QtWidgets.QGridLayout(Form)
+        self.gridLayout = QtGui.QGridLayout(Form)
         self.gridLayout.setObjectName("gridLayout")
-        self.pushButton_2 = QtWidgets.QPushButton(Form)
+        self.pushButton_2 = QtGui.QPushButton(Form)
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 0, 0, 1, 1)
-        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton = QtGui.QPushButton(Form)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 1, 1, 1)
 
@@ -27,7 +26,7 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QtWidgets.QApplication.translate("Form", "Form", None, -1))
-        self.pushButton_2.setText(QtWidgets.QApplication.translate("Form", "PushButton", None, -1))
-        self.pushButton.setText(QtWidgets.QApplication.translate("Form", "PushButton", None, -1))
+        Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_2.setText(QtGui.QApplication.translate("Form", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("Form", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
 

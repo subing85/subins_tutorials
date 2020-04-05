@@ -1,36 +1,35 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/venture/subins_tutorials/dumps/main.ui',
-# licensing of '/venture/subins_tutorials/dumps/main.ui' applies.
+# Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/main.ui'
 #
-# Created: Tue Feb 18 14:53:52 2020
-#      by: pyside2-uic  running on PySide2 5.13.2
+# Created: Sun Mar 22 00:39:01 2020
+#      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(300, 453)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.splitter = QtWidgets.QSplitter(self.centralwidget)
+        self.splitter = QtGui.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
-        self.treewidget = QtWidgets.QTreeWidget(self.splitter)
+        self.treewidget = QtGui.QTreeWidget(self.splitter)
         self.treewidget.setAlternatingRowColors(True)
-        self.treewidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.treewidget.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.treewidget.setObjectName("treewidget")
         self.treewidget.headerItem().setText(0, "1")
-        item_0 = QtWidgets.QTreeWidgetItem(self.treewidget)
+        item_0 = QtGui.QTreeWidgetItem(self.treewidget)
         self.treewidget.header().setVisible(False)
         self.verticalLayout.addWidget(self.splitter)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 300, 23))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
@@ -39,10 +38,10 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "MainWindow", None, -1))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
         self.treewidget.setSortingEnabled(True)
         __sortingEnabled = self.treewidget.isSortingEnabled()
         self.treewidget.setSortingEnabled(False)
-        self.treewidget.topLevelItem(0).setText(0, QtWidgets.QApplication.translate("MainWindow", "abc", None, -1))
+        self.treewidget.topLevelItem(0).setText(0, QtGui.QApplication.translate("MainWindow", "abc", None, QtGui.QApplication.UnicodeUTF8))
         self.treewidget.setSortingEnabled(__sortingEnabled)
 

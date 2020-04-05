@@ -8,7 +8,7 @@ from pxr import Sdf
 from pxr import Usd
 from pxr import UsdGeom
 from pxr import UsdShade
-from maya import OpenMaya        
+from maya import OpenMaya
 
 
 class Susd(object):

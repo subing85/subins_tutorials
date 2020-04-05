@@ -15,7 +15,9 @@ from studio_usd_pipe.api import studioShader
 from studio_usd_pipe.api import studioNurbscurve
 
 reload(studioUsd)
-
+reload(studioMaya)
+reload(studioModel)
+reload(studioNurbscurve)
 
 
 class Pack(studioMaya.Maya):
@@ -23,7 +25,6 @@ class Pack(studioMaya.Maya):
     def __init__(self):
         # studioMaya.Maya.__init__(self)  
         super(Pack, self).__init__()
-        
               
         self.model = studioModel.Model()
         self.shader = studioShader.Shader()
@@ -48,7 +49,7 @@ class Pack(studioMaya.Maya):
                 continue
             input_data[k]['value'] = arguments[k]         
         dt_object = datetime.fromtimestamp(arguments['smodified'])
-        input_data['smodified']['value'] = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p')          
+        input_data['smodified']['value'] = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p') 
         return input_data
     
     def pack_exists(self, path, force): 
@@ -77,7 +78,7 @@ class Pack(studioMaya.Maya):
                 'stag': 'character',
                 'sversion': '0.0.0',
                 'smodified': time.time(),
-                'spath': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'slocation': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
                 'sdescription': 'test publish',
                 'node': 'model',
                 'world': 'world'
@@ -92,6 +93,7 @@ class Pack(studioMaya.Maya):
                 node_mobject = self.get_mobject(inputs['node'])
                 self.create_maya_id(node_mobject, input_data)
                 return
+            
         # remove depend nodes
         depend_nodes = self.extract_depend_nodes(default=False)
         for x in range(depend_nodes.length()):
@@ -130,7 +132,6 @@ class Pack(studioMaya.Maya):
         # OpenMaya.MGlobal.selectByName(model_dag_node.fullPathName())
         OpenMaya.MGlobal.clearSelectionList()
         self.set_perspective_view()
-
     
     def create_thumbnail(self, inputs):
         '''
@@ -199,10 +200,12 @@ class Pack(studioMaya.Maya):
         mobject = self.get_mobject(inputs['node'])
         mesh_data = self.model.get_model_data(mobject)
         curve_data = self.nurbscurve.get_curve_data(mobject)
+        transform_data = self.model.get_transform_data(mobject)
         final_data = {
             'mesh': mesh_data,
-            'curve': curve_data
-            }      
+            'curve': curve_data,
+            'transform': transform_data
+            } 
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
         return output_path       
@@ -474,5 +477,7 @@ class Pack(studioMaya.Maya):
             }        
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
-        return output_path   
+        return output_path
+
+    
 
