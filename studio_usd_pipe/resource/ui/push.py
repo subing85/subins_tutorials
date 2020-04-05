@@ -327,7 +327,7 @@ class Window(QtWidgets.QWidget):
         self.pub.bundle['source_file'] = self.current_file
         print '\n#inputs\t'
         print json.dumps(self.pub.bundle, indent=4)
-        self.pub.pack()   
+        self.pub.pack()
         self.pub.release()
         self.set_default()       
         self.set_current_version()

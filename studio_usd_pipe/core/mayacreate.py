@@ -1,5 +1,7 @@
 import json
 
+from maya import OpenMaya
+
 from studio_usd_pipe.api import studioUsd
 from studio_usd_pipe.api import studioModel
 from studio_usd_pipe.api import studioShader
@@ -20,42 +22,34 @@ class Create(object):
        
     def model(self, replace=True):
         # create polygon mesh
+        mobjects = OpenMaya.MObjectArray()
         smodel = studioModel.Model()
         model_data = self.studio_data['mesh']
         model_nodes = smodel.sort_dictionary(model_data)
+        
+        contents = {}
         for node in model_nodes:
             node_contents = model_data[node]
-            dagpath_name = node.split('|')[-1]
-            smodel.create_model(dagpath_name, node_contents, replace=replace)
-            
-            
-        return
-            
+            mfn_mesh = smodel.create_model(node, node_contents, replace=replace)
+            contents.setdefault(node.split('|')[-1], mfn_mesh.parent(0))
 
-            
         # create nurbs curve
         scurve = studioNurbscurve.Nurbscurve()
         curve_data = self.studio_data['curve']
         curve_nodes = scurve.sort_dictionary(curve_data)
         for node in curve_nodes:
             node_contents = curve_data[node]
-            dagpath_name = node.split('|')[-1]
-            scurve.create_kcurve(dagpath_name, node_contents)
+            mfn_curve = scurve.create_curve(node, node_contents, replace=replace)
+            contents.setdefault(node.split('|')[-1], mfn_curve.parent(0))
+ 
+        # create transform
+        transform_data = self.studio_data['transform']
+        for node, node_contents in transform_data.items():
+            mfn_transform = smodel.create_transform(node, node_contents, replace=replace)
+            contents.setdefault(node.split('|')[-1], mfn_transform.object())
         
-        # create groups        
-        locations = model_nodes + curve_nodes        
-        for location in locations:
-            nodes = location.split('|')[1:]            
-            for node in nodes:
-                if smodel.object_exists(node):
-                    continue
-                #children = smodel.get_children(node)
-                #for x in range(children.length()):
-                #    smodel.unparent(children[x])
-                #smodel.remove_node(node)
-                smodel.create_group(node)
-
-        # create hierarchy
+        # create hierarchy 
+        locations = model_nodes + curve_nodes + transform_data.keys()
         stack = []
         for location in locations:
             nodes = location.split('|')[1:]
@@ -63,8 +57,10 @@ class Create(object):
                 if len(nodes)==x+1:
                     continue
                 if [nodes[x+1], nodes[x]] in stack:
-                    continue                    
-                smodel.set_parent(nodes[x+1], nodes[x])
+                    continue
+                mfndag_child = OpenMaya.MFnDagNode(contents[nodes[x+1]])
+                mfndag_parent = OpenMaya.MFnDagNode(contents[nodes[x]])
+                smodel.set_parent(mfndag_child.fullPathName(), mfndag_parent.fullPathName())
                 stack.append([nodes[x+1], nodes[x]])
 
     

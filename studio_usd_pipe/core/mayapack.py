@@ -93,6 +93,7 @@ class Pack(studioMaya.Maya):
                 node_mobject = self.get_mobject(inputs['node'])
                 self.create_maya_id(node_mobject, input_data)
                 return
+            
         # remove depend nodes
         depend_nodes = self.extract_depend_nodes(default=False)
         for x in range(depend_nodes.length()):
@@ -199,10 +200,12 @@ class Pack(studioMaya.Maya):
         mobject = self.get_mobject(inputs['node'])
         mesh_data = self.model.get_model_data(mobject)
         curve_data = self.nurbscurve.get_curve_data(mobject)
+        transform_data = self.model.get_transform_data(mobject)
         final_data = {
             'mesh': mesh_data,
-            'curve': curve_data
-            }      
+            'curve': curve_data,
+            'transform': transform_data
+            } 
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
         return output_path       

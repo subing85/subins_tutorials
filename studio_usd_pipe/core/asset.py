@@ -157,10 +157,11 @@ class Asset(object):
             )
         
         self.temp_pack_path = self.make_directory(
-            os.path.join(tempfile.gettempdir(), self.temp_entity))         
+            os.path.join(tempfile.gettempdir(), self.temp_entity))  
+    
         
         if self.subfield == 'model':
-            self.make_maya_model(force=True)
+            self.make_maya_model(force=False)
             self.make_thumbnail()            
             self.make_studio_model()
             self.make_model_usd()
@@ -273,7 +274,7 @@ class Asset(object):
                 'description': 'test publish',
                 'time_stamp': time.time()
                 }        
-            asset.pack(bundle)        
+            asset.make_maya_model(bundle)        
         '''
         inputs = {
             self.asset_ids[0]: self.entity,
@@ -289,7 +290,6 @@ class Asset(object):
             }
         
         import json
-        print 'hello'
         print json.dumps(inputs, indent=4)       
         self.mpack.create_model(inputs, force=force)  
          

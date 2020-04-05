@@ -1,5 +1,6 @@
 import os
 import json
+import math
 import tempfile
 
 from maya import OpenMaya
@@ -79,6 +80,12 @@ class Maya(object):
         mobject = OpenMaya.MObject()
         mselection.getDependNode(0, mobject)
         return mobject
+    
+    def get_mobject_dagpath(self, mobject):
+        mdag_path = OpenMaya.MDagPath()
+        mdagpath = OpenMaya.MDagPath()
+        mdagpath.getAPathTo(mobject, mdag_path)
+        return mdag_path    
 
     def get_mplug(self, node_attribute):
         mplug = OpenMaya.MPlug()
@@ -100,7 +107,9 @@ class Maya(object):
         if isinstance(maya_object, OpenMaya.MObject):
             mfn_dependency_node = OpenMaya.MFnDependencyNode(maya_object)
             return mfn_dependency_node.name().encode()
-    
+        if isinstance(maya_object, OpenMaya.MFnDagNode):
+            return maya_object.fullPathName().encode()
+        
     def get_default_nodes(self):        
         nodes = []        
         for node in self.node_data['default_nodes']:
@@ -126,7 +135,12 @@ class Maya(object):
         mit_dependency_nodes = OpenMaya.MItDependencyNodes()
         while not mit_dependency_nodes.isDone():
             mobject = mit_dependency_nodes.item()
-            mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)
+            mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)            
+            if mfn_dependency_node.typeName() == 'dagNode':
+                mit_dependency_nodes.next()
+                continue
+            if '|' in object_nmae:
+                object_nmae = object_nmae.split('|')[-1]            
             if mfn_dependency_node.name() == object_nmae:
                 return True       
             mit_dependency_nodes.next()
@@ -144,6 +158,64 @@ class Maya(object):
                 continue
             children.append(child)
         return children
+        
+    def get_ktransform(self, mobject, world=True):
+        if world:
+            dag_path = mobject
+            if isinstance(mobject, OpenMaya.MObject):
+                dag_path = self.get_mobject_dagpath(mobject)
+            m_matrix = dag_path.inclusiveMatrix()
+            transform_matrix = OpenMaya.MTransformationMatrix(m_matrix)
+        else:
+            mfn_transform = OpenMaya.MFnTransform(mobject)        
+            transform_matrix = mfn_transform.transformation()
+        mvector = transform_matrix.getTranslation(OpenMaya.MSpace.kWorld)       
+        translation = [mvector.x, mvector.y, mvector.z]                    
+        m_euler = transform_matrix.eulerRotation()
+        angles = [m_euler.x, m_euler.y, m_euler.z]
+        rotation = [math.degrees(angle) for angle in angles]            
+        scale_util = OpenMaya.MScriptUtil()
+        scale_util.createFromList([0, 0, 0], 3)
+        double = scale_util.asDoublePtr()
+        transform_matrix.getScale(double, OpenMaya.MSpace.kWorld)
+        scale = [OpenMaya.MScriptUtil.getDoubleArrayItem(double, x) for x in range(3)]
+        data = {
+            'translate': translation,
+            'rotate': rotation,
+            'scale': scale
+            }                 
+        return data           
+        
+    def create_ktransform(self, name, data):
+        mfn_transform = OpenMaya.MFnTransform()
+        mfn_transform.create()
+        mfn_transform.setName(name)        
+        tx, ty, tz = data['translate']                
+        translate_mvector = OpenMaya.MVector(tx, ty, tz)
+        mfn_transform.setTranslation(translate_mvector, OpenMaya.MSpace.kTransform)        
+        radians = [math.radians(x) for x in data['rotate']]
+        euler_rotation = OpenMaya.MEulerRotation(radians[0], radians[1], radians[2])
+        mfn_transform.setRotation(euler_rotation)
+        scale_util = OpenMaya.MScriptUtil()
+        scale_util.createFromList(data['scale'], 3)
+        double = scale_util.asDoublePtr()
+        mfn_transform.setScale(double)
+        return mfn_transform
+    
+    def set_ktransform(self, mobject, data):
+        mfn_transform = OpenMaya.MFnTransform(mobject)
+        tx, ty, tz = data['translate']                
+        translate_mvector = OpenMaya.MVector(tx, ty, tz)
+        mfn_transform.setTranslation(translate_mvector, OpenMaya.MSpace.kTransform) 
+        radians = [math.radians(x) for x in data['rotate']]
+        euler_rotation = OpenMaya.MEulerRotation(radians[0], radians[1], radians[2])
+        mfn_transform.setRotation(euler_rotation)
+        scale_util = OpenMaya.MScriptUtil()
+        scale_util.createFromList(data['scale'], 3)
+        double = scale_util.asDoublePtr()
+        mfn_transform.setScale(double)
+        return mfn_transform        
+
           
     def remove_node(self, mobject):
         if isinstance(mobject, unicode):
@@ -265,34 +337,28 @@ class Maya(object):
                 continue            
             dag_path_array.append(dag_path)            
             mit_dependency_nodes.next()
-        return dag_path_array      
-        
-    def extract_transform_primitive(self, mfn_type, root_mobject=None):
-        # OpenMaya.MFn.kMesh
+        return dag_path_array 
+    
+    def extract_transform_primitive(self, mfn_type, shape=True, parent_mobject=None):
+        dag_path_array = OpenMaya.MDagPathArray()        
         mit_dependency_nodes = OpenMaya.MItDependencyNodes(mfn_type)
-        dag_paths = []
         while not mit_dependency_nodes.isDone():
             mobject = mit_dependency_nodes.item() 
             mfn_dag_node = OpenMaya.MFnDagNode(mobject)
-            if root_mobject:
-                root = mfn_dag_node.fullPathName().split('|')[1]    
-                current_root_mobject = self.get_mobject(root)
-                if current_root_mobject != root_mobject:
+            if parent_mobject:
+                current_root = mfn_dag_node.fullPathName().split('|')[1]    
+                current_root_mobject = self.get_mobject(current_root)
+                if current_root_mobject != parent_mobject:
                     mit_dependency_nodes.next()
-                    continue  
-            p_mobject = mfn_dag_node.parent(0)       
-            p_dag_node = OpenMaya.MFnDagNode(p_mobject)
+                    continue
+            if not shape:        
+                p_mobject = mfn_dag_node.parent(0)       
+                mfn_dag_node = OpenMaya.MFnDagNode(p_mobject)
             p_dag_path = OpenMaya.MDagPath()
-            p_dag_node.getPath(p_dag_path)
-            if p_dag_path in dag_paths:                
-                mit_dependency_nodes.next()
-                continue
-            dag_paths.append(p_dag_path)
+            mfn_dag_node.getPath(p_dag_path) 
+            dag_path_array.append(p_dag_path)
             mit_dependency_nodes.next()
-        dag_path_array = OpenMaya.MDagPathArray()
-        for dag_path in dag_paths:
-            dag_path_array.append(dag_path)
-        return dag_path_array           
+        return dag_path_array
 
     def extract_top_transforms(self, default=False):
         default_nodes = []
@@ -316,7 +382,7 @@ class Maya(object):
             mit_dependency_nodes.next()            
         return dag_path_array   
     
-    def create_group(self, name, replace=True):
+    def create_group(self, name):
         mfn_dag_node = OpenMaya.MFnDagNode()
         mfn_dag_node.create('transform')
         mfn_dag_node.setName(name)
@@ -414,9 +480,9 @@ class Maya(object):
         mel_command = 'parent -w \"%s\"'% mobject                       
         OpenMaya.MGlobal.executeCommand(mel_command, False, True)   
                      
-    def freeze_transformations(self, node): 
+    def freeze_transformations(self, node):
         if not isinstance(node, str):
-            node = self.get_name(node)      
+            node = self.get_name(node)
         mcommand_result = OpenMaya.MCommandResult()        
         mel_command = 'makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1 \"%s\"' % node
         OpenMaya.MGlobal.executeCommand(
