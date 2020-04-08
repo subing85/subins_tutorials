@@ -17,6 +17,7 @@ from studio_usd_pipe.api import studioNurbscurve
 reload(studioUsd)
 reload(studioMaya)
 reload(studioModel)
+reload(studioShader)
 reload(studioNurbscurve)
 
 
@@ -263,6 +264,9 @@ class Pack(studioMaya.Maya):
             raise IOError('Cannot save, already file found <%s>' % output_path) 
         mobject = self.get_mobject(inputs['node'])
         mesh_data = self.shader.get_surface_data(mobject)
+        
+        
+        return
         final_data = {
             'surface': mesh_data,
             }  
@@ -298,13 +302,18 @@ class Pack(studioMaya.Maya):
             inputs['publish_directory'], 'source_images')
         mobject = self.get_mobject(inputs['node'])
         input_data = self.shader.get_source_image_data(mobject)
+        
+        print json.dumps(input_data, indent=4)
+                
         output_data = self.shader.set_source_images(input_data, temp_source_image_path, source_image_path)
+
         lowres_data = self.shader.create_lowres_source_images(input_data, temp_source_image_path)  
         final_data = {
             'input': input_data,
             'output': output_data,
             'lowres': lowres_data
             } 
+
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
         source_images = []        
@@ -339,6 +348,41 @@ class Pack(studioMaya.Maya):
             raise IOError('Cannot save, already file found <%s>' % output_path)                 
         self.export_selected(inputs['node'], output_path, force=inputs['force'])
         return output_path
+    
+    
+    def create_surface_maya(self, inputs):
+        '''
+            import time
+            from studio_usd_pipe.core import mayapack
+            reload(mayapack)
+            mpack = mayapack.Pack()
+            input_data = {
+                'node': 'model',
+                'output_directory': '/venture/shows/my_hero/assets/batman/model/0.0.0/',
+                'caption': 'batman',
+                'force': True
+                }     
+            mpack.create_surface_maya(input_data)        
+        '''                
+        output_path = os.path.join(
+            inputs['output_directory'],
+            '{}.ma'.format(inputs['caption'])
+            ) 
+        premission = self.pack_exists(output_path, inputs['force'])
+        if not premission:
+            raise IOError('Cannot save, already file found <%s>' % output_path)
+        
+        mobject = self.shader.get_mobject(inputs['node'])
+        
+        shading_engines = self.shader.get_scene_shading_engines(mobject)
+        
+        print 'shading_engines\t', shading_engines
+        
+                  
+        self.export_selected(shading_engines, output_path, force=inputs['force'])
+        return output_path
+    
+    
     
     def get_asset_id_data(self, root, ids):
         data = {}

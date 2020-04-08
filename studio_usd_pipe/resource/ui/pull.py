@@ -503,7 +503,7 @@ class Window(QtWidgets.QMainWindow):
             
         if subfield=='uv':
             mcreate = mayacreate.Create(file)
-            mcreate.uv(replace=replace)            
+            mcreate.uv(replace=True)            
 
         if subfield=='surface':
             mcreate = mayacreate.Create(file)
