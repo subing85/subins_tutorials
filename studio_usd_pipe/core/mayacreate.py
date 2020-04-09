@@ -22,7 +22,6 @@ class Create(object):
        
     def model(self, replace=True):
         # create polygon mesh
-        mobjects = OpenMaya.MObjectArray()
         smodel = studioModel.Model()
         model_data = self.studio_data['mesh']
         model_nodes = smodel.sort_dictionary(model_data)
@@ -62,15 +61,25 @@ class Create(object):
                 mfndag_parent = OpenMaya.MFnDagNode(contents[nodes[x]])
                 smodel.set_parent(mfndag_child.fullPathName(), mfndag_parent.fullPathName())
                 stack.append([nodes[x+1], nodes[x]])
-
     
-    def uv(self, replace=False):
-        pass
-    
+    def uv(self, replace=True):
+        smodel = studioModel.Model()
+        uv_data = self.studio_data['mesh']
+        for node, contenst in uv_data.items():
+            mfn_mesh = smodel.create_uv(node, contenst)
     
     def surface(self, replace=False):
-        pass
-    
+        '''
+            from studio_usd_pipe.core import mayacreate
+            path = '/venture/shows/batman/assets/batman/surface/1.0.0/batman.shader'
+            mcreate = mayacreate.Create(path)
+            mcreate.surface()
+        '''     
+        
+        sshader = studioShader.Shader()
+        surface_data = self.studio_data['surface']
+        for node, contenst in surface_data.items():
+            mfn_mesh = sshader.create_shadernet(node, contenst, replace=replace)        
     
     def puppet(self, replace=False):
         pass

@@ -182,7 +182,7 @@ class Asset(object):
             self.make_source_images()
             self.make_studio_surface()            
             self.make_surface_usd()
-            self.make_maya()
+            self.make_surface_maya()
             self.make_manifest()            
                      
         if self.subfield == 'puppet':
@@ -317,6 +317,18 @@ class Asset(object):
             }        
         maya_file = self.mpack.create_maya(inputs)
         self.data['maya_file'] = [maya_file]
+        
+    def make_surface_maya(self):
+        inputs = {
+            'node': 'model',
+            'output_directory': self.temp_pack_path,
+            'caption': self.caption,
+            'time_stamp': self.time_stamp,
+            'force': True
+            }        
+        maya_file = self.mpack.create_surface_maya(inputs)
+        self.data['maya_file'] = [maya_file]        
+        
         
     def make_studio_model(self):
         inputs = {

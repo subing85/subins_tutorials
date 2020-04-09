@@ -103,7 +103,7 @@ class Model(studioMaya.Maya):
             )            
         # mfn_mesh.setName(data['shape'])        
         mfn_dag_node = OpenMaya.MFnDagNode(mfn_mesh.parent(0))
-        self.set_ktransform(mfn_dag_node.object(), data) # set position
+        self.set_ktransform(mfn_dag_node.object(), data)  # set position
         if '|' in name:
             name = name.split('|')[-1]
         mfn_dag_node.setName(name)   
@@ -146,21 +146,25 @@ class Model(studioMaya.Maya):
             data.setdefault(set_name, uvset_data)
         return data        
 
+    def create_uv(self, name, data, replace=False):
+        dagpath = self.get_dagpath(name)
+        self.create_kuv(dagpath, data)
+
     def create_kuv(self, mobject, data):
         mfn_mesh = OpenMaya.MFnMesh(mobject)
-        set_names = []
-        mfn_mesh.getUVSetNames(set_names)                
-        self.delete_uv_sets(mfn_mesh, set_names)        
+        self.delete_uv_sets(mfn_mesh, set_names=None)
+        default_set_name = self.get_default_uvset(mfn_mesh)     
         sorted_data = self.sort_dictionary(data)        
         for index, set_name in enumerate(sorted_data):
             contents = data[set_name]
             u_array = self.create_float_array(contents['u_array'])
             v_array = self.create_float_array(contents['v_array'])
             uv_counts = self.create_int_array(contents['uv_counts'])
-            uv_ids = self.create_int_array(contents['uv_ids'])            
+            uv_ids = self.create_int_array(contents['uv_ids']) 
             if index == 0:
-                mfn_mesh.clearUVs(set_name)
-                mfn_mesh.renameUVSet(set_names[0], set_name)
+                mfn_mesh.clearUVs(default_set_name)
+                if default_set_name != set_name:
+                    mfn_mesh.renameUVSet(default_set_name, set_name)
             else:
                 set_name = mfn_mesh.createUVSetWithName(set_name)                
             mfn_mesh.setUVs(u_array, v_array, set_name)
@@ -168,12 +172,21 @@ class Model(studioMaya.Maya):
         mfn_mesh.updateSurface()
         return mfn_mesh              
               
-    def delete_uv_sets(self, mfn_mesh, set_names):
+    def delete_uv_sets(self, mfn_mesh, set_names=None):
+        if not set_names:
+            set_names = []
+            mfn_mesh.getUVSetNames(set_names)
         for set_name in set_names:
             try:
                 mfn_mesh.deleteUVSet(set_name)
             except Exception as error:
-                print '\nDeleteError', error
+                print '\nDeleteError (ignore)', error
+        mfn_mesh.updateSurface()
+                
+    def get_default_uvset(self, mfn_mesh):
+        set_names = []
+        mfn_mesh.getUVSetNames(set_names)
+        return set_names[0]
                                   
     def get_model_data(self, mobject):
         transform_mesh = self.extract_transform_primitive(
@@ -190,9 +203,9 @@ class Model(studioMaya.Maya):
             OpenMaya.MFn.kMesh, shape=False, parent_mobject=mobject)
         data = {}
         for x in range(transform_mesh.length()):
-            model_data = self.get_kuv(transform_mesh[x])
-            model_data['order'] = x
-            data.setdefault(transform_mesh[x].fullPathName(), model_data)            
+            uv_data = self.get_kuv(transform_mesh[x])
+            # uv_data['order'] = x
+            data.setdefault(transform_mesh[x].fullPathName(), uv_data)
         return data   
     
     def get_transform_data(self, mobject):
@@ -212,7 +225,4 @@ class Model(studioMaya.Maya):
                 self.remove_node(name)                
         mfn_transform = self.create_ktransform(name, data)
         return mfn_transform     
-        
-        
-        
           
