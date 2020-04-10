@@ -132,11 +132,8 @@ class Asset(object):
                 }        
             asset.pack(bundle)         
         '''
-        
         print json.dumps(bundle, indent=4)
-        
         self.data = {}
-                   
         self.source_maya = bundle['source_file']
         self.caption = bundle['caption']
         self.version = bundle['version'] 
@@ -194,10 +191,14 @@ class Asset(object):
             self.make_maya()
             self.make_manifest()
             
-        for each in sum(self.data.values(), []):  # time stamp
-            if not each:
-                continue
-            os.utime(each, (self.time_stamp, self.time_stamp))
+        for key in self.data:
+            if not self.data[key]:
+                continue       
+            for each in self.data[key]:
+                if not each:
+                    continue                
+                os.utime(each, (self.time_stamp, self.time_stamp))
+
 
     def release(self):  
         result = self.move_to_publish()        
@@ -239,23 +240,26 @@ class Asset(object):
     def move_to_publish(self):   
         temp_pack_path = os.path.join(
             tempfile.gettempdir(), self.temp_entity)   
-        self.make_directory(self.publish_path)               
-        for each in sum(self.data.values(), []):
-            if not each:
+        self.make_directory(self.publish_path)  
+        for key in self.data:
+            if not self.data[key]:
                 continue
-            path = each.replace(temp_pack_path, self.publish_path)
-            if os.path.isdir(each):
-                if not os.path.isdir(path):
-                    os.makedirs(path)
-                    self.set_time_stamp(path)
-            if os.path.isfile(each):                 
-                if not os.path.isdir(os.path.dirname(path)):
-                    os.makedirs(os.path.dirname(path))
-                try:            
-                    shutil.copy2(each, path)
-                except Exception as IOError:
-                    print IOError
-                    return False
+            for each in self.data[key]:
+                if not each:
+                    continue
+                path = each.replace(temp_pack_path, self.publish_path)
+                if os.path.isdir(each):
+                    if not os.path.isdir(path):
+                        os.makedirs(path)
+                        self.set_time_stamp(path)
+                if os.path.isfile(each):                 
+                    if not os.path.isdir(os.path.dirname(path)):
+                        os.makedirs(os.path.dirname(path))
+                    try:            
+                        shutil.copy2(each, path)
+                    except Exception as IOError:
+                        print IOError
+                        return False
         return True
 
     def make_maya_model(self, force=False):
@@ -288,9 +292,6 @@ class Asset(object):
             'node': 'model',
             'world': 'world'
             }
-        
-        import json
-        print json.dumps(inputs, indent=4)       
         self.mpack.create_model(inputs, force=force)  
          
     def make_thumbnail(self):
@@ -354,7 +355,7 @@ class Asset(object):
         
     
     def make_studio_puppet(self):
-        self.data['studio_puppet'] = [None]
+        self.data['studio_puppet'] = None
                 
     def make_source_images(self): 
         inputs = {
@@ -416,18 +417,49 @@ class Asset(object):
         self.data['usd_surface'] = [usd]
         
     def make_puppet_usd(self):
-        self.data['usd_puppet'] = [None]
+        self.data['usd_puppet'] = None
     
-    def make_manifest(self):        
+    def make_manifest(self):
         source_images = None
         if 'source_images' in self.data:
             source_images = self.data['source_images']
+        
+        maya_file, studio_format, usd, thumbnail = [None], [None], [None], [None]
 
-        maya_file = [os.path.join(self.publish_path, os.path.basename(self.data['maya_file'][0]))]
-        studio_format = [os.path.join(self.publish_path, os.path.basename(self.data['studio_%s' % self.subfield][0]))]
-        usd = [os.path.join(self.publish_path, os.path.basename(self.data['usd_%s' % self.subfield][0]))]      
-        thumbnail = [os.path.join(self.publish_path, os.path.basename(self.data['thumbnail'][0]))]          
-
+        if 'maya_file' in self.data:
+            maya_data = self.data['maya_file']
+            
+            if maya_data:
+                maya_dirname = os.path.basename(maya_data[0])
+                maya_file = [os.path.join(self.publish_path, maya_dirname)]
+            else:
+                maya_file = None
+            
+        if 'studio_%s' % self.subfield in self.data:
+            studio_data = self.data['studio_%s' % self.subfield]
+            if studio_data:
+                studio_dirname = os.path.basename(studio_data[0])
+                studio_format = [os.path.join(self.publish_path, studio_dirname)]
+            else:
+                studio_format = None
+        
+        if 'usd_%s' % self.subfield in self.data:
+            usd_data = self.data['usd_%s' % self.subfield]
+            if usd_data:
+                usd_dirname = os.path.basename(usd_data[0])
+                usd = [os.path.join(self.publish_path, usd_dirname)]
+            else:
+                usd = None
+            
+        if 'thumbnail' in self.data: 
+            thumbnail_data = self.data['thumbnail']
+            if thumbnail_data:
+                thumbnail_dirname = os.path.basename(thumbnail_data[0])
+                thumbnail = [os.path.join(self.publish_path, thumbnail_dirname)]
+            else:
+                thumbnail = None
+            
+                      
         inputs = {
             'output_directory': self.temp_pack_path,
             'location': self.publish_path,
@@ -445,9 +477,11 @@ class Asset(object):
             'source_images': source_images,
             'force': True
             }
+        
         print '#'*50
         print json.dumps(inputs, indent=4)
         print '#'*50
+        
         mainfest = self.mpack.create_manifest(inputs)
         self.data['mainfest'] = [mainfest]
             

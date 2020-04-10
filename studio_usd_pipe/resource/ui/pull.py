@@ -349,7 +349,66 @@ class Window(QtWidgets.QMainWindow):
         if not contents:
             return
         # self.menu.exec_(QtGui.QCursor.pos())
+        contents = ast.literal_eval(contents)        
+        subfield = contents['hierarchy'].split('|')[1]        
+        self.set_menu_options(subfield)        
+        
         self.menu.exec_(widget.mapToGlobal(point))
+        
+
+        
+    
+    def set_menu_options(self, subfield):
+        
+        print 'subfield\t', subfield
+        actions = [
+            self.action_import_maya,
+            self.action_reference_maya,           
+            self.action_import_usd,
+            self.action_reference_usd,
+            self.action_open_source,
+            self.action_pull_normal,
+            self.action_pull_replace,          
+            self.action_open_location
+            ]
+        for action in actions:
+            action.setVisible(True)                
+                
+
+        visibile = {
+            'uv': [
+                self.action_import_maya,
+                self.action_reference_maya,           
+                self.action_import_usd,
+                self.action_reference_usd,
+                self.action_pull_normal,
+                # self.action_pull_replace     
+                ],
+            'surface': [
+                #self.action_import_maya,
+                #self.action_reference_maya,           
+                self.action_import_usd,
+                self.action_reference_usd,
+                # self.action_pull_normal,               
+                # self.action_pull_replace     
+                ],
+        
+            'puppet': [
+                #self.action_import_maya,
+                # self.action_reference_maya,           
+                self.action_import_usd,
+                self.action_reference_usd,
+                self.action_pull_normal,               
+                self.action_pull_replace                    
+                ]
+            }
+        
+        if subfield in visibile:
+        
+            for action in visibile[subfield]:
+                action.setVisible(False)
+                    
+        
 
     def set_tool_context(self):
         config = configure.Configure()
@@ -420,7 +479,10 @@ class Window(QtWidgets.QMainWindow):
             thumbnail_icon = os.path.join(resource.getIconPath(), 'unknown.png')
         widgets.image_to_button(
             self.button_thumbnail, size.width(), size.height(), path=thumbnail_icon)
-    
+        
+        subfield = contents['hierarchy'].split('|')[1]        
+        self.set_menu_options(subfield)             
+            
     def clear_display(self):
         self.label_caption.clear()
         self.label_tag.clear()
