@@ -31,13 +31,7 @@ class Shader(studioMaya.Maya):
             'shadingEngine': 'shadingEngine'         
             }             
 
-    def assign_shading_engine(self, mobject, shading_group=None):
-        if not shading_group:            
-            shading_group = 'initialShadingGroup'
-        if isinstance(shading_group, str):
-            shading_group = self.get_mobject(shading_group)
-        mfn_set = OpenMaya.MFnSet(shading_group)
-        mfn_set.addMember(mobject)
+            
     
     def get_shading_engines(self, mobject):
         dependency_graph = OpenMaya.MItDependencyGraph(
@@ -228,7 +222,7 @@ class Shader(studioMaya.Maya):
 
     def get_source_images(self, object):
         attribute_data = {}        
-        mplug_array = self.get_mplug_attributes(object)  
+        mplug_array = self.get_mplug_attributes(object, default=True)  
         for x in range(mplug_array.length()):
             attribute = mplug_array[x].attribute()
             if attribute.apiType()!=OpenMaya.MFn.kTypedAttribute:
@@ -255,7 +249,16 @@ class Shader(studioMaya.Maya):
                 if os.path.isfile(attribute_contents['value']):
                     shutil.copy2(attribute_contents['value'], temp_target_path)
                 mplug = self.get_mplug('{}.{}'.format(node, attribute))
-                mplug.setString(target_path)
+                
+                valid = False
+                try:
+                    mplug.setString(target_path)
+                    valid = True
+                except Exception as error:
+                    valid = False
+                    print '#warnings', error
+                if not valid:
+                    continue
                 if node not in data:
                     data.setdefault(node, {})
                 data[node][attribute] = {
@@ -294,52 +297,47 @@ class Shader(studioMaya.Maya):
     
     def create_shadernet(self, name, data, replace=False):
         if replace:
-            mfn_mesh = self.update_kmodel(name, data)
-            if not mfn_mesh:
-                if self.object_exists(name):
-                    children = self.get_children(name)
-                    for x in range(children.length()):
-                        self.unparent(children[x])
-                    self.remove_node(name)                
-                mfn_mesh = self.create_kmodel(name, data)       
-        else:
-            mfn_mesh = self.create_kshadernet(name, data)
-        return mfn_mesh
+            self.remove_node(name)
+            for dependency_node in data['nodes']:
+                self.remove_node(dependency_node)
+        mobject = self.create_kshadernet(name, data)
+        return mobject
     
 
-    def create_kshadernet(self, name, data):        
-        nodes = data['nodes']
+    def create_kshadernet(self, name, data):
+        '''
+        from studio_usd_pipe.api import studioShader
+        from studio_usd_pipe.core import mayacreate
+        reload(studioShader)
+        reload(mayacreate)
+        sshader = studioShader.Shader()
+        path = '/venture/shows/batman/assets/batman/surface/2.0.0/batman.shader'
+        mcreate = mayacreate.Create(path)
+        data = mcreate.studio_data['surface']['phong1SG']
+        sshader.create_kshadernet(data)        
+        '''
+        # create node
+        shader_mobject = None
+        for node, contents in data['nodes'].items():
+            mobject = self.create_knode(node, contents['type'])
+            if node==data['surface']['shader']:
+                shader_mobject = mobject
+            if 'parameters' in contents: # set attribute values        
+                self.set_attributes(mobject, contents['parameters'])
+            if 'connections' in contents: # connect nodes                 
+                self.set_connections(mobject, contents['connections'])
         
-        # create node        
-        for node, contents in nodes.items():
-            node_mobject = self.create_knode(contents['type'], node)
-            
-            print '\n', node
-            # set parameters(attributes) values
-            for parameter in contents['parameters']:
-                
-                
-                print '\t', parameter
-            
-            # print node, contents['parameters']
-            
-            # place2dTexture1 {u'repeatUV': {u'type': u'2FloatAttr', u'value': [10.0, 10.0]}}
+        # geometry assignments
+        mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_mobject)
+        shader_mplug = mfn_dependency_node.findPlug(data['surface']['attribute'])
+        shading_engine_mobject = self.create_kshading_engine(
+            name, 
+            shader_mplug,
+            geometries = data['geometries']
+            )
+        return shading_engine_mobject
 
-            
-        # set node connections
-        
-        #===================================================================
-        # [u'connections', u'type', u'name', u'parameters']
-        # [u'connections', u'type', u'name', u'parameters']
-        #===================================================================
-
-        
-        
-        
-        
-        pass
-    
-    def create_knode(self, node_type, name):        
+    def create_knode(self, name, node_type):        
         node_types = self.get_shading_node_types()
         if node_type not in node_types:
             warnings.warn('node type <%s> not found in the hyper shade  library'%node_type)
@@ -352,7 +350,6 @@ class Shader(studioMaya.Maya):
         mcommand_result.getResult(results)
         mobject = self.get_mobject(results[0])
         return mobject
-    
 
     def get_shading_node_types(self):
         data = {}
@@ -362,11 +359,45 @@ class Shader(studioMaya.Maya):
                 data.setdefault(node, node_type)
         return data    
     
-    
-    
-    
-    
-    
-    
-    
-    
+    def create_kshading_engine(self, name, shader_mplug=None, geometries=None):    
+        shading_engine = self.create_shading_engine(name)
+        if shader_mplug:
+            output_mplug = self.get_mplug('%s.surfaceShader'%(shading_engine))
+            dgMod = OpenMaya.MDGModifier()
+            dgMod.connect(shader_mplug, output_mplug)
+            dgMod.doIt()
+        if geometries:
+            self.assign_to_shading_engine(geometries, shading_engine)
+        return self.get_mobject(shading_engine)
+
+    def create_shading_engine(self, name):  
+        #mfn_dependency_node= OpenMaya.MFnDependencyNode()
+        #mfn_dependency_node.create('shadingEngine')
+        #mfn_dependency_node.setName(name)        
+        mcommand_result = OpenMaya.MCommandResult()
+        mel_command = 'sets -renderable true -noSurfaceShader true -empty -name \"%s\"'% name
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
+        results = []
+        mcommand_result.getResult(results)
+        return results[0]        
+
+    def assign_shading_engine(self, mobject, shading_group=None):
+        if not shading_group:            
+            shading_group = 'initialShadingGroup'
+        if isinstance(shading_group, str):
+            shading_group = self.get_mobject(shading_group)
+        mfn_set = OpenMaya.MFnSet(shading_group)
+        mfn_set.addMember(mobject)
+
+    def assign_to_shading_engine(self, objects, shading_group):
+        mcommand_result = OpenMaya.MCommandResult()
+        mel_command = 'sets -e -forceElement %s %s;' % (shading_group, ' '.join(objects))
+        
+        mel_command = 'sets -e -forceElement %s %s;' % (shading_group, 'pCube1')
+        
+        print 'mel_command\t', mel_command
+        
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
+        results = []
+        mcommand_result.getResult(results)
+        return results

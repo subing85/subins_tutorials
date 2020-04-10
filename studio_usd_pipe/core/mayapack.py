@@ -264,9 +264,6 @@ class Pack(studioMaya.Maya):
             raise IOError('Cannot save, already file found <%s>' % output_path) 
         mobject = self.get_mobject(inputs['node'])
         mesh_data = self.shader.get_surface_data(mobject)
-        
-        
-        return
         final_data = {
             'surface': mesh_data,
             }  
@@ -345,7 +342,9 @@ class Pack(studioMaya.Maya):
             ) 
         premission = self.pack_exists(output_path, inputs['force'])
         if not premission:
-            raise IOError('Cannot save, already file found <%s>' % output_path)                 
+            raise IOError('Cannot save, already file found <%s>' % output_path)
+        
+        print  '\nsubin', inputs['node']               
         self.export_selected(inputs['node'], output_path, force=inputs['force'])
         return output_path
     
