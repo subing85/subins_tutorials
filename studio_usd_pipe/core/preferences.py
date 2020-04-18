@@ -8,14 +8,14 @@ from datetime import datetime
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import image
-from studio_usd_pipe.core import configure
+from studio_usd_pipe.core import studio
 
 
 class Preferences(object):
     
     def __init__(self):
         self.toolkit = 'subins-toolkits'
-        self.config = configure.Configure()
+        self.config = studio.Configure()
         self.config.tool()     
         self.preference_path = self.get_path()
 
@@ -47,6 +47,7 @@ class Preferences(object):
                 show_icon = '/local/references/images/batman.png',
                 database_directory = '/venture/shows/my_hero/db',
                 mayapy_directory = '/usr/autodesk/maya2018/bin/mayapy'
+                python_path = '/venture/source_code/subins-toolkits'
                 )        
         '''
         input_data = self.get_inputs()

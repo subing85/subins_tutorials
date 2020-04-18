@@ -34,7 +34,7 @@
 			"order": 2,
 			"display": "Data Base Directory",
 			"tooltip": "Data Base Directory",
-			"description": "Browse your Python Directory"
+			"description": "Browse your Database Directory"
 			},
 		"mayapy_directory": {
 			"enable": true,
@@ -42,8 +42,16 @@
 			"order": 3,
 			"display": "Mayapy Directory",
 			"tooltip": "Mayapy Directory",
-			"description": "Browse your Python Directory",
+			"description": "Browse your Mayapy Directory",
 			"format": "(*mayapy*)"
+			},
+		"python_path": {
+			"enable": true,
+			"type": "directory",
+			"order": 4,
+			"display": "Python Path",
+			"tooltip": "Python Path",
+			"description": "Browse your Python Directory"
 			}			
 		}
 	} 	

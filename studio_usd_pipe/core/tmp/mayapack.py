@@ -101,7 +101,8 @@ class Pack(studioMaya.Maya):
             self.remove_node(depend_nodes[x]) 
         self.remove_nodes(depend_nodes)                
         # make model group             
-        mesh_mobjects = self.extract_transform_primitive(OpenMaya.MFn.kMesh)
+        mesh_mobjects = self.extract_transform_primitive(OpenMaya.MFn.kMesh, shape=False)
+        
         model_dag_node = self.create_group(inputs['node'])        
         # make geometry hierarchy  
         for x in range (mesh_mobjects.length()):
@@ -299,11 +300,7 @@ class Pack(studioMaya.Maya):
             inputs['publish_directory'], 'source_images')
         mobject = self.get_mobject(inputs['node'])
         input_data = self.shader.get_source_image_data(mobject)
-        
-        print json.dumps(input_data, indent=4)
-                
         output_data = self.shader.set_source_images(input_data, temp_source_image_path, source_image_path)
-
         lowres_data = self.shader.create_lowres_source_images(input_data, temp_source_image_path)  
         final_data = {
             'input': input_data,

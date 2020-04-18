@@ -2,15 +2,15 @@ import os
 import sys
 import tempfile
 
-from PySide2 import QtCore
 from PySide2 import QtGui
+from PySide2 import QtCore
 from PySide2 import QtWidgets
 from functools import partial
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import configure
-from studio_usd_pipe.core import widgets
 from studio_usd_pipe.core import image
+from studio_usd_pipe.core import studio
+from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.core import preferences
 
 
@@ -50,7 +50,7 @@ class Window(QtWidgets.QWidget):
         self.horizontallayout.setContentsMargins(5, 5, 5, 5)
         self.horizontallayout.setObjectName('horizontallayout')
         self.verticallayout_item.addLayout(self.horizontallayout)        
-        self.button_logo, self.button_show = widgets.set_header(
+        self.button_logo, self.button_show = swidgets.set_header(
             self.horizontallayout, show_icon=None)  
         # space
         self.horizontallayout_input = QtWidgets.QHBoxLayout()
@@ -125,7 +125,25 @@ class Window(QtWidgets.QWidget):
             'color: #ff007f; border: 1px solid #000000; border-radius: 12px')
         self.button_maya.setMinimumSize(QtCore.QSize(25, 25))
         self.button_maya.setMaximumSize(QtCore.QSize(25, 25))      
-        self.gridlayout.addWidget(self.button_maya, 3, 2, 1, 1)        
+        self.gridlayout.addWidget(self.button_maya, 3, 2, 1, 1)  
+        
+        self.label_python = QtWidgets.QLabel(self.groupbox)
+        self.label_python.setObjectName('label_python')
+        self.label_python.setText('Python Directory')
+        self.label_python.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.gridlayout.addWidget(self.label_python, 4, 0, 1, 1)
+        self.lineedit_python = QtWidgets.QLineEdit(self.groupbox)
+        self.lineedit_python.setObjectName('lineedit_python')
+        self.gridlayout.addWidget(self.lineedit_python, 4, 1, 1, 1)
+        self.button_python = QtWidgets.QPushButton(self.groupbox)
+        self.button_python.setObjectName('button_python')
+        self.button_python.setText('...')
+        self.button_python.setStyleSheet(
+            'color: #ff007f; border: 1px solid #000000; border-radius: 12px')
+        self.button_python.setMinimumSize(QtCore.QSize(25, 25))
+        self.button_python.setMaximumSize(QtCore.QSize(25, 25))      
+        self.gridlayout.addWidget(self.button_python, 4, 2, 1, 1)  
+              
         self.horizontallayout_button = QtWidgets.QHBoxLayout()
         self.horizontallayout_button.setObjectName('horizontallayout_button')
         self.horizontallayout_button.setSpacing(10)
@@ -162,15 +180,19 @@ class Window(QtWidgets.QWidget):
             'mayapy_directory': {
                 'description': 'Browse your mayapy Directory',
                 'format': '(*mayapy*)'
-                }            
+                },
+            'python_path': {
+                'description': 'Browse your Python Path'
+                }         
             }            
         self.button_icon.clicked.connect(partial(self.find_file, self.lineedit_icon, contents['show_icon'], display=True))
         self.button_directory.clicked.connect(partial(self.find_directory, self.lineedit_directory, contents['show_directory']))
         self.button_database.clicked.connect(partial(self.find_directory, self.lineedit_database, contents['database_directory']))
         self.button_maya.clicked.connect(partial(self.find_file, self.lineedit_maya, contents['mayapy_directory']))
+        self.button_python.clicked.connect(partial(self.find_directory, self.lineedit_python, contents['python_path']))
         
     def set_tool_context(self):
-        config = configure.Configure()
+        config = studio.Configure()
         config.tool()
         return config.version, config.pretty   
 
@@ -182,6 +204,7 @@ class Window(QtWidgets.QWidget):
         self.lineedit_directory.setText(bundle_data['show_directory'])
         self.lineedit_database.setText(bundle_data['database_directory'])
         self.lineedit_maya.setText(bundle_data['mayapy_directory'])
+        self.lineedit_python.setText(bundle_data['python_path'])
         size = self.button_show.minimumSize()
         self.snapshot(self.button_show, bundle_data['show_icon'], [size.width(), size.height()])
 
@@ -218,7 +241,7 @@ class Window(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.Ok
                 )
             return
-        widgets.image_to_button(
+        swidgets.image_to_button(
             button, resolution[0], resolution[1], path=q_image_path)
         button.setStatusTip(q_image_path)
         return q_image_path
@@ -228,7 +251,8 @@ class Window(QtWidgets.QWidget):
             'show_icon': self.lineedit_icon,
             'show_directory': self.lineedit_directory,
             'database_directory': self.lineedit_database,
-            'mayapy_directory': self.lineedit_maya
+            'mayapy_directory': self.lineedit_maya,
+            'python_path': self.lineedit_python
             }        
         widget_data = {}        
         for key, widget in widgets.items():
@@ -251,7 +275,8 @@ class Window(QtWidgets.QWidget):
             show_directory=widget_data['show_directory'],
             show_icon=widget_data['show_icon'],
             database_directory=widget_data['database_directory'],
-            mayapy_directory=widget_data['mayapy_directory']
+            mayapy_directory=widget_data['mayapy_directory'],
+            python_path = widget_data['python_path']
             )
         if not result:
             QtWidgets.QMessageBox.critical(

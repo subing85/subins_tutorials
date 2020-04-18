@@ -239,13 +239,15 @@ class Shader(studioMaya.Maya):
     
     def set_source_images(self, input_data, temp_output_path, output_path):
         data = {}
+
+        if not os.path.isdir(temp_output_path):
+            os.makedirs(temp_output_path)
+                            
         for node, node_contents in input_data.items():
             for attribute, attribute_contents in node_contents.items():
                 source_image = os.path.basename(attribute_contents['value'])
                 target_path = os.path.join(output_path, source_image)
                 temp_target_path = os.path.join(temp_output_path, source_image)
-                if not os.path.isdir(os.path.dirname(temp_target_path)):
-                    os.makedirs(os.path.dirname(temp_target_path))
                 if os.path.isfile(attribute_contents['value']):
                     shutil.copy2(attribute_contents['value'], temp_target_path)
                 mplug = self.get_mplug('{}.{}'.format(node, attribute))

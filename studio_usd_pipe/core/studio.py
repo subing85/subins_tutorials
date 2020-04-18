@@ -1,6 +1,8 @@
 import json
 from studio_usd_pipe import resource
 
+reload(resource)
+
 
 class Configure(object):
     
@@ -26,5 +28,5 @@ class Configure(object):
         self.version = self.lib['version']
             
     def get_data(self):        
-        data = resource.getConfigureData()
+        data = resource.getStudioData()
         return data

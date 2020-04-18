@@ -1,0 +1,71 @@
+{
+	"created_by": "subin gopi",
+	"author": "Subin. Gopi (subing85@gmail.com)",
+	"#copyright": "(c) 2019, Subin Gopi All rights reserved.",
+	"date": "April:15:2020 - 7.58:01:PM",
+	"last_modified": "April:15:2020 - 7.58:01:PM",
+	"comment": "Pipe input configure",
+	"description": "inputs of pipe discipline",
+	"warning": "# WARNING! All changes made in this file will be lost!",
+	"enable": true,
+	"type": "world",
+	"data": {
+		"pipe": {
+		    "assets": {
+				"caption": {
+					"order": 0,
+					"values": null
+					},   
+				"subfield": {
+					"order": 1,
+					"values": [					
+						"model",
+						"uv",
+						"surface",
+						"puppet",
+						"usd"
+						]
+					},
+				"type": {
+					"order": 2,
+					"values": [
+						"interactive",
+						"non-interactive"
+						]
+					},				
+				"tag": {
+					"order": 3,
+					"values": [
+						"character",
+						"prop",
+						"environment"
+						]
+					},
+				"thumbnail": {
+					"order": 4,
+					"values": null
+					},   
+				"description": {
+					"order": 5,
+					"values": null
+					}, 
+				"next_version": {
+					"order": 6,
+					"values": null
+					}
+  				},                
+			"shot": {
+				"subfield": {
+					"order": 0,
+					"values": [				
+						"primarylayout",
+						"secondarylayout",
+						"animation",
+						"lighting",
+						"compositing"
+						]
+					}
+				}
+			}	      
+		}
+	}

@@ -3,7 +3,6 @@ import math
 from maya import OpenMaya
 
 from studio_usd_pipe.api import studioMaya
-from __builtin__ import True, False
 
 reload(studioMaya)
 
@@ -204,7 +203,7 @@ class Model(studioMaya.Maya):
         data = {}
         for x in range(transform_mesh.length()):
             uv_data = self.get_kuv(transform_mesh[x])
-            # uv_data['order'] = x
+            uv_data['order'] = x
             data.setdefault(transform_mesh[x].fullPathName(), uv_data)
         return data   
     

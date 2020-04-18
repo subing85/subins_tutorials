@@ -15,7 +15,7 @@ from distutils import version
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import configure
+from studio_usd_pipe.core import studio
 from studio_usd_pipe.core import mayacreate
 from studio_usd_pipe.core import preferences
 
@@ -25,6 +25,7 @@ from studio_usd_pipe.api import studioPublish
 reload(studioPublish)
 reload(studioMaya)
 reload(mayacreate)
+reload(widgets)
 
 
 class Window(QtWidgets.QMainWindow):
@@ -50,7 +51,7 @@ class Window(QtWidgets.QMainWindow):
         self.setup_toolbar()
         self.icon_configure()
         self.set_current()
-        self.load_date()
+        self.set_current_caption()
         
     def setup_ui(self):
         self.setObjectName('mainwindow_pull')
@@ -65,12 +66,22 @@ class Window(QtWidgets.QMainWindow):
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(0)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)  
+     
+        self.groupbox = QtWidgets.QGroupBox(self)
+        self.groupbox.setObjectName('groupbox_asset')
+        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))          
+        self.verticallayout.addWidget(self.groupbox)
+             
+        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
+        self.verticallayout_item.setObjectName('verticallayout_item')
+        self.verticallayout_item.setSpacing(10)
+        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                  
         
         self.horizontallayout = QtWidgets.QHBoxLayout()
         self.horizontallayout.setSpacing(10)
         self.horizontallayout.setContentsMargins(5, 5, 5, 5)
         self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout.addLayout(self.horizontallayout)
+        self.verticallayout_item.addLayout(self.horizontallayout)
         
         self.button_logo, self.button_show = widgets.set_header(
             self.horizontallayout, show_icon=None) 
@@ -78,18 +89,18 @@ class Window(QtWidgets.QMainWindow):
         self.line = QtWidgets.QFrame(self)
         self.line.setObjectName('line')        
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.verticallayout.addWidget(self.line)        
+        self.verticallayout_item.addWidget(self.line)        
         
         self.horizontallayout_toolbar = QtWidgets.QHBoxLayout()
         self.horizontallayout_toolbar.setSpacing(10)
         self.horizontallayout_toolbar.setContentsMargins(5, 5, 5, 5)
         self.horizontallayout_toolbar.setObjectName('horizontallayout_toolbar')
-        self.verticallayout.addLayout(self.horizontallayout_toolbar)        
+        self.verticallayout_item.addLayout(self.horizontallayout_toolbar)        
         
         self.line = QtWidgets.QFrame(self)
         self.line.setObjectName('line')        
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.verticallayout.addWidget(self.line)          
+        self.verticallayout_item.addWidget(self.line)          
         
         #=======================================================================
         # self.groupbox_bar = QtWidgets.QGroupBox(self)
@@ -112,12 +123,12 @@ class Window(QtWidgets.QMainWindow):
         self.horizontallayout_input.setObjectName('horizontallayout_input')        
         self.horizontallayout_input.setSpacing(10)
         self.horizontallayout_input.setContentsMargins(5, 5, 5, 5)   
-        self.verticallayout.addLayout(self.horizontallayout_input)
+        self.verticallayout_item.addLayout(self.horizontallayout_input)
              
         self.treewidget = QtWidgets.QTreeWidget(self)
         self.treewidget.setObjectName('treewidget')
         # self.treewidget.headerItem().setText(0, 'No')
-        self.treewidget.headerItem().setText(0, 'Name')
+        self.treewidget.headerItem().setText(0, 'Assets')
         # self.treewidget.headerItem().setText(1, 'Location')
         self.treewidget.header().resizeSection (0, 250)
         self.treewidget.setStyleSheet('font: 12pt \'Sans Serif\';')
@@ -352,15 +363,9 @@ class Window(QtWidgets.QMainWindow):
         contents = ast.literal_eval(contents)        
         subfield = contents['hierarchy'].split('|')[1]        
         self.set_menu_options(subfield)        
-        
         self.menu.exec_(widget.mapToGlobal(point))
-        
-
-        
     
     def set_menu_options(self, subfield):
-        
-        print 'subfield\t', subfield
         actions = [
             self.action_import_maya,
             self.action_reference_maya,           
@@ -373,9 +378,7 @@ class Window(QtWidgets.QMainWindow):
             ]
         for action in actions:
             action.setVisible(True)                
-                
-
-        visibile = {
+        invisibile = {
             'uv': [
                 self.action_import_maya,
                 self.action_reference_maya,           
@@ -402,16 +405,12 @@ class Window(QtWidgets.QMainWindow):
                 self.action_pull_replace                    
                 ]
             }
-        
-        if subfield in visibile:
-        
-            for action in visibile[subfield]:
+        if subfield in invisibile:
+            for action in invisibile[subfield]:
                 action.setVisible(False)
-                    
-        
 
     def set_tool_context(self):
-        config = configure.Configure()
+        config = studio.Configure()
         config.tool()
         return config.version, config.pretty          
         
@@ -424,22 +423,22 @@ class Window(QtWidgets.QMainWindow):
         widgets.image_to_button(
             self.button_show, size.width(), size.height(), path=bundle_data['show_icon'])
     
-    def load_date(self):
+    def set_current_caption(self):
         pub_data = self.pub.get()
         valid_subfields = self.pub.valid_modes[self.mode]['subfield']
+        self.treewidget.clear()
         for caption, contents in pub_data.items():
             version_contents = contents[contents.keys()[0]]
             tag = version_contents[version_contents.keys()[0]]['tag']
-            caption_item = self.add_treewidget_item(
-                self.treewidget, caption, icon=tag)
+            caption_item = widgets.add_treewidget_item(self.treewidget, caption, icon=tag)
             for subfield in valid_subfields:                
                 if subfield not in contents:
                     continue
-                subfield_item = self.add_treewidget_item(caption_item, subfield, icon=subfield)
+                subfield_item = widgets.add_treewidget_item(caption_item, subfield, icon=subfield)
                 versions = sorted(contents[subfield].keys(), key=version.StrictVersion)
                 versions.reverse()
                 for each in versions:
-                    version_item = self.add_treewidget_item(subfield_item, each, icon='version')
+                    version_item = widgets.add_treewidget_item(subfield_item, each, icon='version')
                     ver_contents = copy.deepcopy(contents[subfield][each])
                     more_contents = self.pub.get_more_data(caption, subfield, each)
                     ver_contents['hierarchy'] = '{}|{}|{}'.format(caption, subfield, each)
@@ -447,16 +446,6 @@ class Window(QtWidgets.QMainWindow):
                     ver_contents.update(more_contents)
                     version_item.setStatusTip(0, str(ver_contents))
         self.treewidget.expandAll()
-    
-    def add_treewidget_item(self, parent, label, icon=None):
-        item = QtWidgets.QTreeWidgetItem (parent)
-        item.setText (0, label)
-        if icon:      
-            icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon))
-            icon = QtGui.QIcon ()
-            icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)           
-            item.setIcon (0, icon)
-        return item        
 
     def current_item_select(self, *args):
         self.clear_display() 

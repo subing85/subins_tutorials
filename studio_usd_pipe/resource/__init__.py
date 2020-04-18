@@ -30,8 +30,14 @@ def getPreferenceData(path=None):
     return data
 
 
-def getConfigureData():
-    path = os.path.join(getInputPath(), 'configure.json')
+def getPipeData():
+    path = os.path.join(getInputPath(), 'pipe.json')
+    data = get_input_data(path)
+    return data
+
+
+def getStudioData():
+    path = os.path.join(getInputPath(), 'studio.json')
     data = get_input_data(path)
     return data
 
@@ -75,5 +81,11 @@ def getWorkspacePath():
             os.getenv('USERPROFILE') + '/Documents').replace('\\', '/')
     if platform.system() == 'Linux':
         return os.path.join(os.getenv('HOME'), 'Documents')
+    
+
+def getPublishBundlePath(mode):
+    path = os.path.join(CURRENT_PATH, 'publish', mode)
+    return path
+    
 
  

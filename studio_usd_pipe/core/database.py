@@ -1,6 +1,5 @@
 import os
 import re
-import json
 import getpass
 import logging
 import sqlite3
@@ -13,16 +12,18 @@ from studio_usd_pipe.core import preferences
 
 class DataBase(object):
     
-    def __init__(self, entity):        
-        self.entity = entity
+    def __init__(self, pipe):        
+        self.pipe = pipe
         self.pref = preferences.Preferences()
         pref_data = resource.getPreferenceData(path=self.pref.preference_path)
         self.db = os.path.join(
-            pref_data['database_directory'], '{}.db'.format(self.entity))
+            pref_data['database_directory'], '{}.db'.format(self.pipe))
         self.table_prefix = 'table'
         self.initialize(force=False)
         
     def initialize(self, force=False):
+        if not self.pipe:
+            return
         if force:
             self.remove_db()
         if not os.path.isdir(os.path.dirname(self.db)):
@@ -190,6 +191,7 @@ class DataBase(object):
             logging.warn('OperationalError: {}'.format(str(error)))
         finally:
             self.close(connect)
+        
         return tables
         
     def next_table(self):
@@ -203,6 +205,7 @@ class DataBase(object):
     
     def has_table(self, table):
         tables = self.get_tables()
+        print tables
         if not table:
             return False
         if table in tables:
@@ -236,5 +239,5 @@ class DataBase(object):
             sorted_data.setdefault(
                 dictionary[contents]['order'], []).append(contents)
         order = sum(sorted_data.values(), [])
-        return order     
-
+        return order  
+    

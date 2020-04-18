@@ -2,6 +2,7 @@ import os
 import sys
 import copy
 import json
+import tempfile
 import warnings
 
 from PySide2 import QtGui
@@ -11,34 +12,43 @@ from PySide2 import QtWidgets
 from functools import partial
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import configure
+from studio_usd_pipe.core import studio
+from studio_usd_pipe.core import image
+from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.core import preferences
 from studio_usd_pipe.api import studioPublish
-from studio_usd_pipe.api import studioMaya
 
+reload(swidgets)
 reload(studioPublish)
 
 
 class Window(QtWidgets.QWidget):
 
-    def __init__(self, parent=None, mode=None):
+    def __init__(self, parent=None, standalone=None):
         super(Window, self).__init__(parent)        
         # self.setParent(parent)
         self.setWindowFlags(QtCore.Qt.Window) 
-        self.mode = mode        
+        self.standalone = standalone
         self.title = 'Asset Publish/Push'
         self.width = 572
         self.height = 716
-        self.version, self.label = self.set_tool_context()        
-        self.pub = studioPublish.Publish(self.mode)                
-        self.pref = preferences.Preferences()
+        self.version, self.label = self.set_tool_context()  
+        preference = preferences.Preferences()
+        self.preferences_data = preference.get()
+        self.brows_directory = self.preferences_data['show_directory']
+        self.pub = studioPublish.Publish(pipe='assets') 
+        self.source_maya = None          
+        
         self.setup_ui()
+        self.setup_menu()
+        self.setup_standalone()
+        self.setup_icons()
         self.set_default()
-        self.icon_configure()
+
+
         
     def setup_ui(self):
-        self.setObjectName('widget_asset')
+        self.setObjectName('widget_push')
         self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))        
         self.resize(self.width, self.height)         
         self.verticallayout = QtWidgets.QVBoxLayout(self)
@@ -50,22 +60,31 @@ class Window(QtWidgets.QWidget):
         self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
         self.verticallayout.addWidget(self.groupbox)             
         self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout')
+        self.verticallayout_item.setObjectName('verticallayout_item')
         self.verticallayout_item.setSpacing(10)
         self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                
         self.horizontallayout = QtWidgets.QHBoxLayout()
         self.horizontallayout.setContentsMargins(5, 5, 5, 5)
         self.horizontallayout.setObjectName('horizontallayout')
         self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = widgets.set_header(
-            self.horizontallayout, show_icon=None)         
+        self.button_logo, self.button_show = swidgets.set_header(
+            self.horizontallayout, show_icon=None)    
+
+        self.line = QtWidgets.QFrame(self)
+        self.line.setObjectName('line')        
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.verticallayout_item.addWidget(self.line)
+                     
         self.horizontallayout_output = QtWidgets.QHBoxLayout()
         self.horizontallayout_output.setObjectName('horizontallayout_output')
         self.horizontallayout_output.setSpacing(10)
         self.horizontallayout_output.setContentsMargins(5, 5, 5, 5)
         self.verticallayout_item.addLayout(self.horizontallayout_output)
-        studio_maya = studioMaya.Maya()
-        self.current_file, file_type = studio_maya.get_current_file()        
+        
+
+        
+        self.current_file, file_type = None, None
+               
         source_file = 'Current File: {}\nFile Type: {}'.format(self.current_file, file_type)
         self.label_source = QtWidgets.QLabel()
         self.label_source.setObjectName('label_source')
@@ -142,7 +161,7 @@ class Window(QtWidgets.QWidget):
         self.button_thumbnail.setSizePolicy(size_policy)
         self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
         self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
-        widgets.image_to_button(
+        swidgets.image_to_button(
             self.button_thumbnail, 256, 180, path=os.path.join(resource.getIconPath(), 'screenshot.png'))          
         self.button_thumbnail.clicked.connect(partial(self.take_thumbnail, self.button_thumbnail))
         self.gridlayout.addWidget(self.button_thumbnail, 4, 1, 1, 1)  
@@ -209,18 +228,66 @@ class Window(QtWidgets.QWidget):
         self.horizontallayout_button.addWidget(self.button_publish)
         spacer_item = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
-        self.button_publish.clicked.connect(self.publish)        
-        self.button_cancel.clicked.connect(self.close)  
         self.combobox_caption.editTextChanged.connect(self.set_current_version)
         self.combobox_subfield.currentIndexChanged.connect(self.set_current_version)
         self.combobox_version.currentIndexChanged.connect(self.set_current_version)
+        self.button_publish.clicked.connect(self.publish)        
+        self.button_cancel.clicked.connect(self.close)  
+           
+    def setup_menu(self):        
+        self.menu = QtWidgets.QMenu(self)
+        self.menu.setObjectName('menu')        
+        self.action_open= QtWidgets.QAction(self)
+        self.action_open.setObjectName('action_open')
+        self.action_open.setToolTip('Open maya file') 
+        self.action_open.setText('Open maya file') 
+        self.menu.addAction(self.action_open)
+        self.action_open.triggered.connect(self.open_maya)
+    
+
+    def setup_standalone(self):
+        if not self.standalone:
+            self.setup_current_maya()
+            return
+        self.label_source.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)        
+        self.label_source.customContextMenuRequested.connect(
+            partial(self.on_context_menu, self.label_source)) 
         
+    def on_context_menu(self, widget, point):
+        self.menu.exec_(widget.mapToGlobal(point))   
+        
+    def setup_icons (self):
+        widgets = self.findChildren(QtWidgets.QAction)
+        swidgets.set_icons(mainwindow=self, widgets=widgets)
+    
+    
+    def open_maya(self):
+        current_file = QtWidgets.QFileDialog.getOpenFileName(
+            self, 'find the maya file', self.brows_directory, '(*.ma *.mb)')
+        if not current_file:
+            return
+        self.brows_directory = os.path.dirname(current_file[0])
+        self.setup_current_maya(file=current_file[0], format=format)   
+    
+    def setup_current_maya(self, file=None, format=None):
+        self.source_maya = file
+        if not file:
+            from studio_usd_pipe.api import studioMaya
+            studio_maya = studioMaya.Maya()
+            name, format = studio_maya.get_current_file()
+        else:
+            name, format = os.path.splitext(file)
+            formats = {'.ma': 'mayaAscii', '.mb': 'mayaBinary'}            
+            format = formats[format]
+        source_file = 'Current File: {}\nFile Type: {}'.format(name, format)
+        self.label_source.setText(source_file)
+
     def set_tool_context(self):
-        config = configure.Configure()
+        config = studio.Configure()
         config.tool()
-        return config.version, config.pretty          
-        
-    def set_default(self):
+        return config.version, config.pretty
+    
+    def clear_widget(self):
         self.combobox_caption.clear()
         self.combobox_subfield.clear()
         self.combobox_type.clear()
@@ -229,56 +296,66 @@ class Window(QtWidgets.QWidget):
         self.combobox_version.clear()
         self.combobox_latest_version.clear()
         self.combobox_next_version.clear()
-        bundle_data = self.pref.get()
-        if bundle_data:  # set show icon 
-            show_icon = os.path.join(resource.getIconPath(), 'show.png')
-            if 'show_icon' in bundle_data:
-                show_icon = bundle_data['show_icon']
-            size = self.button_show.minimumSize()
-            widgets.image_to_button(
-                self.button_show,
-                size.width(),
-                size.height(),
-                path=show_icon
-                )            
+        
+    def set_default(self):
+        self.clear_widget()
+        show_icon = os.path.join(resource.getIconPath(), 'show.png')
+        if 'show_icon' in self.preferences_data:
+            show_icon = self.preferences_data['show_icon']
+        size = self.button_show.minimumSize()
+        swidgets.image_to_button(
+            self.button_show,
+            size.width(),
+            size.height(),
+            path=show_icon
+            )
+             
         pub_data = self.pub.get()
         captions = ['']
         if pub_data:  # add caption from database
             captions = [''] + pub_data.keys()
         self.combobox_caption.addItems(captions)
-        self.combobox_subfield.addItems(self.pub.valid_modes[self.mode]['subfield'])        
-        self.combobox_type.addItems(self.pub.valid_modes[self.mode]['type'])        
-        self.combobox_tag.addItems(self.pub.valid_modes[self.mode]['tag'])         
-        self.combobox_version.addItems(['major', 'minor', 'patch'])        
+        self.combobox_subfield.addItems(self.pub.pipe_data['subfield']['values'])
+        self.combobox_type.addItems(self.pub.pipe_data['type']['values'])                                                
+        self.combobox_tag.addItems(self.pub.pipe_data['tag']['values'])         
+        self.combobox_version.addItems(['major', 'minor', 'patch'])            
         size = self.button_thumbnail.minimumSize()
-        widgets.image_to_button(
+        swidgets.image_to_button(
             self.button_thumbnail,
             size.width(),
             size.height(),
             path=os.path.join(resource.getIconPath(), 'screenshot.png')
             )
-
-    def icon_configure (self):
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(os.path.join(resource.getIconPath(), 'push.png')))
-        self.setWindowIcon(icon)
-
                    
     def take_thumbnail(self, button):
-        smaya = studioMaya.Maya()
-        output_path, w, h = smaya.vieport_snapshot(
-            output_path=None,
-            width=768,
-            height=768,
-            )
-        qsize = button.minimumSize()
-        widgets.image_to_button(
+        if not self.standalone:
+            from studio_usd_pipe.api import studioMaya
+            smaya = studioMaya.Maya()
+            output_path, w, h = smaya.vieport_snapshot(
+                output_path=None,
+                width=768,
+                height=540,
+                )
+        else:
+            current_file = QtWidgets.QFileDialog.getOpenFileName(
+                self, 'find the maya file', self.brows_directory, '(*.jpg *.png *.tga *.tiff)')
+            self.brows_directory = os.path.dirname(current_file[0])
+            if not current_file:
+                return
+            output_path = os.path.join(tempfile.gettempdir(), 'thumbnail.png')
+            output_path = image.image_resize(current_file[0], output_path, 768, 540)
+
+                        
+        qsize = button.minimumSize()            
+        swidgets.image_to_button(
             button,
             qsize.width(),
             qsize.height(),
             path=output_path
             )        
-        self.button_thumbnail.setToolTip(output_path)
+        self.button_thumbnail.setToolTip(output_path)            
+        
+            
 
     def set_current_version(self):
         caption = self.combobox_caption.currentText()
@@ -286,11 +363,24 @@ class Window(QtWidgets.QWidget):
         semantic_version = self.combobox_version.currentIndex()
         self.combobox_latest_version.clear() 
         self.combobox_next_version.clear()        
-        versions = self.pub.get_versions(caption, subfield)
+        # disable type and tag
+        type_data = self.pub.get_caption_type()
+        pipe_data = resource.getPipeData()
+        if caption in type_data:
+            types = pipe_data['pipe']['assets']['type']['values']
+            self.combobox_type.setCurrentIndex(types.index(type_data[caption][0]))
+            self.combobox_type.setEnabled(False)
+        tag_data = self.pub.get_caption_tag()
+        if caption in tag_data:
+            tags = pipe_data['pipe']['assets']['tag']['values']
+            self.combobox_tag.setCurrentIndex(tags.index(tag_data[caption][0]))
+            self.combobox_tag.setEnabled(False)            
+        versions = self.pub.get_versions(caption, subfield=subfield)
         if not versions:
             versions = [None]
         self.combobox_latest_version.addItems(versions)
-        next_version = self.pub.get_next_version(versions[0], semantic_version)
+        next_version = self.pub.get_next_version(
+            caption, semantic_version, subfield=subfield)
         self.combobox_next_version.addItem(next_version)
 
     def get_widget_data(self):
@@ -301,7 +391,7 @@ class Window(QtWidgets.QWidget):
             'tag': self.combobox_tag,
             'thumbnail': self.button_thumbnail,
             'description': self.textedit_description,
-            'version': self.combobox_next_version       
+            'version': self.combobox_next_version,
             }
         widget_data = {}        
         for key, widget in widgets.items():
@@ -318,25 +408,79 @@ class Window(QtWidgets.QWidget):
         return widget_data      
             
     def publish(self):
-        widget_data = self.get_widget_data()
-        if None in widget_data.values():
+        input_data = self.get_widget_data()
+       
+        if not self.source_maya :
             QtWidgets.QMessageBox.warning(
-                self, 'Warning', 'Empty inputs!...', QtWidgets.QMessageBox.Ok)
-            return          
-        self.pub.bundle = copy.deepcopy(widget_data)
-        self.pub.bundle['source_file'] = self.current_file
-        print '\n#inputs\t'
-        print json.dumps(self.pub.bundle, indent=4)
-        self.pub.pack()
+                self, 'Warning', 'open maya file and try!...', QtWidgets.QMessageBox.Ok)
+            return            
+        
+        #=======================================================================
+        # if None in input_data.values():
+        #     QtWidgets.QMessageBox.warning(
+        #         self, 'Warning', 'Empty inputs!...', QtWidgets.QMessageBox.Ok)
+        #     return
+        #=======================================================================        
+        
+       
+        print '#header: inputs'
+        print json.dumps(input_data, indent=4)
+        self.pub.pipe = 'assets'
+        self.pub.subfield = input_data['subfield']
+        self.pub.standalone = self.standalone
+        input_data['source_maya'] = self.source_maya      
+        
+        valid, message = self.pub.validate(repair=True, **input_data)
+        if not valid:
+            QtWidgets.QMessageBox.critical(
+                self, message, message, QtWidgets.QMessageBox.Ok)
+            return        
+        
+        valid, message = self.pub.extract(repair=False, **input_data)
+        if not valid:
+            QtWidgets.QMessageBox.critical(
+                self, message, message, QtWidgets.QMessageBox.Ok)
+            return
+        
         self.pub.release()
-        self.set_default()       
-        self.set_current_version()
+        
+        #=======================================================================
+        # if not valid:
+        #     QtWidgets.QMessageBox.critical(
+        #         self, 'Failed', message, QtWidgets.QMessageBox.Ok)
+        #     return        
+        # 
+        #=======================================================================
+         
+        
+        return
+         
+        self.set_default()
+        self.set_current_version()       
         QtWidgets.QMessageBox.information(
-            self, 'Success', 'Done!...', QtWidgets.QMessageBox.Ok)
+            self, message, 'Done!...', QtWidgets.QMessageBox.Ok)
         
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = Window(parent=None)
+    window = Window(parent=None, standalone=True)
     window.show()
-    sys.exit(app.exec_())        
+    sys.exit(app.exec_()) 
+
+'''    
+inputs = {
+    'description': 'test', 
+    'subfield': 'model', 
+    'caption': 'batman', 
+    'tag': 'character', 
+    'version': '3.0.0', 
+    'type': 'non-interactive', 
+    'thumbnail': 'path'
+    }
+
+pipe = 'assets'
+subfield = inputs['subfield']
+pub = studioPublish.Publish(pipe=pipe, subfield=subfield)
+  
+pub.pack(True, **inputs)   
+'''

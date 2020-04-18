@@ -1,4 +1,25 @@
+NAME = 'Extract USD'
+ORDER = 2
+VALID = True
+TYPE = 'extractor'
+OWNER = 'Subin Gopi'
+COMMENTS = 'To create USD'
+VERSION = '0.0.0'
+LAST_MODIFIED = 'April 14, 2020'
 
+
+
+def execute(**kwargs):   
+    values = []
+    message = ''
+    
+    return True, values, message
+
+
+
+def trail():    
+    return True, [], 'trail run'
+    
 import os
 import copy
 import json
@@ -60,26 +81,25 @@ class Asset(object):
                 contents['version'], keys)
         return db_data
     
-    def get_subfields(self, caption):
-        data = self.get()
+    def get_subfields(self, caption, db_data=None):
+        if not db_data:
+            db_data = self.get()
         subfield_data = {}
-        for k, v in data.items():    
-            if k!=caption:
-                continue        
-            subfield_data.update(v)  
+        if caption in db_data:
+            subfield_data = db_data[caption]
         return subfield_data
     
-    def get_version_data(self, caption, subfield):
-        data = self.get_subfields(caption)
+    def get_version_data(self, caption, subfield, db_data=None):
+        subfield_data = self.get_subfields(caption, db_data=db_data)
         version_data = {}
-        for k, v in data.items():    
+        for k, v in subfield_data.items():    
             if k!=subfield:
                 continue        
             version_data.update(v)        
         return version_data
 
-    def get_asset_data(self, caption, subfield, version):        
-        data = self.get_subfields(caption)
+    def get_asset_data(self, caption, subfield, version, db_data=None):        
+        data = self.get_subfields(caption, db_data=db_data)
         if subfield not in data:
             raise ValueError(
                 'Not found <{}> in the database'.format(subfield))
@@ -105,6 +125,20 @@ class Asset(object):
                 continue
             sorted_data.pop(each)
         return sorted_data
+    
+    def get_specific_key_captions(self, key, db_data=None):
+        if not db_data:
+            db_data = self.get()
+        tag_data = {}
+        for asset, subfields in db_data.items():
+            for subfield in subfields:
+                for version in subfields[subfield]:
+                    specific_key = subfields[subfield][version][key]                    
+                    if specific_key in tag_data:                    
+                        if asset in tag_data[specific_key]:
+                            continue                    
+                    tag_data.setdefault(specific_key, []).append(asset)
+        return tag_data    
 
     def set_inputs(self):
         pref = preferences.Preferences()
@@ -114,7 +148,11 @@ class Asset(object):
         self.mayapy = self.input_data['mayapy_directory']
         self.show_path = self.input_data['show_directory']
     
-    def pack(self, bundle):
+    
+    
+    
+    
+    def pack(self, bundle, **kwargs):
         '''
             import time
             from studio_usd_pipe.core import asset
@@ -191,12 +229,20 @@ class Asset(object):
             self.make_maya()
             self.make_manifest()
             
+        if self.subfield == 'usd':
+            self.make_composition_usd(kwargs['composition'], force=False)
+            self.make_thumbnail()
+            self.make_manifest()
+           
+            
         for key in self.data:
             if not self.data[key]:
                 continue       
             for each in self.data[key]:
                 if not each:
                     continue                
+                #if not os.path.exists(each):
+                #    continue            
                 os.utime(each, (self.time_stamp, self.time_stamp))
 
 
@@ -475,7 +521,8 @@ class Asset(object):
             'usd': usd,
             'thumbnail': thumbnail,
             'source_images': source_images,
-            'force': True
+            'force': True,
+            'subfield': self.subfield
             }
         
         print '#'*50
@@ -484,6 +531,10 @@ class Asset(object):
         
         mainfest = self.mpack.create_manifest(inputs)
         self.data['mainfest'] = [mainfest]
+        
+        
+    def make_composition_usd(self, composition_data, force=False):
+        self.data['composition'] = None      
             
     def make_directory(self, directory):
         if os.path.isdir(directory):

@@ -1,3 +1,4 @@
+
 import os
 import json
 import math
@@ -297,7 +298,8 @@ class Maya(object):
         return dag_path_array 
     
     def extract_transform_primitive(self, mfn_type, shape=True, parent_mobject=None):
-        dag_path_array = OpenMaya.MDagPathArray()        
+        dag_path_array = OpenMaya.MDagPathArray()
+        seen = []
         mit_dependency_nodes = OpenMaya.MItDependencyNodes(mfn_type)
         while not mit_dependency_nodes.isDone():
             mobject = mit_dependency_nodes.item() 
@@ -313,8 +315,13 @@ class Maya(object):
                 mfn_dag_node = OpenMaya.MFnDagNode(p_mobject)
             p_dag_path = OpenMaya.MDagPath()
             mfn_dag_node.getPath(p_dag_path) 
+            if p_dag_path in seen:
+                mit_dependency_nodes.next()
+                continue
+            seen.append(p_dag_path)
             dag_path_array.append(p_dag_path)
             mit_dependency_nodes.next()
+        dag_path_array = OpenMaya.MDagPathArray(dag_path_array)  
         return dag_path_array
 
     def extract_top_transforms(self, default=False):
@@ -420,7 +427,8 @@ class Maya(object):
             child = mfn_dagpath.fullPathName()            
         if not isinstance(parent, str):
             mfn_dagpath = OpenMaya.MFnDagNode(parent)
-            parent = mfn_dagpath.fullPathName()                             
+            parent = mfn_dagpath.fullPathName() 
+        
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'parent \"%s\" \"%s\" ' % (child, parent)
         OpenMaya.MGlobal.executeCommand(
@@ -574,8 +582,6 @@ class Maya(object):
         mplug_array = OpenMaya.MPlugArray()
         for output in outputs:
             mplug = self.get_mplug('%s.%s'%(node, output))
-            
-            print mplug.name()
             if default:
                 mplug_array.append(mplug)
             else:
@@ -593,7 +599,6 @@ class Maya(object):
                 unused_attributes.append(mplugs[x])
             if attribute.apiType() == OpenMaya.MFn.kNumericAttribute:
                 if not mplugs[x].isChild():
-                    print '\t', mplugs[x].name()
                     continue
                 # remove if attribute is child of compound attribute
                 parent_mplug = mplugs[x].parent()
@@ -749,8 +754,6 @@ class Maya(object):
             mfn_matrix_data = OpenMaya.MFnMatrixData(mplug.asMObject())
             value = mfn_matrix_data.matrix()
             return value, 'FloatAttr'
-        
-        print '\t\t', attribute_type, OpenMaya.MFnData.kString
         if attribute_type == OpenMaya.MFnData.kString:  # string
             value = mplug.asString()      
             return value, 'StringAttr'
@@ -822,8 +825,6 @@ class Maya(object):
             except Exception as error:
                 raise error                  
         mselection_list = OpenMaya.MSelectionList()
-        
-        print 'nodes\t', nodes
         for node in nodes:
             mselection_list.add(node)    
         OpenMaya.MGlobal.setActiveSelectionList(mselection_list)
