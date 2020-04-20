@@ -1,25 +1,23 @@
-NAME = 'Validate Scene Hierarchy'
+NAME = 'Validate Model Scene Hierarchy'
 ORDER = 0
 VALID = True
 TYPE = 'validator'
-KEY = 'hierarchy'
+KEY = 'model_hierarchy'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To check the hierarchy as per our workflow'
+COMMENTS = 'To check the model hierarchy'
 VERSION = '0.0.0'
 LAST_MODIFIED = 'April 14, 2020'
 
 
-def execute(**kwargs):   
-    values = ['ball', 'bat']
-    message = 'found in the scene'
-    
-    return True, values, message
+def execute(**kwargs):
+    from studio_usd_pipe.core import asset
+    reload(asset)
+    valid, values, message = asset.check_model_hierarchy()
+    return valid, values, message
 
 
 def repair(**kwargs):
-    values = []
-    message = 'not found in the scene'
-    message = 'not able to fix'
-    return True, values, message
-
-    
+    from studio_usd_pipe.core import asset
+    reload(asset)
+    valid, values, message = asset.create_model()
+    return True, values, message    

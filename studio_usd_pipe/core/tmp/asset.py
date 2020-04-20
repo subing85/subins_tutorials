@@ -29,7 +29,7 @@ import getpass
 import tempfile
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import mayapack
+from studio_usd_pipe.core.tmp import mayapack
 from studio_usd_pipe.core import database
 from studio_usd_pipe.core import preferences
 

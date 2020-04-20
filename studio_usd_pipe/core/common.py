@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import warnings
 
@@ -13,6 +14,15 @@ def sorted_order(input_dict):
         data.setdefault(v['order'], []).append(k)
     result = sum(data.values(), [])    
     return result
+
+
+def sort_dictionary(dictionary): # to remove
+    sorted_data = {}
+    for contents in dictionary:
+        sorted_data.setdefault(
+            dictionary[contents]['order'], []).append(contents)
+    order = sum(sorted_data.values(), [])
+    return order   
 
 
 def make_argeuments(**kwargs):
@@ -59,4 +69,29 @@ def make_maya_batch(module, mayapy, commands, source_path=None):
         except:
             pass
         return batch_path
+    
+def data_exists(path, force): 
+    if os.path.exists(path):      
+        if not force:
+            return True          
+        os.chmod(path, 0777)
+        try:
+            os.remove(path)
+            return True
+        except Exception as error:
+            return False
+    else:
+        return True
+    
+def remove_directory(path):
+    if not os.path.isdir(path):
+        return True
+    try:
+        os.chmod(path, 0777)
+    except Exception as error:
+        print '# warnings', error
+    try:
+        shutil.rmtree(path)   
+    except Exception as error:
+        print '# warnings', error    
 

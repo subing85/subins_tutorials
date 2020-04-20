@@ -1,12 +1,12 @@
-NAME = 'Extract Model Maya Ascii'
+NAME = 'Extract Maya Ascii'
 ORDER = 4
 VALID = True
 TYPE = 'extractor'
-KEY = 'maya_model_scene'
+KEY = 'maya_uv_scene'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To create model maya ascii file'
+COMMENTS = 'To create uv maya ascii file'
 VERSION = '0.0.0'
-LAST_MODIFIED = 'April 14, 2020'
+LAST_MODIFIED = 'April 19, 2020'
 
 
 def execute(output_path=None, **kwargs):   

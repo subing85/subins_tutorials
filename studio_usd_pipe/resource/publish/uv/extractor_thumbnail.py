@@ -1,12 +1,12 @@
-NAME = 'Extract Model Thumbnail'
+NAME = 'Extract UV Thumbnail'
 ORDER = 1
 VALID = True
 TYPE = 'extractor'
-KEY = 'model_thumbnail'
+KEY = 'uv_thumbnail'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To create model thumbnail file'
+COMMENTS = 'To create uv thumbnail file'
 VERSION = '0.0.0'
-LAST_MODIFIED = 'April 14, 2020'
+LAST_MODIFIED = 'April 19, 2020'
 
 
 def execute(output_path=None, **kwargs):

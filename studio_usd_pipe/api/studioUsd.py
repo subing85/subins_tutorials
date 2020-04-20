@@ -59,11 +59,6 @@ class Susd(object):
         points.Set(point_value)
         
     def make_uv_points_ids(self, define, set, data):
-        
-        print define
-        print set
-        print data
-          
         uv_primvar = define.CreatePrimvar(
             set,
             Sdf.ValueTypeNames.Float2Array,

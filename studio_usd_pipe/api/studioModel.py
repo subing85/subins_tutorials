@@ -223,5 +223,50 @@ class Model(studioMaya.Maya):
                     self.unparent(children[x])
                 self.remove_node(name)                
         mfn_transform = self.create_ktransform(name, data)
-        return mfn_transform     
-          
+        return mfn_transform    
+    
+    def get_uv_at_point(self, mobject, uvset=None):
+        u_array = OpenMaya.MFloatArray()
+        v_array = OpenMaya.MFloatArray()
+        points = OpenMaya.MPointArray()
+        mfn_mesh = OpenMaya.MFnMesh(mobject)
+        mfn_mesh.getPoints(points)
+        for x in range (points.length()):
+            mscript = OpenMaya.MScriptUtil()
+            mscript.createFromList([0.0,0.0],2)
+            uv_points = mscript.asFloat2Ptr()   
+            mfn_mesh.getUVAtPoint(points[x], uv_points, OpenMaya.MSpace.kObject)
+            u_array.append(mscript.getFloat2ArrayItem(uv_points,0,0))
+            v_array.append(mscript.getFloat2ArrayItem(uv_points,0,1))
+        return u_array, v_array
+    
+    def has_valid_uvset(self, mobject, uvset=None):
+        valid = False
+        try:        
+            self.get_uv_at_point(mobject, uvset=uvset)
+            valid = True
+        except Exception:
+            valid = False
+        return valid    
+    
+    def _has_valid_uvset(self, mobject, uvset=None):
+        mfn_mesh = OpenMaya.MFnMesh(mobject)
+        set_names = []
+        mfn_mesh.getUVSetNames(set_names)
+        if uvset not in set_names:
+            print '#warnings: not found uv set <%s>'%uvset
+            return False
+        uv_counts = OpenMaya.MIntArray()
+        uv_ids = OpenMaya.MIntArray()
+        mfn_mesh.getAssignedUVs(uv_counts, uv_ids, uvset)
+        if uv_ids:
+            return True
+        return False
+    
+    def get_uvsets(self, mobject):
+        mfn_mesh = OpenMaya.MFnMesh(mobject)
+        set_names = []
+        mfn_mesh.getUVSetNames(set_names)
+        return set_names
+    
+        

@@ -65,16 +65,16 @@ class DataBase(object):
                 'subfield': {'value': 'model', 'order': 2 },
                 'type': {'value': 'inractive', 'order': 3},
                 'tag': {'value': 'character', 'order': 4},
-                'date': {'value': '01-01-2110', 'order': 5},
+                'modified': {'value': '01-01-2110', 'order': 5},
                 'location': {'value': '/show/assets/batman/0.0.0', 'order': 6}
                 }         
             dbs = DataBase('asset')
             dbs.create(kwargs)            
         '''
-        kwargs['user'] = {
-            'order': len(kwargs),
-            'value': getpass.getuser()
-            }
+        #kwargs['user'] = {
+        #    'order': len(kwargs),
+        #    'value': getpass.getuser()
+        #    }
         headers = self.sort_dictionary(kwargs)
         values = [kwargs[header]['value'] for header in headers]
         current_table = self.next_table()
@@ -107,14 +107,14 @@ class DataBase(object):
                 'subfield': 'model',
                 'type': 'inractive',
                 'tag': 'character',
-                'date':'01-01-2110',
+                'modified':'01-01-2110',
                 'location': '/venture/test_show/assets/batman/0.0.0',
                 }
             dbs = DataBase('asset')                  
             dbs.update(1, kwargs)       
         '''
         current_table = '{}_{}'.format(self.table_prefix, table)
-        kwargs['date'] = datetime.now().strftime('%Y/%d/%B - %I/%M/%S/%p')
+        kwargs['modified'] = datetime.now().strftime('%Y/%d/%B - %I/%M/%S/%p')
         if not self.has_table(current_table):
             logging.warn('Not found such column <{}>'.format(table))
             return 

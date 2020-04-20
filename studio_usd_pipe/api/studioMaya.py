@@ -9,9 +9,12 @@ from maya import OpenMayaUI
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import image
+from studio_usd_pipe.core import common
+from __builtin__ import False
 
 reload(resource)
 reload(image)
+reload(common)
 
 
 class Maya(object):
@@ -23,9 +26,6 @@ class Maya(object):
         self.scene_mobjects = OpenMaya.MObjectArray()        
         self.node_data = resource.getNodeData()
         self.attribute_container = self.attribute_bundles()
-
-     
- 
 
     def is_dagpath(self, mobject):           
         mobject = self.get_mobject(mobject)
@@ -352,25 +352,92 @@ class Maya(object):
         mfn_dag_node.setName(name)
         return mfn_dag_node   
         
-    def create_maya_id(self, mobject, inputs):
-        attributes = self.sort_dictionary(inputs)
-        self.remove_maya_id(mobject, inputs)
+    def create_maya_ids(self, mobject, id_data):
+        attributes = common.sorted_order(id_data)
+        self.remove_maya_id(mobject, id_data)
+        data = {}
         hidden = {True: False, False: True} 
         for attribute in attributes:
-            short = inputs[attribute]['short']
+            short = id_data[attribute]['short']
             type_attribute = OpenMaya.MFnTypedAttribute()
             sample_mobject = OpenMaya.MObject()
             sample_mobject = type_attribute.create(attribute, short, OpenMaya.MFnData.kString)
             type_attribute.setKeyable(False)
             type_attribute.setReadable(True)
             type_attribute.setChannelBox(False)
-            type_attribute.setWritable(inputs[attribute]['locked'])
-            type_attribute.setHidden(hidden[inputs[attribute]['show']])
+            type_attribute.setWritable(id_data[attribute]['locked'])
+            type_attribute.setHidden(hidden[id_data[attribute]['show']])
             mfn_dependency_node = OpenMaya.MFnDependencyNode()  
             mfn_dependency_node.setObject(mobject)
             mfn_dependency_node.addAttribute(sample_mobject)
             mplug = mfn_dependency_node.findPlug(type_attribute.name())
-            mplug.setString(inputs[attribute]['value'])     
+            if not id_data[attribute]['value']:
+                data.setdefault(attribute, 'no value updated')                
+                continue
+            mplug.setString(id_data[attribute]['value'].encode())
+            mplug.setLocked(id_data[attribute]['locked'])
+            data.setdefault(attribute, id_data[attribute]['value'])
+        return data
+                
+    def set_maya_ids(self, mobject, inputs):
+        dependency_node = OpenMaya.MFnDependencyNode(mobject)
+        for attribute, value in inputs.items():
+            if not dependency_node.hasAttribute(attribute):
+                continue
+            mplug = dependency_node.findPlug(attribute)
+            if not value:
+                continue
+            mplug.setLocked(False)
+            mplug.setString(value)
+            mplug.setLocked(True)
+
+    def update_asset_ids(self, mobject, id_data=None):
+        if not id_data:
+            id_data = resource.getAssetIDData()        
+        removed_ids = self.removed_asset_ids(mobject, id_data=id_data)
+        exists_attributes = set(id_data.keys()).difference(removed_ids)
+        dependency_node = OpenMaya.MFnDependencyNode(mobject)
+        for attribute in exists_attributes:
+            mplug = dependency_node.findPlug(attribute)
+            id_data[attribute]['value'] = mplug.asString()         
+        self.create_maya_ids(mobject, id_data)      
+            
+    def has_valid_maya_ids(self, mobject, inputs):
+        data = []
+        dependency_node = OpenMaya.MFnDependencyNode(mobject)        
+        for attribute in inputs:            
+            if dependency_node.hasAttribute(attribute):
+                continue
+            data.append(attribute)
+        if data:
+            return False
+        return True
+
+    def get_maya_id_data(self, mobject, id_data=None):
+        if not id_data:
+            id_data = resource.getAssetIDData()
+            id_data = id_data.keys()
+        data = {}
+        dependency_node = OpenMaya.MFnDependencyNode(mobject)        
+        for index, attribute in enumerate(id_data):
+            mplug = dependency_node.findPlug(attribute)
+            id_value = mplug.asString()
+            data[attribute] = {
+                'order': index,
+                'value': id_value
+            }
+        return data
+
+    def removed_asset_ids(self, mobject, id_data=None):
+        if not id_data:
+            id_data = resource.getAssetIDData()
+        removed_ids = []
+        dependency_node = OpenMaya.MFnDependencyNode(mobject)
+        for attribute in id_data:
+            if dependency_node.hasAttribute(attribute):
+                continue
+            removed_ids.append(attribute)
+        return removed_ids    
                         
     def remove_maya_id(self, mobject, inputs):
         mfn_dependency = OpenMaya.MFnDependencyNode(mobject)
@@ -378,6 +445,8 @@ class Maya(object):
             if not mfn_dependency.hasAttribute(attribute):
                 continue
             attribute_mobject = mfn_dependency.attribute(attribute)
+            mplug = mfn_dependency.findPlug(attribute)
+            mplug.setLocked(False)            
             mfn_dependency.removeAttribute(
                 attribute_mobject,
                 OpenMaya.MFnDependencyNode.kLocalDynamicAttr
@@ -442,7 +511,7 @@ class Maya(object):
         if not isinstance(mobject, str):
             mfn_dagpath = OpenMaya.MFnDagNode(mobject)
             mobject = mfn_dagpath.fullPathName()            
-        mel_command = 'parent -w \"%s\"'% mobject                       
+        mel_command = 'parent -w \"%s\"' % mobject                       
         OpenMaya.MGlobal.executeCommand(mel_command, False, True)   
                      
     def freeze_transformations(self, node):
@@ -474,14 +543,6 @@ class Maya(object):
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'bakePartialHistory -preCache \"%s\"' % node 
         OpenMaya.MGlobal.executeCommand(mel_command, False, True)            
-
-    def sort_dictionary(self, dictionary):
-        sorted_data = {}
-        for contents in dictionary:
-            sorted_data.setdefault(
-                dictionary[contents]['order'], []).append(contents)
-        order = sum(sorted_data.values(), [])
-        return order   
         
     def set_perspective_view(self):  
         position = {
@@ -549,7 +610,7 @@ class Maya(object):
         for attribute, contents in data.items():    
             input_attribute, input_node = contents['value'].split('@')
             output_mplug = mfn_dependency_node.findPlug(attribute)
-            input_mplug = self.get_mplug('%s.%s'%(input_node, input_attribute))
+            input_mplug = self.get_mplug('%s.%s' % (input_node, input_attribute))
             dgMod = OpenMaya.MDGModifier()
             dgMod.connect(input_mplug, output_mplug)
             dgMod.doIt()
@@ -572,7 +633,6 @@ class Maya(object):
             return outputs[0]
         return None
     
-    
     def list_attributes(self, node, default=False):
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'listAttr -r -w -u -m -hd \"%s\"' % (node)
@@ -581,7 +641,7 @@ class Maya(object):
         mcommand_result.getResult(outputs)
         mplug_array = OpenMaya.MPlugArray()
         for output in outputs:
-            mplug = self.get_mplug('%s.%s'%(node, output))
+            mplug = self.get_mplug('%s.%s' % (node, output))
             if default:
                 mplug_array.append(mplug)
             else:
@@ -603,7 +663,7 @@ class Maya(object):
                 # remove if attribute is child of compound attribute
                 parent_mplug = mplugs[x].parent()
                 parent_mobject = parent_mplug.attribute()
-                if parent_mobject.apiType()==OpenMaya.MFn.kCompoundAttribute:
+                if parent_mobject.apiType() == OpenMaya.MFn.kCompoundAttribute:
                     continue
                 unused_attributes.append(mplugs[x])        
         mplug_array = OpenMaya.MPlugArray()
@@ -637,7 +697,7 @@ class Maya(object):
             type = contents['type']
             value = contents['value']
             
-            if contents['type']== 'IntAttr':
+            if contents['type'] == 'IntAttr':
                 try:
                     mplug.setInt(contents['value'])
                 except Exception as error:
@@ -657,7 +717,7 @@ class Maya(object):
                     except Exception as error:
                         print 'error', error, mplug.name()
             
-            if contents['type']== 'StringAttr':
+            if contents['type'] == 'StringAttr':
                 try:
                     mplug.setString(contents['value'])
                 except Exception as error:
@@ -668,7 +728,6 @@ class Maya(object):
                     mplug.setBool(contents['value'])
                 except Exception as error:
                     print 'error', error, mplug.name()
-                   
     
     def get_attribute_type(self, mplug):
         attribute = mplug.attribute()
@@ -798,7 +857,7 @@ class Maya(object):
 
     def list_knode_types(self, node_type):        
         mcommand_result = OpenMaya.MCommandResult()        
-        mel_command = 'listNodeTypes \"%s\"'% node_type
+        mel_command = 'listNodeTypes \"%s\"' % node_type
         OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)

@@ -1,12 +1,12 @@
-NAME = 'Extract Model USD'
+NAME = 'Extract UV USD'
 ORDER = 3
 VALID = True
 TYPE = 'extractor'
-KEY = 'model_usd'
+KEY = 'uv_usd'
 OWNER = 'Subin Gopi'
-COMMENTS = 'To create model usd file'
+COMMENTS = 'To create uv usd file'
 VERSION = '0.0.0'
-LAST_MODIFIED = 'April 14, 2020'
+LAST_MODIFIED = 'April 19, 2020'
 
 
 def execute(output_path=None, **kwargs):   
@@ -22,6 +22,7 @@ def execute(output_path=None, **kwargs):
         )
     premission = common.data_exists(output_usd, True)
     if not premission:
-        return False, [output_usd], 'not able to save studio model!...' 
-    model_usd = asset.create_model_usd(output_usd)
-    return True, [model_usd], 'success!...'
+        return False, [output_usd], 'not able to save studio uv!...' 
+    uv_usd = asset.create_uv_usd(output_usd)
+    return True, [uv_usd], 'success!...'
+    

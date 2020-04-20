@@ -7,21 +7,22 @@ import time
 import shutil
 import getpass
 import tempfile
+import warnings
 import subprocess
 
 from datetime import datetime
 from distutils import version
 
-
 from studio_usd_pipe import resource
+from studio_usd_pipe.core import asset
 from studio_usd_pipe.core import common
 from studio_usd_pipe.core import publish
 from studio_usd_pipe.core import database
 from studio_usd_pipe.core import preferences
 
-
 reload(publish)
 reload(database)
+reload(asset)
 
 
 class Publish(object):
@@ -33,22 +34,16 @@ class Publish(object):
         input_dirname = pref.get() 
         self.show_path = input_dirname['show_directory']
         self.mayapy_path = input_dirname['mayapy_directory']  
-        self.stamped_time = time.time()
+        self.time_stamp = time.time()
         self.identity_key = '##..##'
         self.container = {}
         self.parameters = {}
-        
         if not pipe:        
             self.pipe, self.pipe_data = self.get_pipe_data()
         else:
             self.pipe = pipe
             self.pipe_data = resource.getPipeData()['pipe'][pipe]
-        
         self.dbs = database.DataBase(self.pipe)
-        
-        # print self.pipe
-        # print json.dumps(self.pipe_data, indent=4) 
-        # print json.dumps(self.pipe_data.keys(), indent=4) 
        
     def has_valid_subfield(self):
         if not self.pipe_data:
@@ -60,7 +55,7 @@ class Publish(object):
         current_pipe = None
         for pipe, contents in pipe_data['pipe'].items():            
             for each in contents['subfield']['values']:                
-                if each!=self.subfield:
+                if each != self.subfield:
                     continue
                 current_pipe = pipe
         if not current_pipe:
@@ -70,12 +65,12 @@ class Publish(object):
     def get(self):
         data = self.dbs.get()        
         db_data = {}
-        for table, contents in data.items():    
+        for table, contents in data.items():  
             keys = {
                 'tag': contents['tag'],
                 'caption': contents['caption'],
                 'user': contents['user'],
-                'date': contents['date'],
+                'modified': contents['modified'],
                 'location': contents['location'],
                 'type': contents['type']        
                 }
@@ -101,7 +96,7 @@ class Publish(object):
         subfield_data = self.get_subfields(caption, db_data=db_data)
         version_data = {}
         for k, v in subfield_data.items():    
-            if k!=subfield:
+            if k != subfield:
                 continue        
             version_data.update(v)        
         return version_data
@@ -118,7 +113,6 @@ class Publish(object):
     def get_version_contents(self, caption, version, subfield=None, db_data=None):
         if not subfield:
             subfield = self.subfield   
-                    
         data = self.get_subfields(caption, db_data=db_data)
         if subfield not in data:
             raise ValueError(
@@ -132,14 +126,14 @@ class Publish(object):
         if not db_data:
             db_data = self.get()
         key_data = {}
-        for asset, subfields in db_data.items():
+        for sasset, subfields in db_data.items():
             for subfield in subfields:
                 for version in subfields[subfield]:
                     specific_key = subfields[subfield][version][key]                    
                     if specific_key in key_data:                    
-                        if asset in key_data[specific_key]:
+                        if sasset in key_data[specific_key]:
                             continue                    
-                    key_data.setdefault(specific_key, []).append(asset)
+                    key_data.setdefault(specific_key, []).append(sasset)
         return key_data   
 
     def get_type_caption(self, db_data=None):
@@ -154,17 +148,17 @@ class Publish(object):
         if not db_data:
             db_data = self.get()
         key_data = {}
-        for asset, subfields in db_data.items():
+        for sasset, subfields in db_data.items():
             for subfield in subfields:
                 for version in subfields[subfield]:
                     if key not in subfields[subfield][version]:
                         continue
                     specific_key = subfields[subfield][version][key]
-                    if asset not in key_data:
-                        key_data.setdefault(asset, [])
-                    if specific_key in key_data[asset]:
+                    if sasset not in key_data:
+                        key_data.setdefault(sasset, [])
+                    if specific_key in key_data[sasset]:
                         continue
-                    key_data.setdefault(asset, []).append(specific_key)
+                    key_data.setdefault(sasset, []).append(specific_key)
         return key_data
     
     def get_caption_type(self, db_data=None):
@@ -188,12 +182,24 @@ class Publish(object):
             )
         data = resource.get_input_data(manifest_path)
         sorted_data = copy.deepcopy(data)
-        extrude = ['caption', 'tag', 'user', 'date', 'location', 'type']
+        extrude = ['caption', 'tag', 'user', 'modified', 'location', 'type']
         for each in data:
             if each not in extrude:
                 continue
             sorted_data.pop(each)
         return sorted_data
+    
+    def get_dependencies(self, caption, db_data=None):
+        if not db_data:
+            db_data = self.get()        
+        dependencies = self.get_versions(
+            caption, subfield='model', db_data=db_data)
+        dependencies = ['None'] + dependencies
+        return dependencies
+    
+    def get_dependency(self, caption, subfild):
+        pass
+    
 
     def get_latest_version(self, caption, subfield=None):
         if not subfield:
@@ -220,22 +226,10 @@ class Publish(object):
             n_version = '{}.{}.{}'.format(major, minor, int(patch) + 1)
         return n_version
     
-    
-    def _get_publish_path(self, caption, version):
-        publish_path = os.path.join(
-            self.show_path,
-            self.pipe,
-            caption,
-            self.subfield,
-            version
-            )
-        return publish_path
-    
     def get_publish_path(self, caption, version, temp=True, create=True):
         dirname = os.path.join(tempfile.gettempdir(), 'test_show')        
         if not temp:
             dirname = self.show_path
-        
         publish_path = os.path.join(
             dirname,
             self.pipe,
@@ -245,112 +239,93 @@ class Publish(object):
             )
         if not create:
             return publish_path
-        if os.path.isdir(publish_path):
-            try:
-                os.chmod(publish_path, 0777)
-            except Exception as error:
-                print '# warnings', error
-            try:
-                shutil.rmtree(publish_path)   
-            except Exception as error:
-                print '# warnings', error
+        common.remove_directory(publish_path)
         os.makedirs(publish_path)
-        return publish_path
+        return publish_path  
     
-    
-    
+    def make_inputs(self, **kwargs):        
+        publish_path = self.get_publish_path(
+            kwargs['caption'], kwargs['version'], temp=False, create=False)
+        dt_object = datetime.fromtimestamp(self.time_stamp)
+        modified = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p') 
+        inputs = {
+            'pipe': self.pipe,
+            'caption': kwargs['caption'],
+            'subfield': kwargs['subfield'],
+            'version': kwargs['version'],
+            'type': kwargs['type'],
+            'tag': kwargs['tag'],
+            'dependency': kwargs['dependency'],
+            'thumbnail': kwargs['thumbnail'],
+            'description': kwargs['description'],
+            'modified': modified,
+            'user': getpass.getuser(),
+            'source_maya': kwargs['source_maya'],
+            'show_path': self.show_path,
+            'mayapy': self.mayapy_path,
+            'location': publish_path       
+            }
+        return inputs
     
     def validate(self, repair=False, **kwargs):
-        valid, message = self.run('validator', repair=repair, **kwargs)
+        '''
+            from studio_usd_pipe.api import studioPublish
+            reload(studioPublish)
+            inputs = {
+                'description': 'test', 
+                'subfield': 'model', 
+                'caption': 'batman', 
+                'tag': 'character', 
+                'version': '3.0.0', 
+                'type': 'non-interactive', 
+                'thumbnail': 'path',
+                'source_maya': '/venture/shows/assets/batman/batman_0.0.3.mb'
+                }
+            pipe = 'assets'
+            subfield = inputs['subfield']
+            pub = studioPublish.Publish(pipe=pipe, subfield=subfield)  
+            pub.validate(repair=True, **inputs)  
+        '''
+        inputs = self.make_inputs(**kwargs)
+        valid, message = self.run('validator', repair=repair, **inputs)
         return valid, message
     
     def extract(self, repair=False, **kwargs):
-        valid, message = self.run('extractor', repair=repair, **kwargs)
-        self.parameters = kwargs
+        '''
+            from studio_usd_pipe.api import studioPublish
+            reload(studioPublish)
+            inputs = {
+                'description': 'test', 
+                'subfield': 'model', 
+                'caption': 'batman', 
+                'tag': 'character', 
+                'version': '3.0.0', 
+                'type': 'non-interactive', 
+                'thumbnail': 'path',
+                'source_maya': '/venture/shows/assets/batman/batman_0.0.3.mb'
+                }
+            pipe = 'assets'
+            subfield = inputs['subfield']
+            pub = studioPublish.Publish(pipe=pipe, subfield=subfield)  
+            pub.extract(**inputs)          
+        '''
+        inputs = self.make_inputs(**kwargs)
+        valid, message = self.run('extractor', repair=repair, **inputs)
+        extracted_data = self.get_extracted_data()        
+        inputs.update(extracted_data)
+        manifest = self.extract_manifest(**inputs)       
+        inputs['manifest'] = manifest
+        self.parameters = inputs
         return valid, message
     
-    def release(self):    
-        data, message = self.get_extracted_data()
-        if not data:
-            return data, message
-        publish_path = self.get_publish_path(
-            self.parameters['caption'], self.parameters['version'], temp=False, create=True)
-        
-        print '\npublish_path', publish_path, '\n\n'
-                
-        result = self.move_to_publish(data, publish_path)
-        
-        return
-            
-        if not result:
-            return        
-        date = time.strftime('%Y/%d/%B - %I/%M/%S/%p', time.gmtime(self.time_stamp))
-        kwargs = {
-            'caption': {
-                'value': self.caption,
-                'order': 0
-                },
-            'version': {
-                'value': self.version,
-                'order': 1
-                },
-            'subfield': {
-                'value': self.subfield,
-                'order': 2
-                },
-            'type': {
-                'value': self.type,
-                'order': 3
-                },
-            'tag': {
-                'value': self.tag,
-                'order': 4
-                },
-            'date': {
-                'value': date,
-                'order': 5
-                },
-            'location': {
-                'value': self.publish_path,
-                'order': 6
-                }
-            } 
-        self.dbs.create(kwargs)
-    
-    def move_to_publish(self, data, publish_path):
-        ['/tmp/test_show/assets/batman/model/3.0.0/man.txt' ]   
-        for each in data:
-            print each
-            print publish_path, '\n'
-        
-        
-        #=======================================================================
-        # for each in data:
-        #     if not self.data[key]:
-        #         continue
-        #     for each in self.data[key]:
-        #         if not each:
-        #             continue
-        #         path = each.replace(temp_pack_path, self.publish_path)
-        #         if os.path.isdir(each):
-        #             if not os.path.isdir(path):
-        #                 os.makedirs(path)
-        #                 self.set_time_stamp(path)
-        #         if os.path.isfile(each):                 
-        #             if not os.path.isdir(os.path.dirname(path)):
-        #                 os.makedirs(os.path.dirname(path))
-        #             try:            
-        #                 shutil.copy2(each, path)
-        #             except Exception as IOError:
-        #                 print IOError
-        #                 return False
-        #=======================================================================
-        return True
-    
-            
-    
-    
-    
+    def extract_manifest(self, **kwargs):
+        temp_publish_path = self.get_publish_path(
+            kwargs['caption'], kwargs['version'], temp=True, create=False)
+        temp_manifest = os.path.join(temp_publish_path, '%s.manifest' % kwargs['caption'])
+        manifest = asset.create_asset_manifest(temp_manifest, **kwargs)
+        self.container[True]['manifest'] = [[manifest], 'success']  
+        return manifest
+
     def run(self, mode, repair=False, **kwargs):    
         temp_publish_path = self.get_publish_path(
             kwargs['caption'], kwargs['version'], temp=True, create=True)
@@ -358,12 +333,13 @@ class Publish(object):
             self.mayapy_run(mode, temp_publish_path, repair=repair, open_maya=True, **kwargs)
         else:
             self.python_run(mode, temp_publish_path, repair=repair, open_maya=False, **kwargs)
+            
         if False in self.container:
             messages = []            
             print '#warnings'
             for module, contents in self.container[False].items():
-                print '%s: '%module.KEY.rjust(15), contents[1]
-                messages.append('%s: %s'%(module.KEY, contents[1]))
+                print '%s: ' % module.rjust(15), contents[1]
+                messages.append('%s: %s' % (module, contents[1]))
             return False, '\n'.join(messages)
         return True, 'success!..'
     
@@ -371,24 +347,22 @@ class Publish(object):
         '''
         :param mode <str> 'validator' or 'extractor'
         '''    
-        if open_maya: # open maya file
+        if open_maya:  # open maya file
             from studio_usd_pipe.api import studioMaya
             smaya = studioMaya.Maya()
             smaya.open_maya(kwargs['source_maya'], None)        
         core_publish = publish.Publish(self.subfield)
         temp, self.container = core_publish.execute(mode, output_path, repair=repair, **kwargs)
-        
         if self.standalone:
-            print self.identity_key, self.container # do not remove, important line
-            
+            print self.identity_key, self.container  # do not remove, important line
         return self.container 
     
     def mayapy_run(self, mode, output_path, repair=False, open_maya=False, **kwargs):
         argeuments = common.make_argeuments(**kwargs)        
         commands = [
             'from studio_usd_pipe.api import studioPublish',
-            'pub=studioPublish.Publish(standalone=True,pipe=\'%s\',subfield=\'%s\')'%(self.pipe, self.subfield),
-            'container=pub.python_run(\'%s\',\'%s\',repair=%s,open_maya=%s,%s)'%(
+            'pub=studioPublish.Publish(standalone=True,pipe=\'%s\',subfield=\'%s\')' % (self.pipe, self.subfield),
+            'container=pub.python_run(\'%s\',\'%s\',repair=%s,open_maya=%s,%s)' % (
                 mode, output_path, repair, open_maya, argeuments)
             ]
         batch_path = common.make_maya_batch(
@@ -415,114 +389,112 @@ class Publish(object):
             return False, 'failed!...'        
         if False in self.container:
             return False, 'found packing (extract) error!...'        
-        data = []     
+        data = {}    
         for name in self.container[True]:        
             for input in self.container[True][name][0]:
+                if isinstance(input, unicode):
+                    input = input.encode()
+                if not isinstance(input, str):
+                    continue
+                input = input.encode()
+                if not input:
+                    continue
                 if not os.path.exists(input):
                     continue
-                os.utime(input, (self.time_stamp, self.time_stamp))                    
-                data.append(input)
+                data.setdefault(name, []).append(input)
         if not data:
-            False, 'not extracted any data!...'            
-        return data, 'success!...'
-                
+            False       
+        return data    
+    
+    def release(self):
+        extracted_data = self.get_extracted_data()
         
-
-
-
-
+        import json
+        print '\n\nextracted_data..............'
+        print json.dumps(extracted_data, indent=4)
         
+        data = []        
+        for contents in extracted_data:
+            values = extracted_data[contents]
+            if not values:
+                continue
+            for value in values:
+                if not os.path.isfile(value):
+                    continue
+                data.append(value)
+        valid = self.move_to_publish(data)
+        if not valid:
+            print '#warnings', 'deployed to publish failed!...'
+            return False, 'deployed to publish failed!...'
+        kwargs = {
+            'caption': {
+                'value': self.parameters['caption'],
+                'order': 0
+                },
+            'version': {
+                'value': self.parameters['version'],
+                'order': 1
+                },
+            'subfield': {
+                'value': self.parameters['subfield'],
+                'order': 2
+                },
+            'type': {
+                'value': self.parameters['type'],
+                'order': 3
+                },
+            'tag': {
+                'value': self.parameters['tag'],
+                'order': 4
+                },
+            'dependency': {
+                'value': self.parameters['dependency'],
+                'order': 5
+                },
+            'modified': {
+                'value': self.parameters['modified'],
+                'order': 6
+                },
+            'location': {
+                'value': self.parameters['location'],
+                'order': 7
+                },
+            'user': {
+                'value': self.parameters['user'],
+                'order': 8
+                }           
+            } 
+        self.dbs.create(kwargs)
+        print '\n#header registered info'
+        print 'pipe: '.rjust(15), self.parameters['pipe']
+        print 'caption: '.rjust(15), self.parameters['caption']
+        print 'subfield: '.rjust(15), self.parameters['subfield']
+        print 'type: '.rjust(15), self.parameters['type']
+        print 'tag: '.rjust(15), self.parameters['tag']
+        print 'dependency: '.rjust(15), self.parameters['dependency']
+        print 'location: '.rjust(15), self.parameters['location']
+        print 'successfully registered publish'
+        return True, 'successfully registered publish'
 
-
-    
-    def _release(self, bundle, *kwargs):
-        print json.dumps(bundle, indent=4)
-        self.data = {}
-        self.source_maya = bundle['source_file']
-        self.caption = bundle['caption']
-        self.version = bundle['version'] 
-        self.thumbnail = None
-        if 'thumbnail' in bundle:
-            self.thumbnail = bundle['thumbnail']
-        self.type = bundle['type']
-        self.tag = bundle['tag']
-        self.description = bundle['description']   
-        self.time_stamp = bundle['time_stamp'] 
-        
-        self.publish_path = os.path.join(
-            self.show_path,
-            self.entity,
-            self.caption,
-            self.subfield,
-            self.version
-            )      
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-            
-            
-            
-
-            
-    def collect_packed(self):        
-        if not self.publish_path:
-            self.publish_path = self.get_pulish_path()
-        self.packed_bundle = {
-            'caption': self.bundle['caption'],
-            'version': self.bundle['version'],
-            'type': self.bundle['type'],
-            'tag': self.bundle['tag'],
-            'subfield': self.bundle['subfield'],
-            'thumbnail': self.bundle['thumbnail'],
-            'description': self.bundle['description'],
-            'time_stamp': self.stamped_time,
-            'user': getpass.getuser(),
-            # 'date': time.strftime('%Y/%d/%B - %I/%M/%S/%p', time.gmtime(self.stamped_time)),
-            'source_file': self.bundle['source_file'],
-            'show_path': self.show_path,
-            'mayapy': self.mayapy_path,
-            'publish_path': self.publish_path        
-            }
-        return self.packed_bundle
-
-
-
-#===============================================================================
-# inputs = {
-#     'description': 'test', 
-#     'subfield': 'model', 
-#     'caption': 'batman', 
-#     'tag': 'character', 
-#     'version': '3.0.0', 
-#     'type': 'non-interactive', 
-#     'thumbnail': 'path'
-#     }
-#      
-# pipe = 'assets'
-# subfield = inputs['subfield']
-# pub = Publish(pipe=pipe, subfield=subfield)
-#      
-# pub.validate(repair=True, **inputs)  
-#===============================================================================
- 
+    def move_to_publish(self, data):
+        common.remove_directory(self.parameters['location'])
+        if not os.path.isdir(self.parameters['location']):
+            os.makedirs(self.parameters['location'])
+        valids = []
+        for each in data:
+            if not os.path.isfile(each):
+                continue
+            basename = each.rsplit(self.parameters['version'], 1)[-1]
+            target = '%s%s' % (self.parameters['location'], basename)
+            if not os.path.isdir(os.path.dirname(target)):
+                os.makedirs(os.path.dirname(target))
+            os.utime(each, (self.time_stamp, self.time_stamp)) 
+            try:            
+                shutil.copy2(each, target)
+            except Exception as IOError:
+                print '#warnings', IOError
+                valids.append(False)
+        if False in valids:
+            return False           
+        return True    
 

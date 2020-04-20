@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/usd_create.ui'
 #
-# Created: Sun Apr 12 15:16:07 2020
+# Created: Mon Apr 20 00:34:51 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,6 +66,12 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.label_3, 4, 0, 1, 1)
         self.comboBox_2 = QtGui.QComboBox(self.groupBox)
         self.comboBox_2.setObjectName("comboBox_2")
+        self.comboBox_2.addItem("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/newPrefix/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.comboBox_2.addItem(icon, "")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
         self.gridLayout.addWidget(self.comboBox_2, 4, 1, 1, 1)
         self.label_4 = QtGui.QLabel(self.groupBox)
         self.label_4.setObjectName("label_4")
@@ -101,6 +107,11 @@ class Ui_MainWindow(object):
         self.pushButton.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_2.setItemText(0, QtGui.QApplication.translate("MainWindow", "New Item", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_2.setItemText(1, QtGui.QApplication.translate("MainWindow", "Subin", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_2.setItemText(2, QtGui.QApplication.translate("MainWindow", "New Item", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_2.setItemText(3, QtGui.QApplication.translate("MainWindow", "New Item", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
 
+import ss_rc
