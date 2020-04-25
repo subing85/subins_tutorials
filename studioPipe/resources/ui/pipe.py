@@ -58,12 +58,12 @@ class Main(QtGui.QWidget):
         self.current_discipline = None
         self.current_description = None
 
-        studio_header = studioHeader.Connect()
-        self.input_data, self.input_sort_data, self.input_key_data = studio_header.getInputData()
+        # studio_header = studioHeader.Connect()
+        # self.input_data, self.input_sort_data, self.input_key_data = studio_header.getInputData()
         self.setup_ui()
         self.load_tool_bar()
         self.set_icons()
-        self.load_shows_to_layout(self.listWidget_shows)
+        # self.load_shows_to_layout(self.listWidget_shows)
         
 
     def setup_ui(self):

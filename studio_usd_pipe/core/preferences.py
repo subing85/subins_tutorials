@@ -8,14 +8,14 @@ from datetime import datetime
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import image
-from studio_usd_pipe.core import studio
+from studio_usd_pipe.core import sheader
 
 
 class Preferences(object):
     
     def __init__(self):
         self.toolkit = 'subins-toolkits'
-        self.config = studio.Configure()
+        self.config = sheader.Header()
         self.config.tool()     
         self.preference_path = self.get_path()
 

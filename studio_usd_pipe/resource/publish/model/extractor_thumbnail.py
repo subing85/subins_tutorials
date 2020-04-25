@@ -26,5 +26,6 @@ def execute(output_path=None, **kwargs):
     premission = common.data_exists(ouput_path, True)
     if not premission:
         return False, [ouput_path], 'not able to save thumbnail!...'
-    thumbnail = asset.create_thumbnail(kwargs['thumbnail'], ouput_path)   
+    thumbnail = asset.create_thumbnail(kwargs['thumbnail'], ouput_path)
+    thumbnail = kwargs['thumbnail']
     return True, [thumbnail], 'success!...'

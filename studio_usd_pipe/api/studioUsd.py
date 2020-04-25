@@ -2,6 +2,10 @@ import json
 
 import os
 
+import sys
+
+sys.path.append('/usr/local/usd/maya2018/pixar/19.05/lib/python')
+
 from pxr import Vt
 from pxr import Gf
 from pxr import Sdf

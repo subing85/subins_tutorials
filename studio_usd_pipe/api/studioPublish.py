@@ -15,19 +15,22 @@ from distutils import version
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import asset
+from studio_usd_pipe.core import mread
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import publish
+from studio_usd_pipe.core import spublish
 from studio_usd_pipe.core import database
 from studio_usd_pipe.core import preferences
 
-reload(publish)
+reload(spublish)
 reload(database)
 reload(asset)
+reload(mread)
 
 
 class Publish(object):
     
-    def __init__(self, standalone=False, pipe=None, subfield=None):
+    def __init__(self, standalone=True, pipe=None, subfield=None):
+       
         self.standalone = standalone
         self.subfield = subfield    
         pref = preferences.Preferences()
@@ -199,7 +202,6 @@ class Publish(object):
     
     def get_dependency(self, caption, subfild):
         pass
-    
 
     def get_latest_version(self, caption, subfield=None):
         if not subfield:
@@ -272,22 +274,22 @@ class Publish(object):
             from studio_usd_pipe.api import studioPublish
             reload(studioPublish)
             inputs = {
-                'description': 'test', 
+                'description': 'test publish', 
+                'dependency': 'None', 
                 'subfield': 'model', 
                 'caption': 'batman', 
                 'tag': 'character', 
-                'version': '3.0.0', 
-                'type': 'non-interactive', 
-                'thumbnail': 'path',
-                'source_maya': '/venture/shows/assets/batman/batman_0.0.3.mb'
+                'user': 'shreya', 
+                'version': '8.0.0', 
+                'type': 'interactive', 
+                'thumbnail': '/venture/shows/icons/my_super_hero_rigging_.png',
+                'source_maya': '/venture/shows/batman/batman_0.0.3.mb'
                 }
-            pipe = 'assets'
-            subfield = inputs['subfield']
-            pub = studioPublish.Publish(pipe=pipe, subfield=subfield)  
+            pub = studioPublish.Publish(pipe='assets', subfield='model')  
             pub.validate(repair=True, **inputs)  
         '''
         inputs = self.make_inputs(**kwargs)
-        valid, message = self.run('validator', repair=repair, **inputs)
+        valid, message = self.python_run('validator', repair=repair, **inputs)
         return valid, message
     
     def extract(self, repair=False, **kwargs):
@@ -295,23 +297,23 @@ class Publish(object):
             from studio_usd_pipe.api import studioPublish
             reload(studioPublish)
             inputs = {
-                'description': 'test', 
+                'description': 'test publish', 
+                'dependency': 'None', 
                 'subfield': 'model', 
                 'caption': 'batman', 
                 'tag': 'character', 
-                'version': '3.0.0', 
-                'type': 'non-interactive', 
-                'thumbnail': 'path',
-                'source_maya': '/venture/shows/assets/batman/batman_0.0.3.mb'
+                'user': 'shreya', 
+                'version': '8.0.0', 
+                'type': 'interactive', 
+                'thumbnail': '/venture/shows/icons/my_super_hero_rigging_.png',
+                'source_maya': '/venture/shows/batman/batman_0.0.3.mb'
                 }
-            pipe = 'assets'
-            subfield = inputs['subfield']
-            pub = studioPublish.Publish(pipe=pipe, subfield=subfield)  
+            pub = studioPublish.Publish(pipe='assets', subfield='model')  
             pub.extract(**inputs)          
         '''
         inputs = self.make_inputs(**kwargs)
-        valid, message = self.run('extractor', repair=repair, **inputs)
-        extracted_data = self.get_extracted_data()        
+        valid, message = self.python_run('extractor', repair=repair, **inputs)
+        extracted_data = self.get_extracted_data()
         inputs.update(extracted_data)
         manifest = self.extract_manifest(**inputs)       
         inputs['manifest'] = manifest
@@ -326,14 +328,11 @@ class Publish(object):
         self.container[True]['manifest'] = [[manifest], 'success']  
         return manifest
 
-    def run(self, mode, repair=False, **kwargs):    
+    def python_run(self, mode, repair=False, **kwargs):    
         temp_publish_path = self.get_publish_path(
             kwargs['caption'], kwargs['version'], temp=True, create=True)
-        if self.standalone:
-            self.mayapy_run(mode, temp_publish_path, repair=repair, open_maya=True, **kwargs)
-        else:
-            self.python_run(mode, temp_publish_path, repair=repair, open_maya=False, **kwargs)
-            
+        core_publish = spublish.Publish(self.subfield)
+        temp, self.container = core_publish.execute(mode, temp_publish_path, repair=repair, **kwargs)
         if False in self.container:
             messages = []            
             print '#warnings'
@@ -342,47 +341,6 @@ class Publish(object):
                 messages.append('%s: %s' % (module, contents[1]))
             return False, '\n'.join(messages)
         return True, 'success!..'
-    
-    def python_run(self, mode, output_path, repair=False, open_maya=False, **kwargs):    
-        '''
-        :param mode <str> 'validator' or 'extractor'
-        '''    
-        if open_maya:  # open maya file
-            from studio_usd_pipe.api import studioMaya
-            smaya = studioMaya.Maya()
-            smaya.open_maya(kwargs['source_maya'], None)        
-        core_publish = publish.Publish(self.subfield)
-        temp, self.container = core_publish.execute(mode, output_path, repair=repair, **kwargs)
-        if self.standalone:
-            print self.identity_key, self.container  # do not remove, important line
-        return self.container 
-    
-    def mayapy_run(self, mode, output_path, repair=False, open_maya=False, **kwargs):
-        argeuments = common.make_argeuments(**kwargs)        
-        commands = [
-            'from studio_usd_pipe.api import studioPublish',
-            'pub=studioPublish.Publish(standalone=True,pipe=\'%s\',subfield=\'%s\')' % (self.pipe, self.subfield),
-            'container=pub.python_run(\'%s\',\'%s\',repair=%s,open_maya=%s,%s)' % (
-                mode, output_path, repair, open_maya, argeuments)
-            ]
-        batch_path = common.make_maya_batch(
-            'spublish', self.mayapy_path, commands, source_path=None)
-        popen = subprocess.Popen(
-            [self.mayapy_path, '-s', batch_path], shell=False, stdout=subprocess.PIPE)
-        popen_result = popen.stdout.readlines()
-        communicate = popen.communicate()
-        if not popen_result:
-            return False, 'failed'
-        spack_return = None
-        for each in popen_result:            
-            if self.identity_key in each:
-                spack_return = each.split('##..##')[-1]
-                continue
-            print each.replace('\n', '')
-        if not spack_return:
-            return False, 'failed'        
-        self.container = ast.literal_eval(spack_return.strip())
-        return self.container    
      
     def get_extracted_data(self):
         if True not in self.container:
@@ -408,11 +366,6 @@ class Publish(object):
     
     def release(self):
         extracted_data = self.get_extracted_data()
-        
-        import json
-        print '\n\nextracted_data..............'
-        print json.dumps(extracted_data, indent=4)
-        
         data = []        
         for contents in extracted_data:
             values = extracted_data[contents]
@@ -424,8 +377,8 @@ class Publish(object):
                 data.append(value)
         valid = self.move_to_publish(data)
         if not valid:
-            print '#warnings', 'deployed to publish failed!...'
-            return False, 'deployed to publish failed!...'
+            print '#warnings', 'deployed to spublish failed!...'
+            return False, 'deployed to spublish failed!...'
         kwargs = {
             'caption': {
                 'value': self.parameters['caption'],
@@ -473,8 +426,8 @@ class Publish(object):
         print 'tag: '.rjust(15), self.parameters['tag']
         print 'dependency: '.rjust(15), self.parameters['dependency']
         print 'location: '.rjust(15), self.parameters['location']
-        print 'successfully registered publish'
-        return True, 'successfully registered publish'
+        print 'successfully registered spublish'
+        return True, 'successfully registered spublish'
 
     def move_to_publish(self, data):
         common.remove_directory(self.parameters['location'])

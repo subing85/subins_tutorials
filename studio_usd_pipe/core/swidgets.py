@@ -19,11 +19,11 @@ def image_to_button(button, width, height, path=None):
     button.setIconSize(QtCore.QSize(width, height)) 
     
     
-def add_treewidget_item(parent, label, icon=None, foreground=None):
+def add_treewidget_item(parent, label, icon_path=None, foreground=None):
     item = QtWidgets.QTreeWidgetItem (parent)
     item.setText (0, label)
-    if icon:      
-        icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon))
+    if icon_path:      
+        icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon_path))
         icon = QtGui.QIcon ()
         icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)           
         item.setIcon (0, icon)
@@ -32,8 +32,23 @@ def add_treewidget_item(parent, label, icon=None, foreground=None):
         brush = QtGui.QBrush(QtGui.QColor(r, g, b))
         brush.setStyle(QtCore.Qt.NoBrush)
         item.setForeground(0, brush)
-    return item            
-   
+    return item
+
+
+def add_listwidget_item(parent, label, key=None, icon_path=None):
+    item = QtWidgets.QListWidgetItem()
+    parent.addItem(item)
+    item.setText(label)
+    if key:
+        item.setStatusTip(key)            
+    icon = QtGui.QIcon()
+    if not os.path.isfile(icon_path):
+        icon_path = os.path.join(
+            resource.getIconPath(), 'unknown.png')
+    icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+    item.setIcon(icon)
+    item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)       
+
 
 def get_treeitem_hierarchy(items):
     stack = items

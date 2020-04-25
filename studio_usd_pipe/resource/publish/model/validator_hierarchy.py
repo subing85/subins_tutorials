@@ -20,4 +20,4 @@ def repair(**kwargs):
     from studio_usd_pipe.core import asset
     reload(asset)
     valid, values, message = asset.create_model()
-    return True, values, message    
+    return valid, values, message    

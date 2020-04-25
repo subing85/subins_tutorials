@@ -93,18 +93,16 @@ class Publish(object):
             self.container[index].setdefault(status, {})
         self.container[index][status].setdefault(
             module, [values, message]
-            )  
+            )
         return status, values, message
                    
     def execute_bundles(self, mode, index, output_path, **kwargs):
         bundles = self.get_bundles()
         if mode not in bundles:
             return
-        container = {}
         for x, module in bundles[mode].items():
             print '\t', module.ORDER, module.KEY
             self.execute_bundle(module, mode, index, output_path, **kwargs)
-        return container
         
     def convert_key_container(self):        
         string_container = {}

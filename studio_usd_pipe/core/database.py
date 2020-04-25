@@ -205,7 +205,6 @@ class DataBase(object):
     
     def has_table(self, table):
         tables = self.get_tables()
-        print tables
         if not table:
             return False
         if table in tables:

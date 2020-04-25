@@ -14,8 +14,8 @@ from functools import partial
 from distutils import version
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import studio
+from studio_usd_pipe.core import sheader
+from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.core import mayacreate
 from studio_usd_pipe.core import preferences
 
@@ -410,7 +410,7 @@ class Window(QtWidgets.QMainWindow):
                 action.setVisible(False)
 
     def set_tool_context(self):
-        config = studio.Configure()
+        config = sheader.Configure()
         config.tool()
         return config.version, config.pretty          
         

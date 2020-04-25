@@ -13,7 +13,7 @@ from distutils import version
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import widgets
-from studio_usd_pipe.core import studio
+from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import preferences
 from studio_usd_pipe.api import studioMaya
 from studio_usd_pipe.api import studioPublish
@@ -146,7 +146,7 @@ class Window(QtWidgets.QMainWindow):
         self.treewidget_composition.setObjectName('treewidget_composition')
         self.treewidget_composition.header().setVisible(False)
         # self.treewidget_composition.headerItem().setText(0, 'Composition')
-        # self.treewidget_composition.header().resizeSection (0, 250)
+        # self.treewidget_composition.sheader().resizeSection (0, 250)
         self.treewidget_composition.setStyleSheet('font: 12pt \'Sans Serif\';')
         self.treewidget_composition.setAlternatingRowColors(True)        
         self.treewidget_composition.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)        
@@ -306,7 +306,7 @@ class Window(QtWidgets.QMainWindow):
                 action.setVisible(False)
  
     def set_tool_context(self):
-        config = studio.Configure()
+        config = sheader.Configure()
         config.tool()
         return config.version, config.pretty
     

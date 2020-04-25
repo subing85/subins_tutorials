@@ -141,6 +141,17 @@ def update_asset_ids(id_data=None):
     return True, [id_data.keys()], 'updated with valid asset ids'
 
 
+def get_asset_ids():
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    root = get_root()
+    if not smaya.object_exists(root):
+        return None
+    mobject = smaya.get_mobject(root)
+    id_data = smaya.get_maya_id_data(mobject, id_data=None)
+    return id_data
+
+
 def create_thumbnail(input_path, ouput_path):
     from studio_usd_pipe.core import image    
     thumbnail = image.image_resize(
@@ -270,20 +281,4 @@ def create_uv_usd(output_path):
     susd = studioUsd.Susd(path=output_path)                
     susd.create_uv_usd(root, final_data)
     return output_path
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
          

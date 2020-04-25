@@ -2,8 +2,13 @@ import os
 
 
 def image_resize(image_path, output_path, width=2048, height=2048):
-    from PySide2 import QtGui
-    from PySide2 import QtCore
+    try:
+        from PySide2 import QtGui
+        from PySide2 import QtCore
+    except:   
+        from PyQt4 import QtGui
+        from PyQt4 import QtCore    
+    
     q_image = QtGui.QImage(image_path)
     sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 
     if sq_scaled.width() <= sq_scaled.height():
@@ -16,4 +21,5 @@ def image_resize(image_path, output_path, width=2048, height=2048):
     if not os.path.isdir(os.path.dirname(output_path)):
         os.makedirs(os.path.dirname(output_path))        
     copy.save(output_path)
+    output_path
     return output_path

@@ -13,14 +13,17 @@ from PySide2 import QtWidgets
 from functools import partial
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import studio
 from studio_usd_pipe.core import image
+from studio_usd_pipe.core import mread
+from studio_usd_pipe.core import asset
+from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.core import preferences
 from studio_usd_pipe.api import studioPublish
 
 reload(swidgets)
 reload(studioPublish)
+reload(asset)
 
 
 class Window(QtWidgets.QWidget):
@@ -39,6 +42,7 @@ class Window(QtWidgets.QWidget):
         self.brows_directory = self.preferences_data['show_directory']
         self.pub = studioPublish.Publish(pipe='assets') 
         self.source_maya = None
+        self.asset_ids = {}
         self.setup_ui()
         self.setup_menu()
         self.setup_icons()
@@ -234,7 +238,7 @@ class Window(QtWidgets.QWidget):
         self.horizontallayout_button.addWidget(self.button_publish)
         spacer_item = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
-        self.combobox_caption.editTextChanged.connect(self.set_current_version)
+        self.combobox_caption.editTextChanged.connect(self.set_current_caption)
         self.combobox_subfield.currentIndexChanged.connect(self.set_current_version)
         self.combobox_version.currentIndexChanged.connect(self.set_current_version)
         self.button_publish.clicked.connect(self.publish)        
@@ -253,8 +257,8 @@ class Window(QtWidgets.QWidget):
         self.action_image.setText('Load image')        
         self.menu.addAction(self.action_maya)
         self.menu.addAction(self.action_image)
-        self.action_maya.triggered.connect(partial(self.open_file, 'maya'))
-        self.action_image.triggered.connect(partial(self.open_file, 'image'))
+        self.action_maya.triggered.connect(partial(self.load_file, 'maya'))
+        self.action_image.triggered.connect(partial(self.load_file, 'image'))
        
     def on_context_menu(self, key, widget, point):
         self.set_menu_options(key)        
@@ -285,8 +289,8 @@ class Window(QtWidgets.QWidget):
         widgets = self.findChildren(QtWidgets.QAction)
         swidgets.set_icons(mainwindow=self, widgets=widgets)
     
-    def open_file(self, key):       
-        if not self.standalone and key == 'maya':
+    def load_file(self, key):       
+        if not self.standalone:
             self.setup_current_maya()
             return
         formats = {
@@ -294,35 +298,37 @@ class Window(QtWidgets.QWidget):
             'image': '(*.jpg *.tga *.png)'
             }
         current_file = QtWidgets.QFileDialog.getOpenFileName(
-            self, 'find the %s file' % key, self.brows_directory, formats[key])        
-        if not current_file:
+            self, 'find the %s file' % key, self.brows_directory, formats[key])
+        if not current_file[0]:
             return
         self.brows_directory = os.path.dirname(current_file[0])
-        if key == 'maya':       
+        if key == 'maya':
             self.setup_current_maya(file=current_file[0], format=format)
         if key == 'image':
             size = self.button_thumbnail.minimumSize()
             swidgets.image_to_button(
-                self.button_thumbnail, size.width(), size.height(), path=current_file[0])   
+                self.button_thumbnail, size.width(), size.height(), path=current_file[0])
+            self.button_thumbnail.setToolTip(current_file[0])
                         
     def setup_current_maya(self, file=None, format=None):
-        if self.standalone:
+        if not file and self.standalone:
             return
-        if not file:
+        if not file and not self.standalone:
             from studio_usd_pipe.api import studioMaya
             studio_maya = studioMaya.Maya()
-            name, format = studio_maya.get_current_file()
+            self.source_maya, format = studio_maya.get_current_file()
         else:
-            name, format = os.path.splitext(file)
+            format = os.path.splitext(file)[-1]
             formats = {'.ma': 'mayaAscii', '.mb': 'mayaBinary'}            
             format = formats[format]
-        source_file = 'Current File: {}\nFile Type: {}'.format(name, format)
-        self.source_maya = name
-        print self.source_maya
+            self.source_maya = file
+        source_file = 'Current File: {}\nFile Type: {}'.format(self.source_maya, format)
         self.label_source.setText(source_file)
+        self.asset_ids = self.get_asset_ids(self.source_maya)
+        self.combobox_caption.setCurrentIndex(0)
 
     def set_tool_context(self):
-        config = studio.Configure()
+        config = sheader.Header()
         config.tool()
         return config.version, config.pretty
     
@@ -368,6 +374,7 @@ class Window(QtWidgets.QWidget):
             )
                    
     def take_thumbnail(self, button):
+        output_path = None
         if not self.standalone:
             from studio_usd_pipe.api import studioMaya
             smaya = studioMaya.Maya()
@@ -380,7 +387,7 @@ class Window(QtWidgets.QWidget):
             current_file = QtWidgets.QFileDialog.getOpenFileName(
                 self, 'find the maya file', self.brows_directory, '(*.jpg *.png *.tga *.tiff)')
             self.brows_directory = os.path.dirname(current_file[0])
-            if not current_file:
+            if not current_file[0]:
                 return
             output_path = os.path.join(tempfile.gettempdir(), 'thumbnail.png')
             output_path = image.image_resize(current_file[0], output_path, 768, 540)
@@ -391,15 +398,32 @@ class Window(QtWidgets.QWidget):
             qsize.height(),
             path=output_path
             )        
-        self.button_thumbnail.setToolTip(output_path)            
+        self.button_thumbnail.setToolTip(output_path)
 
+    def set_current_caption(self):
+        caption = self.combobox_caption.currentText()
+        if not caption:
+            self.combobox_dependency.clear()
+            self.textedit_description.clear()
+            self.combobox_latest_version.clear()
+            self.combobox_next_version.clear()
+            return
+        if not self.source_maya:
+            QtWidgets.QMessageBox.warning(
+                self,
+                'warning',
+                'Load the maya file and try!...',
+                QtWidgets.QMessageBox.Ok
+                )
+            self.combobox_caption.setCurrentIndex(0)           
+            return            
+        self.set_dependency(caption)
+        self.set_current_version()
+    
     def set_current_version(self):
         caption = self.combobox_caption.currentText()
         subfield = self.combobox_subfield.currentText()
         semantic_version = self.combobox_version.currentIndex()
-        self.combobox_dependency.clear() 
-        self.combobox_latest_version.clear() 
-        self.combobox_next_version.clear() 
         # disable type and tag
         type_data = self.pub.get_caption_type()
         pipe_data = resource.getPipeData()
@@ -412,39 +436,47 @@ class Window(QtWidgets.QWidget):
             tags = pipe_data['pipe']['assets']['tag']['values']
             self.combobox_tag.setCurrentIndex(tags.index(tag_data[caption][0]))
             self.combobox_tag.setEnabled(False)
-        dependencies = self.pub.get_dependencies(caption)
         versions = self.pub.get_versions(caption, subfield=subfield)
         if not versions:
             versions = [None]
+        self.combobox_latest_version.clear()        
         self.combobox_latest_version.addItems(versions)
         next_version = self.pub.get_next_version(
             caption, semantic_version, subfield=subfield)
+        self.combobox_next_version.clear()        
         self.combobox_next_version.addItem(next_version)
-        self.set_dependency(caption)
-
+                
+    def get_asset_ids(self, maya_file):
+        if self.standalone:
+            script_path = os.path.join(resource.getScriptPath(), 'find_assetids.py')
+            id_data, message = mread.read(maya_file, script_path)
+        else:
+            id_data = asset.get_asset_ids()
+        return id_data     
+    
     def set_dependency(self, caption):
-        dependency, dependencies = self.get_dependencies(caption)
-        # print dependency, dependencies
+        dependency, dependencies = self.get_dependencies(caption, self.asset_ids)
+        icon_path = os.path.join(resource.getIconPath(), 'tick.png')
         for each in dependencies:
-            path = '/venture/source_code/subins_tutorials/studio_usd_pipe/resource/icons/add.png'
-            if each==dependency:
+            if each == dependency:
                 icon = QtGui.QIcon()
-                icon.addPixmap(QtGui.QPixmap(path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.combobox_dependency.addItem(icon, each)
             else:
                 self.combobox_dependency.addItem(each)        
     
-    def get_dependencies(self, caption):
-        from studio_usd_pipe.api import studioMaya
-        smaya = studioMaya.Maya()
-        mobject = smaya.get_mobject('asset')        
-        subfiled = smaya.get_maya_id_data(mobject, id_data=['ssubfield'])
+    def get_dependencies(self, caption, id_data):
         dependencies = self.pub.get_dependencies(caption)
-        if subfiled['ssubfield']['value']=='model':
-            version = smaya.get_maya_id_data(mobject, id_data=['sversion'])
-            return version['sversion']['value'], dependencies
-        dependency = smaya.get_maya_id_data(mobject, id_data=['sdependency'])
-        return dependency['sdependency']['value'], dependencies
+        if not id_data:
+            return None, dependencies
+        if 'ssubfield' not in id_data:
+            return None, dependencies
+        current_subfield = id_data['ssubfield']['value']
+        if current_subfield == 'model':
+            dependency = id_data['sversion']['value']
+        else:
+            dependency = id_data['sdependency']['value']
+        return dependency, dependencies
 
     def get_widget_data(self):
         widgets = {
@@ -474,30 +506,50 @@ class Window(QtWidgets.QWidget):
             
     def publish(self):
         input_data = self.get_widget_data()
+        import json
+        print json.dumps(input_data, indent=4)
         if not self.source_maya:
             QtWidgets.QMessageBox.warning(
-                self, 'Warning', 'open maya file and try!...', QtWidgets.QMessageBox.Ok)
+                self, 'Warning', 'load the maya file and try!...', QtWidgets.QMessageBox.Ok)
             return            
         if None in input_data.values():
             QtWidgets.QMessageBox.warning(
                 self, 'Warning', 'Empty inputs!...', QtWidgets.QMessageBox.Ok)
             return
-        print '\n#header: inputs'
+        print '\n#sheader: inputs'
         print json.dumps(input_data, indent=4)
         self.pub.pipe = 'assets'
         self.pub.subfield = input_data['subfield']
         self.pub.standalone = self.standalone
-        input_data['source_maya'] = self.source_maya      
-        valid, message = self.pub.validate(repair=True, **input_data)
-        if not valid:
-            QtWidgets.QMessageBox.critical(
-                self, 'critical', message, QtWidgets.QMessageBox.Ok)
-            return        
-        valid, message = self.pub.extract(repair=False, **input_data)
-        if not valid:
-            QtWidgets.QMessageBox.critical(
-                self, 'critical', message, QtWidgets.QMessageBox.Ok)
-            return
+        input_data['source_maya'] = self.source_maya
+        
+        if self.standalone:
+            script_path = os.path.join(resource.getScriptPath(), 'maya_pre_release.py')
+            
+            input_data['pipe'] = 'assets'
+            
+            valid, message = mread.read(self.source_maya, script_path, **input_data)
+            
+            if not valid:
+                QtWidgets.QMessageBox.critical(
+                    self, 'critical', message, QtWidgets.QMessageBox.Ok)
+                return
+            
+            return                     
+        
+        
+        else:  
+            valid, message = self.pub.validate(repair=True, **input_data)
+            if not valid:
+                QtWidgets.QMessageBox.critical(
+                    self, 'critical', message, QtWidgets.QMessageBox.Ok)
+                return        
+            valid, message = self.pub.extract(repair=False, **input_data)
+            if not valid:
+                QtWidgets.QMessageBox.critical(
+                    self, 'critical', message, QtWidgets.QMessageBox.Ok)
+                return 
+
         valid, message = self.pub.release()
         if not valid:
             QtWidgets.QMessageBox.critical(
@@ -508,7 +560,7 @@ class Window(QtWidgets.QWidget):
         QtWidgets.QMessageBox.information(
             self, 'Success', 'Done!...', QtWidgets.QMessageBox.Ok)
         
-
+ 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window(parent=None, standalone=True)

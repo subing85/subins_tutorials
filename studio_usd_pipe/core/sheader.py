@@ -4,7 +4,7 @@ from studio_usd_pipe import resource
 reload(resource)
 
 
-class Configure(object):
+class Header(object):
     
     def __init__(self):
         self.context = self.get_data()       
@@ -28,5 +28,5 @@ class Configure(object):
         self.version = self.lib['version']
             
     def get_data(self):        
-        data = resource.getStudioData()
+        data = resource.getHeaderData()
         return data

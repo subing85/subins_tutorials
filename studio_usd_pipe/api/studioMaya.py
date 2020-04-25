@@ -1,5 +1,6 @@
 
 import os
+import sys
 import json
 import math
 import tempfile
@@ -393,7 +394,7 @@ class Maya(object):
 
     def update_asset_ids(self, mobject, id_data=None):
         if not id_data:
-            id_data = resource.getAssetIDData()        
+            id_data = resource.getAsfsetIDData()        
         removed_ids = self.removed_asset_ids(mobject, id_data=id_data)
         exists_attributes = set(id_data.keys()).difference(removed_ids)
         dependency_node = OpenMaya.MFnDependencyNode(mobject)
@@ -416,14 +417,18 @@ class Maya(object):
     def get_maya_id_data(self, mobject, id_data=None):
         if not id_data:
             id_data = resource.getAssetIDData()
-            id_data = id_data.keys()
         data = {}
-        dependency_node = OpenMaya.MFnDependencyNode(mobject)        
-        for index, attribute in enumerate(id_data):
+        dependency_node = OpenMaya.MFnDependencyNode(mobject)
+        for attribute in id_data:
+            if not dependency_node.hasAttribute(attribute):
+                continue
             mplug = dependency_node.findPlug(attribute)
             id_value = mplug.asString()
+            order = None
+            if 'order' in id_data[attribute]:
+                order = id_data[attribute]['order']
             data[attribute] = {
-                'order': index,
+                'order': order,
                 'value': id_value
             }
         return data
@@ -563,7 +568,10 @@ class Maya(object):
             'fitPanel -selectedNoChildren;'
             ]
         for mel_command in mel_commands:
-            OpenMaya.MGlobal.executeCommand(mel_command, False, True)                 
+            try:
+                OpenMaya.MGlobal.executeCommand(mel_command, False, True)
+            except Exception:
+                pass               
         
     def vieport_snapshot(self, output_path=None, width=2048, height=2048):
         OpenMaya.MGlobal.clearSelectionList()
@@ -923,10 +931,34 @@ class Maya(object):
 
     def reference_maya(self, maya_file, locked=True, namespace=None):
         mfile = OpenMaya.MFileIO()        
-        mfile.reference(maya_file, True, locked, namespace)
-
-    def read_json(self, path):
-        data = None
-        with open(path, 'r') as file:
-            data = json.load(file)
-        return data
+        mfile.reference(maya_file, True, locked, namespace)        
+        
+    def has_plugin_loaded(self, plugin):
+        mcommand_result = OpenMaya.MCommandResult()
+        mel_command = 'pluginInfo -q -loaded \"%s\"'%plugin
+        OpenMaya.MGlobal.executeCommand(
+            mel_command, mcommand_result, False, True)
+        util = OpenMaya.MScriptUtil()
+        util.createFromInt(0)
+        id_pointer = util.asIntPtr()
+        mcommand_result.getResult(id_pointer)
+        return OpenMaya.MScriptUtil(id_pointer).asBool()                 
+       
+    def load_plugin(self, plugin):        
+        loaded = self.has_plugin_loaded(plugin)
+        if loaded:
+            sys.stderr.write('#warnings: already loaded <%s>'%plugin)
+            return
+        mel_command = 'loadPlugin -qt %s'%plugin
+        try:
+            OpenMaya.MGlobal.executeCommand(mel_command, False, True)
+            print 'plugin register', plugin 
+        except:
+            sys.stderr.write('failed to register command: %s' % plugin)
+            
+    def load_plugins(self, plugins=None):   
+        if not plugins:     
+            data = resource.getPluginData()
+            plugins = data['maya']
+        for plugin in plugins:
+            self.load_plugin(plugin)           

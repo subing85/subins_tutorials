@@ -9,9 +9,11 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import image
-from studio_usd_pipe.core import studio
+from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.core import preferences
+
+print os.environ['PACKAGE_PATH']
 
 
 class Window(QtWidgets.QWidget):
@@ -192,7 +194,7 @@ class Window(QtWidgets.QWidget):
         self.button_python.clicked.connect(partial(self.find_directory, self.lineedit_python, contents['python_path']))
         
     def set_tool_context(self):
-        config = studio.Configure()
+        config = sheader.Configure()
         config.tool()
         return config.version, config.pretty   
 
