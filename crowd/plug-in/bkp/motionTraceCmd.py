@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,44 +34,44 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
-#	Creation Date:   27 September 2006
+# 	Creation Date:   27 September 2006
 #
-#	Description:
+# 	Description:
 #
-#		Traces the position of an animated object
-#		and create a curve showing the object's path.
+# 		Traces the position of an animated object
+# 		and create a curve showing the object's path.
 #
-#	Usage:
+# 	Usage:
 #
-#		Animate an object.
-#		Select the object.
-#		Run the command in the command window.
-#		See the object's path drawn as a curve.
+# 		Animate an object.
+# 		Select the object.
+# 		Run the command in the command window.
+# 		See the object's path drawn as a curve.
 #
-#	Options:
+# 	Options:
 #
-#		s=<frame>		The start frame.  Default to 1.
-#		e=<frame>		The end frame.	Default to 60.
-#		b=<frame>		The by frame.  Default to 1.
+# 		s=<frame>		The start frame.  Default to 1.
+# 		e=<frame>		The end frame.	Default to 60.
+# 		b=<frame>		The by frame.  Default to 1.
 #
-#	Example:
+# 	Example:
 #
-#		From Python:
-#			import maya
-#			maya.cmds.spMotionTrace(s=1, e=100, b=2)
+# 		From Python:
+# 			import maya
+# 			maya.cmds.spMotionTrace(s=1, e=100, b=2)
 #
-#		From Mel:
-#			spMotionTrace -s 1 -e 100 -b 2
+# 		From Mel:
+# 			spMotionTrace -s 1 -e 100 -b 2
 #
 
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
 import math, sys
 
-kPluginCmdName="spMotionTrace"
+kPluginCmdName = "spMotionTrace"
 
 kStartFlag = "-s"
 kStartLongFlag = "-startFrame"
@@ -80,15 +80,16 @@ kEndLongFlag = "-endFrame"
 kByFlag = "-b"
 kByLongFlag = "-byFrame"
 
+
 # command
 class motionTrace(OpenMayaMPx.MPxCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxCommand.__init__(self)
 		# setup private data members
 		self.__start = 1
 		self.__end = 60
 		self.__by = 1
-
 
 	def doIt(self, args):
 		"""
@@ -107,7 +108,6 @@ class motionTrace(OpenMayaMPx.MPxCommand):
 
 		self.redoIt()
 
-
 	def redoIt(self):
 		"""
 		This method performs the action of the command.
@@ -116,7 +116,7 @@ class motionTrace(OpenMayaMPx.MPxCommand):
 		information.
 		"""
 		picked = OpenMaya.MObjectArray()
-		dependNode = OpenMaya.MObject()     # Selected dependency node
+		dependNode = OpenMaya.MObject()  # Selected dependency node
 
 		# Create a selection list iterator
 		slist = OpenMaya.MSelectionList()
@@ -169,7 +169,6 @@ class motionTrace(OpenMayaMPx.MPxCommand):
 		for i in range(picked.length()):
 			self.__jMakeCurve(pointArrays[i])
 
-
 	def __jMakeCurve(self, cvs):
 		"""
 		Make a degree 1 curve from the given CVs.
@@ -221,5 +220,4 @@ def uninitializePlugin(mobject):
 	except:
 		sys.stderr.write("Failed to unregister command: %s\n" % kPluginCmdName)
 		raise
-
 

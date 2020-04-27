@@ -1,37 +1,37 @@
 ##-*****************************************************************************
-##
-## Copyright (c) 2009-2011,
-##  Sony Pictures Imageworks, Inc. and
-##  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
-##
-## All rights reserved.
-##
-## Redistribution and use in source and binary forms, with or without
-## modification, are permitted provided that the following conditions are
-## met:
-## *       Redistributions of source code must retain the above copyright
-## notice, this list of conditions and the following disclaimer.
-## *       Redistributions in binary form must reproduce the above
-## copyright notice, this list of conditions and the following disclaimer
-## in the documentation and/or other materials provided with the
-## distribution.
-## *       Neither the name of Sony Pictures Imageworks, nor
-## Industrial Light & Magic nor the names of their contributors may be used
-## to endorse or promote products derived from this software without specific
-## prior written permission.
-##
-## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-## A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-## OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-## SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-## LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-## DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-## THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-##
+# #
+# # Copyright (c) 2009-2011,
+# #  Sony Pictures Imageworks, Inc. and
+# #  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
+# #
+# # All rights reserved.
+# #
+# # Redistribution and use in source and binary forms, with or without
+# # modification, are permitted provided that the following conditions are
+# # met:
+# # *       Redistributions of source code must retain the above copyright
+# # notice, this list of conditions and the following disclaimer.
+# # *       Redistributions in binary form must reproduce the above
+# # copyright notice, this list of conditions and the following disclaimer
+# # in the documentation and/or other materials provided with the
+# # distribution.
+# # *       Neither the name of Sony Pictures Imageworks, nor
+# # Industrial Light & Magic nor the names of their contributors may be used
+# # to endorse or promote products derived from this software without specific
+# # prior written permission.
+# #
+# # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# # A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# # OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# # SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# # LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# # DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# #
 ##-*****************************************************************************
 
 from maya import cmds as MayaCmds
@@ -40,6 +40,7 @@ import os
 import unittest
 
 import util
+
 
 class MayaReloadTest(unittest.TestCase):
 
@@ -55,7 +56,7 @@ class MayaReloadTest(unittest.TestCase):
     # connection info is all correct
     def testAnimMeshReload(self):
 
-        MayaCmds.polyCube( name = 'mesh')
+        MayaCmds.polyCube(name='mesh')
         MayaCmds.setKeyframe('meshShape.vtx[0:7]', time=[1, 24])
         MayaCmds.setKeyframe('meshShape.vtx[0:7]')
         MayaCmds.currentTime(12, update=True)
@@ -82,10 +83,9 @@ class MayaReloadTest(unittest.TestCase):
         mesh2 = '|mesh1|meshShape'
         for t in range(1, 25):
             MayaCmds.currentTime(t, update=True)
-            if not util.compareMesh( mesh1, mesh2 ):
+            if not util.compareMesh(mesh1, mesh2):
                 self.fail('%s and %s were not equal at frame %d' % (mesh1,
                     mesh2, t))
-
 
 #-------------------------------------------------------------------------------
 # The following tests each creates four animated nodes of the same data
@@ -98,54 +98,54 @@ class MayaReloadTest(unittest.TestCase):
 
         # create a poly cube and animate
         shapeName = 'pCube'
-        MayaCmds.polyCube( name=shapeName )
+        MayaCmds.polyCube(name=shapeName)
         MayaCmds.move(5, 0, 0, r=True)
-        MayaCmds.setKeyframe( shapeName+'.vtx[2:5]', time=[1, 24] )
-        MayaCmds.currentTime( 12 )
-        MayaCmds.select( shapeName+'.vtx[2:5]',replace=True )
+        MayaCmds.setKeyframe(shapeName + '.vtx[2:5]', time=[1, 24])
+        MayaCmds.currentTime(12)
+        MayaCmds.select(shapeName + '.vtx[2:5]', replace=True)
         MayaCmds.move(0, 4, 0, r=True)
-        MayaCmds.setKeyframe( shapeName+'.vtx[2:5]', time=[12] )
+        MayaCmds.setKeyframe(shapeName + '.vtx[2:5]', time=[12])
 
         # create a poly sphere and animate
         shapeName = 'pSphere'
-        MayaCmds.polySphere( name=shapeName )
+        MayaCmds.polySphere(name=shapeName)
         MayaCmds.move(-5, 0, 0, r=True)
-        MayaCmds.setKeyframe( shapeName+'.vtx[200:379]',
-            shapeName+'.vtx[381]', time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:379]',
+            shapeName + '.vtx[381]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select( shapeName+'.vtx[200:379]',
-            shapeName+'.vtx[381]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[200:379]',
+            shapeName + '.vtx[381]', replace=True)
         MayaCmds.scale(0.5, 0.5, 0.5, relative=True)
-        MayaCmds.setKeyframe( shapeName+'.vtx[200:379]',
-            shapeName+'.vtx[381]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:379]',
+            shapeName + '.vtx[381]', time=[12])
         MayaCmds.currentTime(1)
 
         # create a poly torus and animate
         shapeName = 'pTorus'
         MayaCmds.polyTorus(name=shapeName)
-        MayaCmds.setKeyframe(shapeName+'.vtx[200:219]',time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:219]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[200:219]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[200:219]', replace=True)
         MayaCmds.scale(2, 1, 2, relative=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[200:219]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:219]', time=[12])
 
         # create a poly cone and animate
         shapeName = 'pCone'
         MayaCmds.polyCone(name=shapeName)
         MayaCmds.move(0, 0, -5, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[20]', time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[20]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[20]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[20]', replace=True)
         MayaCmds.move(0, 4, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[20]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[20]', time=[12])
 
         # write it out to Abc file and load back in
         self.__files.append(util.expandFileName('testPolyReload.abc'))
-        MayaCmds.AbcExport(j='-fr 1 24 -root pCube -root pSphere -root pTorus -root pCone -file %s' %
+        MayaCmds.AbcExport(j='-fr 1 24 -root pCube -root pSphere -root pTorus -root pCone -file %s' % 
             self.__files[-1])
 
         # load back the Abc file, delete the sphere and save to a maya file
-        MayaCmds.AbcImport( self.__files[-1], mode='open')
+        MayaCmds.AbcImport(self.__files[-1], mode='open')
         MayaCmds.delete('pSphere')
         self.__files.append(util.expandFileName('test.mb'))
         MayaCmds.file(rename=self.__files[-1])
@@ -167,23 +167,23 @@ class MayaReloadTest(unittest.TestCase):
             for t in range(1, 25):
                 MayaCmds.currentTime(t, update=True)
                 if not util.compareMesh(m[0], m[1]):
-                    self.fail('%s and %s are not the same at frame %d' %
+                    self.fail('%s and %s are not the same at frame %d' % 
                         (m[0], m[1], t))
 
     def testAnimSubDDeleteReload(self):
 
         # create a subD cube and animate
         shapeName = 'cube'
-        MayaCmds.polyCube( name=shapeName )
+        MayaCmds.polyCube(name=shapeName)
         MayaCmds.select('cubeShape')
         MayaCmds.addAttr(longName='SubDivisionMesh', attributeType='bool',
             defaultValue=True)
         MayaCmds.move(5, 0, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[2:5]', time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[2:5]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[2:5]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[2:5]', replace=True)
         MayaCmds.move(0, 4, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[2:5]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[2:5]', time=[12])
 
         # create a subD sphere and animate
         shapeName = 'sphere'
@@ -192,13 +192,13 @@ class MayaReloadTest(unittest.TestCase):
         MayaCmds.addAttr(longName='SubDivisionMesh', attributeType='bool',
             defaultValue=True)
         MayaCmds.move(-5, 0, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[200:379]', shapeName+'.vtx[381]',
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:379]', shapeName + '.vtx[381]',
             time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[200:379]',  shapeName+'.vtx[381]',
+        MayaCmds.select(shapeName + '.vtx[200:379]', shapeName + '.vtx[381]',
             replace=True)
         MayaCmds.scale(0.5, 0.5, 0.5, relative=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[200:379]',  shapeName+'.vtx[381]',
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:379]', shapeName + '.vtx[381]',
             time=[12])
         MayaCmds.currentTime(1)
 
@@ -208,33 +208,33 @@ class MayaReloadTest(unittest.TestCase):
         MayaCmds.select('torusShape')
         MayaCmds.addAttr(longName='SubDivisionMesh', attributeType='bool',
             defaultValue=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[200:219]',time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:219]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[200:219]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[200:219]', replace=True)
         MayaCmds.scale(2, 1, 2, relative=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[200:219]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[200:219]', time=[12])
 
         # create a subD cone and animate
         shapeName = 'cone'
-        MayaCmds.polyCone( name=shapeName )
+        MayaCmds.polyCone(name=shapeName)
         MayaCmds.select('coneShape')
         MayaCmds.addAttr(longName='SubDivisionMesh', attributeType='bool',
             defaultValue=True)
         MayaCmds.move(0, 0, -5, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[20]', time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[20]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[20]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[20]', replace=True)
         MayaCmds.move(0, 4, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[20]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[20]', time=[12])
 
         self.__files.append(util.expandFileName('testSubDReload.abc'))
 
         # write it out to Abc file and load back in
-        MayaCmds.AbcExport(j='-fr 1 24 -root cube -root sphere -root torus -root cone -file ' +
+        MayaCmds.AbcExport(j='-fr 1 24 -root cube -root sphere -root torus -root cone -file ' + 
             self.__files[-1])
 
         # load back the Abc file, delete the sphere and save to a maya file
-        MayaCmds.AbcImport( self.__files[-1], mode='open' )
+        MayaCmds.AbcImport(self.__files[-1], mode='open')
         MayaCmds.delete('sphere')
         self.__files.append(util.expandFileName('test.mb'))
         MayaCmds.file(rename=self.__files[-1])
@@ -258,7 +258,7 @@ class MayaReloadTest(unittest.TestCase):
             for t in range(1, 25):
                 MayaCmds.currentTime(t, update=True)
                 if not util.compareMesh(m[0], m[1]):
-                    self.fail('%s and %s are not the same at frame %d' %
+                    self.fail('%s and %s are not the same at frame %d' % 
                         (m[0], m[1], t))
 
     def testAnimNSurfaceDeleteReload(self):
@@ -307,7 +307,7 @@ class MayaReloadTest(unittest.TestCase):
 
         # write it out to Abc file and load back in
         self.__files.append(util.expandFileName('testNSurfaceReload.abc'))
-        MayaCmds.AbcExport(j='-fr 1 24 -root nSphere -root nTorus -root nPlane -root nCylinder -file ' +
+        MayaCmds.AbcExport(j='-fr 1 24 -root nSphere -root nTorus -root nPlane -root nCylinder -file ' + 
             self.__files[-1])
 
         # load back the Abc file, delete the torus and save to a maya file
@@ -336,7 +336,7 @@ class MayaReloadTest(unittest.TestCase):
             for t in range(1, 25):
                 MayaCmds.currentTime(t, update=True)
                 if not util.compareNurbsSurface(s[0], s[1]):
-                    self.fail('%s and %s are not the same at frame %d' %
+                    self.fail('%s and %s are not the same at frame %d' % 
                         (s[0], s[1], t))
 
     def testAnimNSurfaceAndPolyDeleteReload(self):
@@ -345,11 +345,11 @@ class MayaReloadTest(unittest.TestCase):
         shapeName = 'pCube'
         MayaCmds.polyCube(name=shapeName)
         MayaCmds.move(5, 0, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[2:5]', time=[1, 24])
+        MayaCmds.setKeyframe(shapeName + '.vtx[2:5]', time=[1, 24])
         MayaCmds.currentTime(12)
-        MayaCmds.select(shapeName+'.vtx[2:5]',replace=True)
+        MayaCmds.select(shapeName + '.vtx[2:5]', replace=True)
         MayaCmds.move(0, 4, 0, r=True)
-        MayaCmds.setKeyframe(shapeName+'.vtx[2:5]', time=[12])
+        MayaCmds.setKeyframe(shapeName + '.vtx[2:5]', time=[12])
 
         # create an animated Nurbs plane
         MayaCmds.nurbsPlane(ch=False, name='nPlane')
@@ -389,8 +389,8 @@ class MayaReloadTest(unittest.TestCase):
         surface2 = '|ReloadGrp|nPlane|nPlaneShape'
         for t in range(1, 25):
             MayaCmds.currentTime(t, update=True)
-            if not util.compareNurbsSurface( surface1, surface2 ):
-                self.fail('%s and %s are not the same at frame %d' %
+            if not util.compareNurbsSurface(surface1, surface2):
+                self.fail('%s and %s are not the same at frame %d' % 
                     (surface1, surface2, t))
 
     def testAnimCameraDeleteReload(self):
@@ -429,7 +429,7 @@ class MayaReloadTest(unittest.TestCase):
 
         # write them out to an Abc file and load back in
         self.__files.append(util.expandFileName('testCamReload.abc'))
-        MayaCmds.AbcExport(j='-fr 1 24 -root cam1 -root cam2 -root cam3 -root cam4 -file ' +
+        MayaCmds.AbcExport(j='-fr 1 24 -root cam1 -root cam2 -root cam3 -root cam4 -file ' + 
             self.__files[-1])
         # load back the Abc file, delete the 2nd camera and save to a maya file
         MayaCmds.AbcImport(self.__files[-1], mode='open')
@@ -458,7 +458,7 @@ class MayaReloadTest(unittest.TestCase):
             for t in range(1, 25):
                 MayaCmds.currentTime(t, update=True)
                 if not util.compareCamera(c[0], c[1]):
-                    self.fail('%s and %s are not the same at frame %d' %
+                    self.fail('%s and %s are not the same at frame %d' % 
                         (c[0], c[1], t))
 
     def testAnimNCurvesDeleteReload(self):
@@ -520,7 +520,7 @@ class MayaReloadTest(unittest.TestCase):
             for t in range(1, 25):
                 MayaCmds.currentTime(t, update=True)
                 if not util.compareNurbsCurve(c[0], c[1]):
-                    self.fail('%s and %s are not the same at frame %d' %
+                    self.fail('%s and %s are not the same at frame %d' % 
                         (c[0], c[1], t))
 
 #-------------------------------------------------------------------------
@@ -585,14 +585,14 @@ class MayaReloadTest(unittest.TestCase):
             for t in range(1, 25):
                 MayaCmds.currentTime(t, update=True)
                 if not util.compareNurbsCurve(c[0], c[1]):
-                    self.fail('%s and %s are not the same at frame %d' %
+                    self.fail('%s and %s are not the same at frame %d' % 
                         (c[0], c[1], t))
 
     def testAnimPropDeleteReload(self):
 
         # create some animated properties on a transform node ( could be any type )
-        nodeName = MayaCmds.polyPrism(ch=False, name = 'prism')
-        MayaCmds.addAttr(longName='SPT_int8',   defaultValue=0,
+        nodeName = MayaCmds.polyPrism(ch=False, name='prism')
+        MayaCmds.addAttr(longName='SPT_int8', defaultValue=0,
             attributeType='byte', keyable=True)
         MayaCmds.addAttr(longName='SPT_int16', defaultValue=100,
             attributeType='short', keyable=True)
@@ -623,7 +623,7 @@ class MayaReloadTest(unittest.TestCase):
             minValue=0.0, maxValue=1.0)
         MayaCmds.addAttr(longName='SPT_HwColorB', defaultValue=1.0,
             minValue=0.0, maxValue=1.0)
-        MayaCmds.addAttr( longName='SPT_HwColor', usedAsColor=True,
+        MayaCmds.addAttr(longName='SPT_HwColor', usedAsColor=True,
             attributeType='float3')
         MayaCmds.currentTime(1, update=True)
         MayaCmds.setKeyframe(at='SPT_HwColorR')
@@ -640,7 +640,7 @@ class MayaReloadTest(unittest.TestCase):
 
         # load back the Abc file, delete the 2nd letter and save to a maya file
         abcNode = MayaCmds.AbcImport(
-            self.__files[-1], mode='open' )
+            self.__files[-1], mode='open')
 
         # delete connections to animated props
         prop = MayaCmds.listConnections('|prism.SPT_float', p=True)[0]
@@ -654,7 +654,6 @@ class MayaReloadTest(unittest.TestCase):
         MayaCmds.file(rename=self.__files[-1])
         MayaCmds.file(save=True)
 
-
         # import the saved maya file to compare with the original scene
         MayaCmds.file(self.__files[-1], open=True)
         MayaCmds.select('prism', replace=True)
@@ -666,7 +665,7 @@ class MayaReloadTest(unittest.TestCase):
             MayaCmds.currentTime(t, update=True)
             self.failUnlessEqual(MayaCmds.getAttr('|prism.SPT_int8'),
                 MayaCmds.getAttr('|ReloadGrp|prism.SPT_int8'),
-                'prism.SPT_int8 not equal' )
+                'prism.SPT_int8 not equal')
             self.failUnlessEqual(MayaCmds.getAttr('|prism.SPT_int16'),
                 MayaCmds.getAttr('|ReloadGrp|prism.SPT_int16'),
                 'prism.SPT_int16 not equal')

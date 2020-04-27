@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/usd_create.ui'
 #
-# Created: Sat Apr 25 15:06:07 2020
+# Created: Sun Apr 26 21:58:44 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!

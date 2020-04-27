@@ -18,6 +18,7 @@ from pymel import core as pymel
 import warnings
 import pprint
 
+
 class MayaAnim():
     
     '''
@@ -49,7 +50,6 @@ class MayaAnim():
                 pass
             
         self._mObjects = pymelObjects
-        
     
     def copy(self):
         
@@ -111,18 +111,18 @@ class MayaAnim():
                 preInfinity = animCurves[0].getAttr('preInfinity')
                 postInfinity = animCurves[0].getAttr('postInfinity')  
                               
-                inTangentType = pymel.keyTangent (animCurves[0], q=True, t=(startFrame,endFrame), itt=True)                 
+                inTangentType = pymel.keyTangent (animCurves[0], q=True, t=(startFrame, endFrame), itt=True)                 
                 if inTangentType:
                     inTangentType = [eachInTangent.encode () for eachInTangent in inTangentType]                                   
                 
-                outTangentType = pymel.keyTangent (animCurves[0], q=True, t=(startFrame,endFrame), ott=True) 
+                outTangentType = pymel.keyTangent (animCurves[0], q=True, t=(startFrame, endFrame), ott=True) 
                 if outTangentType:
                     outTangentType = [eachOutTangent.encode () for eachOutTangent in outTangentType]                                           
 
-                inAngle = pymel.keyTangent (animCurves[0], q=1, t=(startFrame,endFrame), ia=1)
-                outAngle = pymel.keyTangent (animCurves[0], q=1, t=(startFrame,endFrame), oa=1) 
-                timeChange = pymel.keyframe(eachAttri.nodeName(), at=eachAttri.attrName(), query=True, t=(startFrame,endFrame), tc=True )
-                valueChange = pymel.keyframe(eachAttri.nodeName(), at=eachAttri.attrName(), query=True, t=(startFrame,endFrame), vc=True )
+                inAngle = pymel.keyTangent (animCurves[0], q=1, t=(startFrame, endFrame), ia=1)
+                outAngle = pymel.keyTangent (animCurves[0], q=1, t=(startFrame, endFrame), oa=1) 
+                timeChange = pymel.keyframe(eachAttri.nodeName(), at=eachAttri.attrName(), query=True, t=(startFrame, endFrame), tc=True)
+                valueChange = pymel.keyframe(eachAttri.nodeName(), at=eachAttri.attrName(), query=True, t=(startFrame, endFrame), vc=True)
                 
                 currentAnimation = {}
                 currentAnimation['animCurve'] = animCurves[0].name().encode ()
@@ -137,7 +137,7 @@ class MayaAnim():
                 currentAnimation['timeChange'] = timeChange
                 currentAnimation['valueChange'] = valueChange 
                 
-                attributesAnimation.setdefault(eachAttri.attrName().encode(),  currentAnimation)
+                attributesAnimation.setdefault(eachAttri.attrName().encode(), currentAnimation)
                                 
             controlDatas = {'namespace': currentNamespace.encode(),
                             'attributes': attributesAnimation}
@@ -147,7 +147,6 @@ class MayaAnim():
         pprint.pprint(dataList)  
 
         return dataList
-
 
     def paste(self, dataContent):       
         
@@ -223,21 +222,21 @@ class MayaAnim():
                 animCurves = pyAttributes.listConnections(d=False, s=True)       
                          
                 if animCurves:                
-                    if animCurves[0].type()=='animCurveTL' or animCurves[0].type()=='animCurveTA' or animCurves[0].type()=='animCurveTU':
+                    if animCurves[0].type() == 'animCurveTL' or animCurves[0].type() == 'animCurveTA' or animCurves[0].type() == 'animCurveTU':
                         currentAnimCurve = animCurves[0]
                 else:
                     currentAnimCurve = pymel.createNode (animCurveType, n=pyAttributes.name().replace('.', '_'))
                     currentAnimCurve.connectAttr('output', pyAttributes)
                 
-                pymel.keyTangent (currentAnimCurve, e=True, wt=weightTangent)  #Set weightTangent                                                
+                pymel.keyTangent (currentAnimCurve, e=True, wt=weightTangent)  # Set weightTangent                                                
                 
-                currentAnimCurve.setAttr ('preInfinity', preInfinity) #Set preInfinity 
-                currentAnimCurve.setAttr ('postInfinity', postInfinity) #Set postInfinity 
+                currentAnimCurve.setAttr ('preInfinity', preInfinity)  # Set preInfinity 
+                currentAnimCurve.setAttr ('postInfinity', postInfinity)  # Set postInfinity 
                 
-                #Set frames and key
+                # Set frames and key
                 for index in range (len(timeChange)) :                                           
-                    precentage   = float(valueChange[index]) * 100/100.00                                        
-                    currentFrame =  (startFrame + timeChange[index])-1
+                    precentage = float(valueChange[index]) * 100 / 100.00                                        
+                    currentFrame = (startFrame + timeChange[index]) - 1
                                                          
                     pymel.setKeyframe (currentAnimCurve, time=float(currentFrame), value=precentage)                       
                     pymel.keyTangent (currentAnimCurve, e=1, t=(currentFrame, currentFrame), itt=inTangentType[index], ott=outTangentType[index])

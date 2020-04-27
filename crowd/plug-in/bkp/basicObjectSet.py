@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,13 +34,13 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Creation Date:   12 October 2006
 #
 # Description:
-#	Trivial extension of MPxObjectSet
+# 	Trivial extension of MPxObjectSet
 #
 
 import maya.OpenMaya as OpenMaya
@@ -51,17 +51,19 @@ kNodeName = "spBasicObjectSet"
 kCmdName = "spBasicObjectSetTest"
 kNodeId = OpenMaya.MTypeId(0x87012)
 
+
 # Node definition
 class BasicObjectSet(OpenMayaMPx.MPxObjectSet):
+
 	def __init__(self):
 		OpenMayaMPx.MPxObjectSet.__init__(self)
 
 
 class BasicObjectSetTest(OpenMayaMPx.MPxCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxCommand.__init__(self)
 		self.__fDGMod = OpenMaya.MDGModifier()
-
 
 	def doIt(self, args):
 		# Create the node
@@ -79,7 +81,6 @@ class BasicObjectSetTest(OpenMayaMPx.MPxCommand):
 
 		depNodeFn = OpenMaya.MFnDependencyNode(setNode)
 		OpenMayaMPx.MPxCommand.setResult(depNodeFn.name())
-
 
 #####################################################################
 

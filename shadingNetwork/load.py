@@ -13,28 +13,27 @@ Description
     Load (import) Shading Network from custom data format in maya using PyMel
 '''
 
-
-#Load (import) the shader networks from custom file(data)
+# Load (import) the shader networks from custom file(data)
 import pymel.core as pm
 import json
 import pprint
 import os
 
-#Read custom shader network data
-#write data
+# Read custom shader network data
+# write data
 filePath = os.path.join(os.environ['temp'], 'myTestShader.shader')
 shaderData = open(filePath, 'r')
 shaderNetworkData = json.load(shaderData)       
 shaderData.close()
 
-#pprint.pprint(shaderNetworkData)
+# pprint.pprint(shaderNetworkData)
 
 shaderList = pm.listNodeTypes('shader')
 textureList = pm.listNodeTypes('texture')
 utilityList = pm.listNodeTypes('utility')
 
 for eachShaderNetwork in shaderNetworkData:
-    #print eachShaderNetwork      
+    # print eachShaderNetwork      
     nodes = shaderNetworkData[eachShaderNetwork]['nodes']
     attributes = shaderNetworkData[eachShaderNetwork]['attributes']
     connections = shaderNetworkData[eachShaderNetwork]['connections']
@@ -42,7 +41,7 @@ for eachShaderNetwork in shaderNetworkData:
     
     updateNode = {}
     
-    #create nodes    
+    # create nodes    
     for eachNode in nodes:
         nodeType = nodes[eachNode]   
              
@@ -63,7 +62,7 @@ for eachShaderNetwork in shaderNetworkData:
             
         updateNode.setdefault(eachNode, currentNode.name())
         
-    #set attribute values        
+    # set attribute values        
     for eachNode in attributes:
         for eachAttribute in attributes[eachNode]:
             if not pm.objExists(eachAttribute):
@@ -76,7 +75,7 @@ for eachShaderNetwork in shaderNetworkData:
             except Exception as result:
                 print 'set attribute warning', eachAttribute, '\t-   ', result
                 
-    #connect attribute                 
+    # connect attribute                 
     for eachNode in connections:
         for eachAttribute in connections[eachNode]:
             currentSourceAttribute = eachAttribute.replace(eachNode, updateNode[eachNode])            

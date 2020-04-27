@@ -77,8 +77,7 @@ class PyMetaDataCmd(om.MPxCommand):
     forceFlagLong = '-force'
 
     valueFlag = '-v'
-    valueFlagLong= '-value'
-
+    valueFlagLong = '-value'
 
     def __init__(self):
         om.MPxCommand.__init__(self)
@@ -143,8 +142,6 @@ class PyMetaDataCmd(om.MPxCommand):
                 value = os.environ['USER']
             else:
                 value = 'USERNAME'
-                
-
 
         # Use an MDGModifier so we can undo this work
         #
@@ -161,7 +158,7 @@ class PyMetaDataCmd(om.MPxCommand):
                     self.dgmod.newPlugValueString(plug, value)
                     self.dgmod.doIt()
                 else:
-                    print ('passing over "' + fnDN.name()+ '": force flag not set to True')
+                    print ('passing over "' + fnDN.name() + '": force flag not set to True')
             else:
                 # Create a new attribute 
                 #
@@ -183,7 +180,6 @@ class PyMetaDataCmd(om.MPxCommand):
                 self.dgmod.newPlugValueString(plug, value)
                 self.dgmod.doIt()
 
-
         # Iterate over all dependency nodes in list
         # add the meta-data attribute if it is not already there
         #
@@ -195,7 +191,7 @@ class PyMetaDataCmd(om.MPxCommand):
                 dependNode = selList.getDependNode(i)
                 fnDN = om.MFnDependencyNode(dependNode)
             except RuntimeError:
-                om.MGlobal.displayWarning('item %d is not a depend node'%i)
+                om.MGlobal.displayWarning('item %d is not a depend node' % i)
                 continue
             addMetaData(dependNode, fnDN)
 
@@ -208,17 +204,19 @@ class PyMetaDataCmd(om.MPxCommand):
     def isUndoable(self):
         return True
 
+
 def initializePlugin(plugin):
     pluginFn = om.MFnPlugin(plugin)
     pluginFn.registerCommand(
         PyMetaDataCmd.cmdName, PyMetaDataCmd.creator, PyMetaDataCmd.createSyntax
     )
 
+
 def uninitializePlugin(plugin):
     pluginFn = om.MFnPlugin(plugin)
     pluginFn.deregisterCommand(PyMetaDataCmd.cmdName)
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All
 # rights reserved.
@@ -254,4 +252,4 @@ def uninitializePlugin(plugin):
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +

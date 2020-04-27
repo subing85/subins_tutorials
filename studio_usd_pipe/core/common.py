@@ -7,7 +7,7 @@ import warnings
 from datetime import datetime
 
     
-def sorted_order(input_dict):
+def sort_dictionary(input_dict):
     data = {}
     stack = input_dict.items()    
     while stack:
@@ -16,34 +16,22 @@ def sorted_order(input_dict):
             continue
         if 'order' not in v:
             continue
-        data.setdefault(int(v['order']), []).append(k)
+        data.setdefault(int(v['order']), []).append(k.encode())
     result = sum(data.values(), [])    
     return result
 
 
 def sorted_show_order(input_dict):
     data = {}
-    stack = input_dict.items()    
-    while stack:
-        k, v = stack.pop()
-        if not isinstance(v, dict): 
-            continue
-        if 'show' not in v:
-            continue
-        if 'show_order' not in v['show']:
-            continue
-        data.setdefault(v['show']['show_order'], []).append(k)
-    result = sum(data.values(), [])    
-    return result    
+    stack = input_dict.items()
     
-
-def sort_dictionary(dictionary):  # to remove
     sorted_data = {}
-    for contents in dictionary:
+    for show in input_dict:
+        show_order = input_dict[show]['current_show']['show']['order']
         sorted_data.setdefault(
-            dictionary[contents]['order'], []).append(contents)
+            int(show_order), []).append(show)  
     order = sum(sorted_data.values(), [])
-    return order
+    return order  
 
 
 def get_template_header():
@@ -61,13 +49,13 @@ def get_template_header():
 
 
 def get_modified_date():
-    modified = datetime.now().strftime("%Y %d %B %A, %H:%M:%S %p")
+    modified = datetime.now().strftime("%Y %d %B %A, %I:%M:%S %p")
     return modified
 
 
 def get_time_date(time):
     dt_object = datetime.fromtimestamp(time)
-    modified = dt_object.strftime("%Y %d %B %A, %H:%M:%S %p")
+    modified = dt_object.strftime("%Y %d %B %A, %I:%M:%S %p")
     return modified
 
 
@@ -76,15 +64,6 @@ def read_json(path):
     with open(path, 'r') as file:
         data = json.load(file)
     return data
-
-
-
-
-
-
-
-
-
 
 
 def make_argeuments(**kwargs):

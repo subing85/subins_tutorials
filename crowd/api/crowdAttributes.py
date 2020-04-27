@@ -4,7 +4,6 @@ from maya import OpenMaya
 from crowd.api import crowdSkeleton
 
 
-
 class Connect(object):
 
     def __init__(self, node=None):        
@@ -13,21 +12,11 @@ class Connect(object):
         
         self.input_attribute = 'module_type'
         
-        
     def setInputAttribute(self):
         pass
     
-    
     def getInInputAttribute(self):
         pass
-    
-    
-        
-        
-        
-
-
-
 
     def getPlugName(self):
         return 'crowdProxy'
@@ -89,7 +78,6 @@ class Connect(object):
         mobject.addAttribute(self.node, column_offset_attribute, OpenMaya.MFnDependencyNode.kLocalDynamicAttr)
 
         mobject.addAttribute(self.node, random_attribute, OpenMaya.MFnDependencyNode.kLocalDynamicAttr)
-
                          
     def getSkeletonTypes(self):
         crowd_skeleton = crowdSkeleton.Connect()
@@ -97,7 +85,6 @@ class Connect(object):
         if not skeleton_type:
             skeleton_type = ['None']
         return skeleton_type        
-        
 
     def createEnumAttribute(self, attribute, name, short_name, data):
         current_attribute = attribute.create(name, short_name, 0)

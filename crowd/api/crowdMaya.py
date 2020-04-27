@@ -4,7 +4,6 @@ import logging
 
 from pprint import pprint
 
-
 from pymel import core
 from maya import OpenMaya
 from maya import OpenMayaAnim
@@ -42,7 +41,7 @@ class Connect(object):
             mobject = self.getMObject(mobject)
         mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)
         if not mfn_dependency_node.hasAttribute(self.crowd_parameter):
-            logging.warning('MObject not valid %s' %
+            logging.warning('MObject not valid %s' % 
                             mfn_dependency_node.name())
             return None
         mplug = mfn_dependency_node.findPlug(self.crowd_parameter)

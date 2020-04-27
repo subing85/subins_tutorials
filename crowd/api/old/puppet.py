@@ -10,6 +10,8 @@ reload(puppet)
 reload(crowdMaya)
 
 from pprint import pprint
+
+
 class Connect(object):
 
     def __init__(self):
@@ -42,6 +44,5 @@ class Connect(object):
         rw = readWrite.ReadWrite()
         data = rw.collect('puppets', 'puppet')
         return data
-
 
     

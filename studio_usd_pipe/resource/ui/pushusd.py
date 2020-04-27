@@ -54,10 +54,6 @@ class Window(QtWidgets.QMainWindow):
         self.set_default()       
         self.icon_configure()
         
-
-                
-        
-        
     def setup_ui(self):
         self.setObjectName('mainwindow_pullusd')
         self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
@@ -141,7 +137,6 @@ class Window(QtWidgets.QMainWindow):
         self.label_composition.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_composition, 2, 0, 1, 1)
         
-        
         self.treewidget_composition = QtWidgets.QTreeWidget(self)
         self.treewidget_composition.setObjectName('treewidget_composition')
         self.treewidget_composition.header().setVisible(False)
@@ -154,8 +149,6 @@ class Window(QtWidgets.QMainWindow):
             partial(self.on_context_menu, self.treewidget_composition))                 
         
         self.gridlayout.addWidget(self.treewidget_composition, 2, 1, 1, 1)
-       
-                       
                 
         self.label_thumbnail = QtWidgets.QLabel(self.groupbox)
         self.label_thumbnail.setObjectName('label_thumbnail')
@@ -239,7 +232,6 @@ class Window(QtWidgets.QMainWindow):
         self.combobox_version.currentIndexChanged.connect(self.set_current_version)
         self.button_publish.clicked.connect(self.publish)        
         self.button_cancel.clicked.connect(self.close)     
-        
                                 
     def setup_menu(self):        
         self.menu = QtWidgets.QMenu(self)
@@ -351,7 +343,6 @@ class Window(QtWidgets.QMainWindow):
              
         versions = self.pub.get_versions(caption, self.subfield)
         
-        
         if not versions:
             versions = [None]
         self.combobox_latest_version.addItems(versions)
@@ -369,7 +360,7 @@ class Window(QtWidgets.QMainWindow):
         for subfield in self.valid_subfields:
             if subfield not in self.caption_data:
                 continue
-            if subfield=='puppet':
+            if subfield == 'puppet':
                 continue   
             subfield_item = widgets.add_treewidget_item(
                 self.treewidget_input, subfield, icon=subfield, foreground=[255, 255, 255])
@@ -414,9 +405,9 @@ class Window(QtWidgets.QMainWindow):
             if subfield in exists_subfields:
                 children = exists_subfields[subfield]['child']
                 if item.text(0) in children:
-                    message = '%s already exists!..'% item.text(0)
+                    message = '%s already exists!..' % item.text(0)
                     QtWidgets.QMessageBox.warning(
-                        self,'Warning', message, QtWidgets.QMessageBox.Ok)
+                        self, 'Warning', message, QtWidgets.QMessageBox.Ok)
                     continue
                 subfield_item = exists_subfields[subfield]['widget']
             else:
@@ -440,7 +431,6 @@ class Window(QtWidgets.QMainWindow):
             brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
             brush.setStyle(QtCore.Qt.NoBrush)
             self.composition_bundles[item].setForeground(0, brush)
-
         
     def take_thumbnail(self, button):
         smaya = studioMaya.Maya()
@@ -458,10 +448,8 @@ class Window(QtWidgets.QMainWindow):
             )        
         self.button_thumbnail.setToolTip(output_path)
         
-        
     def get_caption_tag(self, caption):
         tag_data = self.pub.get_tag_caption()
-        
                 
     def get_widget_data(self):        
         caption = self.combobox_caption.currentText()
@@ -506,7 +494,6 @@ class Window(QtWidgets.QMainWindow):
                 composition_data[parent_item.text(0)].setdefault(
                     child_item.text(0), inputs)
         return composition_data     
-              
                 
     def publish(self):
         widget_data = self.get_widget_data()
@@ -526,13 +513,11 @@ class Window(QtWidgets.QMainWindow):
         
         self.pub.pack(composition=composition_data)
         
-        
         self.pub.release()
         self.set_default()       
         self.set_current_version()
         QtWidgets.QMessageBox.information(
             self, 'Success', 'Done!...', QtWidgets.QMessageBox.Ok)                    
-
 
 
 if __name__ == '__main__':

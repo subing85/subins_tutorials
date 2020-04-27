@@ -1,4 +1,4 @@
-#-
+# -
 # ===========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -6,12 +6,13 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 # ===========================================================================
-#+
+# +
 
 import sys
 import math
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaRender as omr
+
 
 def maya_useNewAPI():
 	"""
@@ -20,32 +21,36 @@ def maya_useNewAPI():
 	"""
 	pass
 
+
 def step(t, c):
 	if t < c:
 		return 0.0
 	return 1.0
+
 
 def smoothstep(t, a, b):
 	if t < a:
 		return 0.0
 	if t > b:
 		return 1.0
-	t = (t - a)/(b - a)
-	return t*t*(3.0 - 2.0*t)
+	t = (t - a) / (b - a)
+	return t * t * (3.0 - 2.0 * t)
+
 
 def linearstep(t, a, b):
 	if t < a:
 		return 0.0
 	if t > b:
 		return 1.0
-	return (t - a)/(b - a)
+	return (t - a) / (b - a)
 
-##
-## Node declaration
+
+# #
+# # Node declaration
 #######################################################
 class brickTextureNode(om.MPxNode):
 	# Id tag for use with binary file format
-	id = om.MTypeId( 0x8100d )
+	id = om.MTypeId(0x8100d)
 
 	# Input attributes
 	aColor1 = None
@@ -72,16 +77,16 @@ class brickTextureNode(om.MPxNode):
 		nAttr.storable = True
 		nAttr.readable = True
 		nAttr.writable = True
-		nAttr.default = (.75, .3, .1) 			# Brown
+		nAttr.default = (.75, .3, .1)  # Brown
 
 		brickTextureNode.aColor2 = nAttr.createColor("jointColor", "jc")
 		nAttr.keyable = True
 		nAttr.storable = True
 		nAttr.readable = True
 		nAttr.writable = True
-		nAttr.default = (.75, .75, .75) 		# Grey
+		nAttr.default = (.75, .75, .75)  # Grey
 
-		brickTextureNode.aBlurFactor = nAttr.create( "blurFactor", "bf", om.MFnNumericData.kFloat)
+		brickTextureNode.aBlurFactor = nAttr.create("blurFactor", "bf", om.MFnNumericData.kFloat)
 		nAttr.keyable = True
 		nAttr.storable = True
 		nAttr.readable = True
@@ -89,17 +94,17 @@ class brickTextureNode(om.MPxNode):
 
 		# Implicit shading network attributes
 
-		child1 = nAttr.create( "uCoord", "u", om.MFnNumericData.kFloat)
-		child2 = nAttr.create( "vCoord", "v", om.MFnNumericData.kFloat)
-		brickTextureNode.aUVCoord = nAttr.create( "uvCoord", "uv", child1, child2)
+		child1 = nAttr.create("uCoord", "u", om.MFnNumericData.kFloat)
+		child2 = nAttr.create("vCoord", "v", om.MFnNumericData.kFloat)
+		brickTextureNode.aUVCoord = nAttr.create("uvCoord", "uv", child1, child2)
 		nAttr.keyable = True
 		nAttr.storable = True
 		nAttr.readable = True
 		nAttr.writable = True
 		nAttr.hidden = True
 
-		child1 = nAttr.create( "uvFilterSizeX", "fsx", om.MFnNumericData.kFloat)
-		child2 = nAttr.create( "uvFilterSizeY", "fsy", om.MFnNumericData.kFloat)
+		child1 = nAttr.create("uvFilterSizeX", "fsx", om.MFnNumericData.kFloat)
+		child2 = nAttr.create("uvFilterSizeY", "fsy", om.MFnNumericData.kFloat)
 		brickTextureNode.aFilterSize = nAttr.create("uvFilterSize", "fs", child1, child2)
 		nAttr.keyable = True
 		nAttr.storable = True
@@ -124,32 +129,32 @@ class brickTextureNode(om.MPxNode):
 		om.MPxNode.addAttribute(brickTextureNode.aOutColor)
 
 		# All input affect the output color
-		om.MPxNode.attributeAffects(brickTextureNode.aColor1,  		brickTextureNode.aOutColor)
-		om.MPxNode.attributeAffects(brickTextureNode.aColor2,  		brickTextureNode.aOutColor)
-		om.MPxNode.attributeAffects(brickTextureNode.aBlurFactor,  	brickTextureNode.aOutColor)
-		om.MPxNode.attributeAffects(brickTextureNode.aFilterSize,	brickTextureNode.aOutColor)
-		om.MPxNode.attributeAffects(brickTextureNode.aUVCoord,		brickTextureNode.aOutColor)
+		om.MPxNode.attributeAffects(brickTextureNode.aColor1, 		brickTextureNode.aOutColor)
+		om.MPxNode.attributeAffects(brickTextureNode.aColor2, 		brickTextureNode.aOutColor)
+		om.MPxNode.attributeAffects(brickTextureNode.aBlurFactor, 	brickTextureNode.aOutColor)
+		om.MPxNode.attributeAffects(brickTextureNode.aFilterSize, 	brickTextureNode.aOutColor)
+		om.MPxNode.attributeAffects(brickTextureNode.aUVCoord, 		brickTextureNode.aOutColor)
 
 	def __init__(self):
 		om.MPxNode.__init__(self)
 
 	#######################################################
-	## DESCRIPTION:
-	## This function gets called by Maya to evaluate the texture.
-	##
-	## Get color1 and color2 from the input block.
-	## Get UV coordinates from the input block.
-	## Compute the color of our brick for a given UV coordinate.
-	## Put the result into the output plug.
+	# # DESCRIPTION:
+	# # This function gets called by Maya to evaluate the texture.
+	# #
+	# # Get color1 and color2 from the input block.
+	# # Get UV coordinates from the input block.
+	# # Compute the color of our brick for a given UV coordinate.
+	# # Put the result into the output plug.
 	#######################################################
 	def compute(self, plug, block):
 		# outColor or individial R, G, B channel
 		if (plug != brickTextureNode.aOutColor) and (plug.parent() != brickTextureNode.aOutColor):
-			return None # let Maya handle this attribute
+			return None  # let Maya handle this attribute
 
-		uv = block.inputValue( brickTextureNode.aUVCoord ).asFloat2()
-		surfaceColor1 = block.inputValue( brickTextureNode.aColor1 ).asFloatVector()
-		surfaceColor2 = block.inputValue( brickTextureNode.aColor2 ).asFloatVector()
+		uv = block.inputValue(brickTextureNode.aUVCoord).asFloat2()
+		surfaceColor1 = block.inputValue(brickTextureNode.aColor1).asFloatVector()
+		surfaceColor2 = block.inputValue(brickTextureNode.aColor2).asFloatVector()
 
 		# normalize the UV coords
 		uv[0] -= math.floor(uv[0])
@@ -157,38 +162,40 @@ class brickTextureNode(om.MPxNode):
 
 		borderWidth = 0.1
 		brickHeight = 0.4
-		brickWidth  = 0.9
-		blur = block.inputValue( brickTextureNode.aBlurFactor ).asFloat()
+		brickWidth = 0.9
+		blur = block.inputValue(brickTextureNode.aBlurFactor).asFloat()
 
-		v1 = borderWidth/2
+		v1 = borderWidth / 2
 		v2 = v1 + brickHeight
 		v3 = v2 + borderWidth
 		v4 = v3 + brickHeight
-		u1 = borderWidth/2
-		u2 = brickWidth/2
+		u1 = borderWidth / 2
+		u2 = brickWidth / 2
 		u3 = u2 + borderWidth
 		u4 = u1 + brickWidth
 
-		fs = block.inputValue( brickTextureNode.aFilterSize ).asFloat2()
-		du = blur*fs[0]/2.0
-		dv = blur*fs[1]/2.0
+		fs = block.inputValue(brickTextureNode.aFilterSize).asFloat2()
+		du = blur * fs[0] / 2.0
+		dv = blur * fs[1] / 2.0
 
 		t = max(min(linearstep(uv[1], v1 - dv, v1 + dv) - linearstep(uv[1], v2 - dv, v2 + dv), max(linearstep(uv[0], u3 - du, u3 + du), 1 - linearstep(uv[0], u2 - du, u2 + du))), min(linearstep(uv[1], v3 - dv, v3 + dv) - linearstep(uv[1], v4 - dv, v4 + dv), linearstep(uv[0], u1 - du, u1 + du) - linearstep(uv[0], u4 - du, u4 + du)))
 
-		resultColor = t*surfaceColor1 + (1.0 - t)*surfaceColor2
+		resultColor = t * surfaceColor1 + (1.0 - t) * surfaceColor2
 
 		# set ouput color attribute
-		outColorHandle = block.outputValue( brickTextureNode.aOutColor )
-		outColorHandle.setMFloatVector( resultColor )
+		outColorHandle = block.outputValue(brickTextureNode.aOutColor)
+		outColorHandle.setMFloatVector(resultColor)
 		outColorHandle.setClean()
 
 	def postConstructor(self):
 		self.setMPSafe(True)
 
-##
-## Override declaration
+
+# #
+# # Override declaration
 #######################################################
 class brickTextureNodeOverride(omr.MPxShadingNodeOverride):
+
 	@staticmethod
 	def creator(obj):
 		return brickTextureNodeOverride(obj)
@@ -304,10 +311,11 @@ class brickTextureNodeOverride(omr.MPxShadingNodeOverride):
 		return "brickTextureNodePluginFragment"
 
 
-##
-## Plugin setup
+# #
+# # Plugin setup
 #######################################################
 sRegistrantId = "brickTexturePlugin"
+
 
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "4.5", "Any")
@@ -324,6 +332,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register override\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

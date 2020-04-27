@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import copy
 
 from PySide2 import QtGui
@@ -12,11 +11,9 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import common
 from studio_usd_pipe.core import swidgets
+from studio_usd_pipe.core import sconsole  
 from studio_usd_pipe.api import studioShow
-
 from studio_usd_pipe.resource.ui import show
-
-# reload(show)
 
 
 class Window(QtWidgets.QMainWindow):
@@ -27,26 +24,20 @@ class Window(QtWidgets.QMainWindow):
         self.mode = mode        
         self.title = 'Studio Launcher'
         self.width = 1140
-        self.height = 820
-        
-        self.icon_size = [256, 128]
-        # self.icon_size = [200, 100]
-        
-        self.version, self.label = self.set_tool_context()
-        
+        self.height = 820        
+        self.show_icon_size = [256, 128]
+        self.version, self.label = self.set_tool_context()        
         self.show_data = {}
         self.current_show = None
-        self.current_tool = None
-        
+        self.current_application = None        
         self.shows = studioShow.Show()
-        self.show_window = show.Window()
-     
+        self.show_window = show.Window()     
         self.setup_ui()
+        self.setup_console()        
         self.setup_menu()
         self.setup_toolbar()
         self.setup_icons()
         self.set_default()
-         
         
     def setup_ui(self):
         self.setObjectName('mainwindow_launcher')
@@ -95,16 +86,13 @@ class Window(QtWidgets.QMainWindow):
         self.listwidget_shows.setProperty('isWrapping', True)
         self.listwidget_shows.setResizeMode(QtWidgets.QListView.Adjust)
         self.listwidget_shows.setSpacing(0)
-        # vself.listwidget_shows.setUniformItemSizes(True)
+        self.listwidget_shows.setUniformItemSizes(True)
         self.listwidget_shows.setViewMode(QtWidgets.QListView.IconMode)
         self.listwidget_shows.setMovement(QtWidgets.QListView.Static)
-        
         self.listwidget_shows.setSelectionRectVisible(True)
-        self.listwidget_shows. setIconSize(QtCore.QSize(self.icon_size[0], self.icon_size[1]))
-                
+        self.listwidget_shows. setIconSize(QtCore.QSize(self.show_icon_size[0], self.show_icon_size[1]))
         self.horizontallayout_input.addWidget(self.listwidget_shows)
         self.listwidget_shows.itemClicked.connect(self.set_current_show)
-                
         self.splitter = QtWidgets.QSplitter(self)
         self.splitter.setObjectName('splitter')        
         self.splitter.setOrientation(QtCore.Qt.Vertical)
@@ -121,9 +109,7 @@ class Window(QtWidgets.QMainWindow):
         self.listwidget_tools.setSelectionRectVisible(True)
         self.listwidget_tools.setMovement(QtWidgets.QListView.Static)
         self.listwidget_tools.setIconSize(QtCore.QSize(64, 64))  
-        # self.listwidget_tools.setIconSize(QtCore.QSize(128, 128))                  
         self.listwidget_tools.itemDoubleClicked.connect(self.set_current_tool)
-                        
         self.splitter.addWidget(self.listwidget_tools)                
         self.textedit_output = QtWidgets.QTextEdit(self)
         self.textedit_output.setObjectName('textedit_output')
@@ -150,7 +136,12 @@ class Window(QtWidgets.QMainWindow):
 
     def setup_icons (self):
         widgets = self.findChildren(QtWidgets.QAction)
-        swidgets.set_icons(mainwindow=self, widgets=widgets)      
+        swidgets.set_icons(mainwindow=self, widgets=widgets)    
+        
+    def setup_console(self):
+        console = sconsole.Console()    
+        console.stdout(self.textedit_output).message_written.connect(
+            self.textedit_output.insertPlainText)
                 
     def set_tool_context(self):
         config = sheader.Header()
@@ -158,61 +149,72 @@ class Window(QtWidgets.QMainWindow):
         return config.version, config.pretty
     
     def create_show(self):
-        print self.size()
-        print self.splitter.sizes()
         self.show_window.show()
         
     def set_default(self):
         self.show_data = self.shows.get_preset_data()
-        sorted_shows = common.sorted_show_order(self.show_data )
+        sorted_shows = common.sorted_show_order(self.show_data)
         self.listwidget_shows.clear()
+        print '#header available shows information'        
         for each in sorted_shows:
             swidgets.add_listwidget_item(
                 self.listwidget_shows,
-                self.show_data [each]['show']['long_name'],
-                key = each,
-                icon_path = self.show_data [each]['show']['icon']
+                self.show_data [each]['current_show']['show']['long_name'],
+                key=each,
+                icon_path=self.show_data[each]['current_show']['show']['icon']
                 )
+            print 'show: '.rjust(15), self.show_data [each]['current_show']['show']['long_name']
+            print 'name: '.rjust(15), self.show_data [each]['current_show']['show']['name']
+            print 'usd: '.rjust(15), str(self.show_data [each]['current_show']['show']['USD'])
+            print 'show path: '.rjust(15), self.show_data [each]['current_show']['show']['show_path'], '\n'
 
     def set_current_show(self):
         currentitem = self.listwidget_shows.currentItem()
-        self.current_show = currentitem.statusTip()      
-        show_contents = self.show_data[self.current_show]
-        sorted_contents = common.sorted_order(show_contents)
+        self.current_show = currentitem.statusTip()    
+        application_contents = self.show_data[self.current_show]['applications']
+        sorted_contents = common.sort_dictionary(application_contents)
         self.listwidget_tools.clear()
+        show_contents = self.show_data[self.current_show]['current_show']['show']        
+        print '#header current show information'
+        print 'current show: '.rjust(15), show_contents['long_name']
+        print 'name: '.rjust(15), show_contents['name']
+        print 'usd: '.rjust(15), str(show_contents['USD'])
+        print 'show path: '.rjust(15), show_contents['show_path']
+        print '\n#header available applications information'
         for each in sorted_contents:            
-            if each=='show':
+            if each == 'show':
                 continue
-            contents = show_contents[each]
+            contents = application_contents[each]
             swidgets.add_listwidget_item(
                 self.listwidget_tools,
                 contents['version'],
-                key = each,
-                icon_path = contents['icon']
+                key=each,
+                icon_path=contents['icon']
                 )
+            print 'version: '.rjust(15), contents['version']
+            print 'source: '.rjust(15), contents['exe']
+            print 'path: '.rjust(15), contents['path'], '\n'              
             
-    def set_current_tool(self):
+    def set_current_tool(self, bin=True):
         currentitem = self.listwidget_tools.currentItem()
-        self.current_tool = currentitem.statusTip()      
-        show_contents = self.show_data[self.current_show][self.current_tool]
-        
-
-        #self.shows.launch(
-        #    self.current_show, self.current_tool, contents=show_contents)
-        
+        self.current_application = currentitem.statusTip()
+        show_contents = self.show_data[self.current_show]['current_show']['show']
+        application_contents = self.show_data[self.current_show]['applications'][self.current_application]
+        print '#header current show and applications information'
+        print 'current show: '.rjust(15), show_contents['long_name']
+        print 'name: '.rjust(15), show_contents['name']
+        print 'usd: '.rjust(15), str(show_contents['USD']), '\n'
+        print 'show path: '.rjust(15), show_contents['show_path']
+        print 'version: '.rjust(15), application_contents['version']
+        print 'source: '.rjust(15), application_contents['exe']
+        print 'path: '.rjust(15), application_contents['path']
         self.shows.launch(
-            self.current_show, self.current_tool, contents=None)        
-        # print json.dumps(show_contents, indent=4)
-        
-        
-        
-        # os.system('/venture/resource/studio/maya2018/main.sh')
-                   
-            
-        
-        # print contents.keys()
-        
-        
+            self.current_show,
+            self.current_application,
+            contents=self.show_data[self.current_show],
+            bin=False
+            )
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

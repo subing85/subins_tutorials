@@ -63,7 +63,6 @@ def create_puppet(root, inputs):
     
     return
 
-
     fk_node = create_fk(fk_skeletons, inputs['fk'])
     ik_skeletons = generic.find_ik_skeletons(scene_skeletons, inputs['ik'])
     ik_nodes = create_ik(ik_skeletons, inputs['ik'])

@@ -25,7 +25,7 @@ from studio_maya.core import generic
 
 def get_exists_items(parent):
     exist_items = []
-    treewidget= parent.invisibleRootItem()
+    treewidget = parent.invisibleRootItem()
     for index in range (treewidget.childCount()):
         path = treewidget.child(index).toolTip(1)
         exist_items.append(path.encode())

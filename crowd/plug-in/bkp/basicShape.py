@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,25 +34,25 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 ###############################################################################
-##
-## basicShape.py
-##
-## Description:
-##    Registers a new type of shape with maya called "basicShape".
-##    This shape will display rectangles, triangles, and circles using basic gl
-##
-##
-##    There are no output attributes for this shape.
-##    The following input attributes define the type of shape to draw.
-##
-##       shapeType  : 0=rectangle, 1=circle, 2=triangle
-##       radius		: circle radius
-##       height		: rectangle and triangle height
-##		 width		: rectangle and triangle width
-##
+# #
+# # basicShape.py
+# #
+# # Description:
+# #    Registers a new type of shape with maya called "basicShape".
+# #    This shape will display rectangles, triangles, and circles using basic gl
+# #
+# #
+# #    There are no output attributes for this shape.
+# #    The following input attributes define the type of shape to draw.
+# #
+# #       shapeType  : 0=rectangle, 1=circle, 2=triangle
+# #       radius		: circle radius
+# #       height		: rectangle and triangle height
+# #		 width		: rectangle and triangle width
+# #
 ################################################################################
 
 # Usage:
@@ -73,18 +73,17 @@ import maya.OpenMayaUI as OpenMayaUI
 import math
 import sys
 
-
 kPluginNodeTypeName = "spBasicShape"
 spBasicShapeNodeId = OpenMaya.MTypeId(0x87018)
 
 glRenderer = OpenMayaRender.MHardwareRenderer.theRenderer()
 glFT = glRenderer.glFunctionTable()
 
-kLeadColor 				= 18 # green
-kActiveColor			= 15 # white
-kActiveAffectedColor	= 8  # purple
-kDormantColor			= 4  # blue
-kHiliteColor			= 17 # pale blue
+kLeadColor 				 = 18  # green
+kActiveColor			 = 15  # white
+kActiveAffectedColor	 = 8  # purple
+kDormantColor			 = 4  # blue
+kHiliteColor			 = 17  # pale blue
 
 kDefaultRadius = 1.0
 kDefaultHeight = 2.0
@@ -93,9 +92,9 @@ kDefaultShapeType = 0
 
 
 #####################################################################
-##
-## Geometry class
-##
+# #
+# # Geometry class
+# #
 class basicGeom:
 	radius = kDefaultRadius
 	height = kDefaultHeight
@@ -104,10 +103,11 @@ class basicGeom:
 
 
 #####################################################################
-##
-## Shape class - defines the non-UI part of a shape node
-##
+# #
+# # Shape class - defines the non-UI part of a shape node
+# #
 class basicShape(OpenMayaMPx.MPxSurfaceShape):
+
 	def __init__(self):
 		OpenMayaMPx.MPxSurfaceShape.__init__(self)
 
@@ -119,7 +119,6 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 
 		# geometry
 		self.__myGeometry = basicGeom()
-
 
 	# override
 	def postConstructor(self):
@@ -134,7 +133,6 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 		"""
 		self.setRenderable(True)
 
-
 	# override
 	def compute(self, plug, dataBlock):
 		"""
@@ -143,7 +141,6 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 		 be done here base on the inputs.
 		"""
 		return OpenMaya.kUnknownParameter
-
 
 	# override
 	def getInternalValue(self, plug, datahandle):
@@ -165,7 +162,6 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 			return OpenMayaMPx.MPxSurfaceShape.getInternalValue(self, plug, datahandle)
 
 		return True
-
 
 	# override
 	def setInternalValue(self, plug, datahandle):
@@ -202,11 +198,9 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 		
 		return True
 
-
 	# override
 	def isBounded(self):
 		return True
-
 
 	# override
 	def boundingBox(self):
@@ -220,19 +214,18 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 		geom = self.geometry()
 
 		r = geom.radius
-		result.expand(OpenMaya.MPoint(r,r,r))
-		result.expand(OpenMaya.MPoint(-r,-r,-r))
+		result.expand(OpenMaya.MPoint(r, r, r))
+		result.expand(OpenMaya.MPoint(-r, -r, -r))
 		
-		r = geom.height/2.0
-		result.expand(OpenMaya.MPoint(r,r,r))
-		result.expand(OpenMaya.MPoint(-r,-r,-r))
+		r = geom.height / 2.0
+		result.expand(OpenMaya.MPoint(r, r, r))
+		result.expand(OpenMaya.MPoint(-r, -r, -r))
 		
-		r = geom.width/2.0
-		result.expand(OpenMaya.MPoint(r,r,r))
-		result.expand(OpenMaya.MPoint(-r,-r,-r))
+		r = geom.width / 2.0
+		result.expand(OpenMaya.MPoint(r, r, r))
+		result.expand(OpenMaya.MPoint(-r, -r, -r))
 
 		return result
-
 
 	def geometry(self):
 		"""
@@ -254,19 +247,21 @@ class basicShape(OpenMayaMPx.MPxSurfaceShape):
 		self.__myGeometry.width = plug.asDouble()
 		
 		plug.setAttribute(basicShape.aShapeType)
-		self.__myGeometry.shapeType = plug.asShort() # enum????
+		self.__myGeometry.shapeType = plug.asShort()  # enum????
 
 		return self.__myGeometry
 
+
 def printMsg(msg):
 	print msg
-	stream=OpenMaya.MStreamUtils.stdOutStream()
-	OpenMaya.MStreamUtils.writeCharBuffer(stream,msg)
+	stream = OpenMaya.MStreamUtils.stdOutStream()
+	OpenMaya.MStreamUtils.writeCharBuffer(stream, msg)
+
 
 #####################################################################
-##
-## UI class	- defines the UI part of a shape node
-##
+# #
+# # UI class	- defines the UI part of a shape node
+# #
 class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 	# private enums
 	__kDrawRectangle, __kDrawCircle, __kDrawTriangle = range(3)
@@ -274,7 +269,6 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 
 	def __init__(self):
 		OpenMayaMPx.MPxSurfaceShapeUI.__init__(self)
-
 
 	# override
 	def getDrawRequests(self, info, objectAndActiveOnly, queue):
@@ -312,7 +306,6 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 			queue.add(request)
 		return 
 
-
 	# override
 	def draw(self, request, view):
 		"""
@@ -326,7 +319,7 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 		token = request.token()
 		drawTexture = False
 
-		#set up texturing if it is shaded
+		# set up texturing if it is shaded
 		if ((token == basicShapeUI.__kDrawSmoothShaded) or
 					(token == basicShapeUI.__kDrawFlatShaded)):
 			# Set up the material
@@ -345,7 +338,7 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 			if (drawTexture):
 				material.applyTexture(view, data)
 
-		glFT.glPushAttrib( OpenMayaRender.MGL_ALL_ATTRIB_BITS )
+		glFT.glPushAttrib(OpenMayaRender.MGL_ALL_ATTRIB_BITS)
 		
 		if ((token == basicShapeUI.__kDrawSmoothShaded) or
 					(token == basicShapeUI.__kDrawFlatShaded)):			
@@ -360,51 +353,51 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 		if (geom.shapeType == basicShapeUI.__kDrawCircle):
 			# circle
 			glFT.glBegin(OpenMayaRender.MGL_POLYGON)
-			for i in range(0,360):
-				rad = (i*2*math.pi)/360;
+			for i in range(0, 360):
+				rad = (i * 2 * math.pi) / 360;
 				glFT.glNormal3f(0.0, 0.0, 1.0)
 				if (i == 360):
-					glFT.glTexCoord3f(geom.radius*math.cos(0), geom.radius*math.sin(0), 0.0)
-					glFT.glVertex3f(geom.radius*math.cos(0), geom.radius*math.sin(0), 0.0)
+					glFT.glTexCoord3f(geom.radius * math.cos(0), geom.radius * math.sin(0), 0.0)
+					glFT.glVertex3f(geom.radius * math.cos(0), geom.radius * math.sin(0), 0.0)
 				else:
-					glFT.glTexCoord3f(geom.radius*math.cos(rad), geom.radius*math.sin(rad), 0.0)
-					glFT.glVertex3f(geom.radius*math.cos(rad), geom.radius*math.sin(rad), 0.0)
+					glFT.glTexCoord3f(geom.radius * math.cos(rad), geom.radius * math.sin(rad), 0.0)
+					glFT.glVertex3f(geom.radius * math.cos(rad), geom.radius * math.sin(rad), 0.0)
 			glFT.glEnd()
 
 		elif (geom.shapeType == basicShapeUI.__kDrawRectangle):
-			#rectangle
+			# rectangle
 			glFT.glBegin(OpenMayaRender.MGL_QUADS)
 
-			glFT.glTexCoord2f(-1*(geom.width/2), -1*(geom.height/2))
-			glFT.glVertex3f(-1*(geom.width/2), -1*(geom.height/2), 0.0)
+			glFT.glTexCoord2f(-1 * (geom.width / 2), -1 * (geom.height / 2))
+			glFT.glVertex3f(-1 * (geom.width / 2), -1 * (geom.height / 2), 0.0)
 			glFT.glNormal3f(0, 0, 1.0)
 			
-			glFT.glTexCoord2f(-1*(geom.width/2), (geom.height/2))
-			glFT.glVertex3f(-1*(geom.width/2), (geom.height/2), 0.0)
+			glFT.glTexCoord2f(-1 * (geom.width / 2), (geom.height / 2))
+			glFT.glVertex3f(-1 * (geom.width / 2), (geom.height / 2), 0.0)
 			glFT.glNormal3f(0, 0, 1.0)
 			
-			glFT.glTexCoord2f((geom.width/2), (geom.height/2))
-			glFT.glVertex3f((geom.width/2), (geom.height/2), 0.0)
+			glFT.glTexCoord2f((geom.width / 2), (geom.height / 2))
+			glFT.glVertex3f((geom.width / 2), (geom.height / 2), 0.0)
 			glFT.glNormal3f(0, 0, 1.0)
 			
-			glFT.glTexCoord2f((geom.width/2), -1*(geom.height/2))
-			glFT.glVertex3f((geom.width/2), -1*(geom.height/2), 0.0)
+			glFT.glTexCoord2f((geom.width / 2), -1 * (geom.height / 2))
+			glFT.glVertex3f((geom.width / 2), -1 * (geom.height / 2), 0.0)
 			glFT.glNormal3f(0, 0, 1.0)
 			glFT.glEnd()
 		
 		else:
 			# triangle
 			glFT.glBegin(OpenMayaRender.MGL_TRIANGLES)
-			glFT.glTexCoord2f(-1*(geom.width/2), -1*(geom.height/2))
-			glFT.glVertex3f(-1*(geom.width/2), -1*(geom.height/2), 0.0)
+			glFT.glTexCoord2f(-1 * (geom.width / 2), -1 * (geom.height / 2))
+			glFT.glVertex3f(-1 * (geom.width / 2), -1 * (geom.height / 2), 0.0)
 			glFT.glNormal3f(0.0, 0.0, 1.0)
 			
-			glFT.glTexCoord2f(0.0, (geom.height/2))
-			glFT.glVertex3f(0.0, (geom.height/2), 0.0)
+			glFT.glTexCoord2f(0.0, (geom.height / 2))
+			glFT.glVertex3f(0.0, (geom.height / 2), 0.0)
 			glFT.glNormal3f(0.0, 0.0, 1.0)
 			
-			glFT.glTexCoord2f((geom.width/2), -1*(geom.height/2))
-			glFT.glVertex3f((geom.width/2), -1*(geom.height/2), 0.0)
+			glFT.glTexCoord2f((geom.width / 2), -1 * (geom.height / 2))
+			glFT.glVertex3f((geom.width / 2), -1 * (geom.height / 2), 0.0)
 			glFT.glNormal3f(0.0, 0.0, 1.0)
 			glFT.glEnd()
 			
@@ -416,8 +409,6 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 				glFT.glDisable(OpenMayaRender.MGL_TEXTURE_2D)
 		
 		glFT.glPopAttrib()
-
-
 
 	# override
 	def select(self, selectInfo, selectionList, worldSpaceSelectPts):
@@ -433,7 +424,6 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 		selectInfo.addSelection(item, xformedPt, selectionList,
 								 worldSpaceSelectPts, priorityMask, False)
 		return True
-
 
 	def getDrawRequestsWireframe(self, request, info):
 	
@@ -458,12 +448,10 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 		elif (displayStatus == OpenMayaUI.M3dView.kHilite):
 				request.setColor(kHiliteColor, activeColorTable)
 
-
-
 	def getDrawRequestsShaded(self, request, info, queue, data):
 		# Need to get the material info
-		path = info.multiPath()	# path to your dag object 
-		view = info.view() 		# view to draw to
+		path = info.multiPath()  # path to your dag object 
+		view = info.view()  # view to draw to
 		material = OpenMayaMPx.MPxSurfaceShapeUI.material(self, path)
 		usingDefaultMat = view.usingDefaultMaterial()
 		if usingDefaultMat: 
@@ -484,10 +472,10 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 
 		request.setMaterial(material)
 
-		#materialTransparent = False
-		#material.getHasTransparency(materialTransparent)
-		#if (materialTransparent):
-		#	request.setIsTransparent(True)
+		# materialTransparent = False
+		# material.getHasTransparency(materialTransparent)
+		# if (materialTransparent):
+		# 	request.setIsTransparent(True)
 
 		# create a draw request for wireframe on shaded if necessary.
 		if ((displayStatus == OpenMayaUI.M3dView.kActive) or
@@ -502,12 +490,13 @@ class basicShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 
 #####################################################################
 
+
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( basicShape() )
+	return OpenMayaMPx.asMPxPtr(basicShape())
 
 
 def uiCreator():
-	return OpenMayaMPx.asMPxPtr( basicShapeUI() )
+	return OpenMayaMPx.asMPxPtr(basicShapeUI())
 
 
 def nodeInitializer():
@@ -542,14 +531,15 @@ def nodeInitializer():
 	setOptions(numericAttr)
 	basicShape.addAttribute(basicShape.aWidth)
 
+
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject, "Autodesk", "8.5", "Any")
 	try:
-		mplugin.registerShape( kPluginNodeTypeName, spBasicShapeNodeId,
-								nodeCreator, nodeInitializer, uiCreator )
+		mplugin.registerShape(kPluginNodeTypeName, spBasicShapeNodeId,
+								nodeCreator, nodeInitializer, uiCreator)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise
 
 
@@ -557,7 +547,7 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( spBasicShapeNodeId )
+		mplugin.deregisterNode(spBasicShapeNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to deregister node: %s" % kPluginNodeTypeName)
 		raise

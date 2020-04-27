@@ -188,7 +188,7 @@ class Susd(object):
                 for x in range(len(uv_d['u_array'])):
                     uv_points.append((uv_d['u_array'][x], uv_d['u_array'][x]))
                 current_set = 'st'
-                if index>0:
+                if index > 0:
                     current_set = uv_set
                 uv_data = [uv_points, uv_d['uv_ids']]
                 self.make_uv_points_ids(mesh_define, current_set, uv_data)
@@ -196,7 +196,6 @@ class Susd(object):
     
     def create_preview_surface(self, data, stage=None):
         pass
-    
            
     def create_surface(self, root, data, stage=None):
         if not stage:
@@ -214,7 +213,7 @@ class Susd(object):
         look_path = Sdf.Path('/{}/Looks'.format(root))                     
         UsdGeom.Scope.Define(stage, look_path)
         materials = self.sort_dictionary(data)        
-        for material in materials: # make materials
+        for material in materials:  # make materials
             contents = data[material]
             material_path = look_path.AppendPath(material)    
             UsdShade.Material.Define(stage, material_path)
@@ -230,7 +229,7 @@ class Susd(object):
                         parameter_contents['type'],
                         parameter_contents['value']
                         )
-                    if not current_type or current_value=='null':
+                    if not current_type or current_value == 'null':
                         print '#need to update attribute configure'
                         print '\tmaterial', material, node, parameter
                         print '\t', parameter, parameter_contents['type'], parameter_contents['value']
@@ -246,8 +245,8 @@ class Susd(object):
                     continue               
                 for parameter, connection_contents in node_contents['connections'].items():
                     source_attribute, source_node = connection_contents['value'].split('@')
-                    shader_path = look_path.AppendPath('%s/%s'%(material, node))
-                    source_path = look_path.AppendPath('%s/%s'%(material, source_node))
+                    shader_path = look_path.AppendPath('%s/%s' % (material, node))
+                    source_path = look_path.AppendPath('%s/%s' % (material, source_node))
                     shader_define = UsdShade.Shader.Define(stage, shader_path)
                     source_define = UsdShade.Shader.Define(stage, source_path)
                     current_type, current_value = self.get_prameter_values(
@@ -268,7 +267,7 @@ class Susd(object):
             # material to shader connection                        
             shader = data[material]['surface']['shader']
             attribute = data[material]['surface']['attribute']    
-            shader_path = look_path.AppendPath('%s/%s'%(material, shader))     
+            shader_path = look_path.AppendPath('%s/%s' % (material, shader))     
             material_define = UsdShade.Material.Define(stage, material_path)
             shader_define = UsdShade.Shader.Define(stage, shader_path)
             shader_output = material_define.CreateOutput('ri:surface', Sdf.ValueTypeNames.Token)
@@ -343,28 +342,28 @@ class Susd(object):
     def get_prameter_values(self, attribute_type, attribute_value):
         current_type = None
         current_value = 'null'           
-        if attribute_type=='StringAttr':
+        if attribute_type == 'StringAttr':
             current_type = Sdf.ValueTypeNames.String
             if attribute_value:
                 if os.path.isabs(attribute_value):
                     current_type = Sdf.ValueTypeNames.Asset
                 current_value = attribute_value 
-        if  attribute_type=='IntAttr':
+        if  attribute_type == 'IntAttr':
             current_type = Sdf.ValueTypeNames.Int            
             if isinstance(attribute_value, bool):
                 current_value = int(attribute_value)
             if isinstance(attribute_value, int):
                 current_value = int(attribute_value)
                          
-        if  attribute_type=='FloatAttr':
+        if  attribute_type == 'FloatAttr':
             current_type = Sdf.ValueTypeNames.Float
             if attribute_value:
                 current_value = attribute_value
-        if attribute_type=='2FloatAttr':
+        if attribute_type == '2FloatAttr':
             current_type = Sdf.ValueTypeNames.Float2
             if attribute_value:
-                current_value =  Gf.Vec2f(attribute_value)     
-        if attribute_type=='3FloatAttr':
+                current_value = Gf.Vec2f(attribute_value)     
+        if attribute_type == '3FloatAttr':
             current_type = Sdf.ValueTypeNames.Color3f
             if attribute_value:
                 current_value = Gf.Vec3f(attribute_value)
@@ -379,8 +378,6 @@ class Susd(object):
                 dictionary[contents]['order'], []).append(contents)
         order = sum(sorted_data.values(), [])
         return order 
-    
-    
     
     def create_sublayer(self, components, stage=None):        
         if not stage:
@@ -414,12 +411,10 @@ class Susd(object):
             prim.SetPayload(abc)
         stage.GetRootLayer().Save()  
     
-    
     def create_variant_reference(self, components, stage=None):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
-            
         
         components = ["/venture/shows/batman/assets/batman/model/0.0.0/batman.usd",
                         "/venture/shows/batman/assets/batman/model/1.0.0/batman.usd"]
@@ -451,29 +446,15 @@ class Susd(object):
             referencs = variant_prim.GetReferences()
             referencs.AddReference(assetPath=components[1], primPath=variant_path)
         
-        
-        
-        
-        
         stage.GetRootLayer().Save()  
         
-        
-        
-        
-        
         # print stage.GetRootLayer().ExportToString()
-
-
-
-
-    
     
     def create_inherits(self):
         pass
     
     def create_spe(self):
         pass    
-    
     
     def example(self):
     
@@ -482,23 +463,23 @@ class Susd(object):
             "2.0.1": {
                 "usd": [
                     "/venture/shows/batman/assets/batman/model/2.0.1/batman.usd"
-                ], 
+                ],
                 "location": "/venture/shows/batman/assets/batman/model/2.0.1"
             }
-        }, 
+        },
         "uv": {
             "0.0.0": {
                 "usd": [
                     "/venture/shows/batman/assets/batman/uv/0.0.0/batman.usd"
-                ], 
+                ],
                 "location": "/venture/shows/batman/assets/batman/uv/0.0.0"
             }
-        }, 
+        },
         "surface": {
             "2.0.1": {
                 "usd": [
                     "/venture/shows/batman/assets/batman/surface/2.0.1/batman.usd"
-                ], 
+                ],
                 "location": "/venture/shows/batman/assets/batman/surface/2.0.1"
             }
         }

@@ -71,7 +71,7 @@ class DataBase(object):
             dbs = DataBase('asset')
             dbs.create(kwargs)            
         '''
-        #kwargs['user'] = {
+        # kwargs['user'] = {
         #    'order': len(kwargs),
         #    'value': getpass.getuser()
         #    }

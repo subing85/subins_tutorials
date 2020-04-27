@@ -537,7 +537,6 @@ class Window(QtWidgets.QWidget):
             
             return                     
         
-        
         else:  
             valid, message = self.pub.validate(repair=True, **input_data)
             if not valid:

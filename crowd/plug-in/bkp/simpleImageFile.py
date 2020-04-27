@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,26 +34,26 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Description: 
-#	Simple Image File plugin. This plugin registers a new image
-#	file format against file extension ".moo". Loading any ".moo"
-#	image file will produce a procedurally generated colour 
-#	spectrum including values outside 0 to 1.
+# 	Simple Image File plugin. This plugin registers a new image
+# 	file format against file extension ".moo". Loading any ".moo"
+# 	image file will produce a procedurally generated colour 
+# 	spectrum including values outside 0 to 1.
 #
 # Usage:
-#	Run the script:
+# 	Run the script:
 #
-#	import maya.cmds
-#	maya.cmds.loadPlugin("simpleImageFile.py")
-#	# Create a poly plane
-#	# Assign a shader to it
-#	# Assign a file texture to the shader
+# 	import maya.cmds
+# 	maya.cmds.loadPlugin("simpleImageFile.py")
+# 	# Create a poly plane
+# 	# Assign a shader to it
+# 	# Assign a file texture to the shader
 # 	# Make a copy of a project/images file and call it test.moo
-#	# Assign the test.moo image to the file texture
-#	# Turn on hardware texturing
+# 	# Assign the test.moo image to the file texture
+# 	# Turn on hardware texturing
 
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
@@ -75,24 +75,24 @@ class SimpleImageFile(OpenMayaMPx.MPxImageFile):
 	def __init__(self):
 		OpenMayaMPx.MPxImageFile.__init__(self)
 	
-	#	
+	# 	
 	# DESCRIPTION:
-	#	Configure the image characteristics. A real image file
-	#	format plugin would extract these values from the image
-	#	file header.
+	# 	Configure the image characteristics. A real image file
+	# 	format plugin would extract these values from the image
+	# 	file header.
 	#
 	#################################################################
-	def open( self, pathname, info ):
+	def open(self, pathname, info):
 		
 		if info is not None:
-			info.width( 512 )
-			info.height( 512 )
-			info.channels( 3 )
-			info.pixelType( OpenMaya.MImage.kFloat )
+			info.width(512)
+			info.height(512)
+			info.channels(3)
+			info.pixelType(OpenMaya.MImage.kFloat)
 
 			# Only necessary if your format defines a native
 			# hardware texture loader
-			info.hardwareType( OpenMaya.MImageFileInfo.kHwTexture2D)		
+			info.hardwareType(OpenMaya.MImageFileInfo.kHwTexture2D)		
 		
 	#
 	# DESCRIPTION:
@@ -101,15 +101,15 @@ class SimpleImageFile(OpenMayaMPx.MPxImageFile):
 	# file here.
 	#
 	#################################################################
-	def load( self, image, idx ):
+	def load(self, image, idx):
 		width = 512
 		height = 512
 	
 		# Create a floating point image and fill it with
 		# a pretty rainbow test image.
-		#	
-		image.create( width, height, 3, OpenMaya.MImage.kFloat )
-		self.populateTestImage( image.floatPixels(), width, height )		
+		# 	
+		image.create(width, height, 3, OpenMaya.MImage.kFloat)
+		self.populateTestImage(image.floatPixels(), width, height)		
 		
 	#
 	# DESCRIPTION:
@@ -118,7 +118,7 @@ class SimpleImageFile(OpenMayaMPx.MPxImageFile):
 	# image file here.
 	#
 	#################################################################
-	def glLoad( self, info, imageNumber ):
+	def glLoad(self, info, imageNumber):
 		w = info.width()
 		h = info.height()
 
@@ -126,57 +126,58 @@ class SimpleImageFile(OpenMayaMPx.MPxImageFile):
 		# a pretty rainbow test image.
 		#
 		image = OpenMaya.MImage()
-		image.create( w, h, 3, OpenMaya.MImage.kFloat )
-		self.populateTestImage( image.floatPixels(), w, h )
+		image.create(w, h, 3, OpenMaya.MImage.kFloat)
+		self.populateTestImage(image.floatPixels(), w, h)
 	
 		# Now load it into OpenGL as a floating point image
-		glFT.glTexImage2D( OpenMayaRender.MGL_TEXTURE_2D, 0, \
+		glFT.glTexImage2D(OpenMayaRender.MGL_TEXTURE_2D, 0, \
 			OpenMayaRender.MGL_RGB, w, h, 0, OpenMayaRender.MGL_RGB, \
-			OpenMayaRender.MGL_FLOAT, pixelsPtr )
-
+			OpenMayaRender.MGL_FLOAT, pixelsPtr)
 
 	#
 	# DESCRIPTION:
 	# Helper method to populate our procedural test image
 	#
 	#################################################################
-	def populateTestImage( self, pixels, w, h ):
+	def populateTestImage(self, pixels, w, h):
 		#
 		rainbowScale = 4.0
 		index = 0
-		for y in range( 0, h ):
+		for y in range(0, h):
 			g = rainbowScale * y / float(h)			
-			for x in range( 0, w ):
+			for x in range(0, w):
 				r = rainbowScale * x / float(w)
-				OpenMaya.MScriptUtil.setFloatArray( pixels, index, r )
-				index+=1
-				OpenMaya.MScriptUtil.setFloatArray( pixels, index, g )
-				index+=1
+				OpenMaya.MScriptUtil.setFloatArray(pixels, index, r)
+				index += 1
+				OpenMaya.MScriptUtil.setFloatArray(pixels, index, g)
+				index += 1
 				b = rainbowScale * 1.5 - r - g
-				OpenMaya.MScriptUtil.setFloatArray( pixels, index, b )
-				index+=1
+				OpenMaya.MScriptUtil.setFloatArray(pixels, index, b)
+				index += 1
+
 				
 # creator
 def creator():
-	return OpenMayaMPx.asMPxPtr( SimpleImageFile() )	
+	return OpenMayaMPx.asMPxPtr(SimpleImageFile())	
 
 
 # initialize plugin
-def initializePlugin( mObject ):
+def initializePlugin(mObject):
 	mPlugin = OpenMayaMPx.MFnPlugin(mObject, "Autodesk", "1.0", "Any")	
 	#
 	extensions = ["moo"]	
 	try:
-		mPlugin.registerImageFile( kImagePluginName, creator, extensions )
+		mPlugin.registerImageFile(kImagePluginName, creator, extensions)
 	except:
-		sys.stderr.write( "Failed to register image plugin: %s" % kImagePluginName )
+		sys.stderr.write("Failed to register image plugin: %s" % kImagePluginName)
 		raise
+
 		
 # uninitialize plugin
-def uninitializePlugin( mObject ):
-	mPlugin = OpenMayaMPx.MFnPlugin( mObject )
+def uninitializePlugin(mObject):
+	mPlugin = OpenMayaMPx.MFnPlugin(mObject)
 	try:
-		mPlugin.deregisterImageFile( kImagePluginName )
+		mPlugin.deregisterImageFile(kImagePluginName)
 	except:
-		sys.stderr.write( "Failed to deregister image: %s" % kImagePluginName )
+		sys.stderr.write("Failed to deregister image: %s" % kImagePluginName)
 		raise

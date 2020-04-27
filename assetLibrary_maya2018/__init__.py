@@ -3,6 +3,7 @@
 import sys
 from PySide2 import QtWidgets
 
+
 def show_window(standalone=None):
     from assetLibrary_maya2018.resources.ui import main
     my_window = main.MainWindow(standalone=standalone)

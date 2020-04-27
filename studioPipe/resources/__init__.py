@@ -29,6 +29,7 @@ def getInputPath(module=None):
 def getIconPath():
     return os.path.join(CURRENT_PATH, 'icons')
 
+
 def getImageFormats():
     formats = '(*.jpg *.tga *.png)'
     return formats 
@@ -39,10 +40,10 @@ def getPreferencePath():
 
 
 def getWorkspacePath():
-    if platform.system()=='Windows':
+    if platform.system() == 'Windows':
         return os.path.abspath (
-            os.getenv('USERPROFILE') + '/Documents/%s'%MODULE).replace ('\\', '/')
-    if platform.system()=='Linux':
+            os.getenv('USERPROFILE') + '/Documents/%s' % MODULE).replace ('\\', '/')
+    if platform.system() == 'Linux':
         return os.path.join(os.getenv('HOME'), 'Documents', MODULE)
     
 

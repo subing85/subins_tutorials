@@ -13,7 +13,6 @@ Description
     None.  
 '''
 
-
 import sys
 
 from PySide2 import QtCore

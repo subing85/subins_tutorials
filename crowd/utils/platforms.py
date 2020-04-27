@@ -34,6 +34,7 @@ def has_valid():
         return result
     return result
 
+
 def had_tool_valid():
     tool_oss, tool_app, tool_ver, tool_py = config.get_conig()
     python = platform.python_version()
@@ -43,6 +44,7 @@ def had_tool_valid():
             False: 'Only support \"Python %s.*.*\"' % (tool_py.split('.')[0])
         }
     return result     
+
 
 def get_maya_platform():
     from maya import cmds

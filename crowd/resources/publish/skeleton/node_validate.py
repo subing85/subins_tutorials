@@ -9,7 +9,6 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'To check is it joints in the scene?'
 VERSION = '0.0.1'
 
-
 from crowd.core import skeleton
 
 

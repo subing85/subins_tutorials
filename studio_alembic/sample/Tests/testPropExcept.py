@@ -44,6 +44,7 @@ index or name is passed into getProperty on either an IObject or an OObject.
 
 testList = []
 
+
 def testWrite():
     """
     Tests exception raising for invalid property indices and names
@@ -70,7 +71,9 @@ def testWrite():
         found = False
     assert found == False
 
+
 testList.append(('testWrite', testWrite))
+
 
 def testRead():
     """
@@ -94,6 +97,7 @@ def testRead():
     except IndexError, e:
         found = False
     assert found == False
+
 
 testList.append(('testRead', testRead))
 

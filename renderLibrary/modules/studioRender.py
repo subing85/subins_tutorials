@@ -45,10 +45,8 @@ class Render(studioMaya.Maya):
         result = rw.has_valid()
         return result
     
-    
     def get_render_data(self):
         pass
-    
     
     def get_component_data(self):
         component_data = {}
@@ -84,11 +82,6 @@ class Render(studioMaya.Maya):
             attribute_data.setdefault(
                 each_attribute.longName().encode(), current_value)
         return attribute_data
-    
-
-    
-    
-          
 
     def create(self, assign, selected, fake=False):
         rw = readWrite.ReadWrite(t='shader_net')

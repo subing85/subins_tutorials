@@ -58,61 +58,76 @@ TraitsComparison = {}
 # -----------------------------------------------------------------
 # Comparison functions for various data types
 EPS = 0.01 
+
+
 def compareExact (a0, a1):
     return a0 == a1
+
 
 def compareEPS (a0, a1):
     return abs (a0 - a1) <= EPS
 
+
 def compareVec3Exact (a0, a1):
     return a0[0] == a1[0] and a0[1] == a1[1] and a0[2] == a1[2]
+
 
 def compareVec4Exact (a0, a1):
     return a0[0] == a1[0] and a0[1] == a1[1] and a0[2] == a1[2] and \
            a0[3] == a1[3]
 
+
 def compareVecEPS (a0, a1):
     return a0.equalWithRelError (a1, EPS)
+
 
 def compareBoxExact (a0, a1):
     return compareExact (a0.min(), a1.min()) and \
            compareExact (a0.max(), a1.max())
 
+
 def compareBoxEPS (a0, a1):
     return compareVecEPS (a0.min(), a1.min()) and \
            compareVecEPS (a0.max(), a1.max())
+
 
 def compareQuatEPS (a0, a1):
     return compareEPS (a0.angle(), a1.angle()) and \
            compareVecEPS (a0.axis(), a1.axis())
 
+
 def compareC3EPS (a0, a1):
     return compareEPS (a0[0], a1[0]) and compareEPS (a0[1], a1[1]) and \
            compareEPS (a0[2], a1[2])
+
 
 def compareC4EPS (a0, a1):
     return compareEPS (a0[0], a1[0]) and compareEPS (a0[1], a1[1]) and \
            compareEPS (a0[2], a1[2]) and compareEPS (a0[3], a1[3])
 
 
-def WRITES( *iArgs ):
+def WRITES(*iArgs):
     iTraits = iArgs[0];
     name = iTraits.__name__
     ScalarTraitsData[name] = iArgs
 
-def WRITESA( iTraits, *iArgs ):
-    name = iTraits.__name__
-    SmallArrayTraitsData[name] = iTraits, createArray( iTraits.arrayType, iArgs )
 
-def createArray( iArray, iList ):
-    a = iArray( len( iList ) )
-    for i in range( len( iList ) ):
+def WRITESA(iTraits, *iArgs):
+    name = iTraits.__name__
+    SmallArrayTraitsData[name] = iTraits, createArray(iTraits.arrayType, iArgs)
+
+
+def createArray(iArray, iList):
+    a = iArray(len(iList))
+    for i in range(len(iList)):
         a[i] = iList[i]
     return a
 
-def WRITEA( iTraits, *iArgs ):
+
+def WRITEA(iTraits, *iArgs):
     name = iTraits.__name__
-    ArrayTraitsData[name] = iTraits, createArray( iTraits.arrayType, iArgs )
+    ArrayTraitsData[name] = iTraits, createArray(iTraits.arrayType, iArgs)
+
 
 def buildTestScalarData():
     # Scalar DataType
@@ -121,18 +136,17 @@ def buildTestScalarData():
     # extent 1
     WRITES (BooleanTPTraits, 0, 1, 0)
     WRITES (Uint8TPTraits, 3, 4)
-    WRITES (Int8TPTraits, -5 )
-    WRITES (Uint16TPTraits, 6 )
-    WRITES (Int16TPTraits, -7, 8 )
-    WRITES (Uint32TPTraits, 9, 10, 11, 12 )
-    WRITES (Int32TPTraits, -13, 14, -15 )
-    WRITES (Uint64TPTraits, 16 )
+    WRITES (Int8TPTraits, -5)
+    WRITES (Uint16TPTraits, 6)
+    WRITES (Int16TPTraits, -7, 8)
+    WRITES (Uint32TPTraits, 9, 10, 11, 12)
+    WRITES (Int32TPTraits, -13, 14, -15)
+    WRITES (Uint64TPTraits, 16)
     WRITES (Float16TPTraits, 1.234, 6.789)
     WRITES (Float32TPTraits, -1234.5678)
     WRITES (Float64TPTraits, 1234.5678)
     WRITES (StringTPTraits, "abc", "def")
-    WRITES (WstringTPTraits, u"asdf" )
-
+    WRITES (WstringTPTraits, u"asdf")
 
     # Compound Types
     # extent 2
@@ -177,10 +191,10 @@ def buildTestScalarData():
 
     # extent 4
     # color4
-    WRITES (C4cTPTraits, Color4c (1, 2, 3, 4) )
+    WRITES (C4cTPTraits, Color4c (1, 2, 3, 4))
     # TODO: Color4h types are not wrapped. C4f is used instead.
-    WRITES (C4hTPTraits, Color4f (5.6, 7.8, 1.2, 3.4) )
-    WRITES (C4fTPTraits, Color4f (1.111, 2.222, 3.333, 4.444) )
+    WRITES (C4hTPTraits, Color4f (5.6, 7.8, 1.2, 3.4))
+    WRITES (C4fTPTraits, Color4f (1.111, 2.222, 3.333, 4.444))
 
     # box2
     WRITES (Box2sTPTraits, Box2s (V2s (0, 0), V2s (1, 1)));
@@ -201,13 +215,14 @@ def buildTestScalarData():
 
     # extent 9
     # matrix33
-    WRITES (M33fTPTraits, M33f(1)*2)
-    WRITES (M33dTPTraits, M33d(1)*3)
+    WRITES (M33fTPTraits, M33f(1) * 2)
+    WRITES (M33dTPTraits, M33d(1) * 3)
 
     # extent 16
     # matrix44
-    WRITES (M44fTPTraits, M44f(1)*4)
-    WRITES (M44dTPTraits, M44d(1)*5)
+    WRITES (M44fTPTraits, M44f(1) * 4)
+    WRITES (M44dTPTraits, M44d(1) * 5)
+
     
 def buildTestSmallArrayData():
     # Scalar DataType
@@ -228,6 +243,7 @@ def buildTestSmallArrayData():
     WRITESA (Float64TPTraits, 1.2345, 2.3456, 3.4567, 4.5678)
     WRITESA (StringTPTraits, "a", "b", "c", "d", "e")
     WRITESA (WstringTPTraits, u"A", u"B", u"C", u"D", u"E")
+
 
 def buildTestArrayData():
     # POD types
@@ -289,10 +305,10 @@ def buildTestArrayData():
 
     # extent 4
     # color4
-    WRITEA (C4cTPTraits, C4c (1, 2, 3, 4) )
+    WRITEA (C4cTPTraits, C4c (1, 2, 3, 4))
     # TODO: C4h types are not wrapped. C4f is used instead.
-    WRITEA (C4hTPTraits, C4f (5.6, 7.8, 1.2, 3.4) )
-    WRITEA (C4fTPTraits, C4f (1.111, 2.222, 3.333, 4.444) )
+    WRITEA (C4hTPTraits, C4f (5.6, 7.8, 1.2, 3.4))
+    WRITEA (C4fTPTraits, C4f (1.111, 2.222, 3.333, 4.444))
 
     # box2
     WRITEA (Box2sTPTraits, Box2s (V2s (0, 0), V2s (1, 1)));
@@ -313,13 +329,14 @@ def buildTestArrayData():
 
     # extent 9
     # matrix33
-    WRITEA (M33fTPTraits, M33f (1)*2, M33f (0.1))
-    WRITEA (M33dTPTraits, M33d (1)*3, M33d (3.4))
+    WRITEA (M33fTPTraits, M33f (1) * 2, M33f (0.1))
+    WRITEA (M33dTPTraits, M33d (1) * 3, M33d (3.4))
 
     # extent 16
     # matrix44
-    WRITEA (M44fTPTraits, M44f (1)*4, M44f (1.2))
-    WRITEA (M44dTPTraits, M44d (1)*5, M44d (5.6))
+    WRITEA (M44fTPTraits, M44f (1) * 4, M44f (1.2))
+    WRITEA (M44dTPTraits, M44d (1) * 5, M44d (5.6))
+
 
 def buildComparisonMeasure():
     # Assign the property name and proper comparison function
@@ -387,9 +404,9 @@ def buildComparisonMeasure():
 # -------------------------------------------------------------------------
 # Main loop
 
+
 buildTestScalarData()
 buildTestSmallArrayData()
 buildTestArrayData()
 buildComparisonMeasure()
-
 

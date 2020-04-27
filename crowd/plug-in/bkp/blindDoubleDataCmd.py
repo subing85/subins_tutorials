@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 # import maya.cmds
 # maya.cmds.loadPlugin("blindDoubleDataCmd.py")
@@ -49,29 +49,32 @@ kPluginName = "spBlindDoubleData"
 kPluginDataId = OpenMaya.MTypeId(0x87011)
 
 #
-fValueDictionary={}
+fValueDictionary = {}
+
 
 # testing function
 def printMsg(msg):
 	print msg
-	stream=OpenMaya.MStreamUtils.stdOutStream()
-	OpenMaya.MStreamUtils.writeCharBuffer(stream,msg)
+	stream = OpenMaya.MStreamUtils.stdOutStream()
+	OpenMaya.MStreamUtils.writeCharBuffer(stream, msg)
+
 
 # data
 class blindDoubleData(OpenMayaMPx.MPxData):
+
 	def __init__(self):
 		OpenMayaMPx.MPxData.__init__(self)
 		self.__fValue = 0.0
-		fValueDictionary[OpenMayaMPx.asHashable(self)]=self.__fValue
+		fValueDictionary[OpenMayaMPx.asHashable(self)] = self.__fValue
 
 	def readASCII(self, args, lastParsedElement):
 		try:
 			if args.length() > 0:
 				parsedIndex = OpenMaya.MScriptUtil.getUint(lastParsedElement)
-				self.__fValue = args.asDouble( parsedIndex )
+				self.__fValue = args.asDouble(parsedIndex)
 				parsedIndex += 1
-				OpenMaya.MScriptUtil.setUint(lastParsedElement,parsedIndex)
-				fValueDictionary[OpenMayaMPx.asHashable(self)]=self.__fValue
+				OpenMaya.MScriptUtil.setUint(lastParsedElement, parsedIndex)
+				fValueDictionary[OpenMayaMPx.asHashable(self)] = self.__fValue
 		except:
 			sys.stderr.write("Failed to read ASCII value.")
 			raise
@@ -79,7 +82,7 @@ class blindDoubleData(OpenMayaMPx.MPxData):
 	def readBinary(self, inStream, length):
 		readParam = OpenMaya.MScriptUtil(0.0)
 		readPtr = readParam.asDoublePtr()
-		OpenMaya.MStreamUtils.readDouble(inStream, readPtr, True )
+		OpenMaya.MStreamUtils.readDouble(inStream, readPtr, True)
 		self.__fValue = readParam.getDouble(readPtr)
 
 	def writeASCII(self, out):
@@ -113,8 +116,10 @@ class blindDoubleData(OpenMayaMPx.MPxData):
 	def setValue(self, newVal):
 		self.__fValue = newVal
 
+
 # command
 class blindDoubleDataCmd(OpenMayaMPx.MPxCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxCommand.__init__(self)
 		self.__iter = None
@@ -126,7 +131,8 @@ class blindDoubleDataCmd(OpenMayaMPx.MPxCommand):
 		self.redoIt()
 
 	def redoIt(self):
-		dependNode = OpenMaya.MObject() # Selected dependency node
+		dependNode = OpenMaya.MObject()  # Selected dependency node
+
 		# show message and advance iterator
 		def error(msg):
 			sys.stderr.write(err)
@@ -199,7 +205,6 @@ class blindDoubleDataCmd(OpenMayaMPx.MPxCommand):
 	def isUndoable(self):
 		return True
 
-
 ########################################################################
 
 
@@ -207,8 +212,10 @@ class blindDoubleDataCmd(OpenMayaMPx.MPxCommand):
 def cmdCreator():
 	return OpenMayaMPx.asMPxPtr(blindDoubleDataCmd())
 
+
 def dataCreator():
 	return OpenMayaMPx.asMPxPtr(blindDoubleData())
+
 
 # Initialize the script plug-in
 def initializePlugin(mobject):

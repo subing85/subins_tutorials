@@ -17,9 +17,8 @@ import os
 import sys
 sys.path.append('/venture/subins_tutorials')
 
-
 from PySide import QtGui
-#from studioPipe.core import input
+# from studioPipe.core import input
 import input
 
 from pprint import pprint

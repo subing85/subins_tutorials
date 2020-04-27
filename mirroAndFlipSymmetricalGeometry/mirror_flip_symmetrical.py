@@ -12,7 +12,7 @@ Maya version    : Maya 2016
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
-#Input object to M-Dag path
+# Input object to M-Dag path
 baseMSelectionList = om.MSelectionList()
 baseMSelectionList.add('pSphereShape1')
 baseGeoDagPath = baseMSelectionList.getDagPath(0)
@@ -21,14 +21,14 @@ shapeMSelectionList = om.MSelectionList()
 shapeMSelectionList.add('pSphereShape2')
 shapeGeoDagPath = shapeMSelectionList.getDagPath(0)
 
-#Get Vertex Positions
+# Get Vertex Positions
 baseMfnMesh = om.MFnMesh(baseGeoDagPath)
 baseVertexList = baseMfnMesh.getPoints(om.MSpace.kObject)
 
 shapeMfnMesh = om.MFnMesh(shapeGeoDagPath)
 shapeVertexList = shapeMfnMesh.getPoints(om.MSpace.kObject)
 
-#Collect Moved vertexs
+# Collect Moved vertexs
 movedVertexs = []
 movedBaseVertexList = []
 movedShapeVertexList = []
@@ -38,22 +38,22 @@ for index in range(len(baseVertexList)) :
     baseVertexPosition = baseVertexList[index]
     sahpeVertexPosition = shapeVertexList[index]
     
-    if baseVertexPosition!=sahpeVertexPosition :        
-        movedVertexs.append('pSphereShape2.vtx[%i]'% index)
+    if baseVertexPosition != sahpeVertexPosition :        
+        movedVertexs.append('pSphereShape2.vtx[%i]' % index)
         
         movedBaseVertexList.append(baseVertexPosition) 
         movedShapeVertexList.append(sahpeVertexPosition) 
         movedVertexList.append(index)        
-#cmds.select(movedVertexs, r=1)
+# cmds.select(movedVertexs, r=1)
 
-#Set to Mirror Filp and Revert Shapes
+# Set to Mirror Filp and Revert Shapes
 mitMeshPolygon = om.MItMeshPolygon(baseGeoDagPath)
-axis = [-1,1,1]
+axis = [-1, 1, 1]
 oppVertexList = [] 
 
 for index in range(len(movedBaseVertexList)) :
     xyz = movedBaseVertexList[index]
-    opp_xyz = om.MPoint(xyz.x*axis[0], xyz.y*axis[1], xyz.z*axis[2])    
+    opp_xyz = om.MPoint(xyz.x * axis[0], xyz.y * axis[1], xyz.z * axis[2])    
     closetPoint, faceID = baseMfnMesh.getClosestPoint(opp_xyz, om.MSpace.kObject)
     
     mitMeshPolygon.setIndex(faceID)
@@ -67,24 +67,24 @@ for index in range(len(movedBaseVertexList)) :
         oppMVector = om.MVector(oppVertexPosition)
         mirrorMVector = om.MVector(opp_xyz)
         
-        mVectorLength = oppMVector-mirrorMVector
+        mVectorLength = oppMVector - mirrorMVector
         length = mVectorLength.length()
         mVectorLengthList.append(length)        
     
     closestVertex = min(mVectorLengthList)
     vertexIndex = mVectorLengthList.index(closestVertex)
     currentVertexID = faceVertexList[vertexIndex]        
-    oppVertexList.append('pSphereShape2.vtx[%i]'% currentVertexID)
+    oppVertexList.append('pSphereShape2.vtx[%i]' % currentVertexID)
     
     movedVertex = movedShapeVertexList[index]
     
-    oppMovedPosition = om.MPoint(movedVertex.x*axis[0], movedVertex.y*axis[1], movedVertex.z*axis[2])
+    oppMovedPosition = om.MPoint(movedVertex.x * axis[0], movedVertex.y * axis[1], movedVertex.z * axis[2])
     
-    #Add Conditions - for Mirror, Filp and Revert    
-    #Set Mirror    
+    # Add Conditions - for Mirror, Filp and Revert    
+    # Set Mirror    
     shapeMfnMesh.setPoint(currentVertexID, oppMovedPosition, om.MSpace.kObject)
     
-    #Set Filp / Revert
+    # Set Filp / Revert
     shapeMfnMesh.setPoint(movedVertexList[index], xyz, om.MSpace.kObject)
     
 shapeMfnMesh.updateSurface()    

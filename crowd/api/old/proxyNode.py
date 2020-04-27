@@ -9,6 +9,7 @@ node_Id = OpenMaya.MTypeId(0x87079)
 gl_renderer = OpenMayaRender.MHardwareRenderer.theRenderer()
 gl_ft = gl_renderer.glFunctionTable()
 
+
 class Connect(OpenMayaMPx.MPxLocatorNode):
         
     def __init__(self):
@@ -28,6 +29,7 @@ class Connect(OpenMayaMPx.MPxLocatorNode):
 
 def nodeCreator():
     return OpenMayaMPx.asMPxPtr(Connect())
+
 
 def nodeInitializer():
     pass

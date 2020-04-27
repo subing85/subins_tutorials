@@ -5,6 +5,7 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.api import studioMaya
 reload(resource)
 
+
 class Nurbscurve(studioMaya.Maya):
     
     def __init__(self):
@@ -124,7 +125,7 @@ class Nurbscurve(studioMaya.Maya):
         
         # print json.dumps(data, indent=4)
         
-        self.set_ktransform(mfn_dag_node.object(), data) # set position
+        self.set_ktransform(mfn_dag_node.object(), data)  # set position
         return mfn_curve
 
     def update_kcurve(self, name, data):

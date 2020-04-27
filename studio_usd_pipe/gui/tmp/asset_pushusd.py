@@ -24,5 +24,4 @@ def show_window(standalone=False):
         my_window.show()
         sys.exit(app.exec_())
         
-        
     

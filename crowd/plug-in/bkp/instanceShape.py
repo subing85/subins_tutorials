@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,30 +34,30 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 ###############################################################################
-##
-## instanceShape.py
-##
-## Description:
-##    Registers a new shape that acts like an instancer.  The new shape
-##    type is called "instanceShape".
-##
-##    The shape will instance N copies of a shape connected via a message
-##    attribute on the node.  The sample will distribute these N copies
-##    in the XZ plane.
-##
-##    There are no output attributes for this shape.
-##    The following input attributes define the type of shape to draw.
-##
-##       radius		   : circle radius for instance object. 
-##		 instanceShape : a connection to the shape to instance 
-##		 count		   : number of instances to make. 
-##
-##    Additionally the instancing feature demonstrated in this code
-##    only works for custom shapes. Non-custom shapes will not work.
-##
+# #
+# # instanceShape.py
+# #
+# # Description:
+# #    Registers a new shape that acts like an instancer.  The new shape
+# #    type is called "instanceShape".
+# #
+# #    The shape will instance N copies of a shape connected via a message
+# #    attribute on the node.  The sample will distribute these N copies
+# #    in the XZ plane.
+# #
+# #    There are no output attributes for this shape.
+# #    The following input attributes define the type of shape to draw.
+# #
+# #       radius		   : circle radius for instance object. 
+# #		 instanceShape : a connection to the shape to instance 
+# #		 count		   : number of instances to make. 
+# #
+# #    Additionally the instancing feature demonstrated in this code
+# #    only works for custom shapes. Non-custom shapes will not work.
+# #
 ################################################################################
 
 # Usage:
@@ -84,31 +84,33 @@ spInstanceShapeNodeId = OpenMaya.MTypeId(0x00080029)
 glRenderer = OpenMayaRender.MHardwareRenderer.theRenderer()
 glFT = glRenderer.glFunctionTable()
 
-kLeadColor 				= 18 # green
-kActiveColor			= 15 # white
-kActiveAffectedColor	= 8  # purple
-kDormantColor			= 4  # blue
-kHiliteColor			= 17 # pale blue
+kLeadColor 				 = 18  # green
+kActiveColor			 = 15  # white
+kActiveAffectedColor	 = 8  # purple
+kDormantColor			 = 4  # blue
+kHiliteColor			 = 17  # pale blue
 
 kDefaultRadius = 1.0
-kDefaultCount  = 10
+kDefaultCount = 10
 
 
 #####################################################################
-##
-## Geometry class
-##
+# #
+# # Geometry class
+# #
 class instanceGeom:
+
 	def __init__(self): 
 		self.radius = kDefaultRadius
 		self.count = kDefaultCount
 		self.instanceShape = None
 		self.drawQueueList = [] 
+
 		
 #####################################################################
-##
-## Shape class - defines the non-UI part of a shape node
-##
+# #
+# # Shape class - defines the non-UI part of a shape node
+# #
 class instanceShape(OpenMayaMPx.MPxSurfaceShape):
 	# class variables
 	aRadius = OpenMaya.MObject()
@@ -151,7 +153,6 @@ class instanceShape(OpenMayaMPx.MPxSurfaceShape):
 
 		return True
 
-
 	# override
 	def setInternalValue(self, plug, datahandle):
 		"""
@@ -179,11 +180,9 @@ class instanceShape(OpenMayaMPx.MPxSurfaceShape):
 			return OpenMayaMPx.MPxSurfaceShape.setInternalValue(plug, datahandle)
 		return True
 
-
 	# override
 	def isBounded(self):
 		return True
-
 
 	# override
 	def boundingBox(self):
@@ -198,25 +197,24 @@ class instanceShape(OpenMayaMPx.MPxSurfaceShape):
 		
 		# Include the instance shape bounding box
 		if geom.instanceShape: 
-			fnDag = OpenMaya.MFnDagNode( geom.instanceShape ) 
+			fnDag = OpenMaya.MFnDagNode(geom.instanceShape) 
 			result = fnDag.boundingBox() 
 
 		r = geom.radius
-		instanceBbox = OpenMaya.MBoundingBox( result ) 
-		for c in range( geom.count ): 
-			percent = float(c)/float(geom.count)
-			rad = 2*math.pi * percent
-			p = (r*math.cos(rad), r*math.sin(rad),0.0)
-			newbbox = OpenMaya.MBoundingBox( instanceBbox )
-			trans = OpenMaya.MTransformationMatrix( ) 	
-			vec = OpenMaya.MVector( p[0], p[1], p[2] ) 
-			trans.setTranslation( vec, OpenMaya.MSpace.kTransform ) 
+		instanceBbox = OpenMaya.MBoundingBox(result) 
+		for c in range(geom.count): 
+			percent = float(c) / float(geom.count)
+			rad = 2 * math.pi * percent
+			p = (r * math.cos(rad), r * math.sin(rad), 0.0)
+			newbbox = OpenMaya.MBoundingBox(instanceBbox)
+			trans = OpenMaya.MTransformationMatrix() 	
+			vec = OpenMaya.MVector(p[0], p[1], p[2]) 
+			trans.setTranslation(vec, OpenMaya.MSpace.kTransform) 
 			mmatrix = trans.asMatrix(); 
-			newbbox.transformUsing( mmatrix ) 
-			result.expand( newbbox ) 
+			newbbox.transformUsing(mmatrix) 
+			result.expand(newbbox) 
 		
 		return result
-
 
 	def geometry(self):
 		"""
@@ -235,8 +233,8 @@ class instanceShape(OpenMayaMPx.MPxSurfaceShape):
 
 		plug = OpenMaya.MPlug(this_object, instanceShape.aInstanceShape)
 		plugArray = OpenMaya.MPlugArray()
-		plug.connectedTo( plugArray, True, False )
-		if ( plugArray.length() > 0 ): 
+		plug.connectedTo(plugArray, True, False)
+		if (plugArray.length() > 0): 
 			node = plugArray[0].node()
 			dagNode = OpenMaya.MFnDagNode(node)
 			path = OpenMaya.MDagPath()
@@ -245,11 +243,13 @@ class instanceShape(OpenMayaMPx.MPxSurfaceShape):
 
 		return self.__myGeometry
 
+
 #####################################################################
-##
-## UI class	- defines the UI part of a shape node
-##
+# #
+# # UI class	- defines the UI part of a shape node
+# #
 class instanceShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
+
 	# private enums
 	def __init__(self):
 		OpenMayaMPx.MPxSurfaceShapeUI.__init__(self)
@@ -286,27 +286,27 @@ class instanceShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 			#
 			shapeUI = OpenMayaMPx.MPxSurfaceShapeUI.surfaceShapeUI(geom.instanceShape)
 			if shapeUI: 	
-				mainMaterial = shapeUI.material( geom.instanceShape )
-				mainMaterial.evaluateMaterial( view, geom.instanceShape ) 
+				mainMaterial = shapeUI.material(geom.instanceShape)
+				mainMaterial.evaluateMaterial(view, geom.instanceShape) 
 				r = geom.radius 
 				for a in range(geom.count):
 					myQueue = OpenMayaUI.MDrawRequestQueue()
-					percent = float(a)/float(geom.count)
-					rad = 2*math.pi * percent
-					position = (r*math.cos(rad), r*math.sin(rad),0.0)
+					percent = float(a) / float(geom.count)
+					rad = 2 * math.pi * percent
+					position = (r * math.cos(rad), r * math.sin(rad), 0.0)
 					# Construct a reference to MDrawInfo and modify it 
 					# to point to the instance shape.  If we do not do 
 					# this in then the call to getDrawRequests will think
 					# that we are still the instancer shape and not the 
 					# instance shape.  
 					# 
-					myinfo = OpenMayaUI.MDrawInfo( info )
-					myinfo.setMultiPath( geom.instanceShape )
-					shapeUI.getDrawRequests( myinfo,
-											 objectAndActiveOnly, myQueue )
- 					geom.drawQueueList.append( (myQueue, position) )
+					myinfo = OpenMayaUI.MDrawInfo(info)
+					myinfo.setMultiPath(geom.instanceShape)
+					shapeUI.getDrawRequests(myinfo,
+											 objectAndActiveOnly, myQueue)
+ 					geom.drawQueueList.append((myQueue, position))
 
-		info.setMultiPath( path )
+		info.setMultiPath(path)
 		# Finally we must supply a material back to the drawing code. 
 		# We attempt to use the instance shape material; however, if 
 		# that fails then we fall back to the default material 
@@ -316,10 +316,9 @@ class instanceShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
  			if not mainMaterial:
  				mainMaterial = defaultMaterial 
 			try: 
-				request.setMaterial( mainMaterial )
+				request.setMaterial(mainMaterial)
 			except:
-				request.setMaterial( defaultMaterial ) 
-
+				request.setMaterial(defaultMaterial) 
 			
 		self.getDrawData(geom, data)			
 		request.setDrawData(data)
@@ -337,38 +336,38 @@ class instanceShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 		data = request.drawData()
 		shapeNode = self.surfaceShape()
 		geom = self.geometry
-		glFT.glMatrixMode( OpenMayaRender.MGL_MODELVIEW )
+		glFT.glMatrixMode(OpenMayaRender.MGL_MODELVIEW)
 		if geom.instanceShape: 
 			shapeUI = OpenMayaMPx.MPxSurfaceShapeUI.surfaceShapeUI(geom.instanceShape)
 			for (queue, pos) in geom.drawQueueList:
 				glFT.glPushMatrix();
-				glFT.glTranslatef( pos[0], pos[1], pos[2] )
+				glFT.glTranslatef(pos[0], pos[1], pos[2])
 				while not queue.isEmpty():
 					request = queue.remove()
-					shapeUI.draw( request, view )
+					shapeUI.draw(request, view)
 				glFT.glPopMatrix()
 
 		# Draw a shell area that shows where the instances are being
 		# drawn. This is nice to have if we don't have any instance
 		# shapes connected to this plugin. 
 		# 
-		glFT.glPushAttrib( OpenMayaRender.MGL_ALL_ATTRIB_BITS )
+		glFT.glPushAttrib(OpenMayaRender.MGL_ALL_ATTRIB_BITS)
 		glFT.glPolygonMode(OpenMayaRender.MGL_FRONT_AND_BACK,
 						   OpenMayaRender.MGL_LINE)
 		glFT.glBegin(OpenMayaRender.MGL_QUADS)
-		glFT.glVertex3f(-1*(geom.radius), -1*(geom.radius), 0.0)
+		glFT.glVertex3f(-1 * (geom.radius), -1 * (geom.radius), 0.0)
 		glFT.glNormal3f(0, 0, 1.0)
 			
-		glFT.glVertex3f(-1*(geom.radius), (geom.radius), 0.0)
+		glFT.glVertex3f(-1 * (geom.radius), (geom.radius), 0.0)
 		glFT.glNormal3f(0, 0, 1.0)
 			
 		glFT.glVertex3f((geom.radius), (geom.radius), 0.0)
 		glFT.glNormal3f(0, 0, 1.0)
 			
-		glFT.glVertex3f((geom.radius), -1*(geom.radius), 0.0)
+		glFT.glVertex3f((geom.radius), -1 * (geom.radius), 0.0)
 		glFT.glNormal3f(0, 0, 1.0)
 		glFT.glEnd()
-		glFT.glPopAttrib( )
+		glFT.glPopAttrib()
 
 	# override
 	def select(self, selectInfo, selectionList, worldSpaceSelectPts):
@@ -386,20 +385,19 @@ class instanceShapeUI(OpenMayaMPx.MPxSurfaceShapeUI):
 								 worldSpaceSelectPts, priorityMask, False)
 		return True
 
-
-
-
 #####################################################################
 
+
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( instanceShape() )
+	return OpenMayaMPx.asMPxPtr(instanceShape())
 
 
 def uiCreator():
-	return OpenMayaMPx.asMPxPtr( instanceShapeUI() )
+	return OpenMayaMPx.asMPxPtr(instanceShapeUI())
 
 
 def nodeInitializer():
+
 	# utility func for numeric attrs
 	def setOptions(attr):
 		attr.setHidden(False)
@@ -419,15 +417,16 @@ def nodeInitializer():
 	instanceShape.aCount = numericAttr.create("count", "ct", OpenMaya.MFnNumericData.kInt, kDefaultCount)
 	setOptions(numericAttr)
 	instanceShape.addAttribute(instanceShape.aCount)
+
 	
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject, "Autodesk", "2011", "Any")
 	try:
-		mplugin.registerShape( kPluginNodeTypeName, spInstanceShapeNodeId,
-								nodeCreator, nodeInitializer, uiCreator )
+		mplugin.registerShape(kPluginNodeTypeName, spInstanceShapeNodeId,
+								nodeCreator, nodeInitializer, uiCreator)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise
 
 
@@ -435,7 +434,7 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( spInstanceShapeNodeId )
+		mplugin.deregisterNode(spInstanceShapeNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to deregister node: %s" % kPluginNodeTypeName)
 		raise

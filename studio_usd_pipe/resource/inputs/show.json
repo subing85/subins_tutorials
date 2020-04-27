@@ -8,17 +8,17 @@
 	"enable": true,
 	"type": "show_config",
 	"data": {
-		"show_name": {
-			"name": {
+		"show": {
+			"show_name": {
 				"order": 0,				
 				"type": "str", 
-				"value": "BTM",					
+				"value": "btm",					
 				"label": "Show name"
 				},
 			"long_name": {
 				"order": 1,				
 				"type": "str", 
-				"value": "Batman",					
+				"value": "batman",					
 				"label": "Full show name"
 				},					
 				

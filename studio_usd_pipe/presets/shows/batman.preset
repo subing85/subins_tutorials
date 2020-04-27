@@ -5,28 +5,28 @@
     "type": "show_config", 
     "enable": true, 
     "#copyright": "(c) 2019, Subin Gopi All rights reserved.", 
-    "modified": "2020 25 April Saturday, 22:53:35 PM", 
+    "modified": "2020 27 April Monday, 22:53:29 PM", 
     "created_by": "subin gopi", 
     "data": {
         "applications": {
             "natron": {
                 "path": "/venture/software/Natron-2.3.13", 
                 "version": "Natron-2.3.13", 
-                "order": "0", 
+                "order": "3", 
                 "icon": "/venture/icons/natron.png", 
                 "exe": "/venture/software/Natron-2.3.13/Natron"
             }, 
             "katana": {
                 "path": "/opt/katana/katana3.2.3", 
                 "version": "katana3.2.3", 
-                "order": "0", 
+                "order": "1", 
                 "icon": "/venture/icons/katana3.2.3.png", 
                 "exe": "/opt/katana/katana3.2.3/katana"
             }, 
             "nuke": {
                 "path": "/opt/nuke/nuke4.2.3", 
                 "version": "Nuke4.2.3", 
-                "order": "0", 
+                "order": "2", 
                 "icon": "/venture/icons/nuke.png", 
                 "exe": "/opt/nuke/nuke4.2.3/nuke"
             }, 
@@ -49,15 +49,15 @@
         "current_show": {
             "show": {
                 "USD": true, 
-                "name": "BTM", 
                 "PYTHONPATH": [
                     "/venture/source_code/package/", 
                     "/venture/source_code/subins-toolkits/"
                 ], 
-                "long_name": "Batman", 
+                "show_name": "btm", 
+                "long_name": "batman", 
                 "show_path": "/venture/shows/batman", 
                 "path": "/usr/bin", 
-                "order": "0", 
+                "order": 1, 
                 "icon": "/venture/shows/icons/batman.png"
             }
         }

@@ -36,6 +36,7 @@ import os
 import unittest
 import util
 
+
 def makeRobot():
     MayaCmds.polyCube(name="head")
     MayaCmds.move(0, 4, 0, r=1)
@@ -70,10 +71,11 @@ def makeRobot():
     MayaCmds.select("head", "body", "lower", r=1)
     MayaCmds.group(name="robot")
 
+
 def makeRobotAnimated():
     makeRobot()
 
-    #change pivot point of arms and legs
+    # change pivot point of arms and legs
     MayaCmds.move(0.65, -0.40, 0, 'rightArm.scalePivot',
         'rightArm.rotatePivot', relative=True)
     MayaCmds.move(-0.65, -0.40, 0, 'leftArm.scalePivot', 'leftArm.rotatePivot',
@@ -92,6 +94,7 @@ def makeRobotAnimated():
     MayaCmds.setKeyframe('leftArm', at='rotateZ', value=-50, t=[6])
     MayaCmds.setKeyframe('rightArm', at='scaleX', value=0.5, t=[1, 12])
     MayaCmds.setKeyframe('rightArm', at='scaleX', value=3.6, t=[6])
+
 
 class AbcNodeNameTest(unittest.TestCase):
 

@@ -278,7 +278,7 @@ class Window(QtWidgets.QWidget):
             show_icon=widget_data['show_icon'],
             database_directory=widget_data['database_directory'],
             mayapy_directory=widget_data['mayapy_directory'],
-            python_path = widget_data['python_path']
+            python_path=widget_data['python_path']
             )
         if not result:
             QtWidgets.QMessageBox.critical(

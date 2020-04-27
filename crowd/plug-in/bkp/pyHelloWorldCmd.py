@@ -10,6 +10,7 @@ maya.cmds.pyHelloWorld()
 import sys
 import maya.api.OpenMaya as om
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
@@ -58,7 +59,7 @@ def uninitializePlugin(plugin):
 		)
 		raise
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -94,5 +95,5 @@ def uninitializePlugin(plugin):
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 

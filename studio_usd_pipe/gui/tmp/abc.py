@@ -10,5 +10,4 @@ app = QtWidgets.QApplication(sys.argv)
 my_window = push.Window(parent=None)
 my_window.show()
 sys.exit(app.exec_())
-        
 

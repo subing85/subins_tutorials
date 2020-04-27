@@ -39,6 +39,7 @@ from alembic.Abc import *
 
 testList = []
 
+
 def instanceOut():
     """Write an oarchive with an instance in it"""
 
@@ -61,7 +62,9 @@ def instanceOut():
 
     a.addChildInstance(b, 'c')
 
+
 testList.append(('instanceOut', instanceOut))
+
 
 def instanceIn():
     """Read an archive with an instance in it, verify it's instancing correctly."""
@@ -102,6 +105,7 @@ def instanceIn():
     assert ei.getParent().getFullName() == di.getFullName()
     assert not ei.isInstanceRoot()
     assert ei.isInstanceDescendant()
+
 
 testList.append(('instanceIn', instanceIn))
 

@@ -14,7 +14,6 @@ Description
     The purpose of the readWrite to create, getting and setting the model data.  
 '''
 
-
 import os
 import json
 import time

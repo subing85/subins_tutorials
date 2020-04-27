@@ -19,6 +19,7 @@ import maya.api.OpenMaya as om
 # This plugin is meant to be used in conjunction with the hwPhongShader
 # where the position geometry is defined with the semantic "swizzlePosition"
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
@@ -26,7 +27,9 @@ def maya_useNewAPI():
 	"""
 	pass
 
+
 class MyCustomBufferMutator(omr.MPxVertexBufferMutator):
+
 	def __init__(self):
 		omr.MPxVertexBufferMutator.__init__(self)
 
@@ -56,7 +59,7 @@ class MyCustomBufferMutator(omr.MPxVertexBufferMutator):
 			return
 
 		# acquire the buffer to fill with data.
-		buffer = vertexBuffer.acquire(vertexCount, False)	# writeOnly = False : we want the current buffer values
+		buffer = vertexBuffer.acquire(vertexCount, False)  # writeOnly = False : we want the current buffer values
 
 		inc = sizeof(c_float)
 		address = buffer
@@ -64,28 +67,31 @@ class MyCustomBufferMutator(omr.MPxVertexBufferMutator):
 		for i in range(0, vertexCount):
 			# Here we swap the x, y and z values
 			xaddr = address
-			yaddr = address+inc
-			zaddr = address+2*inc
-			address += 3*inc
+			yaddr = address + inc
+			zaddr = address + 2 * inc
+			address += 3 * inc
 
 			x = c_float.from_address(xaddr).value
-			c_float.from_address(xaddr).value = c_float.from_address(yaddr).value	# y --> x
-			c_float.from_address(yaddr).value = c_float.from_address(zaddr).value	# z --> y
-			c_float.from_address(zaddr).value = x									# x --> z
+			c_float.from_address(xaddr).value = c_float.from_address(yaddr).value  # y --> x
+			c_float.from_address(yaddr).value = c_float.from_address(zaddr).value  # z --> y
+			c_float.from_address(zaddr).value = x  # x --> z
 
 		# commit the buffer to signal completion.
 		vertexBuffer.commit(buffer)
+
 
 # This is the buffer generator creation function registered with the DrawRegistry.
 # Used to initialize the generator.
 def createMyCustomBufferMutator():
 	return MyCustomBufferMutator()
 
+
 # The following routines are used to register/unregister
 # the vertex mutators with Maya
 def initializePlugin(obj):
 
 	omr.MDrawRegistry.registerVertexBufferMutator("swizzlePosition", createMyCustomBufferMutator)
+
 
 def uninitializePlugin(obj):
 

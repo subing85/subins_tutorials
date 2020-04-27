@@ -3,11 +3,11 @@ import json
 import pkgutil
 import logging
 
-
 from crowd import resource
 from crowd.api import crowdPublish
 from crowd.core import database
 reload(resource)
+
 
 class Connect(object):
     
@@ -44,7 +44,7 @@ class Connect(object):
             order = 0                 
             if hasattr(module, 'ORDER'):
                 order = module.ORDER            
-            modules.setdefault(order,[]).append(module)        
+            modules.setdefault(order, []).append(module)        
         return modules
     
     def do(self):

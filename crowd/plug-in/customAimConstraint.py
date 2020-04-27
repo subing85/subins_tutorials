@@ -1,13 +1,14 @@
 import maya.OpenMayaMPx as OpenMayaMPx
 import maya.OpenMaya as OpenMaya
 
-
 ''' 
 To load the plugin we need to type this in the script editor:
 # maya.cmds.loadPlugin("customAimConstraint.py")
 # And to create our custom node, we use this: 
 # maya.cmds.createNode('customAimConstraint')
 '''
+
+
 class CustomAimConstraint(OpenMayaMPx.MPxNode):
 	kPluginNodeId = OpenMaya.MTypeId(0x00047251)
 	''' Define the inputs and outputs. We use MOject, and leave them empty for now. Later we will plug the correct information on them.'''
@@ -78,25 +79,25 @@ class CustomAimConstraint(OpenMayaMPx.MPxNode):
 		wmB = OpenMaya.MTransformationMatrix(worldMatrixDriverA)
 		wmP = OpenMaya.MTransformationMatrix(worldMatrixDriverB)
 		''' Next we get the translation component of the translation as a vector in centimeters, again for each of the objects.'''
-		transDriven = wmA.getTranslation( OpenMaya.MSpace.kTransform )
-		transDriverA = wmB.getTranslation( OpenMaya.MSpace.kTransform )
-		transDriverB = wmP.getTranslation( OpenMaya.MSpace.kTransform )
+		transDriven = wmA.getTranslation(OpenMaya.MSpace.kTransform)
+		transDriverA = wmB.getTranslation(OpenMaya.MSpace.kTransform)
+		transDriverB = wmP.getTranslation(OpenMaya.MSpace.kTransform)
 		''' 
 		MVector provides access to Maya's internal vector math library allowing vectors to be handled easily, 
 		and in a manner compatible with internal Maya data structures.
 		Using the translation information we have from the objects, we substract both Driver's translation to our 
 		Driven's translation, so we know how much the objects moved in relation to the Driven.
 		'''
-		xv = OpenMaya.MVector(transDriven.x-transDriverA.x-transDriverB.x, transDriven.y-transDriverA.y-transDriverB.y, transDriven.z-transDriverA.z-transDriverB.z)
+		xv = OpenMaya.MVector(transDriven.x - transDriverA.x - transDriverB.x, transDriven.y - transDriverA.y - transDriverB.y, transDriven.z - transDriverA.z - transDriverB.z)
 		''' Normalize the vector's info.'''
 		xv.normalize()
 		''' Based on user input, we set the vector accordingly. Can be set on run time changing the attribute directly on the node.'''
-		if upV==0:
-			up=[1,0,0]
-		elif upV==1:
-			up=[0,1,0]
-		elif upV==2:
-			up=[0,0,1]
+		if upV == 0:
+			up = [1, 0, 0]
+		elif upV == 1:
+			up = [0, 1, 0]
+		elif upV == 2:
+			up = [0, 0, 1]
 		''' Here we get the vector according to what the user chose. We also need to normalize its data.'''
 		zv = xv ^ OpenMaya.MVector(-up[0], -up[1], -up[2])
 		zv.normalize()
@@ -112,7 +113,7 @@ class CustomAimConstraint(OpenMayaMPx.MPxNode):
 		''' We use MScriptUtil to convert the list into a matrix.'''
 		OpenMaya.MScriptUtil.createMatrixFromList(l, mtx)
 		''' Multiply times the maintain offset object's world matrix. If no input provided, matrix is unaffected'''
-		mtx*=offsetMatrix
+		mtx *= offsetMatrix
 		''' Get euler rotations and convert it to radians.'''
 		getFinalRot = OpenMaya.MTransformationMatrix(mtx).eulerRotation() * 57.2958
 		''' Here we define the plug output of our custom node.'''
@@ -126,9 +127,13 @@ class CustomAimConstraint(OpenMayaMPx.MPxNode):
 		rOutput.setMFloatVector(resultRot)
 		return 
 
+
 ''' This section initializes the plugin so Maya can read it. Python plugins can be imported from /maya/plug-ins/ folder. '''
+
+
 def creator():
 	return OpenMayaMPx.asMPxPtr(CustomAimConstraint())
+
 
 def initialize():
 	''' Here we define some varialbes that can be numeric, strings, or other type of attributes.'''
@@ -138,7 +143,7 @@ def initialize():
 	We name our inputs. This names will be shown in the Node Editor. First value is the long name, second the short name.
 	In this case, we want the upVector to be and integer, since we are expecting 0,1 or 2.
 	'''
-	CustomAimConstraint.upInput = nAttr.create('upVector', 'upV',OpenMaya.MFnNumericData.kInt, 0)
+	CustomAimConstraint.upInput = nAttr.create('upVector', 'upV', OpenMaya.MFnNumericData.kInt, 0)
 	''' Remember in the compute() method we need to extract the information from this input as follows:
 	0 = (1,0,0) | 1 = (0,1,0) | 2 = (0,0,1)
 	Set it to be writable, storable and readable, so the user can modify it.
@@ -151,25 +156,25 @@ def initialize():
 	nAttr.setMax(2)
 	nAttr.setKeyable(True)    
 	''' Same for our driven object, but this time we expect a kDouble attribute, which will receive the WorldMatrix in the Node Editor'''
-	CustomAimConstraint.mInputDriven = nMAttr.create('inDriven', 'inD',OpenMaya.MFnMatrixAttribute.kDouble)
+	CustomAimConstraint.mInputDriven = nMAttr.create('inDriven', 'inD', OpenMaya.MFnMatrixAttribute.kDouble)
 	nMAttr.setWritable(True)
 	nMAttr.setStorable(True)
 	nMAttr.setReadable(True)
 	nMAttr.setKeyable(True)
 	''' Our first driver object.'''
-	CustomAimConstraint.mInputDriverA = nMAttr.create('inDriverA', 'inA',OpenMaya.MFnMatrixAttribute.kDouble)
+	CustomAimConstraint.mInputDriverA = nMAttr.create('inDriverA', 'inA', OpenMaya.MFnMatrixAttribute.kDouble)
 	nMAttr.setWritable(True)
 	nMAttr.setStorable(True)
 	nMAttr.setReadable(True)
 	nMAttr.setKeyable(True)
 	''' Second driver object.'''
-	CustomAimConstraint.mInputDriverB = nMAttr.create('inDriverB', 'inB',OpenMaya.MFnMatrixAttribute.kDouble)
+	CustomAimConstraint.mInputDriverB = nMAttr.create('inDriverB', 'inB', OpenMaya.MFnMatrixAttribute.kDouble)
 	nMAttr.setWritable(True)
 	nMAttr.setStorable(True)
 	nMAttr.setReadable(True)
 	nMAttr.setKeyable(True)
 	''' Offset object.'''
-	CustomAimConstraint.mRotateOffset = nMAttr.create('rotateOffset', 'ro',OpenMaya.MFnMatrixAttribute.kDouble)
+	CustomAimConstraint.mRotateOffset = nMAttr.create('rotateOffset', 'ro', OpenMaya.MFnMatrixAttribute.kDouble)
 	nMAttr.setWritable(True)
 	nMAttr.setStorable(True)
 	nMAttr.setReadable(True)
@@ -200,7 +205,10 @@ def initialize():
 	CustomAimConstraint.attributeAffects(CustomAimConstraint.mInputDriverB, CustomAimConstraint.rOutput)
 	CustomAimConstraint.attributeAffects(CustomAimConstraint.mRotateOffset, CustomAimConstraint.rOutput)
 
+
 ''' Customize plugin info and register it.'''
+
+
 def initializePlugin(obj):
 	plugin = OpenMayaMPx.MFnPlugin(obj, 'FelipeR', '1.0', 'Any')
 	try:
@@ -208,7 +216,10 @@ def initializePlugin(obj):
 	except:
 		raise RuntimeError, 'Failed to register node'
 
+
 ''' Call if you want to unload plugin'''
+
+
 def uninitializePlugin(obj):
 	plugin = OpenMayaMPx.MFnPlugin(obj)
 	try:

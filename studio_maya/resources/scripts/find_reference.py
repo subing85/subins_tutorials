@@ -13,7 +13,6 @@ Description
     to find the reference details from the scenes.
 '''
 
-
 import os
 import json
 import tempfile
@@ -37,7 +36,7 @@ def find(output_path=None, write=False):
             print str(error)
     references = cmds.file(q=True, r=True)
     data = {}
-    print "\nhttp://www.subins-toolkits.com", '\n', '-'*41         
+    print "\nhttp://www.subins-toolkits.com", '\n', '-' * 41         
     print '\nReference informations'    
     for index, reference in enumerate(references):
         namespace = cmds.file(reference, q=True, ns=True).encode()

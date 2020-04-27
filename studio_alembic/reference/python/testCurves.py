@@ -46,15 +46,16 @@ kVertexScope = GeometryScope.kVertexScope
 kCubic = CurveType.kCubic
 kNonPeriodic = CurvePeriodicity.kNonPeriodic
 
-def doSample( iCurves ):
+
+def doSample(iCurves):
     
     curves = iCurves.getSchema()
 
-    widthSamp = OFloatGeomParamSample( widths, kVertexScope )
-    uvSamp = OV2fGeomParamSample( uvs, kVertexScope )
+    widthSamp = OFloatGeomParamSample(widths, kVertexScope)
+    uvSamp = OV2fGeomParamSample(uvs, kVertexScope)
 
-    curvesSamp = OCurvesSchemaSample( verts, numVerts, kCubic, kNonPeriodic,
-                                       widthSamp, uvSamp )
+    curvesSamp = OCurvesSchemaSample(verts, numVerts, kCubic, kNonPeriodic,
+                                       widthSamp, uvSamp)
 
     knots = curvesSamp.getKnots()
     assert len(knots) == 0
@@ -80,28 +81,30 @@ def doSample( iCurves ):
     for ii in range(3):
         assert newOrder[ii] == ii
 
-    curves.set( curvesSamp )
+    curves.set(curvesSamp)
+
 
 def curvesOut():
     """write an oarchive with a curve in it"""
 
-    myCurves = OCurves( OArchive( 'curves1.abc' ).getTop(),
-                        'really_long_curves_name' )
+    myCurves = OCurves(OArchive('curves1.abc').getTop(),
+                        'really_long_curves_name')
 
-    for i in range(0,5):
-        doSample( myCurves )
+    for i in range(0, 5):
+        doSample(myCurves)
+
 
 def curvesIn():
     """read an iarchive with a curve in it"""
 
-    myCurves = ICurves( IArchive( 'curves1.abc' ).getTop(),
-                        'really_long_curves_name' )
+    myCurves = ICurves(IArchive('curves1.abc').getTop(),
+                        'really_long_curves_name')
     curves = myCurves.getSchema()
 
     curvesSamp = curves.getValue()
 
-    assert curvesSamp.getSelfBounds().min() == V3d( -1.0, -1.0, -1.0 )
-    assert curvesSamp.getSelfBounds().max() == V3d(  1.0,  1.0,  1.0 )
+    assert curvesSamp.getSelfBounds().min() == V3d(-1.0, -1.0, -1.0)
+    assert curvesSamp.getSelfBounds().max() == V3d(1.0, 1.0, 1.0)
 
     knots = curvesSamp.getKnots()
     for ii in range(4):
@@ -113,22 +116,24 @@ def curvesIn():
 
     positions = curvesSamp.getPositions()
 
-    assert len( positions ) == 12
+    assert len(positions) == 12
 
-    for i in range( len( positions ) ):
+    for i in range(len(positions)):
         assert positions[i] == verts[i]
 
     widthSamp = curves.getWidthsParam().getExpandedValue()
 
-    assert len( widthSamp.getVals() ) == 12
-    assert IFloatGeomParam.matches( curves.getWidthsParam().getHeader() )
+    assert len(widthSamp.getVals()) == 12
+    assert IFloatGeomParam.matches(curves.getWidthsParam().getHeader())
     assert widthSamp.getScope() == kVertexScope
+
 
 def testCurvesBinding():
     curvesOut()
     curvesIn()
 
-testList.append( ( 'testCurvesBinding', testCurvesBinding ) )
+
+testList.append(('testCurvesBinding', testCurvesBinding))
 
 # -------------------------------------------------------------------------
 # Main loop

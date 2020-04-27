@@ -20,14 +20,13 @@ More videos please visit my vimeo profile link mention below
     https://vimeo.com/210275112
 '''
 
-
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
-#Replace the with geometry shape
+# Replace the with geometry shape
 meshObject = 'pCylinderShape1'
 
-#Input object to Dag Path
+# Input object to Dag Path
 meshSelectionList = om.MSelectionList()
 meshSelectionList.add(meshObject)
 meshDagPath = meshSelectionList.getDagPath(0)
@@ -40,18 +39,18 @@ for eachObject in deformObjects :
     deformSelectionList.add(eachObject)
     deformDagPath = deformSelectionList.getDagPath(0)
     
-    #Get the vertex Orig Position
+    # Get the vertex Orig Position
     mfnMesh = om.MFnMesh(meshDagPath)
     origPositionList = mfnMesh.getPoints(om.MSpace.kObject)
     
-    #Set the transform value to deformer
+    # Set the transform value to deformer
     mfnTransform = om.MFnTransform(deformDagPath)
-    xyzMVector = om.MVector(1,0,0)
+    xyzMVector = om.MVector(1, 0, 0)
     mfnTransform.setTranslation(xyzMVector, om.MSpace.kTransform)
     
     deformPositionList = mfnMesh.getPoints(om.MSpace.kObject)
     
-    zeroMVector = om.MVector(0,0,0)
+    zeroMVector = om.MVector(0, 0, 0)
     mfnTransform.setTranslation(zeroMVector, om.MSpace.kTransform)
     
     weightList = []
@@ -59,30 +58,30 @@ for eachObject in deformObjects :
         origMVector = om.MVector(origPositionList[index])
         deformMVector = om.MVector(deformPositionList[index])
         
-        length = origMVector-deformMVector
+        length = origMVector - deformMVector
         weight = length.length()
         weightList.append(weight)
     
-    #Create New Cluster
+    # Create New Cluster
     myCluster = cmds.cluster(meshObject, n='My_Cluster')
     
-    #Set weights to vertex
+    # Set weights to vertex
     for index in range(len(weightList)) :
-        cmds.setAttr('%s.weightList[0].w[%s]'%(myCluster[0], index), weightList[index])
+        cmds.setAttr('%s.weightList[0].w[%s]' % (myCluster[0], index), weightList[index])
     
-    #Change the cluster position
+    # Change the cluster position
     cluster_xyz = cmds.xform(eachObject, q=1, ws=1, piv=1)
     clusterShape = cmds.listRelatives(myCluster[1], s=1)
     
-    cmds.setAttr('%s.rotatePivotX'% myCluster[1], cluster_xyz[0]) 
-    cmds.setAttr('%s.rotatePivotY'% myCluster[1], cluster_xyz[1]) 
-    cmds.setAttr('%s.rotatePivotZ'% myCluster[1], cluster_xyz[2]) 
-    cmds.setAttr('%s.scalePivotX'% myCluster[1], cluster_xyz[0]) 
-    cmds.setAttr('%s.scalePivotY'% myCluster[1], cluster_xyz[1]) 
-    cmds.setAttr('%s.scalePivotZ'% myCluster[1], cluster_xyz[2])
+    cmds.setAttr('%s.rotatePivotX' % myCluster[1], cluster_xyz[0]) 
+    cmds.setAttr('%s.rotatePivotY' % myCluster[1], cluster_xyz[1]) 
+    cmds.setAttr('%s.rotatePivotZ' % myCluster[1], cluster_xyz[2]) 
+    cmds.setAttr('%s.scalePivotX' % myCluster[1], cluster_xyz[0]) 
+    cmds.setAttr('%s.scalePivotY' % myCluster[1], cluster_xyz[1]) 
+    cmds.setAttr('%s.scalePivotZ' % myCluster[1], cluster_xyz[2])
     
-    cmds.setAttr('%s.originX'% clusterShape[0], cluster_xyz[0])
-    cmds.setAttr('%s.originY'% clusterShape[0], cluster_xyz[1])
+    cmds.setAttr('%s.originX' % clusterShape[0], cluster_xyz[0])
+    cmds.setAttr('%s.originY' % clusterShape[0], cluster_xyz[1])
     cmds.setAttr('%s.originZ' % clusterShape[0], cluster_xyz[2])
     
 print '\nSuccessfully convert the wire deformation to cluster'

@@ -935,7 +935,7 @@ class Maya(object):
         
     def has_plugin_loaded(self, plugin):
         mcommand_result = OpenMaya.MCommandResult()
-        mel_command = 'pluginInfo -q -loaded \"%s\"'%plugin
+        mel_command = 'pluginInfo -q -loaded \"%s\"' % plugin
         OpenMaya.MGlobal.executeCommand(
             mel_command, mcommand_result, False, True)
         util = OpenMaya.MScriptUtil()
@@ -947,9 +947,9 @@ class Maya(object):
     def load_plugin(self, plugin):        
         loaded = self.has_plugin_loaded(plugin)
         if loaded:
-            sys.stderr.write('#warnings: already loaded <%s>'%plugin)
+            sys.stderr.write('#warnings: already loaded <%s>' % plugin)
             return
-        mel_command = 'loadPlugin -qt %s'%plugin
+        mel_command = 'loadPlugin -qt %s' % plugin
         try:
             OpenMaya.MGlobal.executeCommand(mel_command, False, True)
             print 'plugin register', plugin 

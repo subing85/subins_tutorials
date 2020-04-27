@@ -8,7 +8,6 @@ from maya import OpenMaya
 from studio_usd_pipe.core import image
 from studio_usd_pipe.api import studioMaya
 
-
 reload(image)
 reload(studioMaya)
 
@@ -23,15 +22,13 @@ class Shader(studioMaya.Maya):
             'shader': 'asShader',
             'texture': 'asTexture',
             'texture/3D': 'asTexture',
-            'texture/Environment': 'asTexture',          
+            'texture/Environment': 'asTexture',
             'utility': 'asUtility',
             'light': 'asLight',
             'rendering': 'asRendering',
             'postProcess': 'asPostProcess',
             'shadingEngine': 'shadingEngine'         
             }             
-
-            
     
     def get_shading_engines(self, mobject):
         dependency_graph = OpenMaya.MItDependencyGraph(
@@ -225,7 +222,7 @@ class Shader(studioMaya.Maya):
         mplug_array = self.get_mplug_attributes(object, default=True)  
         for x in range(mplug_array.length()):
             attribute = mplug_array[x].attribute()
-            if attribute.apiType()!=OpenMaya.MFn.kTypedAttribute:
+            if attribute.apiType() != OpenMaya.MFn.kTypedAttribute:
                 continue
             value, type = self.get_attribute_type(mplug_array[x])
             if not os.path.isabs(value):
@@ -265,18 +262,17 @@ class Shader(studioMaya.Maya):
                     data.setdefault(node, {})
                 data[node][attribute] = {
                     'value': target_path,
-                    'temp_value': temp_target_path,                    
+                    'temp_value': temp_target_path,
                     'type': attribute_contents['type']
                     }
         return data
-    
     
     def create_lowres_source_images(self, input_data, output_path):
         data = {}        
         for node, node_contents in input_data.items():
             for attribute, attribute_contents in node_contents.items():                
                 if not os.path.isfile(attribute_contents['value']):
-                    raise IOError('Cannot found, <%s>'%attribute_contents['value'])
+                    raise IOError('Cannot found, <%s>' % attribute_contents['value'])
                 source_image = '{}_lores.png'.format(
                     os.path.splitext(os.path.basename(attribute_contents['value']))[0])
                 target_path = os.path.join(output_path, source_image)
@@ -294,9 +290,6 @@ class Shader(studioMaya.Maya):
                     }
         return data
     
-    
-    
-    
     def create_shadernet(self, name, data, replace=False):
         if replace:
             self.remove_node(name)
@@ -304,7 +297,6 @@ class Shader(studioMaya.Maya):
                 self.remove_node(dependency_node)
         mobject = self.create_kshadernet(name, data)
         return mobject
-    
 
     def create_kshadernet(self, name, data):
         '''
@@ -322,27 +314,27 @@ class Shader(studioMaya.Maya):
         shader_mobject = None
         for node, contents in data['nodes'].items():
             mobject = self.create_knode(node, contents['type'])
-            if node==data['surface']['shader']:
+            if node == data['surface']['shader']:
                 shader_mobject = mobject
-            if 'parameters' in contents: # set attribute values        
+            if 'parameters' in contents:  # set attribute values        
                 self.set_attributes(mobject, contents['parameters'])
-            if 'connections' in contents: # connect nodes                 
+            if 'connections' in contents:  # connect nodes                 
                 self.set_connections(mobject, contents['connections'])
         
         # geometry assignments
         mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_mobject)
         shader_mplug = mfn_dependency_node.findPlug(data['surface']['attribute'])
         shading_engine_mobject = self.create_kshading_engine(
-            name, 
+            name,
             shader_mplug,
-            geometries = data['geometries']
+            geometries=data['geometries']
             )
         return shading_engine_mobject
 
     def create_knode(self, name, node_type):        
         node_types = self.get_shading_node_types()
         if node_type not in node_types:
-            warnings.warn('node type <%s> not found in the hyper shade  library'%node_type)
+            warnings.warn('node type <%s> not found in the hyper shade  library' % node_type)
             return
         current_dg_type = self.shader_node_bundles[node_types[node_type]]
         mcommand_result = OpenMaya.MCommandResult()        
@@ -364,7 +356,7 @@ class Shader(studioMaya.Maya):
     def create_kshading_engine(self, name, shader_mplug=None, geometries=None):    
         shading_engine = self.create_shading_engine(name)
         if shader_mplug:
-            output_mplug = self.get_mplug('%s.surfaceShader'%(shading_engine))
+            output_mplug = self.get_mplug('%s.surfaceShader' % (shading_engine))
             dgMod = OpenMaya.MDGModifier()
             dgMod.connect(shader_mplug, output_mplug)
             dgMod.doIt()
@@ -373,11 +365,11 @@ class Shader(studioMaya.Maya):
         return self.get_mobject(shading_engine)
 
     def create_shading_engine(self, name):  
-        #mfn_dependency_node= OpenMaya.MFnDependencyNode()
-        #mfn_dependency_node.create('shadingEngine')
-        #mfn_dependency_node.setName(name)        
+        # mfn_dependency_node= OpenMaya.MFnDependencyNode()
+        # mfn_dependency_node.create('shadingEngine')
+        # mfn_dependency_node.setName(name)        
         mcommand_result = OpenMaya.MCommandResult()
-        mel_command = 'sets -renderable true -noSurfaceShader true -empty -name \"%s\"'% name
+        mel_command = 'sets -renderable true -noSurfaceShader true -empty -name \"%s\"' % name
         OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)

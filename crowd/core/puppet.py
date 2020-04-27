@@ -15,17 +15,15 @@ reload(generic)
 reload(biped)
 
 
-
-
 def create_puppet(tag, input):    
     if 'input' not in input:
         warnings.warn('valueError: Input data not valid!...')
         return
     core.select(cl=True)
     root_joints = getSkeletonWorld('skeletonType', tag)     
-    print  'root_joints\t',  root_joints
+    print  'root_joints\t', root_joints
     for each_root in root_joints:     
-        if tag=='biped':
+        if tag == 'biped':
             biped.create_puppet(each_root.name(), input['input'])   
                    
 
@@ -36,12 +34,13 @@ def getSkeletonWorld(parameter, value):
     world_list = set()
     for each in joints:
         root = each.root()
-        if not core.objExists('%s.%s'%(root.name(), parameter)):
+        if not core.objExists('%s.%s' % (root.name(), parameter)):
             continue        
-        if root.getAttr(parameter)!=value:
+        if root.getAttr(parameter) != value:
             continue
         world_list.add(each.root())
     return list(world_list)        
+
     
 def create_puupet_data(data):    
     nodes = skeleton.get_root_skeletons()    
@@ -50,10 +49,11 @@ def create_puupet_data(data):
     pynode = core.PyNode(nodes[0])   
     if pynode.type() != generic.get_skeleton_type():
         return    
-    if not core.objExists('%s.notes'%pynode.name()):        
+    if not core.objExists('%s.notes' % pynode.name()):        
         pynode.addAttr('notes', dt='string')   
     pynode.setAttr('notes', data)
     return True
+
 
 def get_puppet_data():
     node, message = skeleton.get_root_skeletons()
@@ -62,19 +62,12 @@ def get_puppet_data():
     pynode = core.PyNode(node)   
     if pynode.type() != generic.get_skeleton_type():
         return None, 'Node type not match!...' 
-    if not core.objExists('%s.notes'%pynode.name()):        
+    if not core.objExists('%s.notes' % pynode.name()):        
         return None, 'Wrong configure!...' 
     data = pynode.getAttr('notes')
     # dict_data = ast.literal_eval(data)
     dict_data = json.loads(data)
     return dict_data, 'success!...'
-
-
-
-
-
-   
-
 
 #===============================================================================
 # import warnings
@@ -179,6 +172,4 @@ def get_puppet_data():
 # def get_snap_node(node):
 #     pass
 #===============================================================================
-    
-    
 

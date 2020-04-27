@@ -27,6 +27,7 @@ def setToIMathArray(type_traits, *in_list):
 
 
 class MeshWriter(object):
+
     def __init__(self, dag_path=None, filename=None, archive_info=None):
         super(MeshWriter, self).__init__()
         self.dag_path = dag_path

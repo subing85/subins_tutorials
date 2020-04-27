@@ -31,6 +31,7 @@ import maya.api.OpenMaya as om
 # This sample use the MyCustomBufferGenerator2 to create a custom made streams
 # by combining the Position and Normal streams in a single one.
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
@@ -40,6 +41,7 @@ def maya_useNewAPI():
 
 
 class MyCustomBufferGenerator(omr.MPxVertexBufferGenerator):
+
 	def __init__(self):
 		omr.MPxVertexBufferGenerator.__init__(self)
 
@@ -74,7 +76,7 @@ class MyCustomBufferGenerator(omr.MPxVertexBufferGenerator):
 		return False
 
 	def getSourceStreams(self, object, sourceStreams):
-		#No source stream needed
+		# No source stream needed
 		return False
 
 	def createVertexStream(self, object, vertexBuffer, targetIndexing, sharedIndexing, sourceStreams):
@@ -105,7 +107,7 @@ class MyCustomBufferGenerator(omr.MPxVertexBufferGenerator):
 			return
 
 		# fill the data.
-		buffer = vertexBuffer.acquire(vertexCount, True)	# writeOnly = True - we don't need the current buffer values
+		buffer = vertexBuffer.acquire(vertexCount, True)  # writeOnly = True - we don't need the current buffer values
 
 		inc = sizeof(c_float)
 		address = buffer
@@ -118,7 +120,7 @@ class MyCustomBufferGenerator(omr.MPxVertexBufferGenerator):
 			c_float.from_address(address).value = 1.0
 			address += inc
 
-			c_float.from_address(address).value = indices[i] # color index
+			c_float.from_address(address).value = indices[i]  # color index
 			address += inc
 
 		# commit the buffer to signal completion.
@@ -126,6 +128,7 @@ class MyCustomBufferGenerator(omr.MPxVertexBufferGenerator):
 
 
 class MyCustomBufferGenerator2(omr.MPxVertexBufferGenerator):
+
 	def __init__(self):
 		omr.MPxVertexBufferGenerator.__init__(self)
 
@@ -138,13 +141,13 @@ class MyCustomBufferGenerator2(omr.MPxVertexBufferGenerator):
 
 		vertices = sourceIndexing.indices()
 		for i in range(0, vertCount):
-			vertices.append( vertexList[i] )
+			vertices.append(vertexList[i])
 
 		return True
 
 	def getSourceStreams(self, object, sourceStreams):
-		sourceStreams.append( "Position" )
-		sourceStreams.append( "Normal" )
+		sourceStreams.append("Position")
+		sourceStreams.append("Normal")
 		return True
 
 	def createVertexStream(self, object, vertexBuffer, targetIndexing, sharedIndexing, sourceStreams):
@@ -176,14 +179,14 @@ class MyCustomBufferGenerator2(omr.MPxVertexBufferGenerator):
 		if vertexCount <= 0:
 			return
 
-		positionStream = sourceStreams.getBuffer( "Position" )
+		positionStream = sourceStreams.getBuffer("Position")
 		if positionStream == None or positionStream.descriptor().dataType != omr.MGeometry.kFloat:
 			return
 		positionDimension = positionStream.descriptor().dimension
 		if positionDimension != 3 and positionDimension != 4:
 			return
 
-		normalStream = sourceStreams.getBuffer( "Normal" )
+		normalStream = sourceStreams.getBuffer("Normal")
 		if normalStream == None or normalStream.descriptor().dataType != omr.MGeometry.kFloat:
 			return
 		normalDimension = normalStream.descriptor().dimension
@@ -194,7 +197,7 @@ class MyCustomBufferGenerator2(omr.MPxVertexBufferGenerator):
 		if positionBuffer != 0:
 			normalBuffer = normalStream.map()
 			if normalBuffer != 0:
-				compositeBuffer = vertexBuffer.acquire(vertexCount, True) # writeOnly = True - we don't need the current buffer values
+				compositeBuffer = vertexBuffer.acquire(vertexCount, True)  # writeOnly = True - we don't need the current buffer values
 				if compositeBuffer != 0:
 
 					compaddress = compositeBuffer
@@ -208,53 +211,53 @@ class MyCustomBufferGenerator2(omr.MPxVertexBufferGenerator):
 
 						for i in range(0, vertexCount):
 							xcompaddr = compaddress
-							ycompaddr = compaddress+floatinc
-							zcompaddr = compaddress+2*floatinc
-							wcompaddr = compaddress+3*floatinc
+							ycompaddr = compaddress + floatinc
+							zcompaddr = compaddress + 2 * floatinc
+							wcompaddr = compaddress + 3 * floatinc
 
-							#xposaddr = posaddress
-							yposaddr = posaddress+floatinc
-							zposaddr = posaddress+2*floatinc
+							# xposaddr = posaddress
+							yposaddr = posaddress + floatinc
+							zposaddr = posaddress + 2 * floatinc
 
 							xnormaddr = normaddress
-							#ynormaddr = normaddress+floatinc
-							znormaddr = normaddress+2*floatinc
+							# ynormaddr = normaddress+floatinc
+							znormaddr = normaddress + 2 * floatinc
 
 							c_float.from_address(xcompaddr).value = c_float.from_address(yposaddr).value  # store position.y
 							c_float.from_address(ycompaddr).value = c_float.from_address(zposaddr).value  # store position.z
-							c_float.from_address(zcompaddr).value = c_float.from_address(xnormaddr).value # store normal.x
+							c_float.from_address(zcompaddr).value = c_float.from_address(xnormaddr).value  # store normal.x
 							if dimension == 4:
-								c_float.from_address(wcompaddr).value = c_float.from_address(znormaddr).value # store normal.z
+								c_float.from_address(wcompaddr).value = c_float.from_address(znormaddr).value  # store normal.z
 
-							compaddress += dimension*floatinc
-							posaddress += positionDimension*floatinc
-							normaddress += normalDimension*floatinc
+							compaddress += dimension * floatinc
+							posaddress += positionDimension * floatinc
+							normaddress += normalDimension * floatinc
 
 					elif dataType == omr.MGeometry.kInt32:
 
 						for i in range(0, vertexCount):
 							xcompaddr = compaddress
-							ycompaddr = compaddress+intinc
-							zcompaddr = compaddress+2*intinc
-							wcompaddr = compaddress+3*intinc
+							ycompaddr = compaddress + intinc
+							zcompaddr = compaddress + 2 * intinc
+							wcompaddr = compaddress + 3 * intinc
 
-							#xposaddr = posaddress
-							yposaddr = posaddress+floatinc
-							zposaddr = posaddress+2*floatinc
+							# xposaddr = posaddress
+							yposaddr = posaddress + floatinc
+							zposaddr = posaddress + 2 * floatinc
 
 							xnormaddr = normaddress
-							#ynormaddr = normaddress+floatinc
-							znormaddr = normaddress+2*floatinc
+							# ynormaddr = normaddress+floatinc
+							znormaddr = normaddress + 2 * floatinc
 
 							c_int.from_address(xcompaddr).value = c_float.from_address(yposaddr).value * 255  # store position.y
 							c_int.from_address(ycompaddr).value = c_float.from_address(zposaddr).value * 255  # store position.z
-							c_int.from_address(zcompaddr).value = c_float.from_address(xnormaddr).value * 255 # store normal.x
+							c_int.from_address(zcompaddr).value = c_float.from_address(xnormaddr).value * 255  # store normal.x
 							if dimension == 4:
-								c_int.from_address(wcompaddr).value = c_float.from_address(znormaddr).value * 255 # store normal.z
+								c_int.from_address(wcompaddr).value = c_float.from_address(znormaddr).value * 255  # store normal.z
 
-							compaddress += dimension*intinc
-							posaddress += positionDimension*floatinc
-							normaddress += normalDimension*floatinc
+							compaddress += dimension * intinc
+							posaddress += positionDimension * floatinc
+							normaddress += normalDimension * floatinc
 					
 					vertexBuffer.commit(compositeBuffer)
 
@@ -262,16 +265,19 @@ class MyCustomBufferGenerator2(omr.MPxVertexBufferGenerator):
 
 			positionStream.unmap()
 
+
 # This is the buffer generator creation function registered with the DrawRegistry.
 # Used to initialize the generator.
 def createMyCustomBufferGenerator():
 	return MyCustomBufferGenerator()
+
 
 def createMyCustomBufferGenerator2():
 	return MyCustomBufferGenerator2()
 
 # The following routines are used to register/unregister
 # the vertex generators with Maya
+
 
 def initializePlugin(obj):
 
@@ -282,13 +288,13 @@ def initializePlugin(obj):
 	# Pretty limited in cg so we hook onto the "ATTR" semantics.
 	omr.MDrawRegistry.registerVertexBufferGenerator("ATTR8", createMyCustomBufferGenerator)
 
-
 	# register a generator based on a custom semantic for DX11.  You can use any name in DX11.
 	omr.MDrawRegistry.registerVertexBufferGenerator("myCustomStreamB", createMyCustomBufferGenerator2)
 
 	# register a generator based on a custom semantic for cg.  
 	# Pretty limited in cg so we hook onto the "ATTR" semantics.
 	omr.MDrawRegistry.registerVertexBufferGenerator("ATTR7", createMyCustomBufferGenerator2)
+
 
 def uninitializePlugin(obj):
 

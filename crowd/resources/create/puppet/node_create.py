@@ -10,7 +10,6 @@ COMMENTS = 'To create skeleton'
 VERSION = 1.0
 CLASS = 'CreateNode'
 
-
 from pymel import core
 
 from crowd.core import puppet
@@ -45,10 +44,10 @@ class CreateNode(object):
         puppet.create_puppet(self.tag, self.input)
         
         print '\nDone.....................'
-        #try:
+        # try:
         # root_dag_path, parent_data = puppet.create_puppet(self.tag, self.input)
         #    return 'success', root_dag_path, parent_data
-        #except Exception as error:
+        # except Exception as error:
         #    return 'failed', None, str(error)
 
 

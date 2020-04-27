@@ -1,5 +1,5 @@
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -35,8 +35,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
-
+# +
 
 # import maya.cmds
 # maya.cmds.loadPlugin("zoomCameraCmd.py")
@@ -51,9 +50,11 @@ kPluginCmdName = "spZoomCamera"
 
 print "zoomCameraCmd.py has been imported...."
 
+
 # command
 class scriptedCommand(OpenMayaMPx.MPxCommand):
 	camera = OpenMaya.MDagPath()
+
 	def __init__(self):
 		OpenMayaMPx.MPxCommand.__init__(self)
 
@@ -75,24 +76,27 @@ class scriptedCommand(OpenMayaMPx.MPxCommand):
 		try:
 			OpenMayaUI.M3dView.active3dView().getCamera(camera)
 		except:	
-			sys.stderr.write( "ERROR: getting camera \n" )
+			sys.stderr.write("ERROR: getting camera \n")
 		else:
 			self.redoIt()
 
 	def isUndoable(self):
 		return True
 
-#Cmd Creator
+
+# Cmd Creator
 def cmdCreator():
-	return OpenMayaMPx.asMPxPtr( scriptedCommand() )
+	return OpenMayaMPx.asMPxPtr(scriptedCommand())
+
 		
 # Initialize the script plug-in	
 def initializePlugin(obj):
 	plugin = OpenMayaMPx.MFnPlugin(obj)
 	try:
-		plugin.registerCommand( kPluginCmdName, cmdCreator)
+		plugin.registerCommand(kPluginCmdName, cmdCreator)
 	except:
-		sys.stderr.write( "Failed to register command: %s\n" % kPluginCmdName )
+		sys.stderr.write("Failed to register command: %s\n" % kPluginCmdName)
+
 
 # Uninitialize the script plug-in	
 def uninitializePlugin(obj):
@@ -100,6 +104,5 @@ def uninitializePlugin(obj):
 	try:
 		plugin.deregisterCommand(kPluginCmdName)		
 	except:
-		sys.stderr.write( "Failed to unregister command: %s\n" % kPluginCmdName )
-
+		sys.stderr.write("Failed to unregister command: %s\n" % kPluginCmdName)
 	

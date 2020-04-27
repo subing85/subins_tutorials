@@ -165,7 +165,6 @@ class Connect(QtGui.QMainWindow):
         index = self.combobox_input.currentIndex()
         self.load_data(self.combobox_input, self.treewidget, index)
 
-
     def remove(self):
         replay = QtGui.QMessageBox.question(
             self,

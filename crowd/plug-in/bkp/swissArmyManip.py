@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Autodesk Script File
@@ -58,8 +58,8 @@
 #
 # To use this plug-in:
 # 
-#	import maya.cmds as cmds
-#	cmds.createNode("spSwissArmyLocator")
+# 	import maya.cmds as cmds
+# 	cmds.createNode("spSwissArmyLocator")
 #
 #   click on the showManipTool
 # 
@@ -69,7 +69,7 @@ import maya.OpenMayaUI as OpenMayaUI
 import maya.OpenMayaRender as OpenMayaRender
 import maya.OpenMayaMPx as OpenMayaMPx
 
-import math,sys
+import math, sys
 
 glRenderer = OpenMayaRender.MHardwareRenderer.theRenderer()
 glFT = glRenderer.glFunctionTable()
@@ -85,52 +85,52 @@ delta3 = 0.03
 delta4 = 0.04
 
 # Locator Data
-centre = [	[  0.10, 0.0,  0.10 ],
+centre = [	[  0.10, 0.0, 0.10 ],
 			[  0.10, 0.0, -0.10 ],
 			[ -0.10, 0.0, -0.10 ],
-			[ -0.10, 0.0,  0.10 ], 
-			[  0.10, 0.0,  0.10 ] ] 
-state1 = [	[  1.00, 0.0,  1.00 ],
-			[  1.00, 0.0,  0.50 ],
-			[  0.50, 0.0,  0.50 ],
-			[  0.50, 0.0,  1.00 ], 
-			[  1.00, 0.0,  1.00 ] ] 
+			[ -0.10, 0.0, 0.10 ],
+			[  0.10, 0.0, 0.10 ] ] 
+state1 = [	[  1.00, 0.0, 1.00 ],
+			[  1.00, 0.0, 0.50 ],
+			[  0.50, 0.0, 0.50 ],
+			[  0.50, 0.0, 1.00 ],
+			[  1.00, 0.0, 1.00 ] ] 
 state2 = [	[  1.00, 0.0, -1.00 ],
 			[  1.00, 0.0, -0.50 ],
 			[  0.50, 0.0, -0.50 ],
-			[  0.50, 0.0, -1.00 ], 
+			[  0.50, 0.0, -1.00 ],
 			[  1.00, 0.0, -1.00 ] ] 
 state3 = [	[ -1.00, 0.0, -1.00 ],
 			[ -1.00, 0.0, -0.50 ],
 			[ -0.50, 0.0, -0.50 ],
-			[ -0.50, 0.0, -1.00 ], 
+			[ -0.50, 0.0, -1.00 ],
 			[ -1.00, 0.0, -1.00 ] ] 
-state4 = [	[ -1.00, 0.0,  1.00 ],
-			[ -1.00, 0.0,  0.50 ],
-			[ -0.50, 0.0,  0.50 ],
-			[ -0.50, 0.0,  1.00 ], 
-			[ -1.00, 0.0,  1.00 ] ] 
-arrow1 = [	[  0.00, 0.0,  1.00 ],
-			[  0.10, 0.0,  0.20 ],
-			[ -0.10, 0.0,  0.20 ],
-			[  0.00, 0.0,  1.00 ] ] 
-arrow2 = [	[  1.00, 0.0,  0.00 ],
-			[  0.20, 0.0,  0.10 ],
+state4 = [	[ -1.00, 0.0, 1.00 ],
+			[ -1.00, 0.0, 0.50 ],
+			[ -0.50, 0.0, 0.50 ],
+			[ -0.50, 0.0, 1.00 ],
+			[ -1.00, 0.0, 1.00 ] ] 
+arrow1 = [	[  0.00, 0.0, 1.00 ],
+			[  0.10, 0.0, 0.20 ],
+			[ -0.10, 0.0, 0.20 ],
+			[  0.00, 0.0, 1.00 ] ] 
+arrow2 = [	[  1.00, 0.0, 0.00 ],
+			[  0.20, 0.0, 0.10 ],
 			[  0.20, 0.0, -0.10 ],
-			[  1.00, 0.0,  0.00 ] ] 
+			[  1.00, 0.0, 0.00 ] ] 
 arrow3 = [	[  0.00, 0.0, -1.00 ],
 			[  0.10, 0.0, -0.20 ],
 			[ -0.10, 0.0, -0.20 ],
 			[  0.00, 0.0, -1.00 ] ] 
-arrow4 = [	[ -1.00, 0.0,  0.00 ],
-			[ -0.20, 0.0,  0.10 ],
+arrow4 = [	[ -1.00, 0.0, 0.00 ],
+			[ -0.20, 0.0, 0.10 ],
 			[ -0.20, 0.0, -0.10 ],
-			[ -1.00, 0.0,  0.00 ] ] 
-perimeter=[	[  1.10, 0.0,  1.10 ],
+			[ -1.00, 0.0, 0.00 ] ] 
+perimeter = [	[  1.10, 0.0, 1.10 ],
 			[  1.10, 0.0, -1.10 ],
 			[ -1.10, 0.0, -1.10 ],
-			[ -1.10, 0.0,  1.10 ], 
-			[  1.10, 0.0,  1.10 ] ] 
+			[ -1.10, 0.0, 1.10 ],
+			[  1.10, 0.0, 1.10 ] ] 
 
 kCentreCount = 5
 kState1Count = 5
@@ -143,15 +143,14 @@ kArrow3Count = 4
 kArrow4Count = 4
 kPerimeterCount = 5
 
-
 ########################################################################
 ########################################################################
 
 
 class swissArmyLocatorManip(OpenMayaMPx.MPxManipContainer):
+
 	def __init__(self):
 		OpenMayaMPx.MPxManipContainer.__init__(self)
-
 		
 		self.fCircleSweepManip = OpenMaya.MDagPath()
 		self.fDirectionManip = OpenMaya.MDagPath()
@@ -163,7 +162,6 @@ class swissArmyLocatorManip(OpenMayaMPx.MPxManipContainer):
 		self.fRotateManip = OpenMaya.MDagPath()
 		self.fScaleManip = OpenMaya.MDagPath()
 		self.fNodePath = OpenMaya.MDagPath()
-
 
 	def createChildren(self):
 		# FreePointTriadManip
@@ -207,7 +205,6 @@ class swissArmyLocatorManip(OpenMayaMPx.MPxManipContainer):
 		# ScaleManip
 		self.fScaleManip = self.addScaleManip("scaleManip", "scale")
 		scaleManipFn = OpenMayaUI.MFnScaleManip(self.fScaleManip)
-
 
 	def connectToDependNode(self, node):
 		# Get the DAG path
@@ -317,14 +314,12 @@ class swissArmyLocatorManip(OpenMayaMPx.MPxManipContainer):
 		self.finishAddingManips()
 		OpenMayaMPx.MPxManipContainer.connectToDependNode(self, node)
 
-
 	def draw(self, view, path, style, status):
 		OpenMayaMPx.MPxManipContainer.draw(self, view, path, style, status)
 		view.beginGL()
 		textPos = OpenMaya.MPoint(self.nodeTranslation())
 		view.drawText("Swiss Army Manipulator", textPos, OpenMayaUI.M3dView.kLeft)
 		view.endGL()
-
 
 	def plugToManipConversion(self, theIndex):
 		numData = OpenMaya.MFnNumericData()
@@ -333,7 +328,6 @@ class swissArmyLocatorManip(OpenMayaMPx.MPxManipContainer):
 		numData.setData3Float(vec.x, vec.y, vec.z)
 		manipData = OpenMayaUI.MManipData(numDataObj)
 		return manipData
-
 	
 	def nodeTranslation(self):
 		dagFn = OpenMaya.MFnDagNode(self.fNodePath)
@@ -343,12 +337,12 @@ class swissArmyLocatorManip(OpenMayaMPx.MPxManipContainer):
 		transformFn = OpenMaya.MFnTransform(path)
 		return transformFn.getTranslation(OpenMaya.MSpace.kWorld)
 
+########################################################################
+########################################################################
 
-########################################################################
-########################################################################
 
 class swissArmyLocator(OpenMayaMPx.MPxLocatorNode):
-	aSize = OpenMaya.MObject()         # The size of the locator
+	aSize = OpenMaya.MObject()  # The size of the locator
 	aPoint = OpenMaya.MObject()
 	aPointX = OpenMaya.MObject()
 	aPointY = OpenMaya.MObject()
@@ -366,10 +360,8 @@ class swissArmyLocator(OpenMayaMPx.MPxLocatorNode):
 	def __init__(self):
 		OpenMayaMPx.MPxLocatorNode.__init__(self)
 
-
 	def compute(self, plug, data):
 		return OpenMaya.kUnknownParameter
-
 
 	def draw(self, view, path, style, status):
 
@@ -381,7 +373,7 @@ class swissArmyLocator(OpenMayaMPx.MPxLocatorNode):
 
 		arrow1AnglePlug = OpenMaya.MPlug(thisNode, swissArmyLocator.aArrow1Angle)
 		arrow1Angle = arrow1AnglePlug.asMAngle()
-		angle1 = -arrow1Angle.asRadians() - 3.1415927/2.0
+		angle1 = -arrow1Angle.asRadians() - 3.1415927 / 2.0
 
 		arrow3AnglePlug = OpenMaya.MPlug(thisNode, swissArmyLocator.aArrow3Angle)
 		arrow3Angle = arrow3AnglePlug.asMAngle()
@@ -538,106 +530,104 @@ class swissArmyLocator(OpenMayaMPx.MPxLocatorNode):
 		if toggle:
 			last = kCentreCount - 1
 			for i in range(last): 
-				glFT.glVertex3f(centre[i][0] * multiplier, 
-								centre[i][1] * multiplier, 
+				glFT.glVertex3f(centre[i][0] * multiplier,
+								centre[i][1] * multiplier,
 								centre[i][2] * multiplier)
-				glFT.glVertex3f(centre[i+1][0] * multiplier, 
-								centre[i+1][1] * multiplier, 
-								centre[i+1][2] * multiplier)
+				glFT.glVertex3f(centre[i + 1][0] * multiplier,
+								centre[i + 1][1] * multiplier,
+								centre[i + 1][2] * multiplier)
 
 		if (state == 0):
 			last = kState1Count - 1
 			for i in range(last): 
-				glFT.glVertex3f(state1[i][0] * multiplier, 
-								state1[i][1] * multiplier, 
+				glFT.glVertex3f(state1[i][0] * multiplier,
+								state1[i][1] * multiplier,
 								state1[i][2] * multiplier)
-				glFT.glVertex3f(state1[i+1][0] * multiplier, 
-								state1[i+1][1] * multiplier, 
-								state1[i+1][2] * multiplier)
+				glFT.glVertex3f(state1[i + 1][0] * multiplier,
+								state1[i + 1][1] * multiplier,
+								state1[i + 1][2] * multiplier)
 
 		if (state == 1):
 			last = kState2Count - 1
 			for i in range(last): 
-				glFT.glVertex3f(state2[i][0] * multiplier, 
-								state2[i][1] * multiplier, 
+				glFT.glVertex3f(state2[i][0] * multiplier,
+								state2[i][1] * multiplier,
 								state2[i][2] * multiplier)
-				glFT.glVertex3f(state2[i+1][0] * multiplier, 
-								state2[i+1][1] * multiplier, 
-								state2[i+1][2] * multiplier)
+				glFT.glVertex3f(state2[i + 1][0] * multiplier,
+								state2[i + 1][1] * multiplier,
+								state2[i + 1][2] * multiplier)
 
 		if (state == 2):
 			last = kState3Count - 1
 			for i in range(last): 
-				glFT.glVertex3f(state3[i][0] * multiplier, 
-								state3[i][1] * multiplier, 
+				glFT.glVertex3f(state3[i][0] * multiplier,
+								state3[i][1] * multiplier,
 								state3[i][2] * multiplier)
-				glFT.glVertex3f(state3[i+1][0] * multiplier, 
-								state3[i+1][1] * multiplier, 
-								state3[i+1][2] * multiplier)
+				glFT.glVertex3f(state3[i + 1][0] * multiplier,
+								state3[i + 1][1] * multiplier,
+								state3[i + 1][2] * multiplier)
 
 		if (state == 3):
 			last = kState4Count - 1
 			for i in range(last): 
-				glFT.glVertex3f(state4[i][0] * multiplier, 
-								state4[i][1] * multiplier, 
+				glFT.glVertex3f(state4[i][0] * multiplier,
+								state4[i][1] * multiplier,
 								state4[i][2] * multiplier)
-				glFT.glVertex3f(state4[i+1][0] * multiplier, 
-								state4[i+1][1] * multiplier, 
-								state4[i+1][2] * multiplier)
+				glFT.glVertex3f(state4[i + 1][0] * multiplier,
+								state4[i + 1][1] * multiplier,
+								state4[i + 1][2] * multiplier)
 
 		last = kArrow1Count - 1
 		for i in range(last): 
 			glFT.glVertex3f((-arrow1[i][0] * multiplier * math.cos(angle1) - arrow1[i][2] * multiplier * math.sin(angle1)),
 							(arrow1[i][1] * multiplier + delta1),
 							(arrow1[i][2] * multiplier * math.cos(angle1) - arrow1[i][0] * multiplier * math.sin(angle1)))
-			glFT.glVertex3f((-arrow1[i+1][0] * multiplier * math.cos(angle1) - arrow1[i+1][2] * multiplier * math.sin(angle1)),
-							(arrow1[i+1][1] * multiplier + delta1),
-							(arrow1[i+1][2] * multiplier * math.cos(angle1) - arrow1[i+1][0] * multiplier * math.sin(angle1)))
+			glFT.glVertex3f((-arrow1[i + 1][0] * multiplier * math.cos(angle1) - arrow1[i + 1][2] * multiplier * math.sin(angle1)),
+							(arrow1[i + 1][1] * multiplier + delta1),
+							(arrow1[i + 1][2] * multiplier * math.cos(angle1) - arrow1[i + 1][0] * multiplier * math.sin(angle1)))
 
 		last = kArrow2Count - 1
 		for i in range(last): 
 			glFT.glVertex3f((-arrow2[i][0] * multiplier * math.cos(angle2) - arrow2[i][2] * multiplier * math.sin(angle2)),
 							(arrow2[i][1] * multiplier + delta2),
 							(arrow2[i][2] * multiplier * math.cos(angle2) - arrow2[i][0] * multiplier * math.sin(angle2)))
-			glFT.glVertex3f((-arrow2[i+1][0] * multiplier * math.cos(angle2) - arrow2[i+1][2] * multiplier * math.sin(angle2)),
-							(arrow2[i+1][1] * multiplier + delta2),
-							(arrow2[i+1][2] * multiplier * math.cos(angle2) - arrow2[i+1][0] * multiplier * math.sin(angle2)))
+			glFT.glVertex3f((-arrow2[i + 1][0] * multiplier * math.cos(angle2) - arrow2[i + 1][2] * multiplier * math.sin(angle2)),
+							(arrow2[i + 1][1] * multiplier + delta2),
+							(arrow2[i + 1][2] * multiplier * math.cos(angle2) - arrow2[i + 1][0] * multiplier * math.sin(angle2)))
 
 		last = kArrow3Count - 1
 		for i in range(last): 
 			glFT.glVertex3f((-arrow3[i][0] * multiplier * math.cos(angle3) - arrow3[i][2] * multiplier * math.sin(angle3)),
 							(arrow3[i][1] * multiplier + delta3),
 							(arrow3[i][2] * multiplier * math.cos(angle3) - arrow3[i][0] * multiplier * math.sin(angle3)))
-			glFT.glVertex3f((-arrow3[i+1][0] * multiplier * math.cos(angle3) - arrow3[i+1][2] * multiplier * math.sin(angle3)),
-							(arrow3[i+1][1] * multiplier + delta3),
-							(arrow3[i+1][2] * multiplier * math.cos(angle3) - arrow3[i+1][0] * multiplier * math.sin(angle3)))
+			glFT.glVertex3f((-arrow3[i + 1][0] * multiplier * math.cos(angle3) - arrow3[i + 1][2] * multiplier * math.sin(angle3)),
+							(arrow3[i + 1][1] * multiplier + delta3),
+							(arrow3[i + 1][2] * multiplier * math.cos(angle3) - arrow3[i + 1][0] * multiplier * math.sin(angle3)))
 
 		last = kArrow4Count - 1
 		for i in range(last): 
 			glFT.glVertex3f((arrow4[i][0] * multiplier),
 							(arrow4[i][1] * multiplier + delta4),
 							(arrow4[i][2] * multiplier))
-			glFT.glVertex3f((arrow4[i+1][0] * multiplier),
-							(arrow4[i+1][1] * multiplier + delta4),
-							(arrow4[i+1][2] * multiplier))
+			glFT.glVertex3f((arrow4[i + 1][0] * multiplier),
+							(arrow4[i + 1][1] * multiplier + delta4),
+							(arrow4[i + 1][2] * multiplier))
 
 		last = kPerimeterCount - 1
 		for i in range(last): 
 			glFT.glVertex3f(perimeter[i][0] * multiplier,
 							perimeter[i][1] * multiplier,
 							perimeter[i][2] * multiplier)
-			glFT.glVertex3f(perimeter[i+1][0] * multiplier,
-							perimeter[i+1][1] * multiplier,
-							perimeter[i+1][2] * multiplier)
+			glFT.glVertex3f(perimeter[i + 1][0] * multiplier,
+							perimeter[i + 1][1] * multiplier,
+							perimeter[i + 1][2] * multiplier)
 
 		glFT.glEnd()
 
 		view.endGL()
 
-
 	def isBounded(self):
 		return True
-
 
 	def boundingBox(self):
 		thisNode = self.thisMObject()
@@ -653,8 +643,6 @@ class swissArmyLocator(OpenMayaMPx.MPxLocatorNode):
 		corner2 = corner2 * multiplier
 
 		return OpenMaya.MBoundingBox(corner1, corner2)
-
-
 
 ########################################################################
 ########################################################################
@@ -724,7 +712,7 @@ def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject, "Autodesk", "1.0", "Any")
 
 	try:
-		mplugin.registerNode(kSwissArmyLocatorName, 
+		mplugin.registerNode(kSwissArmyLocatorName,
 								kSwissArmyLocatorId,
 								locatorCreator,
 								locatorInit,
@@ -734,9 +722,9 @@ def initializePlugin(mobject):
 		raise
 
 	try:
-		mplugin.registerNode(kSwissArmyLocatorManipName, 
-								kSwissArmyLocatorManipId, 
-								locatorManipCreator, 
+		mplugin.registerNode(kSwissArmyLocatorManipName,
+								kSwissArmyLocatorManipId,
+								locatorManipCreator,
 								locatorManipInit,
 								OpenMayaMPx.MPxNode.kManipContainer)
 	except:

@@ -36,10 +36,10 @@ class Publish(object):
             values = container[key][module]
             if index > 1:
                 print ''
-            print ('%s. module key: ' % (index+1)).rjust(15), module.KEY
+            print ('%s. module key: ' % (index + 1)).rjust(15), module.KEY
             for value in values[0]:
                 print ': '.rjust(15), value
-            print 'message: '.rjust(15),values[1]
+            print 'message: '.rjust(15), values[1]
         if key:
             print '#info: execute success!...', header, '\n'
         else:     
@@ -177,7 +177,6 @@ class Publish(object):
             module_data[type].setdefault(order, contents)
         print json.dumps(module_data, indent=4)            
         return module_data 
-    
     
 #===============================================================================
 # pub = Publish('model')

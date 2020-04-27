@@ -8,7 +8,6 @@ VERSION = '0.0.0'
 LAST_MODIFIED = 'April 14, 2020'
 
 
-
 def execute(**kwargs):   
     values = []
     message = ''
@@ -16,9 +15,9 @@ def execute(**kwargs):
     return True, values, message
 
 
-
 def trail():    
     return True, [], 'trail run'
+
     
 import os
 import copy
@@ -93,7 +92,7 @@ class Asset(object):
         subfield_data = self.get_subfields(caption, db_data=db_data)
         version_data = {}
         for k, v in subfield_data.items():    
-            if k!=subfield:
+            if k != subfield:
                 continue        
             version_data.update(v)        
         return version_data
@@ -148,10 +147,6 @@ class Asset(object):
         self.mayapy = self.input_data['mayapy_directory']
         self.show_path = self.input_data['show_directory']
     
-    
-    
-    
-    
     def pack(self, bundle, **kwargs):
         '''
             import time
@@ -193,7 +188,6 @@ class Asset(object):
         
         self.temp_pack_path = self.make_directory(
             os.path.join(tempfile.gettempdir(), self.temp_entity))  
-    
         
         if self.subfield == 'model':
             self.make_maya_model(force=False)
@@ -233,7 +227,6 @@ class Asset(object):
             self.make_composition_usd(kwargs['composition'], force=False)
             self.make_thumbnail()
             self.make_manifest()
-           
             
         for key in self.data:
             if not self.data[key]:
@@ -241,10 +234,9 @@ class Asset(object):
             for each in self.data[key]:
                 if not each:
                     continue                
-                #if not os.path.exists(each):
+                # if not os.path.exists(each):
                 #    continue            
                 os.utime(each, (self.time_stamp, self.time_stamp))
-
 
     def release(self):  
         result = self.move_to_publish()        
@@ -376,7 +368,6 @@ class Asset(object):
         maya_file = self.mpack.create_surface_maya(inputs)
         self.data['maya_file'] = [maya_file]        
         
-        
     def make_studio_model(self):
         inputs = {
             'node': 'model',
@@ -398,7 +389,6 @@ class Asset(object):
             }       
         studio_uv = self.mpack.create_studio_uv(inputs)
         self.data['studio_uv'] = [studio_uv]
-        
     
     def make_studio_puppet(self):
         self.data['studio_puppet'] = None
@@ -504,7 +494,6 @@ class Asset(object):
                 thumbnail = [os.path.join(self.publish_path, thumbnail_dirname)]
             else:
                 thumbnail = None
-            
                       
         inputs = {
             'output_directory': self.temp_pack_path,
@@ -525,13 +514,12 @@ class Asset(object):
             'subfield': self.subfield
             }
         
-        print '#'*50
+        print '#' * 50
         print json.dumps(inputs, indent=4)
-        print '#'*50
+        print '#' * 50
         
         mainfest = self.mpack.create_manifest(inputs)
         self.data['mainfest'] = [mainfest]
-        
         
     def make_composition_usd(self, composition_data, force=False):
         self.data['composition'] = None      
@@ -556,5 +544,4 @@ class Asset(object):
         if not os.path.exists(path):
             return
         os.utime(path, (self.time_stamp, self.time_stamp)) 
-              
 

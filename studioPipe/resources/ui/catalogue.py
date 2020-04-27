@@ -13,7 +13,6 @@ Description
     None.
 '''
 
-
 import sys
 import warnings
 
@@ -83,6 +82,7 @@ class Catalogue(QtGui.QListWidget):
                      self.height + ingrement]
         self.setIconSize(
             QtCore.QSize(zoom_size[0], zoom_size[1]))
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

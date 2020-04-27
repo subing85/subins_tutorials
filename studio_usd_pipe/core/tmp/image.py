@@ -2,6 +2,7 @@ import os
 from PySide2 import QtGui
 from PySide2 import QtCore
 
+
 def image_resize(image_path, output_path, width=2048, height=2048):
     q_image = QtGui.QImage(image_path)
     sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 

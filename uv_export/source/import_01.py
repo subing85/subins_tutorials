@@ -25,14 +25,14 @@ exist_set_names = mfn_mesh.getUVSetNames()
 
 # Remove exists uv set from polygon shape
 for index, set_name in enumerate(exist_set_names):
-    if index>0:
+    if index > 0:
         mfn_mesh.deleteUVSet(set_name)
  
 # Assign uv informations to polygon shape 
 for index, v in uv_sets.items():
     set_name = v['set_name']
         
-    if int(index)==0:
+    if int(index) == 0:
 	# get exists uv set name
 	new_set_name = exist_set_names[0]  
     else:

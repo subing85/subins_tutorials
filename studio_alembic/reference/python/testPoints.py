@@ -40,8 +40,10 @@ from alembic.AbcGeom import *
 
 testList = []
 
+
 def equalWithAbsError (a0, a1, error):
     return abs (a0 - a1) <= error
+
 
 def pointsOut():
     """write out points archive"""
@@ -68,9 +70,10 @@ def pointsOut():
         ptsObj.getSchema().set(psamp)
 
         positions[i] = V3f(i, i, i)
-        velocities[i] = V3f(100.0-i, 0, 0)
+        velocities[i] = V3f(100.0 - i, 0, 0)
         ids[i] = i * 10
         widths[i] = 0.1 + i * 0.05
+
 
 def pointsIn():
     """read in points archive"""
@@ -92,13 +95,15 @@ def pointsIn():
 
         for j in range(i):
             assert pointsSamp.getPositions()[j] == V3f(j, j, j)
-            assert pointsSamp.getVelocities()[j] == V3f(100-j, 0, 0)
+            assert pointsSamp.getVelocities()[j] == V3f(100 - j, 0, 0)
             assert pointsSamp.getIds()[j] == j * 10
             assert equalWithAbsError(widthSamp.getVals()[j], 0.1 + j * 0.05, 7)
+
 
 def testPointsBinding():
     pointsOut()
     pointsIn()
+
 
 testList.append(('testPointsBinding', testPointsBinding))
 

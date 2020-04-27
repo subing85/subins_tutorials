@@ -39,13 +39,16 @@ from alembic import AbcMaterial
 
 testList = []
 
+
 def almostEqual(a0, a1, error=0.01):
     return abs(a0 - a1) <= error
+
 
 def setFloatParameter(schema, target, shaderType, paramName, value):
     prop = Abc.OFloatProperty(schema.getShaderParameters(target, shaderType),
             paramName)
     prop.setValue(value)
+
 
 def materialOut():
     archive = Abc.OArchive("MaterialAssignment.abc")
@@ -56,15 +59,15 @@ def materialOut():
     # parent material
     materialA = AbcMaterial.OMaterial(materials, "materialA")
     materialA.getSchema().setShader("prman", "surface", "paintedplastic")
-    setFloatParameter(materialA.getSchema(), 
+    setFloatParameter(materialA.getSchema(),
             "prman", "surface", "Kd", 0.5)
-    setFloatParameter(materialA.getSchema(), 
+    setFloatParameter(materialA.getSchema(),
             "prman", "surface", "roughness", 0.1)
 
     # child material
     materialB = AbcMaterial.OMaterial(materialA, "materialB")
     materialB.getSchema().setShader("prman", "displacement", "knobby")
-    setFloatParameter(materialB.getSchema(), 
+    setFloatParameter(materialB.getSchema(),
             "prman", "surface", "roughness", 0.2)
 
     geoA = Abc.OObject(geometry, "geoA")
@@ -77,6 +80,7 @@ def materialOut():
     AbcMaterial.addMaterialAssignment(geoC, "/materials/materialA/materialB")
     geoCMat = AbcMaterial.addMaterial(geoC);
     setFloatParameter(geoCMat, "prman", "surface", "roughness", 0.3)
+
 
 def materialIn():
     archive = Abc.IArchive("MaterialAssignment.abc")
@@ -118,11 +122,13 @@ def materialIn():
     assert rg.getNumSamples() == 1
     assert almostEqual(rg.samples[0], 0.3)
 
+
 def testMaterialAssignment():
     materialOut()
     materialIn()
 
-testList.append( ( 'testMaterialAssignment', testMaterialAssignment ) )
+
+testList.append(('testMaterialAssignment', testMaterialAssignment))
 
 # -------------------------------------------------------------------------
 # Main loop

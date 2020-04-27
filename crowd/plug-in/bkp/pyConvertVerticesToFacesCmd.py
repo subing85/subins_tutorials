@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -7,10 +7,11 @@
 # or which otherwise accompanies this software in either electronic
 # or hard copy form.
 # ==========================================================================
-#+
+# +
 
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
+
 
 def maya_useNewAPI():
 	"""
@@ -19,10 +20,11 @@ def maya_useNewAPI():
 	"""
 	pass
 
+
 ##############################################################################
-##
-## Command class implementation
-##
+# #
+# # Command class implementation
+# #
 ##############################################################################
 class convertVerticesToFacesCmd(om.MPxCommand):
 	s_name = "convertVerticesToFaces"
@@ -53,7 +55,7 @@ class convertVerticesToFacesCmd(om.MPxCommand):
 		        faceIter = om.MItMeshPolygon(meshDagPath)
 
 		        for i in connectedFacesIndices :
-		            #GET THE VERTEX INDICES FOR CURRENT FACE:
+		            # GET THE VERTEX INDICES FOR CURRENT FACE:
 		            faceIter.setIndex(i);
 		            faceVerticesIndices = faceIter.getVertices()
 		            faceIsContained = True
@@ -66,11 +68,11 @@ class convertVerticesToFacesCmd(om.MPxCommand):
 		                vertexName += "]"
 		                singleVertexList.add(vertexName)
 		                meshDagPath, singleVertexComponent = singleVertexList.getComponent(0)
-		                ##SEE WHETHER VERTEX BELONGS TO ORIGINAL SELECTION, AND IF IT DOESN'T, THEN THE WHOLE FACE IS NOT CONTAINED:
+		                # #SEE WHETHER VERTEX BELONGS TO ORIGINAL SELECTION, AND IF IT DOESN'T, THEN THE WHOLE FACE IS NOT CONTAINED:
 		                if not self.previousSelectionList.hasItem((meshDagPath, singleVertexComponent)):
 		                    faceIsContained = False
 		                    break
-		            ##IF FACE IS "CONTAINED", ADD IT TO THE FINAL CONTAINED FACES LIST:
+		            # #IF FACE IS "CONTAINED", ADD IT TO THE FINAL CONTAINED FACES LIST:
 		            if faceIsContained:
 		                faceName = meshName 
 		                faceName += ".f["
@@ -79,10 +81,9 @@ class convertVerticesToFacesCmd(om.MPxCommand):
 		                finalFacesSelection.add(faceName)
 		    vertexComponentIter.next()
 
-
-		## FINALLY, MAKE THE NEW "CONTAINED FACES", THE CURRENT SELECTION:
+		# # FINALLY, MAKE THE NEW "CONTAINED FACES", THE CURRENT SELECTION:
 		om.MGlobal.setActiveSelectionList(finalFacesSelection, om.MGlobal.kReplaceList)
-		## RETURN NEW CONTAINED FACES LIST FROM THE MEL COMMAND, AS AN ARRAY OF STRINGS:
+		# # RETURN NEW CONTAINED FACES LIST FROM THE MEL COMMAND, AS AN ARRAY OF STRINGS:
 		containedFacesArray = finalFacesSelection.getSelectionStrings()
 		om.MPxCommand.setResult(containedFacesArray)
 	
@@ -92,11 +93,12 @@ class convertVerticesToFacesCmd(om.MPxCommand):
 	def undoIt(self):
 		om.MGlobal.setActiveSelectionList(self.previousSelectionList, om.MGlobal.kReplaceList)
 
+
 ##############################################################################
-##
-## The following routines are used to register/unregister
-## the command we are creating within Maya
-##
+# #
+# # The following routines are used to register/unregister
+# # the command we are creating within Maya
+# #
 ##############################################################################
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "4.0", "Any")
@@ -105,6 +107,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register command\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

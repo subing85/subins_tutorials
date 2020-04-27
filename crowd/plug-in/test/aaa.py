@@ -23,6 +23,7 @@ kRandomAttrShortName = 'rm'
 kOutputAttrName = 'output'
 kOutputAttrShortName = 'out'    
 
+
 class CrowdNode(OpenMayaMPx.MPxNode):
         
     position = OpenMaya.MObject()
@@ -38,8 +39,6 @@ class CrowdNode(OpenMayaMPx.MPxNode):
    
     output = OpenMaya.MObject()  
     input = OpenMaya.MObject()  
-   
-           
 
     def __init__(self):
         OpenMayaMPx.MPxNode.__init__(self)
@@ -47,7 +46,6 @@ class CrowdNode(OpenMayaMPx.MPxNode):
     def compute(self, plug, dataBlock):
         print 'plug\t', plug
         print 'dataBlock\t', dataBlock
-        
 
     def compute(self, plug, data):
         print plug
@@ -94,7 +92,6 @@ def nodeInitializer():  # initializer
     CrowdNode.input = numeric_attribute.create(
          "input", "in", OpenMaya.MFnNumericData.kFloat, 0.0)
     numeric_attribute.setStorable(1) 
-
     
     CrowdNode.addAttribute(CrowdNode.input)         
     CrowdNode.addAttribute(CrowdNode.type)
@@ -117,7 +114,7 @@ def nodeInitializer():  # initializer
     #===========================================================================
 
 
-def initializePlugin(mobject): # initialize the script plug-in
+def initializePlugin(mobject):  # initialize the script plug-in
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
         mplugin.registerNode(
@@ -127,8 +124,7 @@ def initializePlugin(mobject): # initialize the script plug-in
         raise
 
 
-
-def uninitializePlugin(mobject): # uninitialize the script plug-in
+def uninitializePlugin(mobject):  # uninitialize the script plug-in
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
         mplugin.deregisterNode(NODE_ID)

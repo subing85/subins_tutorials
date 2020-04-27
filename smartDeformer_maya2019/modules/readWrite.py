@@ -14,7 +14,6 @@ Description
     The purpose of the readWrite to create, getting and setting the weights data.  
 '''
 
-
 import os
 import json
 import time

@@ -37,18 +37,20 @@
 from imath import *
 from alembic.Abc import *
 
+
 # Test helper functions
-def setArray( iTPTraits, *iList ):
-    array = iTPTraits.arrayType( len( iList ) )
-    for i in range( len( iList ) ):
+def setArray(iTPTraits, *iList):
+    array = iTPTraits.arrayType(len(iList))
+    for i in range(len(iList)):
         array[i] = iList[i]
     return array
+
 
 # Xform data
 xformvec = [M44d(), M44d() * 2, M44d() * 4]
 
 # Cube mesh data
-faceCounts = setArray( Int32TPTraits, 4, 4, 4, 4, 4, 4 ) 
+faceCounts = setArray(Int32TPTraits, 4, 4, 4, 4, 4, 4) 
 
 faceIndices = setArray(
     Int32TPTraits,
@@ -59,7 +61,7 @@ faceIndices = setArray(
 points = setArray(
     P3fTPTraits,
 
-    V3f(-1, -1, 1 ),
+    V3f(-1, -1, 1),
     V3f(1, -1, 1),
     V3f(-1, 1, 1),
     V3f(1, 1, 1),
@@ -69,5 +71,5 @@ points = setArray(
     V3f(1, 1, -1)
 )
 
-selfBnds = Box3d( V3d(-1, -1, -1), V3d( 1, 1, 1) ) 
+selfBnds = Box3d(V3d(-1, -1, -1), V3d(1, 1, 1)) 
 

@@ -6,6 +6,7 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'Relad modules!...'
 SEPARATOR = True
 
+
 def execute():    
     # from maya import OpenMaya
     # OpenMaya.MGlobal.executeCommand('unloadPlugin \"subins_usd_toolkits\"', False, True)           
@@ -60,12 +61,11 @@ def execute():
     from studio_usd_pipe.resource.ui import preferences
     reload(preferences) 
     
-    
     from studio_usd_pipe.resource.ui import push
     reload(push)
 
-    #from studio_usd_pipe.resource.ui import pull
-    #reload(pull)           
+    # from studio_usd_pipe.resource.ui import pull
+    # reload(pull)           
     
     #===========================================================================
     # from studio_usd_pipe.gui import preferences

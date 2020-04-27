@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 """
 
@@ -98,6 +98,7 @@ import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
 import maya.OpenMayaFX as OpenMayaFX
 
+
 class testNucleusNode(OpenMayaMPx.MPxNode):
 	kPluginNodeName = "spTestNucleusNode"
 	kPluginNodeId = OpenMaya.MTypeId(0x85006)
@@ -120,11 +121,11 @@ class testNucleusNode(OpenMayaMPx.MPxNode):
 			# pull on start state or current state depending on the current time.
 			if currTime.value() <= 0.0:
 				multiDataHandle = data.inputArrayValue(testNucleusNode.startState)
-				multiDataHandle.jumpToElement( logicalIndex )
+				multiDataHandle.jumpToElement(logicalIndex)
 				inputData = multiDataHandle.inputValue().data()
 			else:
 				multiDataHandle = data.inputArrayValue(testNucleusNode.currentState)
-				multiDataHandle.jumpToElement( logicalIndex )
+				multiDataHandle.jumpToElement(logicalIndex)
 				inputData = multiDataHandle.inputValue().data()
 					
 			inputNData = OpenMayaFX.MFnNObjectData(inputData)
@@ -132,8 +133,8 @@ class testNucleusNode(OpenMayaMPx.MPxNode):
 			
 			points = OpenMaya.MFloatPointArray()
 			nObj.getPositions(points)
-			for ii in range( points.length() ):
-				points[ii].y = math.sin( points[ii].x + currTime.value()*4.0*(3.1415/180.0) )
+			for ii in range(points.length()):
+				points[ii].y = math.sin(points[ii].x + currTime.value() * 4.0 * (3.1415 / 180.0))
 			nObj.setPositions(points)
 
 			data.setClean(plug)
@@ -146,7 +147,7 @@ class testNucleusNode(OpenMayaMPx.MPxNode):
 
 	@staticmethod
 	def creator():
-		return OpenMayaMPx.asMPxPtr( testNucleusNode() )
+		return OpenMayaMPx.asMPxPtr(testNucleusNode())
 
 	@staticmethod
 	def initializer():
@@ -171,7 +172,7 @@ class testNucleusNode(OpenMayaMPx.MPxNode):
 		tAttr.setArray(True)
 
 		uniAttr = OpenMaya.MFnUnitAttribute()
-		testNucleusNode.currentTime = uniAttr.create( "currentTime", "ctm" , OpenMaya.MFnUnitAttribute.kTime, 0.0 )
+		testNucleusNode.currentTime = uniAttr.create("currentTime", "ctm" , OpenMaya.MFnUnitAttribute.kTime, 0.0)
 
 		testNucleusNode.addAttribute(testNucleusNode.startState)
 		testNucleusNode.addAttribute(testNucleusNode.currentState)
@@ -182,21 +183,23 @@ class testNucleusNode(OpenMayaMPx.MPxNode):
 		testNucleusNode.attributeAffects(testNucleusNode.currentState, testNucleusNode.nextState)
 		testNucleusNode.attributeAffects(testNucleusNode.currentTime, testNucleusNode.nextState)
 
+
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.registerNode( testNucleusNode.kPluginNodeName, testNucleusNode.kPluginNodeId, testNucleusNode.creator, testNucleusNode.initializer )
+		mplugin.registerNode(testNucleusNode.kPluginNodeName, testNucleusNode.kPluginNodeId, testNucleusNode.creator, testNucleusNode.initializer)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % testNucleusNode.kPluginNodeName )
+		sys.stderr.write("Failed to register node: %s" % testNucleusNode.kPluginNodeName)
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( testNucleusNode.kPluginNodeId )
+		mplugin.deregisterNode(testNucleusNode.kPluginNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % testNucleusNode.kPluginNodeName )
+		sys.stderr.write("Failed to deregister node: %s" % testNucleusNode.kPluginNodeName)
 		raise
 	

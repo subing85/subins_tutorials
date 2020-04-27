@@ -17,13 +17,13 @@ import os
 import sys
 sys.path.append('/venture/subins_tutorials')
 
-
 from PySide import QtGui
 from PySide import QtCore
 
 from pprint import pprint
 from studioPipe import resources
 from studioPipe.utils import platforms
+
 
 class Launcher(QtGui.QMainWindow):
     
@@ -33,7 +33,6 @@ class Launcher(QtGui.QMainWindow):
         
         self.setup_ui()
         self.load_menu_bar()
-    
     
     def setup_ui(self):
         self.setObjectName('main_window')
@@ -94,7 +93,6 @@ class Launcher(QtGui.QMainWindow):
         # self.listwidget_tools = QtGui.QListWidget(self.splitter)
         # self.listwidget_tools.setObjectName('listwidget_tools')
 
-
     def load_menu_bar(self):    
         self.menubar = QtGui.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 749, 23))
@@ -148,7 +146,6 @@ class Launcher(QtGui.QMainWindow):
         self.menu_settings.addAction(self.action_header)
         self.menu_settings.addAction(self.action_userpool)
 
-
     def image_to_button(self, button=None, path=None, width=None, height=None):
         if not button:
             button = self.button_snapshot
@@ -162,13 +159,12 @@ class Launcher(QtGui.QMainWindow):
         icon.addPixmap(QtGui.QPixmap(path),
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
-        button.setIconSize(QtCore.QSize(width - 5, height- 5))
+        button.setIconSize(QtCore.QSize(width - 5, height - 5))
+
         
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = Launcher(parent=None)
     window.show()
     sys.exit(app.exec_())        
-        
-        
         

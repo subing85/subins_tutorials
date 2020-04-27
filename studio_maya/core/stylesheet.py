@@ -13,6 +13,7 @@ Description
     None.
 '''
 
+
 def connect():
     widget_stypes = [
         'QWidget {font:14pt;}',

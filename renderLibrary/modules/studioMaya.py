@@ -15,7 +15,6 @@ Description
     The purpose of the stdioMaya to validate, getting and setting maya objects.  
 '''
 
-
 from maya import OpenMaya
 
 
@@ -73,9 +72,6 @@ class Maya(object):
             result.append(current_item)
             dependency_graph.next()
         return result
-    
-    
-   
 
     def getObjectShadingEngine(self, mobject):
         shading_engine_array = self.getDependences(
@@ -121,7 +117,7 @@ class Maya(object):
     def assignToMaterial(self, objects, shading_group):
         mcommand_result = OpenMaya.MCommandResult()
         OpenMaya.MGlobal.executeCommand('sets -e -forceElement %s %s;' % (
-            shading_group, ' '.join(objects)), mcommand_result,  True, True)
+            shading_group, ' '.join(objects)), mcommand_result, True, True)
         results = []
         mcommand_result.getResult(results)
         return results

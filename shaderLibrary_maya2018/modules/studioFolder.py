@@ -72,7 +72,7 @@ class Folder(object):
 
     def rename(self, folder_path=None, name=None, force=False):
         if not os.path.exists(folder_path):
-            return False,  'Can not found directory'
+            return False, 'Can not found directory'
 
         new_path = os.path.join(os.path.dirname(folder_path), name)
         print 'new_path', new_path

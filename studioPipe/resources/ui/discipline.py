@@ -20,7 +20,7 @@ import warnings
 
 from functools import partial
 from PySide import QtGui
-#from studioPipe.core import input
+# from studioPipe.core import input
 import input
 
 from pprint import pprint
@@ -52,15 +52,14 @@ class Connect(input.Window):
         self.show_widget = None
         self.description_widget = None
         for k, v in self.input_datas.items():
-            if k=='current_show':
+            if k == 'current_show':
                 self.show_widget = v['widget']
-            if k=='description':
+            if k == 'description':
                 self.description_widget = v['widget']
 
         self.show_widget.addItems(['None'] + current_data)        
         self.show_widget.currentIndexChanged.connect(partial(self.set_show, self.show_widget))
         self.show_widget.setCurrentIndex(1)
-        
 
     def set_show(self, current_widget, *args):
         self.current_show = str(current_widget.currentText())
@@ -75,7 +74,7 @@ class Connect(input.Window):
         if not self.description_widget:
             warnings.warn('Not found type widget')
             return
-        if self.description_widget.currentText()=='None':
+        if self.description_widget.currentText() == 'None':
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any discipline type(description)!..', QtGui.QMessageBox.Ok)
             return

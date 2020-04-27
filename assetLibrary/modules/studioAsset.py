@@ -113,7 +113,7 @@ class Asset(object):
             '\tasset_format = data[each_asset][\'format\']',
             '\t{}'.format(core_type),
             '\tprint \"\\n\", \"asset name\", \"\\t=\" , asset_name',
-            '\tprint \"{}\", \"\\t=\", asset_path'.format(create_type),            
+            '\tprint \"{}\", \"\\t=\", asset_path'.format(create_type),
             '\ttry:',
             '\t\tcore.saveAs(\'{}\', typ=\'{}\')'.format(output_file, maya_type),
             '\texcept Exception as error:',
@@ -131,12 +131,12 @@ class Asset(object):
             os.chmod(bash_file, 0o777)
         except Exception as error:
             warnings.warn(str(error), Warning)		
-        if platform.system()=='Windows':	    
+        if platform.system() == 'Windows':	    
             mayapy = os.path.abspath(os.path.join(maya_path, 'bin/mayapy.exe')).replace('\\', '/')
             windows_command = '\"{}\" \"{}\"'.format(mayapy, bash_file)
             result = subprocess.call(
             windows_command, stdout=None, shell=True, stderr=None)	
-        if platform.system()=='Linux':
+        if platform.system() == 'Linux':
             result = subprocess.call(
             bash_file, stdout=None, shell=True, stderr=None)            
         if os.path.isfile(bash_file):
@@ -202,6 +202,5 @@ class Asset(object):
         panels = core.getPanel(type='modelPanel')
         for each_panel in panels:
             core.modelEditor(each_panel, e=True, da='boundingBox')
-
 
 # end ####################################################################

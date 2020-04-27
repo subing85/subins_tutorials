@@ -233,11 +233,11 @@ class Model(studioMaya.Maya):
         mfn_mesh.getPoints(points)
         for x in range (points.length()):
             mscript = OpenMaya.MScriptUtil()
-            mscript.createFromList([0.0,0.0],2)
+            mscript.createFromList([0.0, 0.0], 2)
             uv_points = mscript.asFloat2Ptr()   
             mfn_mesh.getUVAtPoint(points[x], uv_points, OpenMaya.MSpace.kObject)
-            u_array.append(mscript.getFloat2ArrayItem(uv_points,0,0))
-            v_array.append(mscript.getFloat2ArrayItem(uv_points,0,1))
+            u_array.append(mscript.getFloat2ArrayItem(uv_points, 0, 0))
+            v_array.append(mscript.getFloat2ArrayItem(uv_points, 0, 1))
         return u_array, v_array
     
     def has_valid_uvset(self, mobject, uvset=None):
@@ -254,7 +254,7 @@ class Model(studioMaya.Maya):
         set_names = []
         mfn_mesh.getUVSetNames(set_names)
         if uvset not in set_names:
-            print '#warnings: not found uv set <%s>'%uvset
+            print '#warnings: not found uv set <%s>' % uvset
             return False
         uv_counts = OpenMaya.MIntArray()
         uv_ids = OpenMaya.MIntArray()

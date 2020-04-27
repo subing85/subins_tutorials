@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Autodesk Script File
@@ -65,12 +65,12 @@
 # be simply set via the command "maya.cmds.setAttr" operating on the circle node
 # "circleNode1" created by the Python script. For example:
 #
-#	import maya.cmds as cmds
-#	cmds.setAttr("circleNode1.scale", #)
+# 	import maya.cmds as cmds
+# 	cmds.setAttr("circleNode1.scale", #)
 #
 # will change the size of the circle and:
 #
-#	cmds.setAttr("circleNode1.frames", #)
+# 	cmds.setAttr("circleNode1.frames", #)
 #
 # will cause objects to complete a circle in indicated number of frames.
 #
@@ -93,10 +93,8 @@ class circle(OpenMayaMPx.MPxNode):
 	aSOutput = OpenMaya.MObject()
 	aCOutput = OpenMaya.MObject()
 
-
 	def __init__(self):
 		OpenMayaMPx.MPxNode.__init__(self)
-
 
 	def compute(self, plug, data):
 		# Check that the requested recompute is one of the output values
@@ -108,9 +106,9 @@ class circle(OpenMayaMPx.MPxNode):
 
 			# Compute the output values
 			currentFrame = inputData.asFloat()
-			scaleFactor  = scaleData.asFloat()
+			scaleFactor = scaleData.asFloat()
 			framesPerCircle = framesData.asFloat()
-			angle = 6.2831853 * (currentFrame/framesPerCircle)
+			angle = 6.2831853 * (currentFrame / framesPerCircle)
 			sinResult = math.sin(angle) * scaleFactor
 			cosResult = math.cos(angle) * scaleFactor
 
@@ -128,7 +126,7 @@ class circle(OpenMayaMPx.MPxNode):
 
 # creator
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( circle() )
+	return OpenMayaMPx.asMPxPtr(circle())
 
 
 # initializer
@@ -174,9 +172,9 @@ def nodeInitializer():
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject, "Autodesk", "1.0", "Any")
 	try:
-		mplugin.registerNode( kPluginNodeTypeName, kPluginNodeId, nodeCreator, nodeInitializer )
+		mplugin.registerNode(kPluginNodeTypeName, kPluginNodeId, nodeCreator, nodeInitializer)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise
 
 
@@ -184,8 +182,8 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( kPluginNodeId )
+		mplugin.deregisterNode(kPluginNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to deregister node: %s" % kPluginNodeTypeName)
 		raise
 

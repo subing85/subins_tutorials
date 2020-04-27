@@ -7,8 +7,10 @@ CURRENT_PATH = os.path.dirname(__file__)
 def getInputPath():
     return os.path.join(CURRENT_PATH, 'inputs')
 
+
 def getPath(input):
     return os.path.join(CURRENT_PATH, input)
+
 
 def getSkeleonPath():
     return getInputPath('skeletons')
@@ -33,12 +35,13 @@ def getPublishTypes():
         'scene']
     return data
 
+
 def getPublishResource(type=None):    
     path = os.path.join(CURRENT_PATH, 'publish')
     if type:
         path = os.path.join(CURRENT_PATH, 'publish', type)
     if not os.path.isdir(path):
-        logging.warning('not found such path called \"%s\"'%path)
+        logging.warning('not found such path called \"%s\"' % path)
         return    
     return path
 
@@ -48,16 +51,19 @@ def getCreateResource(type=None):
     if type:
         path = os.path.join(CURRENT_PATH, 'create', type)
     if not os.path.isdir(path):
-        logging.warning('not found such path called \"%s\"'%path)
+        logging.warning('not found such path called \"%s\"' % path)
         return    
     return path
+
 
 def getPresetDirectory():
     return '/home/shreya/Documents/subin_crowd'
 
+
 def getPublishDirectory():    
     # return os.path.join(CURRENT_PATH, 'show') 
     return '/home/shreya/Documents/subin_crowd'
+
 
 def getDatabaseDirectory():
     return 'crowd', '/home/shreya/Documents/subin_crowd/database'
@@ -65,13 +71,5 @@ def getDatabaseDirectory():
 
 def getFontSize():    
     return 10, 'Sans Serif'
-        
-                  
-        
-        
-    
-        
-        
-            
         
     

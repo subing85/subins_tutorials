@@ -30,6 +30,7 @@ def getResourceTypes():
     data = {'weights': getWeightsPath()}
     return data
 
+
 def getToolKitLink():
     return 'https://www.subins-toolkits.com/'
 

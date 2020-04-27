@@ -9,11 +9,12 @@ from crowd.api import crowdAttributes
 reload(crowdAttributes)
 reload(crowdSkeleton)
 
+
 class Connect(object):
     
     def __init__(self, parent=None, **kwargs):
         self.parent = parent
-        self.type  = kwargs['type']
+        self.type = kwargs['type']
         self.count = kwargs['count']
         self.distance = kwargs['distance']
         self.row = kwargs['row']
@@ -23,7 +24,6 @@ class Connect(object):
         
         self.random = kwargs['random']        
         self.parent_name = 'proxy_crowd'
-
     
     def create(self):      
         print '\n\ntype', self.type
@@ -46,28 +46,26 @@ class Connect(object):
         b = 0
         
         print self.count
-        
              
         for x in range(self.count):          
             if x % self.row:
-                s_column+=(self.distance*-1)
-                a+=1
+                s_column += (self.distance * -1)
+                a += 1
             else:
-                s_row+=(self.distance*1)
-                s_column=0                
-                b+=1
-                a=0
+                s_row += (self.distance * 1)
+                s_column = 0                
+                b += 1
+                a = 0
                 
             if not x % 2:         
-                s_column = s_column+(self.row_offset*-1)
+                s_column = s_column + (self.row_offset * -1)
                 
-            if (a%2)!=0:
-                s_row = s_row+(self.column_offset*-1)                
+            if (a % 2) != 0:
+                s_row = s_row + (self.column_offset * -1)                
                 
             if self.random:            
-                s_row = random.randrange(s_row-self.random, s_row+self.random)
-                s_column = random.randrange(s_column-self.random, s_column+self.random)
-                
+                s_row = random.randrange(s_row - self.random, s_row + self.random)
+                s_column = random.randrange(s_column - self.random, s_column + self.random)
             
             #===================================================================
             # row = 0
@@ -84,7 +82,6 @@ class Connect(object):
             #     if (column%2)!=0:
             #         print '\t', x
             #===================================================================
-
                 
             #slide ===================================================================
             # if x % 2:        
@@ -97,18 +94,6 @@ class Connect(object):
             root_joints.append(root_dag_path)
          
         self.addTocontainer(root_joints)
-        
-
-
-
-                 
-                 
-                 
-                 
-                 
-                 
-                 
-                 
             
     def createCrowdNode(self):
         dg_modifier = OpenMaya.MDGModifier()
@@ -123,12 +108,10 @@ class Connect(object):
         children = [core.PyNode(each).name() for each in children]
         mcommand_result = OpenMaya.MCommandResult()
         OpenMaya.MGlobal.executeCommand(
-            'container -e -an {\"%s\"} \"%s\"'%('\", \"'.join(
+            'container -e -an {\"%s\"} \"%s\"' % ('\", \"'.join(
                 children), parent), mcommand_result, True, True)
         return True
-        
 
     def addChildren(self):
         pass
-
                

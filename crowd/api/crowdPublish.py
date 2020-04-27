@@ -153,7 +153,7 @@ class Connect(object):
         if self.isExists():
             result = self.removeOriginData(self.tag)
             if not result:
-                return False, 'Not able to remove <%s>'%self.tag
+                return False, 'Not able to remove <%s>' % self.tag
             result, message = db.overwrite(tag=self.tag, manifest=source)
         else:
             result, message = db.insert(tag=self.tag, manifest=source)

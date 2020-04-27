@@ -1,37 +1,37 @@
 ##-*****************************************************************************
-##
-## Copyright (c) 2009-2011,
-##  Sony Pictures Imageworks, Inc. and
-##  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
-##
-## All rights reserved.
-##
-## Redistribution and use in source and binary forms, with or without
-## modification, are permitted provided that the following conditions are
-## met:
-## *       Redistributions of source code must retain the above copyright
-## notice, this list of conditions and the following disclaimer.
-## *       Redistributions in binary form must reproduce the above
-## copyright notice, this list of conditions and the following disclaimer
-## in the documentation and/or other materials provided with the
-## distribution.
-## *       Neither the name of Sony Pictures Imageworks, nor
-## Industrial Light & Magic nor the names of their contributors may be used
-## to endorse or promote products derived from this software without specific
-## prior written permission.
-##
-## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-## A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-## OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-## SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-## LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-## DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-## THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-##
+# #
+# # Copyright (c) 2009-2011,
+# #  Sony Pictures Imageworks, Inc. and
+# #  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
+# #
+# # All rights reserved.
+# #
+# # Redistribution and use in source and binary forms, with or without
+# # modification, are permitted provided that the following conditions are
+# # met:
+# # *       Redistributions of source code must retain the above copyright
+# # notice, this list of conditions and the following disclaimer.
+# # *       Redistributions in binary form must reproduce the above
+# # copyright notice, this list of conditions and the following disclaimer
+# # in the documentation and/or other materials provided with the
+# # distribution.
+# # *       Neither the name of Sony Pictures Imageworks, nor
+# # Industrial Light & Magic nor the names of their contributors may be used
+# # to endorse or promote products derived from this software without specific
+# # prior written permission.
+# #
+# # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# # A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# # OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# # SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# # LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# # DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# #
 ##-*****************************************************************************
 
 from maya import cmds as MayaCmds
@@ -39,6 +39,7 @@ import os
 import subprocess
 import unittest
 import util
+
 
 class AnimNurbsSurfaceTest(unittest.TestCase):
 
@@ -68,37 +69,37 @@ class AnimNurbsSurfaceTest(unittest.TestCase):
         MayaCmds.currentTime(24, update=True)
         MayaCmds.setKeyframe()
         MayaCmds.currentTime(12, update=True)
-        MayaCmds.move( 0, 0.18, 0, r=True)
-        MayaCmds.scale( 2.5, 1.0, 2.5, r=True)
+        MayaCmds.move(0, 0.18, 0, r=True)
+        MayaCmds.scale(2.5, 1.0, 2.5, r=True)
         MayaCmds.setKeyframe()
 
         MayaCmds.curveOnSurface(name,
-            uv=((0.597523,0), (0.600359,0.271782), (0.538598,0.564218),
-                (0.496932,0.779936),  (0.672153,1)),
-            k=(0,0,0,0.263463,0.530094,0.530094,0.530094))
+            uv=((0.597523, 0), (0.600359, 0.271782), (0.538598, 0.564218),
+                (0.496932, 0.779936), (0.672153, 1)),
+            k=(0, 0, 0, 0.263463, 0.530094, 0.530094, 0.530094))
 
         curvename = MayaCmds.curveOnSurface(name,
-            uv=((0.170718,0.565967), (0.0685088,0.393034), (0.141997,0.206296),
-                (0.95,0.230359), (0.36264,0.441381), (0.251243,0.569889)),
-            k=(0,0,0,0.200545,0.404853,0.598957,0.598957,0.598957))
+            uv=((0.170718, 0.565967), (0.0685088, 0.393034), (0.141997, 0.206296),
+                (0.95, 0.230359), (0.36264, 0.441381), (0.251243, 0.569889)),
+            k=(0, 0, 0, 0.200545, 0.404853, 0.598957, 0.598957, 0.598957))
         MayaCmds.closeCurve(curvename, ch=1, ps=1, rpo=1, bb=0.5, bki=0, p=0.1,
             cos=1)
 
         MayaCmds.trim(name, lu=0.23, lv=0.39)
 
-        degreeU = MayaCmds.getAttr(name+'.degreeU')
-        degreeV = MayaCmds.getAttr(name+'.degreeV')
-        spansU  = MayaCmds.getAttr(name+'.spansU')
-        spansV  = MayaCmds.getAttr(name+'.spansV')
-        formU   = MayaCmds.getAttr(name+'.formU')
-        formV   = MayaCmds.getAttr(name+'.formV')
-        minU    = MayaCmds.getAttr(name+'.minValueU')
-        maxU    = MayaCmds.getAttr(name+'.maxValueU')
-        minV    = MayaCmds.getAttr(name+'.minValueV')
-        maxV    = MayaCmds.getAttr(name+'.maxValueV')
+        degreeU = MayaCmds.getAttr(name + '.degreeU')
+        degreeV = MayaCmds.getAttr(name + '.degreeV')
+        spansU = MayaCmds.getAttr(name + '.spansU')
+        spansV = MayaCmds.getAttr(name + '.spansV')
+        formU = MayaCmds.getAttr(name + '.formU')
+        formV = MayaCmds.getAttr(name + '.formV')
+        minU = MayaCmds.getAttr(name + '.minValueU')
+        maxU = MayaCmds.getAttr(name + '.maxValueU')
+        minV = MayaCmds.getAttr(name + '.minValueV')
+        maxV = MayaCmds.getAttr(name + '.maxValueV')
 
         MayaCmds.createNode('surfaceInfo')
-        MayaCmds.connectAttr(name+'.worldSpace', 'surfaceInfo1.inputSurface',
+        MayaCmds.connectAttr(name + '.worldSpace', 'surfaceInfo1.inputSurface',
             force=True)
 
         MayaCmds.currentTime(1, update=True)
@@ -132,19 +133,19 @@ class AnimNurbsSurfaceTest(unittest.TestCase):
             # reading test
             MayaCmds.AbcImport(self.__files[-3], mode='open')
 
-        self.failUnlessEqual(degreeU, MayaCmds.getAttr(name+'.degreeU'))
-        self.failUnlessEqual(degreeV, MayaCmds.getAttr(name+'.degreeV'))
-        self.failUnlessEqual(spansU, MayaCmds.getAttr(name+'.spansU'))
-        self.failUnlessEqual(spansV, MayaCmds.getAttr(name+'.spansV'))
-        self.failUnlessEqual(formU, MayaCmds.getAttr(name+'.formU'))
-        self.failUnlessEqual(formV, MayaCmds.getAttr(name+'.formV'))
-        self.failUnlessEqual(minU, MayaCmds.getAttr(name+'.minValueU'))
-        self.failUnlessEqual(maxU, MayaCmds.getAttr(name+'.maxValueU'))
-        self.failUnlessEqual(minV, MayaCmds.getAttr(name+'.minValueV'))
-        self.failUnlessEqual(maxV, MayaCmds.getAttr(name+'.maxValueV'))
+        self.failUnlessEqual(degreeU, MayaCmds.getAttr(name + '.degreeU'))
+        self.failUnlessEqual(degreeV, MayaCmds.getAttr(name + '.degreeV'))
+        self.failUnlessEqual(spansU, MayaCmds.getAttr(name + '.spansU'))
+        self.failUnlessEqual(spansV, MayaCmds.getAttr(name + '.spansV'))
+        self.failUnlessEqual(formU, MayaCmds.getAttr(name + '.formU'))
+        self.failUnlessEqual(formV, MayaCmds.getAttr(name + '.formV'))
+        self.failUnlessEqual(minU, MayaCmds.getAttr(name + '.minValueU'))
+        self.failUnlessEqual(maxU, MayaCmds.getAttr(name + '.maxValueU'))
+        self.failUnlessEqual(minV, MayaCmds.getAttr(name + '.minValueV'))
+        self.failUnlessEqual(maxV, MayaCmds.getAttr(name + '.maxValueV'))
 
         MayaCmds.createNode('surfaceInfo')
-        MayaCmds.connectAttr(name+'.worldSpace', 'surfaceInfo1.inputSurface',
+        MayaCmds.connectAttr(name + '.worldSpace', 'surfaceInfo1.inputSurface',
             force=True)
 
         MayaCmds.currentTime(1, update=True)

@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 # import maya
 # maya.cmds.loadPlugin("customNodeFileTranslator.py")
@@ -46,33 +46,40 @@ import maya.OpenMayaMPx as OpenMayaMPx
 
 kPluginTranslatorTypeName = "spCustomNodeTranslator"
 
+
 # Node definition
 class customNodeTranslator(OpenMayaMPx.MPxFileTranslator):
+
 	def __init__(self):
 		OpenMayaMPx.MPxFileTranslator.__init__(self)
+
 	def haveWriteMethod(self):
 		return True
+
 	def haveReadMethod(self):
 		return True
+
 	def filter(self):
 		return "*.spcnt"
+
 	def defaultExtension(self):
 		return "spcnt"
-	def writer( self, fileObject, optionString, accessMode ):
+
+	def writer(self, fileObject, optionString, accessMode):
 		#
 		try:
 			fullName = fileObject.fullName()
-			fileHandle = open(fullName,"w")
+			fileHandle = open(fullName, "w")
 			fileHandle.write("# Simple text file of custom node information\n")
 
-			iterator=OpenMaya.MItDependencyNodes()
+			iterator = OpenMaya.MItDependencyNodes()
 			while not iterator.isDone():
 				object = iterator.thisNode()
 				#
 				try:
-					dnFn = OpenMaya.MFnDependencyNode( object )
+					dnFn = OpenMaya.MFnDependencyNode(object)
 					userNode = dnFn.userNode()
-					if ( not( userNode == None ) ):
+					if (not(userNode == None)):
 						line = "# custom node: " + dnFn.name() + "\n"
 						fileHandle.write(line)
 				except:
@@ -80,46 +87,50 @@ class customNodeTranslator(OpenMayaMPx.MPxFileTranslator):
 				iterator.next()
 			fileHandle.close()
 		except:
-			sys.stderr.write( "Failed to write file information\n")
+			sys.stderr.write("Failed to write file information\n")
 			raise
-	def processLine( self, lineStr ):
+
+	def processLine(self, lineStr):
 		# Normally do parsing here.  Simple example will only
 		# print out the line.
 		print "read <%s>" % lineStr
-	def reader( self, fileObject, optionString, accessMode ):
+
+	def reader(self, fileObject, optionString, accessMode):
 		#
 		try:
 			fullName = fileObject.fullName()
-			fileHandle = open(fullName,"r")
+			fileHandle = open(fullName, "r")
 			for line in fileHandle:
 				# print line
-				self.processLine( line )
+				self.processLine(line)
 				# print "1"
 			fileHandle.close()
 		except:
-			sys.stderr.write( "Failed to read file information\n")
+			sys.stderr.write("Failed to read file information\n")
 			raise
 
 
 # creator
 def translatorCreator():
-	return OpenMayaMPx.asMPxPtr( customNodeTranslator() )
+	return OpenMayaMPx.asMPxPtr(customNodeTranslator())
+
 
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.registerFileTranslator( kPluginTranslatorTypeName, None, translatorCreator )
+		mplugin.registerFileTranslator(kPluginTranslatorTypeName, None, translatorCreator)
 	except:
-		sys.stderr.write( "Failed to register translator: %s" % kPluginTranslatorTypeName )
+		sys.stderr.write("Failed to register translator: %s" % kPluginTranslatorTypeName)
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterFileTranslator( kPluginTranslatorTypeName )
+		mplugin.deregisterFileTranslator(kPluginTranslatorTypeName)
 	except:
-		sys.stderr.write( "Failed to deregister translator: %s" % kPluginTranslatorTypeName )
+		sys.stderr.write("Failed to deregister translator: %s" % kPluginTranslatorTypeName)
 		raise
 	

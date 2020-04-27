@@ -28,6 +28,7 @@ from studio_maya.core import widgets
 from studio_maya.core import stylesheet
 reload(generic)
 
+
 class Window(QtGui.QWidget):
 
     def __init__(self, parent=None, **kwargs):

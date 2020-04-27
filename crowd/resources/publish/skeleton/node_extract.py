@@ -9,7 +9,6 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'To collect skeleton data!...'
 VERSION = '0.0.1'
 
-
 from crowd.core import skeleton
 
 

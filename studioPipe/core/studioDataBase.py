@@ -252,7 +252,7 @@ class Connect(object):
                     continue                
                 current = None                
                 for each in v:
-                    if v[each]['type']!=value:
+                    if v[each]['type'] != value:
                         continue                        
                     current = v.keys()[0].encode()
                     break
@@ -268,15 +268,13 @@ class Connect(object):
         result = None
         for index, data_content in data.items():
             for each_data, v in data_content.items():
-                if key!=each_data:
+                if key != each_data:
                     continue  
                 if value not in v:
                     continue
                 result = v[value]
                 break
         return result
-     
-            
 
 #===============================================================================
 # from studioPipe import resources

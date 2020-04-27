@@ -2,6 +2,7 @@ import alembic
 
 
 class ArchiveInfo(object):
+
     def __init__(self):
         super(ArchiveInfo, self).__init__()
 

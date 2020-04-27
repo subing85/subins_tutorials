@@ -64,30 +64,29 @@ class UI_MainWindow(QtGui.QMainWindow):
         
         self.poseFile = os.path.abspath (os.path.join(os.getenv('TEMP'), 'subin_pose.pose')).replace ('\\', '/')   
         self.animFile = os.path.abspath (os.path.join(os.getenv('TEMP'), 'subin_anim.anim')).replace ('\\', '/') 
-         
     
     def setupUi(self):
         
-        #Create QMainWindow        
-        #self = QtGui.QMainWindow (parent=MAYA_MAIN_WINOW)
+        # Create QMainWindow        
+        # self = QtGui.QMainWindow (parent=MAYA_MAIN_WINOW)
         self.setWindowTitle ('Pose and Animation Copy v0.1')
         self.setStyleSheet('font: 12pt \"MS Shell Dlg 2\";')
         self.setObjectName ('MainWindow_poseCopy')        
         self.resize (350, 160)
 
-        #QWidget        
-        self.centralWidget  = QtGui.QWidget (parent=self)
+        # QWidget        
+        self.centralWidget = QtGui.QWidget (parent=self)
         self.centralWidget.setObjectName ('centralWidget')
         
-        #QVBoxLaout (verticalLayout)        
+        # QVBoxLaout (verticalLayout)        
         self.verticalLayout = QtGui.QVBoxLayout (self.centralWidget)
         self.verticalLayout.setObjectName ('verticalLayout') 
         
-        #Group box
+        # Group box
         self.groupBox = QtGui.QGroupBox (parent=self)
         self.groupBox.setObjectName ('groupBox_category')
-        self.groupBox.setGeometry (QtCore.QRect(10,10, 280,60))
-        #self.groupBox.setTitle ('Categories')        
+        self.groupBox.setGeometry (QtCore.QRect(10, 10, 280, 60))
+        # self.groupBox.setTitle ('Categories')        
         self.verticalLayout.addWidget (self.groupBox)
         
         self.gridLayout = QtGui.QGridLayout(self.groupBox)
@@ -95,11 +94,11 @@ class UI_MainWindow(QtGui.QMainWindow):
         self.gridLayout.setVerticalSpacing(5)
         self.gridLayout.setObjectName('gridLayout')
         
-        #QHBoxLayout (horizontalLayout)        
-        self.horizontalLayout     = QtGui.QHBoxLayout (self.groupBox)
+        # QHBoxLayout (horizontalLayout)        
+        self.horizontalLayout = QtGui.QHBoxLayout (self.groupBox)
         self.horizontalLayout.setObjectName ('horizontalLayout')  
         
-        #QPushButton                
+        # QPushButton                
         self.button_copyPose = QtGui.QPushButton(self.groupBox)
         self.button_copyPose.setObjectName('button_copyPose')
         self.button_copyPose.setText("Copy Pose")        
@@ -123,7 +122,7 @@ class UI_MainWindow(QtGui.QMainWindow):
         self.gridLayout.addWidget(self.button_pasteAnim, 1, 1, 1, 1)   
 
         self.label = QtGui.QLabel(self)
-        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label.setText('Author: Subin. Gopi\nsubing85@gmail.com\nCopyright 2018 Subin. Gopi - All Rights Reserved.')        
         self.label.setObjectName('label')
         self.label.setStyleSheet('font: 10pt \"MS Shell Dlg 2\";background-color: rgb(100, 100, 100);')        
@@ -138,7 +137,6 @@ class UI_MainWindow(QtGui.QMainWindow):
         
         self.show()
         
-        
     def myCopy(self, value):        
        
         objects = pymel.ls(sl=True) 
@@ -147,15 +145,15 @@ class UI_MainWindow(QtGui.QMainWindow):
             warnings.warn('#nyour selection is empty.')
             return None
         
-        if value=='pose':   
-            mp= mayaPose.MayaPose(objects=objects)
+        if value == 'pose':   
+            mp = mayaPose.MayaPose(objects=objects)
             poseData = mp.copy() 
                        
             mw = mayaWrite.MayaWrite(self.poseFile, 'Pose')
             mw.mWrite(dataContent=poseData) 
             openMaya.MGlobal.displayInfo ('#Thanks, Pose copy done!')            
         
-        if value=='animation':            
+        if value == 'animation':            
             ma = mayaAnim.MayaAnim(objects=objects)      
             animData = ma.copy()
             
@@ -164,7 +162,6 @@ class UI_MainWindow(QtGui.QMainWindow):
             openMaya.MGlobal.displayInfo ('#Thanks, Animation copy done!')
             
         pymel.select (objects)     
-
         
     def myPaste(self, value):
         
@@ -174,19 +171,19 @@ class UI_MainWindow(QtGui.QMainWindow):
             warnings.warn('#nyour selection is empty.')
             return None
         
-        if value=='pose':
+        if value == 'pose':
             mw = mayaWrite.MayaWrite(self.poseFile, None)            
             mw.mRead()  
               
-            mp= mayaPose.MayaPose(objects=objects)          
+            mp = mayaPose.MayaPose(objects=objects)          
             mp.paste(dataContent=mw._fileData)
             openMaya.MGlobal.displayInfo ('#Thanks, Pose paste done!')
             
-        if value=='animation':
+        if value == 'animation':
             mw = mayaWrite.MayaWrite(self.animFile, None)            
             mw.mRead()    
 
-            ma= mayaAnim.MayaAnim(objects=objects)                      
+            ma = mayaAnim.MayaAnim(objects=objects)                      
             ma.paste(dataContent=mw._fileData)
             openMaya.MGlobal.displayInfo ('#Thanks, Animation paste done!')
             

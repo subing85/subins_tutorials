@@ -38,6 +38,7 @@
 
 import maya
 
+
 def showNarrowPolyViewer():
 
 	window = maya.cmds.window()
@@ -48,37 +49,37 @@ def showNarrowPolyViewer():
 	#   Create some buttons that will alter the display appearance of
 	#   objects in the model editor, eg. wireframe vs. shaded mode.
 	# 
-	maya.cmds.button(label="Wireframe", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"wireframe\")"  % (editor, )))
-	maya.cmds.button(label="Points", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"points\")"  % (editor, )))
-	maya.cmds.button(label="Bounding Box", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"boundingBox\")"  % (editor, )))
-	maya.cmds.button(label="Smooth Shaded", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"smoothShaded\")"  % (editor, )))
-	maya.cmds.button(label="Flat Shaded", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"flatShaded\")"  % (editor, )))
-	maya.cmds.floatField("angleTolerance",minValue=0,maxValue=180,value=10,step=1,precision=1,ann="tolerance",cc=("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor, )), \
-		ec = ("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor, )), dc = ("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor, )), \
-		rfc = ("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor, )))
+	maya.cmds.button(label="Wireframe", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"wireframe\")" % (editor,)))
+	maya.cmds.button(label="Points", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"points\")" % (editor,)))
+	maya.cmds.button(label="Bounding Box", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"boundingBox\")" % (editor,)))
+	maya.cmds.button(label="Smooth Shaded", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"smoothShaded\")" % (editor,)))
+	maya.cmds.button(label="Flat Shaded", command=("maya.cmds.spNarrowPolyViewer(\"%s\",edit=True,displayAppearance=\"flatShaded\")" % (editor,)))
+	maya.cmds.floatField("angleTolerance", minValue=0, maxValue=180, value=10, step=1, precision=1, ann="tolerance", cc=("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor,)), \
+		ec=("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor,)), dc=("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor,)), \
+		rfc=("maya.cmds.spNarrowPolyViewer(\"%s\", edit=True,tol=maya.cmds.floatField(\"angleTolerance\",q=True,v=True))" % (editor,)))
 
 	#   Set up the window layout attachments.
 	# 
-	maya.cmds.formLayout(form,edit=True,attachForm=(column, "top",0))
-	maya.cmds.formLayout(form,edit=True,attachForm=(column, "left",0))
-	maya.cmds.formLayout(form,edit=True,attachNone=(column, "bottom"))
-	maya.cmds.formLayout(form,edit=True,attachNone=(column, "right"))
-	maya.cmds.formLayout(form,edit=True,attachForm=(editor, "top", 0), attachControl = (editor, "left", 0, column))
-	maya.cmds.formLayout(form,edit=True,attachForm=(editor, "bottom", 0))
-	maya.cmds.formLayout(form,edit=True,attachForm=(editor, "right", 0))
+	maya.cmds.formLayout(form, edit=True, attachForm=(column, "top", 0))
+	maya.cmds.formLayout(form, edit=True, attachForm=(column, "left", 0))
+	maya.cmds.formLayout(form, edit=True, attachNone=(column, "bottom"))
+	maya.cmds.formLayout(form, edit=True, attachNone=(column, "right"))
+	maya.cmds.formLayout(form, edit=True, attachForm=(editor, "top", 0), attachControl=(editor, "left", 0, column))
+	maya.cmds.formLayout(form, edit=True, attachForm=(editor, "bottom", 0))
+	maya.cmds.formLayout(form, edit=True, attachForm=(editor, "right", 0))
 
 	#   Create a camera for the editor.  This particular camera will
 	#   have a close up perspective view of the centre of the ground plane.
 	# 
-	camera = maya.cmds.camera(centerOfInterest=2.450351, position=(1.535314,1.135712,1.535314), rotation=(-27.612504,45,0), worldUp=(-0.1290301,0.3488592,-0.1290301))
+	camera = maya.cmds.camera(centerOfInterest=2.450351, position=(1.535314, 1.135712, 1.535314), rotation=(-27.612504, 45, 0), worldUp=(-0.1290301, 0.3488592, -0.1290301))
 	g__MpTestPrimaryCamera = camera[0];
 
 	#   Attach the camera to the model editor.
 	# 
-	maya.cmds.spNarrowPolyViewer(editor,edit=True,camera=camera[0])
-	maya.cmds.currentTime(10.0,edit=True)
-	maya.cmds.spNarrowPolyViewer(editor,edit=True,i=True)
+	maya.cmds.spNarrowPolyViewer(editor, edit=True, camera=camera[0])
+	maya.cmds.currentTime(10.0, edit=True)
+	maya.cmds.spNarrowPolyViewer(editor, edit=True, i=True)
 	maya.cmds.refresh()
-	maya.cmds.spNarrowPolyViewer(editor,edit=True,r=True)
+	maya.cmds.spNarrowPolyViewer(editor, edit=True, r=True)
 
 	maya.cmds.showWindow(window)

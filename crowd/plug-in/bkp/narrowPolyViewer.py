@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 import sys
 import math
@@ -60,7 +60,9 @@ kClearFlagLong = "-clear"
 kToleranceFlag = "-tol"
 kToleranceFlagLong = "-tolerance"
 
+
 class narrowPolyViewer(OpenMayaMPx.MPx3dModelView):
+
 	def __init__(self):
 		OpenMayaMPx.MPx3dModelView.__init__(self)
 
@@ -145,8 +147,8 @@ class narrowPolyViewer(OpenMayaMPx.MPx3dModelView):
 				if length == 3:
 					for i in range(length):
 						p = points[i]
-						p1 = points[(i+1)%length]
-						p2 = points[(i+2)%length]
+						p1 = points[(i + 1) % length]
+						p2 = points[(i + 2) % length]
 						
 						v1 = OpenMaya.MVector(p1 - p)
 						v2 = OpenMaya.MVector(p2 - p)
@@ -154,7 +156,7 @@ class narrowPolyViewer(OpenMayaMPx.MPx3dModelView):
 						angle = v1.angle(v2) * 180.0 / math.pi
 						
 						if math.fabs(angle - self.tol) < 0.0001 or angle < self.tol:
-							glFT.glBegin( OpenMayaRender.MGL_POLYGON )
+							glFT.glBegin(OpenMayaRender.MGL_POLYGON)
 							glFT.glVertex3f(points[0].x, points[0].y, points[0].z)
 							glFT.glVertex3f(points[1].x, points[1].y, points[1].z)
 							glFT.glVertex3f(points[2].x, points[2].y, points[2].z)
@@ -199,7 +201,7 @@ class narrowPolyViewer(OpenMayaMPx.MPx3dModelView):
 			else:
 				nCameras = self.fCameraList.length()
 				if self.fCurrentPass <= nCameras:
-					dagPath = self.fCameraList[self.fCurrentPass-1]
+					dagPath = self.fCameraList[self.fCurrentPass - 1]
 				else:
 					sys.stderr.write("ERROR: ...too many passes specified\n")
 					return
@@ -245,8 +247,8 @@ class narrowPolyViewer(OpenMayaMPx.MPx3dModelView):
 		# self.setLightingMode(OpenMayaUI.kLightDefault)
 		
 		if ((self.fCurrentPass % 2) == 0):
-			self.setObjectDisplay(OpenMayaUI.M3dView.kDisplayNurbsSurfaces, True );
-			self.setObjectDisplay(OpenMayaUI.M3dView.kDisplayNurbsCurves, True );
+			self.setObjectDisplay(OpenMayaUI.M3dView.kDisplayNurbsSurfaces, True);
+			self.setObjectDisplay(OpenMayaUI.M3dView.kDisplayNurbsCurves, True);
 			
 		self.updateViewingParameters()
 
@@ -265,9 +267,8 @@ class narrowPolyViewer(OpenMayaMPx.MPx3dModelView):
 		return "spNarrowPolyViewer";
 
 
-
-
 class narrowPolyViewerCmd(OpenMayaMPx.MPxModelEditorCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxModelEditorCommand.__init__(self)
 		self.fCameraList = OpenMaya.MDagPathArray()
@@ -281,7 +282,7 @@ class narrowPolyViewerCmd(OpenMayaMPx.MPxModelEditorCommand):
 			theSyntax.addFlag(kToleranceFlag, kToleranceFlagLong, OpenMaya.MSyntax.kDouble)
 
 		except:
-			sys.stderr.write( "ERROR: creating syntax for model editor command: %s" % kPluginCmdName )
+			sys.stderr.write("ERROR: creating syntax for model editor command: %s" % kPluginCmdName)
 
 	def doEditFlags(self):
 		try:
@@ -303,7 +304,7 @@ class narrowPolyViewerCmd(OpenMayaMPx.MPxModelEditorCommand):
 				else:
 					return OpenMaya.kUnknownParameter
 		except:
-			sys.stderr.write( "ERROR: in doEditFlags for model editor command: %s" % kPluginCmdName )
+			sys.stderr.write("ERROR: in doEditFlags for model editor command: %s" % kPluginCmdName)
 
 	def initTests(self, view):
 		clearResults(self, view)
@@ -335,7 +336,7 @@ class narrowPolyViewerCmd(OpenMayaMPx.MPxModelEditorCommand):
 		view.refresh()
 
 	def testResults(self, view):
-		print "fCameraLIst.length() = %d " % (self.fCameraList.length(), )
+		print "fCameraLIst.length() = %d " % (self.fCameraList.length(),)
 		length = self.fCameraList.length()
 
 	def clearResults(self, view):
@@ -343,28 +344,30 @@ class narrowPolyViewerCmd(OpenMayaMPx.MPxModelEditorCommand):
 		self.fCameraList.clear()
 
 
-
 def cmdCreator():
-	return OpenMayaMPx.asMPxPtr( narrowPolyViewerCmd() )
+	return OpenMayaMPx.asMPxPtr(narrowPolyViewerCmd())
+
 
 def viewerCreator():
-	return OpenMayaMPx.asMPxPtr( narrowPolyViewer() )
+	return OpenMayaMPx.asMPxPtr(narrowPolyViewer())
+
 
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.registerModelEditorCommand( kPluginCmdName, cmdCreator, viewerCreator)
+		mplugin.registerModelEditorCommand(kPluginCmdName, cmdCreator, viewerCreator)
 	except:
-		sys.stderr.write( "Failed to register model editor command: %s" % kPluginCmdName )
+		sys.stderr.write("Failed to register model editor command: %s" % kPluginCmdName)
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterModelEditorCommand( kPluginCmdName )
+		mplugin.deregisterModelEditorCommand(kPluginCmdName)
 	except:
-		sys.stderr.write( "Failed to deregister model editor command: %s" % kPluginCmdName )
+		sys.stderr.write("Failed to deregister model editor command: %s" % kPluginCmdName)
 		raise
 	

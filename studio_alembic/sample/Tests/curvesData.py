@@ -37,49 +37,51 @@
 from imath import *
 from alembic.Abc import *
 
-def setArray( iTPTraits, *iList ):
-    array = iTPTraits.arrayType( len( iList ) )
-    for i in range( len( iList ) ):
+
+def setArray(iTPTraits, *iList):
+    array = iTPTraits.arrayType(len(iList))
+    for i in range(len(iList)):
         array[i] = iList[i]
     return array  
 
-numVerts = setArray( Int32TPTraits, 8, 4 )
+
+numVerts = setArray(Int32TPTraits, 8, 4)
 
 verts = setArray(
     V3fTPTraits,
 
     # first curve
-    V3f( -1.0, -1.0, -1.0 ),
-    V3f( 1.0, -1.0, -1.0 ),
-    V3f( -1.0, 1.0, -1.0 ),
-    V3f( 1.0, 1.0, -1.0 ),
-    V3f( -1.0, -1.0, 1.0 ),
-    V3f( 1.0, -1.0, 1.0 ),
-    V3f( -1.0, 1.0, 1.0 ),
-    V3f( 1.0, 1.0, 1.0 ),
+    V3f(-1.0, -1.0, -1.0),
+    V3f(1.0, -1.0, -1.0),
+    V3f(-1.0, 1.0, -1.0),
+    V3f(1.0, 1.0, -1.0),
+    V3f(-1.0, -1.0, 1.0),
+    V3f(1.0, -1.0, 1.0),
+    V3f(-1.0, 1.0, 1.0),
+    V3f(1.0, 1.0, 1.0),
 
     # second curve
-    V3f( 1.0, 0.0, 1.0 ),
-    V3f( 0.5, 0.25, 1.0 ),
-    V3f( 0.5, 0.75, 1.0 ),
-    V3f( 1.0, 1.0, 1.0 )
+    V3f(1.0, 0.0, 1.0),
+    V3f(0.5, 0.25, 1.0),
+    V3f(0.5, 0.75, 1.0),
+    V3f(1.0, 1.0, 1.0)
 )
 
 uvs = setArray(
     V2fTPTraits,
 
-    V2f( 0.0, 0.0 ),
-    V2f( 0.1, 0.0 ),
-    V2f( 0.2, 0.0 ),
-    V2f( 0.3, 0.0 ),
-    V2f( 0.4, 0.0 ),
-    V2f( 0.5, 0.0 ),
-    V2f( 0.6, 0.0 ),
-    V2f( 0.7, 0.0 ),
-    V2f( 0.0, 0.0 ),
-    V2f( 0.25, 0.0 ),
-    V2f( 0.5, 0.0 ),
-    V2f( 1.0, 0.0 )
+    V2f(0.0, 0.0),
+    V2f(0.1, 0.0),
+    V2f(0.2, 0.0),
+    V2f(0.3, 0.0),
+    V2f(0.4, 0.0),
+    V2f(0.5, 0.0),
+    V2f(0.6, 0.0),
+    V2f(0.7, 0.0),
+    V2f(0.0, 0.0),
+    V2f(0.25, 0.0),
+    V2f(0.5, 0.0),
+    V2f(1.0, 0.0)
 )
 
 widths = setArray(

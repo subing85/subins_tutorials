@@ -31,7 +31,6 @@ class Connect(object):
         self.name = 'test'
         self.author = 'Subin Gopi'        
         self.set_file_path()
-        
     
     def update_kwargs(self):
         long_names = {
@@ -204,6 +203,5 @@ class Connect(object):
     @classmethod
     def sorted_data(cls, data):
         return cdata.sorted_order_data(data)
-
 
 # rw.write(data, force=True)

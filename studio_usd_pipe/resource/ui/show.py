@@ -81,22 +81,23 @@ class Window(QtWidgets.QWidget):
     def set_default(self):
         inputs = self.shows.get_show_configure_data()
         order = self.shows.get_next_order()
-        inputs['show_name']['order']['value'] = order
-        self.set_widgets('current_show', 'show', inputs['show_name'])        
-        sorted_application = common.sorted_order(inputs['applications'])
-        for application in sorted_application:
-            self.set_widgets(
-                'applications', application, inputs['applications'][application])        
+        inputs['show']['order']['value'] = order
+        self.set_widgets('current_show', 'show', inputs['show'], order)        
+        sorted_application = common.sort_dictionary(inputs['applications'])
         
-    def set_widgets(self, header, key, inputs):
+        for index, application in enumerate(sorted_application):
+            self.set_widgets(
+                'applications', application, inputs['applications'][application], index)        
+        
+    def set_widgets(self, header, key, inputs, index):
         '''
             :param header <str> 'current_show', 'applications'
             :param key <str>  'show', maya, katana, nuke, natron
         '''
         page = QtWidgets.QWidget()
         page.setObjectName('%s_%s' % (page, header))
-        page.setStatusTip(key)
         page.setToolTip(header)
+        page.setStatusTip('%s,%s' % (key, index))
         self.toolbox.addItem(page, '%s configure' % key)
         gridlayout = QtWidgets.QGridLayout(page)
         gridlayout.setObjectName('gridlayout_%s' % key)
@@ -106,8 +107,8 @@ class Window(QtWidgets.QWidget):
     
     def set_context_widgets(self, inputs, layout):
         sizepolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)        
-        sorted_date = common.sorted_order(inputs)
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sorted_date = common.sort_dictionary(inputs)
         for index, each in enumerate(sorted_date):
             contents = inputs[each]
             label = QtWidgets.QLabel(self)
@@ -168,13 +169,15 @@ class Window(QtWidgets.QWidget):
         widget.setText(directory)                
 
     def get_widget_data(self, toolbox):
-        widget_data = {}        
+        widget_data = {}
         for index in range(toolbox.count()):
             widget = toolbox.widget (index)
             header = widget.toolTip()
-            key = widget.statusTip()
+            key, index = widget.statusTip().split(',')
             girdlayout = widget.findChild(QtWidgets.QGridLayout)
             layout_data = self.get_layout_data(girdlayout)
+            if 'order' not in layout_data:
+                layout_data['order'] = index
             if header not in widget_data:
                 widget_data.setdefault(header, {})
             widget_data[header].setdefault(key, layout_data)
@@ -195,8 +198,7 @@ class Window(QtWidgets.QWidget):
             name, types, order = widget.statusTip().split(',')
             if types == 'list':
                 value = value.replace(' ', '').split(',')
-            data.setdefault(name, value)
-            data.setdefault('order', order)
+            data.setdefault(str(name), value)
         return data
     
     def get_widget(self, layout, row, column):    
@@ -223,12 +225,12 @@ class Window(QtWidgets.QWidget):
         if not valid:        
             QtWidgets.QMessageBox.critical(
                 self, 'critical', '%s\n%s' % (message, value), QtWidgets.QMessageBox.Ok)
-            print '#warning: ', message, value
+            print '#failed: show registration show', message, value
             return         
         QtWidgets.QMessageBox.information(
             self, 'information', '%s\ncreated %s show' % (message, label), QtWidgets.QMessageBox.Ok)
         self.close()            
-        print '#successfully registered show preset!...'
+        print '#info: successfully registered show preset!...'
         return
 
           

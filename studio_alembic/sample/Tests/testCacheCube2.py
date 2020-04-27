@@ -63,19 +63,20 @@ tvec[:] = [ 1, 2, 3 ]
 timePerCycle = 3.0
 numSamplesPerCycle = len(tvec)
 
-tst = TimeSamplingType( numSamplesPerCycle, timePerCycle )
-ts = TimeSampling( tst, tvec )
+tst = TimeSamplingType(numSamplesPerCycle, timePerCycle)
+ts = TimeSampling(tst, tvec)
 
 # Alembic file name
 fileName = 'cube2.abc'
 
 testList = []
 
+
 # Test exporting a simple cube quad mesh
 def testExportCubeGeom():
 
     # create the archive
-    top = OArchive( fileName ).getTop()
+    top = OArchive(fileName).getTop()
     tsidx = top.getArchive().addTimeSampling(ts)
 
     # create the top xform
@@ -90,7 +91,9 @@ def testExportCubeGeom():
     mesh_samp.setSelfBounds(selfBnds)
     mesh.set(mesh_samp)
 
+
 testList.append(('testExportCubeGeom2', testExportCubeGeom))
+
 
 # Test importing the exported quad mesh
 def testImportCubeGeom():
@@ -113,6 +116,7 @@ def testImportCubeGeom():
     assert mesh_samp.getFaceCounts() == faceCounts
     assert mesh_samp.getFaceIndices() == faceIndices
     assert mesh_samp.getSelfBounds() == selfBnds
+
 
 testList.append(('testImportCubeGeom2', testImportCubeGeom))
 

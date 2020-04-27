@@ -50,6 +50,5 @@ file_path = os.path.join(tempfile.gettempdir(), 'myTestUv.uv')
 with open(file_path, 'w') as file:
     file.write(json.dumps(data, indent=4))
 	
-print 'success', '<%s>'%file_path
-
+print 'success', '<%s>' % file_path
 

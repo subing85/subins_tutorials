@@ -20,7 +20,7 @@ sys.path.append('/venture/subins_tutorials')
 from functools import partial
 from PySide import QtGui
 from PySide import QtCore
-#from studioPipe.core import input
+# from studioPipe.core import input
 import input
 
 from pprint import pprint
@@ -56,9 +56,9 @@ class Connect(input.Window):
         self.description_widget = None
         self.add_widget = None
         for k, v in self.input_datas.items():
-            if k=='current_show':
+            if k == 'current_show':
                 self.show_widget = v['widget']
-            if k=='description':
+            if k == 'description':
                 self.description_widget = v['widget']
              
         # print self.description_widget.geometry()
@@ -83,7 +83,7 @@ class Connect(input.Window):
         button_add.setMaximumSize(QtCore.QSize(35, 25))
         button_add.setText(u'\u002B')
         button_add.setStyleSheet('color: #0000FF;')       
-        self.gridlayout.addWidget(button_add, row_count-1, 1, 1, 1)
+        self.gridlayout.addWidget(button_add, row_count - 1, 1, 1, 1)
         button_add.clicked.connect(partial(self.add_tier, button_add, self.gridlayout, row_count))
                 
     def add_tier(self, preivous_button, gridlayout, row):
@@ -97,7 +97,7 @@ class Connect(input.Window):
         combobox = QtGui.QComboBox(None)
         combobox.setObjectName('combobox_%s' % row)
         combobox.setEditable(True)
-        combobox.setStatusTip(str(row-3))
+        combobox.setStatusTip(str(row - 3))
         items = ['', 'character',
                  'prop',
                  'environment',
@@ -105,7 +105,7 @@ class Connect(input.Window):
                  'camera',
                  'light']
         combobox.addItems(items)
-        self.gridlayout.addWidget(combobox, row-1, 2, 1, 1)
+        self.gridlayout.addWidget(combobox, row - 1, 2, 1, 1)
         button_add = QtGui.QPushButton(None)
         button_add.setObjectName('button_add')
         button_add.setMinimumSize(QtCore.QSize(35, 25))
@@ -113,16 +113,15 @@ class Connect(input.Window):
         button_add.setText(u'\u002B')
         button_add.setStyleSheet('color: #0000FF;')       
         self.gridlayout.addWidget(button_add, row, 1, 1, 1)
-        button_add.clicked.connect(partial(self.add_tier, button_add, self.gridlayout, row+1))
+        button_add.clicked.connect(partial(self.add_tier, button_add, self.gridlayout, row + 1))
         preivous_button.setText(u'\u274C')
         preivous_button.setStyleSheet('color: #FF0004;')      
         data = {
             'combobox': combobox,
             'button': button_add,
-            'row': row-1
+            'row': row - 1
             }       
         self.button_data.setdefault(preivous_button, data)
-
 
     def create(self):
         if not self.current_show:
@@ -131,7 +130,7 @@ class Connect(input.Window):
         if not self.description_widget:
             warnings.warn('Not found type widget')
             return
-        if self.description_widget.currentText()=='None':
+        if self.description_widget.currentText() == 'None':
             QtGui.QMessageBox.warning(
                 self, 'Warning', 'Not found any show discipline description!..', QtGui.QMessageBox.Ok)
             return

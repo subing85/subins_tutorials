@@ -121,7 +121,6 @@ def add_tag(mobject, tag=None):
         plug = mfn_dependency_node.findPlug('crowd_type')
         plug.setString(tag)
 
-
 '''
 from crowd.api import crowdSkeleton
 reload(crowdSkeleton)

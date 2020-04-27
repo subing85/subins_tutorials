@@ -469,6 +469,7 @@ class Connect(QtGui.QWidget):
         for index in index_list:
             self.create_addon(self.gridlayout_fk, 'fk', input=data['fk'][index])
 
+
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = Connect(parent=None)

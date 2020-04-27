@@ -21,12 +21,12 @@ class WhatIsCmd(OpenMayaMPx.MPxCommand):
 
 	@staticmethod
 	def cmdCreator():
-		return OpenMayaMPx.asMPxPtr( WhatIsCmd() )
+		return OpenMayaMPx.asMPxPtr(WhatIsCmd())
 
 	def doIt(self, args):
 		selectList = OpenMaya.MSelectionList()
 
-		OpenMaya.MGlobal.getActiveSelectionList( selectList )
+		OpenMaya.MGlobal.getActiveSelectionList(selectList)
 
 		node = OpenMaya.MObject()
 		depFn = OpenMaya.MFnDependencyNode()
@@ -34,17 +34,17 @@ class WhatIsCmd(OpenMayaMPx.MPxCommand):
 		iter = OpenMaya.MItSelectionList(selectList)
 
 		while (iter.isDone() == 0):
-			iter.getDependNode( node )
+			iter.getDependNode(node)
 
 			depFn.setObject(node)
 
 			name = depFn.name()
 			types = []
-			OpenMaya.MGlobal.getFunctionSetList( node, types )
+			OpenMaya.MGlobal.getFunctionSetList(node, types)
 
 			print "Name: %s" % name
 			print "Type: %s" % node.apiTypeStr()
-			sys.stdout.write( "Function Sets: " )
+			sys.stdout.write("Function Sets: ")
 			sys.stdout.write(", ".join(types) + '\n')
 
 			iter.next()
@@ -63,6 +63,7 @@ def initializePlugin(plugin):
 		)
 		raise
 
+
 # Uninitialize the script plug-in
 def uninitializePlugin(plugin):
 	pluginFn = OpenMayaMPx.MFnPlugin(plugin)
@@ -74,7 +75,7 @@ def uninitializePlugin(plugin):
 		)
 		raise
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All
 # rights reserved.
@@ -110,4 +111,4 @@ def uninitializePlugin(plugin):
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +

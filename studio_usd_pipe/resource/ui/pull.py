@@ -368,12 +368,12 @@ class Window(QtWidgets.QMainWindow):
     def set_menu_options(self, subfield):
         actions = [
             self.action_import_maya,
-            self.action_reference_maya,           
+            self.action_reference_maya,
             self.action_import_usd,
             self.action_reference_usd,
             self.action_open_source,
             self.action_pull_normal,
-            self.action_pull_replace,          
+            self.action_pull_replace,
             self.action_open_location
             ]
         for action in actions:
@@ -381,15 +381,15 @@ class Window(QtWidgets.QMainWindow):
         invisibile = {
             'uv': [
                 self.action_import_maya,
-                self.action_reference_maya,           
+                self.action_reference_maya,
                 self.action_import_usd,
                 self.action_reference_usd,
                 self.action_pull_normal,
                 # self.action_pull_replace     
                 ],
             'surface': [
-                #self.action_import_maya,
-                #self.action_reference_maya,           
+                # self.action_import_maya,
+                # self.action_reference_maya,           
                 self.action_import_usd,
                 self.action_reference_usd,
                 # self.action_pull_normal,               
@@ -397,11 +397,11 @@ class Window(QtWidgets.QMainWindow):
                 ],
         
             'puppet': [
-                #self.action_import_maya,
+                # self.action_import_maya,
                 # self.action_reference_maya,           
                 self.action_import_usd,
                 self.action_reference_usd,
-                self.action_pull_normal,               
+                self.action_pull_normal,
                 self.action_pull_replace                    
                 ]
             }
@@ -548,23 +548,21 @@ class Window(QtWidgets.QMainWindow):
 
     def pull_studio(self, file, subfield, replace=True):
         
-        if subfield=='model':
+        if subfield == 'model':
             mcreate = mayacreate.Create(file)
             mcreate.model(replace=replace)
             
-        if subfield=='uv':
+        if subfield == 'uv':
             mcreate = mayacreate.Create(file)
             mcreate.uv(replace=True)            
 
-        if subfield=='surface':
+        if subfield == 'surface':
             mcreate = mayacreate.Create(file)
             mcreate.surface(replace=replace)
                  
-        if subfield=='puppet':
+        if subfield == 'puppet':
             mcreate = mayacreate.Create(file)
             mcreate.puppet(replace=replace)
-            
-
     
     def open_location(self, location):
         if platform.system() == 'Windows':

@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,33 +34,33 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
-#	Creation Date:   2 October 2006
+# 	Creation Date:   2 October 2006
 #
-#	Description:
+# 	Description:
 # 
-#		moveTool.py
+# 		moveTool.py
 #
 # Description:
-#	Interactive tool for moving objects and components.
+# 	Interactive tool for moving objects and components.
 #
-#	This plug-in will register the following two commands in Maya:
-#		maya.cmds.spMoveToolCmd(x, y, z)
+# 	This plug-in will register the following two commands in Maya:
+# 		maya.cmds.spMoveToolCmd(x, y, z)
 #       maya.cmds.spMoveToolContext()
 #
-#	Usage:
-#	import maya
-#	maya.cmds.loadPlugin("moveTool.py")
-#	maya.cmds.spMoveToolContext("spMoveToolContext1")
-#	shelfTopLevel = maya.mel.eval("global string $gShelfTopLevel;$temp = $gShelfTopLevel")
-#	maya.cmds.setParent("%s|General" % shelfTopLevel)
-#	maya.cmds.toolButton("spMoveTool1", cl="toolCluster", t="spMoveToolContext1", i1="moveTool.xpm") 
+# 	Usage:
+# 	import maya
+# 	maya.cmds.loadPlugin("moveTool.py")
+# 	maya.cmds.spMoveToolContext("spMoveToolContext1")
+# 	shelfTopLevel = maya.mel.eval("global string $gShelfTopLevel;$temp = $gShelfTopLevel")
+# 	maya.cmds.setParent("%s|General" % shelfTopLevel)
+# 	maya.cmds.toolButton("spMoveTool1", cl="toolCluster", t="spMoveToolContext1", i1="moveTool.xpm") 
 #
-#	Remove UI objects with
-#	maya.cmds.deleteUI("spMoveToolContext1")
-#	maya.cmds.deleteUI("spMoveTool1")
+# 	Remove UI objects with
+# 	maya.cmds.deleteUI("spMoveToolContext1")
+# 	maya.cmds.deleteUI("spMoveTool1")
 #
 
 import maya.OpenMaya as OpenMaya
@@ -68,14 +68,15 @@ import maya.OpenMayaMPx as OpenMayaMPx
 import maya.OpenMayaUI as OpenMayaUI
 import sys, math
 
-kPluginCmdName="spMoveToolCmd"
-kPluginCtxName="spMoveToolContext"
+kPluginCmdName = "spMoveToolCmd"
+kPluginCtxName = "spMoveToolContext"
 kVectorEpsilon = 1.0e-3
 
 # keep track of instances of MoveToolCmd to get around script limitation
 # with proxy classes of base pointers that actually point to derived
 # classes
 kTrackingDictionary = {}
+
 
 # command
 class MoveToolCmd(OpenMayaMPx.MPxToolCommand):
@@ -352,22 +353,25 @@ class MoveContext(OpenMayaMPx.MPxSelectionContext):
 		"""
 		self._setHelpString("click on object and drag to move it")
 
-
 #############################################################################
 
 
 class MoveContextCommand(OpenMayaMPx.MPxContextCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxContextCommand.__init__(self)
 
 	def makeObj(self):
 		return OpenMayaMPx.asMPxPtr(MoveContext())
 
+
 def cmdCreator():
 	return OpenMayaMPx.asMPxPtr(MoveToolCmd())
 
+
 def ctxCmdCreator():
 	return OpenMayaMPx.asMPxPtr(MoveContextCommand())
+
 
 def syntaxCreator():
 	syntax = OpenMaya.MSyntax()
@@ -378,6 +382,7 @@ def syntaxCreator():
 
 # Initialize the script plug-in
 
+
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject, "Autodesk", "1.0", "Any")
 	try:
@@ -385,6 +390,7 @@ def initializePlugin(mobject):
 	except:
 		sys.stderr.write("Failed to register context command: %s\n" % kPluginCtxName)
 		raise
+
 
 # Uninitialize the script plug-in
 def uninitializePlugin(mobject):

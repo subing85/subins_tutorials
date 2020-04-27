@@ -26,11 +26,11 @@ def has_valid():
     # to block os validation   result = {False: 'Only support \"%s\" operating system' % tool_os}
     # to block os validation  return result
     if tool_app not in application:
-        result = {False: 'Only support \"%s %s\"' %
+        result = {False: 'Only support \"%s %s\"' % 
                   (tool_app, tool_ver)}
         return result
     if tool_ver not in version:
-        result = {False: 'Only support \"%s %s\"' %
+        result = {False: 'Only support \"%s %s\"' % 
                   (tool_app, tool_ver)}
         return result
     return result

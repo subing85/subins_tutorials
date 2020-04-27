@@ -37,39 +37,41 @@
 from imath import *
 from alembic.Abc import *
 
-def setArray( iTPTraits, *iList ):
-    array = iTPTraits.arrayType( len( iList ) )
-    for i in range( len( iList ) ):
+
+def setArray(iTPTraits, *iList):
+    array = iTPTraits.arrayType(len(iList))
+    for i in range(len(iList)):
         array[i] = iList[i]
     return array  
+
 
 nu = 4
 nv = 4
 uOrder = 4
 vOrder = 4
 
-uKnot = setArray( Float32TPTraits, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 )
-vKnot = setArray( Float32TPTraits, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 )
+uKnot = setArray(Float32TPTraits, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
+vKnot = setArray(Float32TPTraits, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
 
 P = setArray(
     V3fTPTraits,
 
-    V3f( 0.0, 0.0, -3.0 ),
-    V3f( 0.0, 1.0, -3.0 ),
-    V3f( 0.0, 2.0, -3.0 ),
-    V3f( 0.0, 3.0, -3.0 ),
-    V3f( 1.0, 0.0, -3.0 ),
-    V3f( 1.0, 1.0, 3.0 ),
-    V3f( 1.0, 2.0, 3.0 ),
-    V3f( 1.0, 3.0, -3.0 ),
-    V3f( 2.0, 0.0, -3.0 ),
-    V3f( 2.0, 1.0, 3.0 ),
-    V3f( 2.0, 2.0, 3.0 ),
-    V3f( 2.0, 3.0, -3.0 ),
-    V3f( 3.0, 0.0, -3.0 ),
-    V3f( 3.0, 1.0, -3.0 ),
-    V3f( 3.0, 2.0, -3.0 ),
-    V3f( 3.0, 3.0, -3.0 )
+    V3f(0.0, 0.0, -3.0),
+    V3f(0.0, 1.0, -3.0),
+    V3f(0.0, 2.0, -3.0),
+    V3f(0.0, 3.0, -3.0),
+    V3f(1.0, 0.0, -3.0),
+    V3f(1.0, 1.0, 3.0),
+    V3f(1.0, 2.0, 3.0),
+    V3f(1.0, 3.0, -3.0),
+    V3f(2.0, 0.0, -3.0),
+    V3f(2.0, 1.0, 3.0),
+    V3f(2.0, 2.0, 3.0),
+    V3f(2.0, 3.0, -3.0),
+    V3f(3.0, 0.0, -3.0),
+    V3f(3.0, 1.0, -3.0),
+    V3f(3.0, 2.0, -3.0),
+    V3f(3.0, 3.0, -3.0)
 )
 
 Pw = setArray(
@@ -80,8 +82,8 @@ Pw = setArray(
 )
 
 trim_nLoops = 1
-trim_nCurves = setArray( Int32TPTraits, 1 )
-trim_order = setArray( Int32TPTraits, 3 )
+trim_nCurves = setArray(Int32TPTraits, 1)
+trim_order = setArray(Int32TPTraits, 3)
 trim_knot = setArray(
     Float32TPTraits,
     
@@ -89,9 +91,9 @@ trim_knot = setArray(
     3.0, 3.0, 4.0, 4.0, 4.0
 )
 
-trim_min = setArray( Float32TPTraits, 0.0 )
-trim_max = setArray( Float32TPTraits, 1.0 )
-trim_n = setArray( Int32TPTraits, 9 )
+trim_min = setArray(Float32TPTraits, 0.0)
+trim_max = setArray(Float32TPTraits, 1.0)
+trim_n = setArray(Int32TPTraits, 9)
 trim_u = setArray(
     Float32TPTraits,
     

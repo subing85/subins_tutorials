@@ -14,6 +14,7 @@ def getInputData(path):
         if not data['enable']:
             return None
         return data['data']
+
     
 def getData(path):
     if not path:
@@ -21,6 +22,7 @@ def getData(path):
     with open(path, 'r') as file:
         data = file.read()
         return data
+
     
 def getPresetFormat():
     return '.preset'
@@ -30,6 +32,7 @@ def getShowConfigureData():
     path = os.path.join(getInputPath(), 'show.json')
     data = getInputData(path)
     return data
+
 
 def getIconPath():
     return os.path.join(CURRENT_PATH, 'icons')
@@ -54,17 +57,62 @@ def getTemplatePath():
     return path
 
 
+def getApplicationTemplatePath(): 
+    template_path = getTemplatePath()
+    path = os.path.join(template_path, 'application_template.txt')
+    return path
+
+def getStudioTemplatePath(): 
+    template_path = getTemplatePath()
+    path = os.path.join(template_path, 'studiopipe_template.txt')
+    return path
+
+def getStudioPipePath(): 
+    bin_path = getBinPath()
+    path = os.path.join(bin_path, 'pipe/studiopipe')
+    return path
+
+
+def getOperatingSystemBinPath():
+    return '/usr/bin'    
+
+
 def getBrowsPath():
     if 'BROWS_PATH' in os.environ:
         return os.environ['BROWS_PATH']        
     return getPackagePath()
 
 
+def getPresetPath():
+    package_path = getPackagePath()
+    package_name = getPackageName()
+    path = os.path.join(
+        package_path, package_name, 'presets')    
+    return path  
+
+
+def getShowPresetPath():
+    preset_path = getPresetPath()
+    path = os.path.join(preset_path, 'shows')
+    return path  
+
+
+def getBinPath():
+    package_path = getPackagePath()
+    package_name = getPackageName()
+    path = os.path.join(
+        package_path, package_name, 'bin')
+    return path  
+
+
+def getBinApplicationPath(show, application):
+    bin_path = getBinPath()
+    path = os.path.join(bin_path, 'shows', show, application, 'main.sh')
+    return path
+
+
 def getIdentityKey():
     return '##..##'
-
-
-
 
 
 def getInputPath():
@@ -85,20 +133,10 @@ def getHeaderData():
     return data
 
 
-
 def getStudioData():
     path = os.path.join(getInputPath(), 'studio.json')
     data = getInputData(path)
     return data
-
-
-
-
-
-
-
-
-
 
 
 def getPreferenceFormat():  # to remove  
@@ -140,9 +178,6 @@ def getNodeData():
     path = os.path.join(getInputPath(), 'nodes.json')
     data = getInputData(path)
     return data
-
-        
-
 
         
 def getWorkspacePath():

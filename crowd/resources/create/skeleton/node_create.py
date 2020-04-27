@@ -10,7 +10,6 @@ COMMENTS = 'To create skeleton'
 VERSION = 1.0
 CLASS = 'CreateNode'
 
-
 from pymel import core
 
 from crowd.core import skeleton

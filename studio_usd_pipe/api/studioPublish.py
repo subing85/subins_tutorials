@@ -183,7 +183,7 @@ class Publish(object):
             version,
             '{}.manifest'.format(caption)
             )
-        data = resource.get_input_data(manifest_path)
+        data = resource.getInputData(manifest_path)
         sorted_data = copy.deepcopy(data)
         extrude = ['caption', 'tag', 'user', 'modified', 'location', 'type']
         for each in data:

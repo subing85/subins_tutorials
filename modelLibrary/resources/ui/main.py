@@ -374,7 +374,7 @@ class MainWindow(QtGui.QMainWindow):
             icon.addPixmap(QtGui.QPixmap(icon_path),
                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item.setIcon(icon)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter |
+            item.setTextAlignment(QtCore.Qt.AlignHCenter | 
                                   QtCore.Qt.AlignBottom)
             thread.start_new_thread(
                 self.validte_model_publish, (each_file, item,))
@@ -384,7 +384,7 @@ class MainWindow(QtGui.QMainWindow):
         valid = studio_model.had_valid(file)
         if valid:
             return
-        item.setFlags(QtCore.Qt.ItemIsSelectable |
+        item.setFlags(QtCore.Qt.ItemIsSelectable | 
                       QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
 
     def collect_child_items(self, parent):
@@ -471,7 +471,7 @@ class MainWindow(QtGui.QMainWindow):
         data = studio_model.create(fake=True)
 
         comment = [data['comment'], 'author : %s' % data['author'], data['tag'],
-                   data['#copyright'],  'user : %s' % data['user'], data['created_date']]
+                   data['#copyright'], 'user : %s' % data['user'], data['created_date']]
         self.textedit_history.setText('\n'.join(comment))
         self.textedit_history.setReadOnly(True)
         self.lineEdit_label.setText(os.path.basename(

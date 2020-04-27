@@ -13,7 +13,6 @@ Description
     None.
 '''
 
-
 import platform
 
 from shaderLibrary_maya2019.utils import config
@@ -24,11 +23,11 @@ def has_valid():
     operating_system, application, version, python = get_maya_platform()
     result = {True, 'Support to your maya version'}
     if tool_app not in application:
-        result = {False: 'Only support \"%s %s\"' %
+        result = {False: 'Only support \"%s %s\"' % 
                   (tool_app, tool_ver)}
         return result
     if tool_ver not in version:
-        result = {False: 'Only support \"%s %s\"' %
+        result = {False: 'Only support \"%s %s\"' % 
                   (tool_app, tool_ver)}
         return result
     return result

@@ -18,7 +18,6 @@ class Create(object):
     def __init__(self, path):
         self.path = path
         self.studio_data = self.read_json(path)
-
        
     def model(self, replace=True):
         # create polygon mesh
@@ -53,14 +52,14 @@ class Create(object):
         for location in locations:
             nodes = location.split('|')[1:]
             for x in range(len(nodes)):
-                if len(nodes)==x+1:
+                if len(nodes) == x + 1:
                     continue
-                if [nodes[x+1], nodes[x]] in stack:
+                if [nodes[x + 1], nodes[x]] in stack:
                     continue
-                mfndag_child = OpenMaya.MFnDagNode(contents[nodes[x+1]])
+                mfndag_child = OpenMaya.MFnDagNode(contents[nodes[x + 1]])
                 mfndag_parent = OpenMaya.MFnDagNode(contents[nodes[x]])
                 smodel.set_parent(mfndag_child.fullPathName(), mfndag_parent.fullPathName())
-                stack.append([nodes[x+1], nodes[x]])
+                stack.append([nodes[x + 1], nodes[x]])
     
     def uv(self, replace=True):
         smodel = studioModel.Model()
@@ -83,9 +82,6 @@ class Create(object):
     
     def puppet(self, replace=False):
         pass
-    
-
-        
         
     def read_json(self, path):
         data = None

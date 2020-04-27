@@ -5,52 +5,60 @@ import json
 
 from datetime import datetime
 
+# from studio_usd_pipe import resource
+# from studio_usd_pipe.core import common
+
 
 def main():    
+    # studio_template_path = resource.getStudioTemplatePath()
+    
     current_path = os.path.dirname(__file__)
-    write_bash(current_path)
+    package_path = os.path.dirname(current_path)    
+    package_name = os.path.basename(current_path)      
+
+    write_bash(package_path, package_name)
 
     
-def write_bash(path):
-    input_path = os.path.join(path, 'bin/studio.txt')
-    basename = os.path.basename(path)
-    package_path = os.path.dirname(path)
-    contents = get_data(input_path)
-    modified = datetime.now().strftime("%A %B %d, %Y %H:%M %p")
+def write_bash(package_path, package_name):
+    template_path = os.path.join(
+        package_path, package_name, 'template/studiopipe_template.txt')        
+    contents = get_data(template_path)
+    modified = datetime.now().strftime("%Y %d %B %A, %I:%M:%S %p")    
     contents = contents.replace(
-        'Last modified: April 22, 2020',
-        'Last modified: %s' % modified
+        '#  modified: 2020 27 00 00, 00:00:00 PM',
+        '#  modified: %s' % modified
         )
-
     contents = contents.replace(
         '\t\tPACKAGE_PATH=\"tmp\"\n',
         '\t\tPACKAGE_PATH=\"%s\"\n' % package_path
-        )
-    
+        )    
     contents = contents.replace(
         '\t\tPACKAGE_NAME=\"tmp\"\n',
-        '\t\tPACKAGE_NAME=\"%s\"\n' % basename
+        '\t\tPACKAGE_NAME=\"%s\"\n' % package_name
         )
-   
-    studio_path = os.path.join(path, 'bin/studio.sh')
-    with open(studio_path, 'w') as file:
-        data = file.write(contents)
-    os.chmod(studio_path, 0o777)
-    symlink = '/usr/bin/studio'    
-    if os.path.isfile(symlink):
+    studiopipe_path = os.path.join(
+        package_path, package_name, 'bin/pipe/studiopipe')  
+    
+    if not os.path.isdir(os.path.dirname(studiopipe_path)):
+        os.makedirs(os.path.dirname(studiopipe_path))    
+    with open(studiopipe_path, 'w') as file:
+        data = file.write(contents)        
+    os.chmod(studiopipe_path, 0o777)
+    symlink_path = '/usr/bin/studiopipe'
+    if os.path.isfile(symlink_path):
         try:
-            os.chmod(symlink, 0777)
+            os.chmod(symlink_path, 0777)
         except Exception:
             pass
         try:            
-            os.remove(symlink)
+            os.remove(symlink_path)
         except Exception:
             pass
     try:        
-        os.symlink(studio_path, symlink)
+        os.symlink(studiopipe_path, symlink_path)
         valid = True
     except Exception as error:
-        sys.stderr.write('%s %s' % (str(error), symlink))
+        sys.stderr.write('%s %s' % (str(error), symlink_path))
         valid = False
     if not valid:
         return  
@@ -63,6 +71,5 @@ def get_data(path):
         return contents     
 
 
-# --studio usd pipe library
 if __name__ == '__main__':
     main() 

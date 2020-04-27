@@ -15,7 +15,6 @@ Description
     The purpose of the stdioMaya to validate, getting and setting maya objects.  
 '''
 
-
 from maya import OpenMaya
 
 

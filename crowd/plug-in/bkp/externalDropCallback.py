@@ -20,7 +20,7 @@ class PyExternalDropCallback(OpenMayaUI.MExternalDropCallback):
     def __init__(self):
         OpenMayaUI.MExternalDropCallback.__init__(self)
         
-    def externalDropCallback( self, doDrop, controlName, data ):
+    def externalDropCallback(self, doDrop, controlName, data):
         str = ("External Drop:  doDrop = %d,  controlName = %s" % (doDrop, controlName))
         
         # Mouse button
@@ -44,7 +44,7 @@ class PyExternalDropCallback(OpenMayaUI.MExternalDropCallback):
             str += (", text = %s" % data.text())
         if data.hasUrls():
             urls = data.urls()
-            for (i,url) in enumerate(urls):
+            for (i, url) in enumerate(urls):
                 str += (", url[%d] = %s" % (i, url))
             # end
         if data.hasHtml():
@@ -55,7 +55,7 @@ class PyExternalDropCallback(OpenMayaUI.MExternalDropCallback):
         if data.hasImage():
             str += (", image = true")
         str += "\n"
-        sys.stdout.write( str )
+        sys.stdout.write(str)
         return OpenMayaUI.MExternalDropCallback.kMayaDefault
         
 # end
@@ -65,7 +65,7 @@ class PyExternalDropCallback(OpenMayaUI.MExternalDropCallback):
 def initializePlugin(plugin):
     try:
         PyExternalDropCallback.instance = PyExternalDropCallback()
-        OpenMayaUI.MExternalDropCallback.addCallback( PyExternalDropCallback.instance )
+        OpenMayaUI.MExternalDropCallback.addCallback(PyExternalDropCallback.instance)
         sys.stdout.write("Successfully registered callback: PyExternalDropCallback\n")
     except:
         sys.stderr.write("Failed to register callback: PyExternalDropCallback\n")
@@ -76,14 +76,14 @@ def initializePlugin(plugin):
 # Uninitialize the plug-in
 def uninitializePlugin(plugin):
     try:
-        OpenMayaUI.MExternalDropCallback.removeCallback( PyExternalDropCallback.instance )
+        OpenMayaUI.MExternalDropCallback.removeCallback(PyExternalDropCallback.instance)
         sys.stdout.write("Successfully deregistered callback: PyExternalDropCallback\n")
     except:
         sys.stderr.write("Failed to deregister callback: PyExternalDropCallback\n")
         raise
 # end
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -119,6 +119,5 @@ def uninitializePlugin(plugin):
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
-
+# +
 

@@ -42,56 +42,59 @@ testList = []
 
 kConstantScope = GeometryScope.kConstantScope
 
+
 def almostEqual(a0, a1, error=0.01):
     return abs(a0 - a1) <= error
+
 
 def lightOut():
     """write out light archive"""
 
     archive = OArchive("light1.abc")
     emptyLightObj = OLight(archive.getTop(), "emptyLight")
-    lightObj = OLight(archive.getTop(), "myLight" )
+    lightObj = OLight(archive.getTop(), "myLight")
 
     samp = CameraSample()
-    lightObj.getSchema().setCameraSample( samp )
+    lightObj.getSchema().setCameraSample(samp)
 
-    samp = CameraSample( -0.35, 0.75, 0.1, 0.5 )
+    samp = CameraSample(-0.35, 0.75, 0.1, 0.5)
     lightObj.getSchema().getChildBoundsProperty().setValue(
-        Box3d( V3d( 0.0, 0.1, 0.2 ), V3d( 0.3, 0.4, 0.5 ) ) )
+        Box3d(V3d(0.0, 0.1, 0.2), V3d(0.3, 0.4, 0.5)))
 
-    lightObj.getSchema().setCameraSample( samp )
+    lightObj.getSchema().setCameraSample(samp)
 
     arg = lightObj.getSchema().getArbGeomParams()
-    param = OFloatGeomParam( arg, "test", False,
-                                          kConstantScope, 1 )
+    param = OFloatGeomParam(arg, "test", False,
+                                          kConstantScope, 1)
     user = lightObj.getSchema().getUserProperties()
-    OFloatProperty( user, "test" )
+    OFloatProperty(user, "test")
+
 
 def lightIn():
     """read in light archive"""
 
     archive = IArchive("light1.abc")
-    emptyLightObj = ILight(archive.getTop(), "emptyLight" )
-    lightObj = ILight(archive.getTop(), "myLight" )
+    emptyLightObj = ILight(archive.getTop(), "emptyLight")
+    lightObj = ILight(archive.getTop(), "myLight")
 
     assert not emptyLightObj.getSchema().getArbGeomParams()
     assert not emptyLightObj.getSchema().getUserProperties()
     assert lightObj.getSchema().getArbGeomParams().getNumProperties() == 1
     assert lightObj.getSchema().getUserProperties().getNumProperties() == 1
 
-    samp = lightObj.getSchema().getCameraSchema().getValue( 0 )
+    samp = lightObj.getSchema().getCameraSchema().getValue(0)
     window = samp.getScreenWindow();
-    assert almostEqual( window['top'], 0.666666666666667 )
-    assert almostEqual( window['bottom'], -0.666666666666667 )
-    assert almostEqual( window['left'], -1.0 )
-    assert almostEqual( window['right'], 1.0 )
+    assert almostEqual(window['top'], 0.666666666666667)
+    assert almostEqual(window['bottom'], -0.666666666666667)
+    assert almostEqual(window['left'], -1.0)
+    assert almostEqual(window['right'], 1.0)
 
-    samp = lightObj.getSchema().getCameraSchema().getValue( 1 )
+    samp = lightObj.getSchema().getCameraSchema().getValue(1)
     window = samp.getScreenWindow();
-    assert almostEqual( window['top'], -0.35 )
-    assert almostEqual( window['bottom'], 0.75 )
-    assert almostEqual( window['left'], 0.1 )
-    assert almostEqual( window['right'], 0.5 )
+    assert almostEqual(window['top'], -0.35)
+    assert almostEqual(window['bottom'], 0.75)
+    assert almostEqual(window['left'], 0.1)
+    assert almostEqual(window['right'], 0.5)
 
     assert not lightObj.getSchema().getCameraSchema().getChildBoundsProperty()
 
@@ -99,6 +102,7 @@ def lightIn():
 def testLightBinding():
     lightOut()
     lightIn()
+
 
 testList.append(('testLightBinding', testLightBinding))
 

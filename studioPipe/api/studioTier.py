@@ -44,7 +44,7 @@ class Connect(object):
         if 'tag' in kwargs:
             self.tag = kwargs['tag']
         if 'show' in kwargs:
-            self.name = '%s_%s'%(self.name, kwargs['show'])
+            self.name = '%s_%s' % (self.name, kwargs['show'])
             
         self.format = '.json'
         self.full_path = os.path.join(
@@ -117,7 +117,7 @@ class Connect(object):
         if data:
             for index, content in data.items():
                 for k, v in content.items():  
-                    if show!=k:
+                    if show != k:
                         continue
                     exists_data = v
                     break
@@ -237,7 +237,4 @@ class Connect(object):
         if show not in shows:
             return None   
         return shows.index(show)
-        
-
-
 

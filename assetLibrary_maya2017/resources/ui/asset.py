@@ -13,7 +13,6 @@ Description
     None.
 '''
 
-
 import os
 import sys
 import tempfile
@@ -171,7 +170,7 @@ class Asset(QtWidgets.QWidget):
 
     def set_source_path(self, widget, tag):
         self.formats = {'file': '(*.ma *.mb)', 'image': '(*.jpg *.tga *.png)'}
-        self.q_image,  self.q_image_path = None, None
+        self.q_image, self.q_image_path = None, None
         title = 'Browse %s' % tag
         current_format = '%s %s' % (tag, self.formats[tag])
         current_file = QtWidgets.QFileDialog.getOpenFileName(
@@ -182,10 +181,10 @@ class Asset(QtWidgets.QWidget):
         self.brows_directory = os.path.dirname(current_file[0])
         if tag == 'image':
             studio_image = studioImage.ImageCalibration()
-            self.q_image,  self.q_image_path = studio_image.setStudioSize(
+            self.q_image, self.q_image_path = studio_image.setStudioSize(
                 source_image=current_file[0])
             self.image_to_button(path=self.q_image_path)
-            return self.q_image,  self.q_image_path
+            return self.q_image, self.q_image_path
         return True, current_file[0]
 
     # Load Image to button

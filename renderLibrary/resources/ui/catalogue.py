@@ -13,7 +13,6 @@ Description
     None.
 '''
 
-
 import sys
 import warnings
 

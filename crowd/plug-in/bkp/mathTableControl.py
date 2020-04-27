@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Creation Date:   13 October 2006
@@ -46,11 +46,11 @@
 # Creates a simple table control
 #
 # Example:
-#	import maya.cmds as cmds
-#	window = cmds.window(title="Math Table",widthHeight=(400,150))
-#	cmds.paneLayout()
-#	cmds.showWindow()
-#	cmds.spMathTableControl()
+# 	import maya.cmds as cmds
+# 	window = cmds.window(title="Math Table",widthHeight=(400,150))
+# 	cmds.paneLayout()
+# 	cmds.showWindow()
+# 	cmds.spMathTableControl()
 #
 
 import math, sys
@@ -70,18 +70,18 @@ kAddLongFlag = "-addVals"
 kRedrawFlag = "-rd"
 kRedrawFlagLong = "-redraw"
 
-
 # operations on cell coordinates, must return strings
-kNop = lambda x,y: "cell(%d,%d)" % (x,y)
-kMult = lambda x,y: str(x*y)
-kAdd = lambda x,y: str(x+y)
+kNop = lambda x, y: "cell(%d,%d)" % (x, y)
+kMult = lambda x, y: str(x * y)
+kAdd = lambda x, y: str(x + y)
 
 kPythonPtrTable = {}
 
+
 class MathTableControlCmd(OpenMayaMPx.MPxControlCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxControlCommand.__init__(self)
-
 
 	def makeControl(self):
 		control = MathTableControl(self)
@@ -89,7 +89,6 @@ class MathTableControlCmd(OpenMayaMPx.MPxControlCommand):
 		control.setNumberOfRows(5)
 		control.setNumberOfColumns(3)
 		return OpenMayaMPx.asMPxPtr(control)
-
 
 	def doEditFlags(self):
 		theParser = self._parser()
@@ -107,10 +106,8 @@ class MathTableControlCmd(OpenMayaMPx.MPxControlCommand):
 		else:
 			OpenMayaMPx.MPxControlCommand.doEditFlags(self)
 
-
 	def doQueryFlags(self):
 		return OpenMayaMPx.MPxControlCommand.doQueryFlags(self)
-
 
 	def appendSyntax(self):
 		theSyntax = self._syntax()
@@ -121,15 +118,14 @@ class MathTableControlCmd(OpenMayaMPx.MPxControlCommand):
 
 
 class MathTableControl(OpenMayaMPx.MPxUITableControl):
+
 	def __init__(self, command):
 		OpenMayaMPx.MPxUITableControl.__init__(self, command)
 		self.__myOperation = None
 		kPythonPtrTable[OpenMayaMPx.asHashable(self)] = self
 
-
 	def __del__(self):
 		del kPythonPtrTable[OpenMayaMPx.asHashable(self)]
-
 
 	def cellString(self, row, column, isValidCell):
 		result = ""
@@ -137,7 +133,6 @@ class MathTableControl(OpenMayaMPx.MPxUITableControl):
 			result = self.__myOperation(row, column)
 		OpenMaya.MScriptUtil.setBool(isValidCell, bool(result))
 		return result
-
 
 	def labelString(self, labelType, index):
 		value = ""
@@ -147,11 +142,9 @@ class MathTableControl(OpenMayaMPx.MPxUITableControl):
 			value = "[Col %d]" % index
 		return value
 
-
 	def setOperation(self, op):
 		self.__myOperation = op
 		self.redrawCells()
-
 
 ################################################################
 
@@ -165,7 +158,7 @@ def initializePlugin(mobject):
 	try:
 		mplugin.registerControlCommand(kPluginCmdName, cmdCreator)
 	except:
-		sys.stderr.write( "Failed to register command: %s\n" % kPluginCmdName)
+		sys.stderr.write("Failed to register command: %s\n" % kPluginCmdName)
 		raise
 
 

@@ -161,7 +161,7 @@ class Pack(studioMaya.Maya):
             raise IOError('Cannot save, already file found <%s>' % output_path)
         
         if inputs['thumbnail']:        
-            #if inputs['standalone']:
+            # if inputs['standalone']:
                      
             image.image_resize(
                 inputs['thumbnail'],
@@ -345,7 +345,6 @@ class Pack(studioMaya.Maya):
         self.export_selected(inputs['node'], output_path, force=inputs['force'])
         return output_path
     
-    
     def create_surface_maya(self, inputs):
         '''
             import time
@@ -373,12 +372,9 @@ class Pack(studioMaya.Maya):
         shading_engines = self.shader.get_scene_shading_engines(mobject)
         
         print 'shading_engines\t', shading_engines
-        
                   
         self.export_selected(shading_engines, output_path, force=inputs['force'])
         return output_path
-    
-    
     
     def get_asset_id_data(self, root, ids):
         data = {}
@@ -518,6 +514,4 @@ class Pack(studioMaya.Maya):
         with (open(output_path, 'w')) as content:
             content.write(json.dumps(final_data, indent=4))
         return output_path
-
-    
 

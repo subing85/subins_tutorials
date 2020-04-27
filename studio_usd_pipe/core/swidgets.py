@@ -7,6 +7,14 @@ from PySide2 import QtWidgets
 from studio_usd_pipe import resource
 
 
+def get_color_code():
+    info_color = QtGui.QColor('darkBlue')
+    error_color = QtGui.QColor('red')
+    warning_color = QtGui.QColor('magenta')
+    header_color = QtGui.QColor('green')
+    return  header_color, info_color, warning_color, error_color
+
+
 def image_to_button(button, width, height, path=None):
     if not path:
         path = os.path.join(resource.getIconPath(), 'unknown.png')
@@ -92,7 +100,7 @@ def set_icons(mainwindow=None, widgets=None):
     if mainwindow:
         icon = QtGui.QIcon()
         name = mainwindow.objectName().split('_')[-1]
-        icon.addPixmap(QtGui.QPixmap(os.path.join(resource.getIconPath(), '%s.png'%name)))
+        icon.addPixmap(QtGui.QPixmap(os.path.join(resource.getIconPath(), '%s.png' % name)))
         mainwindow.setWindowIcon(icon)
     
     if widgets:

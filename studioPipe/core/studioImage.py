@@ -94,9 +94,9 @@ class ImageCalibration(object):
         sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 
         if sq_scaled.width() <= sq_scaled.height():
             x = 0
-            y = (sq_scaled.height()-height)/2
+            y = (sq_scaled.height() - height) / 2
         elif sq_scaled.width() >= sq_scaled.height():
-            x = (sq_scaled.width()-width)/2
+            x = (sq_scaled.width() - width) / 2
             y = 0
         copy = sq_scaled.copy(x, y, width, height)
         if output_path:
@@ -106,6 +106,5 @@ class ImageCalibration(object):
     def set_qimage(self, path):
         q_image = QtGui.QImage(path)
         return q_image
-       
 
 # end ####################################################################

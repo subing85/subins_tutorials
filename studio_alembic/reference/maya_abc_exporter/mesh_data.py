@@ -3,6 +3,7 @@ from imath import *
 
 
 class MeshData(object):
+
      def __init__(self, dagpath):
         super(MeshData, self).__init__()
 
@@ -77,12 +78,10 @@ class MeshData(object):
 
          #  Get scale
          scaleUtil = om.MScriptUtil()
-         scaleUtil.createFromList([0,0,0], 3)
+         scaleUtil.createFromList([0, 0, 0], 3)
          scaleVec = scaleUtil.asDoublePtr()
          transMatrix.getScale(scaleVec, om.MSpace.kWorld)
-         scales = [om.MScriptUtil.getDoubleArrayItem(scaleVec,i) for i in range(0, 3)]
+         scales = [om.MScriptUtil.getDoubleArrayItem(scaleVec, i) for i in range(0, 3)]
 
          return [translation, rotation, scales]
-
-
 
