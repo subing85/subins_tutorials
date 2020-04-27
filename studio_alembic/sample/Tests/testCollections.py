@@ -41,13 +41,14 @@ from alembic.AbcCollection import *
 
 testList = []
 
+
 def collectionOut():
     """test OCollecions Python bindings"""
 
     archive = OArchive("Collection.abc")
     test = OObject(archive.getTop(), "test")
 
-    ts = TimeSampling(1/24.0, 2.0)
+    ts = TimeSampling(1 / 24.0, 2.0)
     md = MetaData()
     md.set("coupe", "de ville")
 
@@ -73,8 +74,8 @@ def collectionOut():
     assert group.getSchema().getNumCollections() == 1
 
     group.getSchema().createCollection("cool", md, ts)
-    assert ( group.getSchema().getCollection(1).getMetaData().get("coupe")
-             == "de ville" )
+    assert (group.getSchema().getCollection(1).getMetaData().get("coupe")
+             == "de ville")
     strVec = StringArray(2)
     strVec[0] = "/foo"
     strVec[1] = "/bar"
@@ -83,6 +84,7 @@ def collectionOut():
     strVec = StringArray(1)
     strVec[0] = "potato"
     group.getSchema().getCollection("cool").setValue(strVec)
+
 
 def collectionIn():
     """test ICollections Python bindings"""
@@ -110,9 +112,11 @@ def collectionIn():
     assert samp[1] == "/a/b/c/2"
     assert samp[2] == "/a/b/c/3"
 
+
 def testCollectionsBinding():
     collectionOut()
     collectionIn()
+
 
 testList.append(('testCollectionsBinding', testCollectionsBinding))
 

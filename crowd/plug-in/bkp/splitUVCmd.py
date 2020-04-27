@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
@@ -42,17 +42,17 @@ import sys
 
 import polyModifier
 
+
 def statusError(message):
 	fullMsg = "Status failed: %s\n" % message
 	sys.stderr.write(fullMsg)
 	OpenMaya.MGlobal.displayError(fullMsg)
-	raise	# called from exception handlers only, reraise exception
+	raise  # called from exception handlers only, reraise exception
 
 
 kPluginCmdName = "spSplitUV"
 kPluginNodeTypeName = "spSplitUVNode"
 kPluginNodeId = OpenMaya.MTypeId(0x87013)
-
 
 #####################################################################
 ## COMMAND ##########################################################
@@ -60,41 +60,41 @@ kPluginNodeId = OpenMaya.MTypeId(0x87013)
 
 # Overview:
 #
-#		The purpose of the splitUV command is to unshare (split) any selected UVs
-#		on a given object.
+# 		The purpose of the splitUV command is to unshare (split) any selected UVs
+# 		on a given object.
 #
 # How it works:
 #
-#		This command is based on the polyModifierCmd. It relies on the polyModifierCmd
-#		to manage "how" the effects of the splitUV operation are applied (ie. directly
-#		on the mesh or through a modifier node). See polyModifier.py for more details
+# 		This command is based on the polyModifierCmd. It relies on the polyModifierCmd
+# 		to manage "how" the effects of the splitUV operation are applied (ie. directly
+# 		on the mesh or through a modifier node). See polyModifier.py for more details
 #
-#		To understand the algorithm behind the splitUV operation, refer to splitUVFty
+# 		To understand the algorithm behind the splitUV operation, refer to splitUVFty
 #
 # Limitations:
 #
-#		(1) Can only operate on a single mesh at a given time. If there are more than one
-#			mesh with selected UVs, only the first mesh found in the selection list is
-#			operated on.
+# 		(1) Can only operate on a single mesh at a given time. If there are more than one
+# 			mesh with selected UVs, only the first mesh found in the selection list is
+# 			operated on.
 #
 
+
 class splitUV(polyModifier.polyModifierCmd):
+
 	def __init__(self):
 		polyModifier.polyModifierCmd.__init__(self)
 		# Selected UVs
 		#
 		# Note: The MObject, fComponentList, is only ever accessed on a single call to the plugin.
-		#		 It is never accessed between calls and is stored on the class for access in the
-		#		 overriden initModifierNode() method.
+		# 		 It is never accessed between calls and is stored on the class for access in the
+		# 		 overriden initModifierNode() method.
 		#
 		self.__fComponentList = OpenMaya.MObject()
 		self.__fSelUVs = OpenMaya.MIntArray()
 		self.__fSplitUVFactory = splitUVFty()
 
-
 	def isUndoable(self):
 		return True
-
 
 	def doIt(self, args):
 		"""
@@ -194,7 +194,6 @@ class splitUV(polyModifier.polyModifierCmd):
 		else:
 			self.displayError("splitUV command failed: Unable to find selected UVs")
 
-
 	def redoIt(self):
 		"""
 		Implements redo for the scripted splitUV command. 
@@ -209,7 +208,6 @@ class splitUV(polyModifier.polyModifierCmd):
 		except:
 			self.displayError("splitUV command failed!")
 			raise
-
 
 	def undoIt(self):
 		"""
@@ -226,7 +224,6 @@ class splitUV(polyModifier.polyModifierCmd):
 			self.displayError("splitUV undo failed!")
 			raise
 
-
 	def _initModifierNode(self, modifierNode):
 		# We need to tell the splitUV node which UVs to operate on. By overriding
 		# the polyModifierCmd._initModifierNode() method, we can insert our own
@@ -240,7 +237,6 @@ class splitUV(polyModifier.polyModifierCmd):
 		uvListPlug = OpenMaya.MPlug(modifierNode, uvListAttr)
 		uvListPlug.setMObject(self.__fComponentList)
 
-
 	def _directModifier(self, mesh):
 		self.__fSplitUVFactory.setMesh(mesh)
 		self.__fSplitUVFactory.setUVIds(self.__fSelUVs)
@@ -248,7 +244,6 @@ class splitUV(polyModifier.polyModifierCmd):
 		# Now, perform the splitUV
 		#
 		self.__fSplitUVFactory.doIt()
-
 
 	def __validateUVs(self):
 		"""
@@ -308,7 +303,6 @@ class splitUV(polyModifier.polyModifierCmd):
 
 		return isValid
 
-
 	def __pruneUVs(self, validUVIndices):
 		"""
 		This method will remove any invalid UVIds from the component list and UVId array.
@@ -352,59 +346,57 @@ class splitUV(polyModifier.polyModifierCmd):
 
 		self.__fComponentList = compListFn.object()
 
-
 #####################################################################
 ## FACTORY ##########################################################
 #####################################################################
 
+
 # Overview:
 #
-#		The splitUV factory implements the actual splitUV operation. It takes in
-#		only two parameters:
+# 		The splitUV factory implements the actual splitUV operation. It takes in
+# 		only two parameters:
 #
-#			1) A polygonal mesh
-#			2) An array of selected UV Ids
+# 			1) A polygonal mesh
+# 			2) An array of selected UV Ids
 #
-#		The algorithm works as follows:
+# 		The algorithm works as follows:
 #
-#			1) Parse the mesh for the selected UVs and collect:
+# 			1) Parse the mesh for the selected UVs and collect:
 #
-#				(a) Number of faces sharing each UV
-#					(stored as two arrays: face array, indexing/offset array)
-#				(b) Associated vertex Id
+# 				(a) Number of faces sharing each UV
+# 					(stored as two arrays: face array, indexing/offset array)
+# 				(b) Associated vertex Id
 #
-#			2) Create (N-1) new UVIds for each selected UV, where N represents the number of faces
-#			   sharing the UV.
+# 			2) Create (N-1) new UVIds for each selected UV, where N represents the number of faces
+# 			   sharing the UV.
 #
-#			3) Set each of the new UVs to the same 2D location on the UVmap.
+# 			3) Set each of the new UVs to the same 2D location on the UVmap.
 #
-#			3) Arbitrarily let the last face in the list of faces sharing this UV to keep the original
-#			   UV.
+# 			3) Arbitrarily let the last face in the list of faces sharing this UV to keep the original
+# 			   UV.
 #
-#			4) Assign each other face one of the new UVIds.
+# 			4) Assign each other face one of the new UVIds.
 #
 #
 class splitUVFty(polyModifier.polyModifierFty):
+
 	def __init__(self):
 		polyModifier.polyModifierFty.__init__(self)
 		# Mesh Node
 		# Note: We only make use of this MObject during a single call of
-		#		the splitUV plugin. It is never maintained and used between
-		#		calls to the plugin as the MObject handle could be invalidated
-		#		between calls to the plugin.
+		# 		the splitUV plugin. It is never maintained and used between
+		# 		calls to the plugin as the MObject handle could be invalidated
+		# 		between calls to the plugin.
 		#
 		self.__fMesh = OpenMaya.MObject()
 		self.__fSelUVs = OpenMaya.MIntArray()
 		self.__fSelUVs.clear()
 
-
 	def setMesh(self, mesh):
 		self.__fMesh = mesh
 
-
 	def setUVIds(self, uvIds):
 		self.__fSelUVs = uvIds
-
 
 	def doIt(self):
 		"""
@@ -425,7 +417,7 @@ class splitUVFty(polyModifier.polyModifierFty):
 
 		#################################################
 		# Collect necessary information for the splitUV #
-		#												#
+		# 												#
 		# - uvSet										#
 		# - faceIds / localVertIds per selected UV		#
 		#################################################
@@ -495,7 +487,7 @@ class splitUVFty(polyModifier.polyModifierFty):
 			# Arbitrarily choose that the last faceId in the list of faces
 			# sharing this UV, will keep the original UV.
 			#
-			for j in range(faceCount-1):
+			for j in range(faceCount - 1):
 				meshFn.setUV(currentUVCount, u, v, selUVSet)
 
 				localVertId = selUVLocalVertIdMap[offset]
@@ -506,19 +498,17 @@ class splitUVFty(polyModifier.polyModifierFty):
 				currentUVCount += 1
 				offset += 1
 
-
 #####################################################################
 ## NODE #############################################################
 #####################################################################
 
+
 class splitUVNode(polyModifier.polyModifierNode):
 	uvList = OpenMaya.MObject()
-
 
 	def __init__(self):
 		polyModifier.polyModifierNode.__init__(self)
 		self.fSplitUVFactory = splitUVFty()
-
 
 	def compute(self, plug, data):
 		"""
@@ -628,10 +618,10 @@ class splitUVNode(polyModifier.polyModifierNode):
 
 		return None
 
-
 #####################################################################
 ## REGISTRATION #####################################################
 #####################################################################
+
 
 def cmdCreator():
 	return OpenMayaMPx.asMPxPtr(splitUV())
@@ -645,10 +635,10 @@ def nodeInitializer():
 	attrFn = OpenMaya.MFnTypedAttribute()
 
 	splitUVNode.uvList = attrFn.create("inputComponents", "ics", OpenMaya.MFnComponentListData.kComponentList)
-	attrFn.setStorable(True)	# To be stored during file-save
+	attrFn.setStorable(True)  # To be stored during file-save
 
 	splitUVNode.inMesh = attrFn.create("inMesh", "im", OpenMaya.MFnMeshData.kMesh)
-	attrFn.setStorable(True)	# To be stored during file-save
+	attrFn.setStorable(True)  # To be stored during file-save
 
 	# Attribute is read-only because it is an output attribute
 	#
@@ -675,13 +665,13 @@ def initializePlugin(mobject):
 	try:
 		mplugin.registerCommand(kPluginCmdName, cmdCreator)
 	except:
-		sys.stderr.write( "Failed to register command: %s\n" % kPluginCmdName)
+		sys.stderr.write("Failed to register command: %s\n" % kPluginCmdName)
 		raise
 
 	try:
 		mplugin.registerNode(kPluginNodeTypeName, kPluginNodeId, nodeCreator, nodeInitializer)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName)
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise
 
 

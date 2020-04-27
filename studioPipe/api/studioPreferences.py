@@ -40,7 +40,7 @@ class Connect(object):
             
         self.format = '.json'
         self.full_path = os.path.join(
-            self.dirname, self.localhost, '%s%s'%(self.name, self.format))               
+            self.dirname, self.localhost, '%s%s' % (self.name, self.format))               
 
     def getInputData(self):
         '''
@@ -145,7 +145,4 @@ class Connect(object):
         if keys not in data:
             return None
         return data[keys]
-
-
-
 

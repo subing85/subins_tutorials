@@ -5,6 +5,7 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.api import studioMaya
 reload(resource)
 
+
 class Nurbscurve(studioMaya.Maya):
     
     def __init__(self):
@@ -98,6 +99,7 @@ class Nurbscurve(studioMaya.Maya):
         cv_array = self.create_mpoint_array(data['points'])
         knots_array = self.create_mdouble_array(data['knots'])
         mfn_curve = OpenMaya.MFnNurbsCurve()
+        
         mfn_curve.create(
             cv_array,
             knots_array,
@@ -118,7 +120,12 @@ class Nurbscurve(studioMaya.Maya):
         mplug_y.setFloat(radius)
         mplug_z.setFloat(radius)
         self.freeze_transformations(mfn_dag_node)
-        self.set_ktransform(mfn_dag_node.object(), data) # set position
+        
+        import json
+        
+        # print json.dumps(data, indent=4)
+        
+        self.set_ktransform(mfn_dag_node.object(), data)  # set position
         return mfn_curve
 
     def update_kcurve(self, name, data):

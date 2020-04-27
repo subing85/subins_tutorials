@@ -149,7 +149,6 @@ class Connect(object):
         data = self.cursor.get_contents()
         specific_value = self.cursor.find_specific_value(data['data'], key, value)
         return specific_value
-        
 
 #=========================================================================
 # input_file = os.path.join(resources.getInputPath(), 'shows.json')

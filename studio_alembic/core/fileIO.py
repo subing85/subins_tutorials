@@ -6,18 +6,14 @@ from studio_alembic.core import studioMaya
 reload(studioMaya)
 
 
-
 def execute(*args):
     # type, select, directory, objects
     
-    if args[0]=='export':
+    if args[0] == 'export':
         studio_alembic_export(args[1], args[2], args[3])
         
-    if args[0]=='import':
+    if args[0] == 'import':
         studio_alembic_import(args[2])
-        
-        
-    
     
 
 def studio_alembic_export(select, directory, objects):
@@ -42,7 +38,7 @@ def studio_alembic_export(select, directory, objects):
     else:    
         mdag_paths = smaya.getDagPaths(objects) 
     
-    if mdag_paths.length()<1:
+    if mdag_paths.length() < 1:
         OpenMaya.MGlobal.displayError(
             'This function requires at least 1 argument to be specified or selected, found 0.//')
         return
@@ -62,14 +58,10 @@ def studio_alembic_export(select, directory, objects):
     alembic = studio_maya.exportAlembic(mdag_paths)
     manifest = studio_maya.exportManifest(mdag_paths)
     
-    
-    
     return
-    
     
     if not mdag_array:
         mdag_array = self.getShapeNodes()        
-
     
     objects = [mdag_array[x].fullPathName() for x in range (mdag_array.length())]
     shading_engines = self.getShadingEngines(mdag_array) 
@@ -88,6 +80,7 @@ def studio_alembic_export(select, directory, objects):
     }
     self.createManifest(self.stuio_path, data)
     print '\n#', os.path.dirname(self.stuio_path)
+
     
 def studio_alembic_import(mdag_array=None):
     pass    

@@ -44,8 +44,10 @@ testList = []
 kScaleFilmBackOperation = FilmBackXformOperationType.kScaleFilmBackOperation
 kTranslateFilmBackOperation = FilmBackXformOperationType.kTranslateFilmBackOperation
 
+
 def almostEqual(a0, a1, error=0.01):
     return abs(a0 - a1) <= error
+
 
 def cameraOut():
     """write out camera archive"""
@@ -70,6 +72,7 @@ def cameraOut():
     samp.setVerticalFilmOffset(3.0)
     assert samp[0].getChannelValue(0) == 2.0
     camSchema.set(samp)
+
 
 def cameraIn():
     """read in camera archive"""
@@ -171,9 +174,11 @@ def cameraIn():
     assert almostEqual(samp[1].getChannelValue(0), 4.0)
     assert almostEqual(samp[1].getChannelValue(1), 5.0)
 
+
 def testCameraBinding():
     cameraOut()
     cameraIn()
+
 
 testList.append(('testCameraBinding', testCameraBinding))
 

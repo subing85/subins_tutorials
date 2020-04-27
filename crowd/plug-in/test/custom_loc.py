@@ -10,7 +10,9 @@ nodeTypeId = OpenMaya.MTypeId(0x87079)
 glRenderer = OpenMayaRender.MHardwareRenderer.theRenderer()	
 glFT = glRenderer.glFunctionTable()							
 
+
 class myNode(OpenMayaMPx.MPxLocatorNode):
+
 	def __init__(self):
 		OpenMayaMPx.MPxLocatorNode.__init__(self)
 
@@ -49,9 +51,11 @@ class myNode(OpenMayaMPx.MPxLocatorNode):
 
 def nodeCreator():
 	return OpenMayaMPx.asMPxPtr(myNode())
+
  
 def nodeInitializer():
 	pass
+
  
 def initializePlugin(obj):
 	print 'aaaaaaaaaaaaaaaaaaaaaaa\t', obj, obj.apiTypeStr()			
@@ -59,11 +63,12 @@ def initializePlugin(obj):
 	try:
 		plugin.registerNode(nodeTypeName, nodeTypeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kLocatorNode)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % nodeTypeName)
+		sys.stderr.write("Failed to register node: %s" % nodeTypeName)
+
 
 def uninitializePlugin(obj):					
 	plugin = OpenMayaMPx.MFnPlugin(obj)
 	try:
 		plugin.deregisterNode(nodeTypeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % nodeTypeName)
+		sys.stderr.write("Failed to deregister node: %s" % nodeTypeName)

@@ -91,7 +91,7 @@ class Connect(object):
             warnings.warn('not fount data')
             return           
         if show_name not in output_data:
-            warnings.warn('not fount %s data' %show_name)
+            warnings.warn('not fount %s data' % show_name)
             return
         return output_data[show_name]    
 
@@ -126,8 +126,6 @@ class Connect(object):
                 
         exists_data = self.headerData(
             show, discipline, disciplines, input_data)
-        
-
          
         #=======================================================================
         # all_data = {}
@@ -149,18 +147,6 @@ class Connect(object):
             tag=self.tag,
             data=current_data
         )
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
         # collect disciplines from description
         #=======================================================================
@@ -182,12 +168,9 @@ class Connect(object):
         #             'tier': {'value': 'props'},
         #             'user': {'value': ''}}}
         #=======================================================================
-        
 
-
-    def findHeaderInDiscipline(self, data, ):
+    def findHeaderInDiscipline(self, data,):
         pass
-
 
     def headerData(self, show, discipline, disciplines, current_data):
         # show, discipline, input_data
@@ -195,7 +178,7 @@ class Connect(object):
         data, rollback_data, sort_data = studio_connect.getAllData()
         show_data, show_index = self.getShowData(show, data=data)
                 
-        new_header = list(set(current_data.keys())-set(show_data.keys()))
+        new_header = list(set(current_data.keys()) - set(show_data.keys()))
 
         for index, discipline_content in show_data.items():
             if index in new_header:
@@ -248,10 +231,6 @@ class Connect(object):
         for index, content in current_data.items():
             if index not in exists_data:
                 continue
-            
-            
-        
-         
     
     def rollback(self, data):
         rollback_data = {}
@@ -259,7 +238,6 @@ class Connect(object):
             for k, v in content.items():
                 rollback_data.setdefault(k, index)
         return rollback_data  
-    
         
     def hasShow(self, show_name):
         '''
@@ -276,8 +254,6 @@ class Connect(object):
         if show_name in shows:
             return True
         return False
-
-
 
     def getShows(self):
         '''
@@ -303,13 +279,4 @@ class Connect(object):
         data = stdio_input.getSpecificValue(key, value)     
         
         return data   
-
-
-
-
-
-
-
-
-
 

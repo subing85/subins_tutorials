@@ -26,6 +26,7 @@ import maya.api.OpenMaya as om
 # can be loaded using the appropriate shader plugin.
 # In any case, the environment variable MAYA_USE_CUSTOMPRIMITIVEGENERATOR needs to be set (any value is fine) for it to be enabled.
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
@@ -35,6 +36,7 @@ def maya_useNewAPI():
 
 
 class MyCustomPrimitiveGenerator(omr.MPxPrimitiveGenerator):
+
 	def __init__(self):
 		omr.MPxPrimitiveGenerator.__init__(self)
 
@@ -81,8 +83,8 @@ class MyCustomPrimitiveGenerator(omr.MPxPrimitiveGenerator):
 				while triId < numTriVerts:
 					# split each triangle in two : add new vertex between vertexId1 and vertexId2
 					vertexId0 = sharedIndices[triVertIDs[triId]]
-					vertexId1 = sharedIndices[triVertIDs[triId+1]]
-					vertexId2 = sharedIndices[triVertIDs[triId+2]]
+					vertexId1 = sharedIndices[triVertIDs[triId + 1]]
+					vertexId2 = sharedIndices[triVertIDs[triId + 2]]
 					triId += 3
 
 					newVertexIndex = nextNewVertexIndex
@@ -91,18 +93,18 @@ class MyCustomPrimitiveGenerator(omr.MPxPrimitiveGenerator):
 					# Triangle 0 1 2 become two triangles : 0 1 X and 0 X 2
 					if dataType == omr.MGeometry.kUnsignedInt32:
 						xaddr = address
-						yaddr = address+uintinc
-						zaddr = address+2*uintinc
-						address += 3*uintinc
+						yaddr = address + uintinc
+						zaddr = address + 2 * uintinc
+						address += 3 * uintinc
 
 						c_uint.from_address(xaddr).value = vertexId0
 						c_uint.from_address(yaddr).value = vertexId1
 						c_uint.from_address(zaddr).value = newVertexIndex
 
 						xaddr = address
-						yaddr = address+uintinc
-						zaddr = address+2*uintinc
-						address += 3*uintinc
+						yaddr = address + uintinc
+						zaddr = address + 2 * uintinc
+						address += 3 * uintinc
 
 						c_uint.from_address(xaddr).value = vertexId0
 						c_uint.from_address(yaddr).value = newVertexIndex
@@ -110,18 +112,18 @@ class MyCustomPrimitiveGenerator(omr.MPxPrimitiveGenerator):
 
 					elif dataType == omr.MGeometry.kUnsignedChar:
 						xaddr = address
-						yaddr = address+ushortinc
-						zaddr = address+2*ushortinc
-						address += 3*ushortinc
+						yaddr = address + ushortinc
+						zaddr = address + 2 * ushortinc
+						address += 3 * ushortinc
 
 						c_ushort.from_address(xaddr).value = vertexId0
 						c_ushort.from_address(yaddr).value = vertexId1
 						c_ushort.from_address(zaddr).value = newVertexIndex
 
 						xaddr = address
-						yaddr = address+ushortinc
-						zaddr = address+2*ushortinc
-						address += 3*ushortinc
+						yaddr = address + ushortinc
+						zaddr = address + 2 * ushortinc
+						address += 3 * ushortinc
 
 						c_ushort.from_address(xaddr).value = vertexId0
 						c_ushort.from_address(yaddr).value = newVertexIndex
@@ -132,6 +134,7 @@ class MyCustomPrimitiveGenerator(omr.MPxPrimitiveGenerator):
 				return (omr.MGeometry.kTriangles, 3)
 		return omr.MGeometry.kInvalidPrimitive
 
+
 # This is the primitive generator creation function registered with the DrawRegistry.
 # Used to initialize a custom primitive generator.
 def createMyCustomPrimitiveGenerator():
@@ -140,7 +143,9 @@ def createMyCustomPrimitiveGenerator():
 ##########################################################################################
 ##########################################################################################
 
+
 class MyCustomPositionBufferGenerator(omr.MPxVertexBufferGenerator):
+
 	def __init__(self):
 		omr.MPxVertexBufferGenerator.__init__(self)
 
@@ -163,7 +168,7 @@ class MyCustomPositionBufferGenerator(omr.MPxVertexBufferGenerator):
 		return True
 
 	def getSourceStreams(self, object, sourceStreams):
-		#No source stream needed
+		# No source stream needed
 		return False
 
 	def createVertexStream(self, object, vertexBuffer, targetIndexing, sharedIndexing, sourceStreams):
@@ -205,15 +210,15 @@ class MyCustomPositionBufferGenerator(omr.MPxVertexBufferGenerator):
 		triId = 0
 		while triId < numTriVerts:
 			# split each triangle in two : add new vertex between vertexId1 and vertexId2
-			#vertexId0 = sharedIndices[triVertIDs[triId]]
-			vertexId1 = sharedIndices[triVertIDs[triId+1]]
-			vertexId2 = sharedIndices[triVertIDs[triId+2]]
+			# vertexId0 = sharedIndices[triVertIDs[triId]]
+			vertexId1 = sharedIndices[triVertIDs[triId + 1]]
+			vertexId2 = sharedIndices[triVertIDs[triId + 2]]
 			triId += 3
 
-			extraVertices.append( [vertexId1, vertexId2] )
+			extraVertices.append([vertexId1, vertexId2])
 
 		newVertexCount = vertexCount + len(extraVertices)
-		customBuffer = vertexBuffer.acquire(newVertexCount, True)	# writeOnly = True - we don't need the current buffer values
+		customBuffer = vertexBuffer.acquire(newVertexCount, True)  # writeOnly = True - we don't need the current buffer values
 		if customBuffer != 0:
 			
 			address = customBuffer
@@ -249,6 +254,7 @@ class MyCustomPositionBufferGenerator(omr.MPxVertexBufferGenerator):
 
 			vertexBuffer.commit(customBuffer)
 
+
 # This is the buffer generator creation function registered with the DrawRegistry.
 # Used to initialize the generator.
 def createMyCustomPositionBufferGenerator():
@@ -257,7 +263,9 @@ def createMyCustomPositionBufferGenerator():
 ##########################################################################################
 ##########################################################################################
 
+
 class MyCustomNormalBufferGenerator(omr.MPxVertexBufferGenerator):
+
 	def __init__(self):
 		omr.MPxVertexBufferGenerator.__init__(self)
 
@@ -280,7 +288,7 @@ class MyCustomNormalBufferGenerator(omr.MPxVertexBufferGenerator):
 		return True
 
 	def getSourceStreams(self, object, sourceStreams):
-		#No source stream needed
+		# No source stream needed
 		return False
 
 	def createVertexStream(self, object, vertexBuffer, targetIndexing, sharedIndexing, sourceStreams):
@@ -322,15 +330,15 @@ class MyCustomNormalBufferGenerator(omr.MPxVertexBufferGenerator):
 		triId = 0
 		while triId < numTriVerts:
 			# split each triangle in two : add new vertex between vertexId1 and vertexId2
-			#vertexId0 = sharedIndices[triVertIDs[triId]]
-			vertexId1 = sharedIndices[triVertIDs[triId+1]]
-			vertexId2 = sharedIndices[triVertIDs[triId+2]]
+			# vertexId0 = sharedIndices[triVertIDs[triId]]
+			vertexId1 = sharedIndices[triVertIDs[triId + 1]]
+			vertexId2 = sharedIndices[triVertIDs[triId + 2]]
 			triId += 3
 
-			extraVertices.append( [vertexId1, vertexId2] )
+			extraVertices.append([vertexId1, vertexId2])
 
 		newVertexCount = vertexCount + len(extraVertices)
-		customBuffer = vertexBuffer.acquire(newVertexCount, True)	# writeOnly = True - we don't need the current buffer values
+		customBuffer = vertexBuffer.acquire(newVertexCount, True)  # writeOnly = True - we don't need the current buffer values
 		if customBuffer != 0:
 			
 			address = customBuffer
@@ -368,6 +376,7 @@ class MyCustomNormalBufferGenerator(omr.MPxVertexBufferGenerator):
 
 			vertexBuffer.commit(customBuffer)
 
+
 # This is the buffer generator creation function registered with the DrawRegistry.
 # Used to initialize the generator.
 def createMyCustomNormalBufferGenerator():
@@ -379,6 +388,7 @@ def createMyCustomNormalBufferGenerator():
 # The following routines are used to register/unregister
 # the vertex mutators with Maya
 
+
 def initializePlugin(obj):
 
 	omr.MDrawRegistry.registerPrimitiveGenerator("customPrimitiveTest", createMyCustomPrimitiveGenerator)
@@ -386,6 +396,7 @@ def initializePlugin(obj):
 	omr.MDrawRegistry.registerVertexBufferGenerator("customPositionStream", createMyCustomPositionBufferGenerator)
 
 	omr.MDrawRegistry.registerVertexBufferGenerator("customNormalStream", createMyCustomNormalBufferGenerator)
+
 
 def uninitializePlugin(obj):
 

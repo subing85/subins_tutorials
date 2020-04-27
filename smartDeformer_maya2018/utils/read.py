@@ -13,7 +13,6 @@ Description
     read is the function set to read the inputs of the smart deformer package.
 '''
 
-
 import os
 import json
 import warnings

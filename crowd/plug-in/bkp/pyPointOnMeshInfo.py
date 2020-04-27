@@ -12,12 +12,14 @@
 import sys
 import maya.api.OpenMaya as om
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
 	expects to be passed, objects created using the Maya Python API 2.0.
 	"""
 	pass
+
 
 # FUNCTION THAT FINDS THE POINT AND NORMAL OF A POLY AT A SPECIFIED FACE UV COORD ABOUT A SPECIFIED FACE:
 def getPointAndNormal(meshDagPath, faceIndex, relative, parameterU, parameterV, point, normal, theMesh):
@@ -36,10 +38,10 @@ def getPointAndNormal(meshDagPath, faceIndex, relative, parameterU, parameterV, 
 		uvs = faceIter.getUVs()
 		uArray = uvs[0]
 		vArray = uvs[1]
-		minU=999999
-		minV=999999
-		maxU=0
-		maxV=0
+		minU = 999999
+		minV = 999999
+		maxU = 0
+		maxV = 0
 		for i in range(len(uArray)):
 			if uArray[i] < minU:
 				minU = uArray[i]
@@ -72,6 +74,7 @@ def getPointAndNormal(meshDagPath, faceIndex, relative, parameterU, parameterV, 
 	normal.x = newNormal[0].x
 	normal.y = newNormal[0].y
 	normal.z = newNormal[0].z
+
 
 #
 # MAIN CLASS DECLARATION FOR THE MEL COMMAND:
@@ -108,7 +111,7 @@ class pointOnMeshCommand(om.MPxCommand):
 		# PARSE THE COMMAND'S ARGUMENTS:
 		for i in range(len(args)):
 			if ("-name" == args.asString(i)) or ("-na" == args.asString(i)):
-				i = i+1
+				i = i + 1
 				self.pointOnMeshInfoName = args.asString(i)
 
 			elif ("-position" == args.asString(i)) or ("-p" == args.asString(i)):
@@ -119,20 +122,20 @@ class pointOnMeshCommand(om.MPxCommand):
 
 			elif ("-faceIndex" == args.asString(i)) or ("-f" == args.asString(i)):
 				self.faceIndexSpecified = True
-				i = i+1
+				i = i + 1
 				temp = args.asInt(i)
 				if temp < 0:
 					raise ValueError("Invalid faceIndex!")
 				faceIndex = temp
 
-			elif ("-relative" == args.asString(i)) or ("-r" ==args.asString(i)):
+			elif ("-relative" == args.asString(i)) or ("-r" == args.asString(i)):
 				self.relativeSpecified = True
-				i = i+1
+				i = i + 1
 				self.relative = args.asBool(i)
 
 			elif ("-parameterU" == args.asString(i)) or ("-u" == args.asString(i)):
 				self.parameterUSpecified = True
-				i = i+1
+				i = i + 1
 				temp = args.asDouble(i)
 				if temp < 0 or temp > 1:
 					raise ValueError("Invalid parameterU!")
@@ -140,13 +143,13 @@ class pointOnMeshCommand(om.MPxCommand):
 
 			elif ("-parameterV" == args.asString(i)) or ("-v" == args.asString(i)):
 				self.parameterVSpecified = True
-				i = i+1
+				i = i + 1
 				temp = args.asDouble(i)
 				if temp < 0 or temp > 1:
 					raise ValueError("Invalid parameterV!")
 				self.parameterV = temp
 
-			elif i == (len(args)-1):
+			elif i == (len(args) - 1):
 				self.meshNodeName = args.asString(i)
 
 			else:
@@ -312,6 +315,7 @@ class pointOnMeshCommand(om.MPxCommand):
 		if self.nodeCreated:
 			deleteCmd = "delete " + self.pointOnMeshInfoName
 			om.MGlobal.executeCommand(deleteCmd)
+
 
 #
 # MAIN CLASS DECLARATION FOR THE CUSTOM NODE:
@@ -557,7 +561,7 @@ class pointOnMeshInfoNode(om.MPxNode):
 			normalDataHandle.set3Double(normal.x, normal.y, normal.z)
 			data.setClean(plug)
 		else:
-			return None # let Maya handle this attribute
+			return None  # let Maya handle this attribute
 
 
 # INITIALIZES THE PLUGIN BY REGISTERING THE COMMAND AND NODE:
@@ -575,6 +579,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register node\n")
 		raise
+
 
 #
 # UNINITIALIZES THE PLUGIN BY DEREGISTERING THE COMMAND AND NODE:

@@ -1,16 +1,17 @@
-#-
+# -
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
 # Use of this software is subject to the terms of the Autodesk license agreement
 # provided at the time of installation or download, or which otherwise
 # accompanies this software in either electronic or hard copy form.
-#+
+# +
 
 import sys
 from OpenGL.GL import *
 import maya.api.OpenMayaRender as omr
 import maya.api.OpenMayaUI as omui
 import maya.api.OpenMaya as om
+
 
 def maya_useNewAPI():
 	"""
@@ -19,31 +20,33 @@ def maya_useNewAPI():
 	"""
 	pass
 
+
 # Enumerations to identify an operation within a list of operations.
-kBackgroundBlit 				= 0
-kMaya3dSceneRender				= 1		# 3d scene render to target 1
-kMaya3dSceneRenderOpaque		= 2		# 3d opaque scene render to target 1
-kMaya3dSceneRenderTransparent	= 3		# 3d transparent scene render to target 1
-kThresholdOp					= 4		# Brightness threshold
-kHorizBlurOp					= 5		# Down sample to target 2
-kVertBlurOp						= 6
-kBlendOp						= 7		# Blend target 1 and 2 back to target 1
-kPostOperation1					= 8		# Post ops on target 1
-kPostOperation2					= 9
-kMaya3dSceneRenderUI			= 10	# Post ui draw to target 1
-kUserOpNumber					= 11	# User op draw to target 1
-kHUDBlit						= 12	# Draw HUD on top
-kPresentOp						= 13	# Present
-kNumberOfOps					= 14
+kBackgroundBlit 				 = 0
+kMaya3dSceneRender				 = 1  # 3d scene render to target 1
+kMaya3dSceneRenderOpaque		 = 2  # 3d opaque scene render to target 1
+kMaya3dSceneRenderTransparent	 = 3  # 3d transparent scene render to target 1
+kThresholdOp					 = 4  # Brightness threshold
+kHorizBlurOp					 = 5  # Down sample to target 2
+kVertBlurOp						 = 6
+kBlendOp						 = 7  # Blend target 1 and 2 back to target 1
+kPostOperation1					 = 8  # Post ops on target 1
+kPostOperation2					 = 9
+kMaya3dSceneRenderUI			 = 10  # Post ui draw to target 1
+kUserOpNumber					 = 11  # User op draw to target 1
+kHUDBlit						 = 12  # Draw HUD on top
+kPresentOp						 = 13  # Present
+kNumberOfOps					 = 14
 
 # Helper to enumerate the target indexing
-kMyColorTarget	= 0
-kMyDepthTarget	= 1
-kMyBlurTarget	= 2
-kTargetCount	= 3
+kMyColorTarget	 = 0
+kMyDepthTarget	 = 1
+kMyBlurTarget	 = 2
+kTargetCount	 = 3
+
 
 #
-#	Utilty to print out lighting information from a draw context
+# 	Utilty to print out lighting information from a draw context
 #
 def printDrawContextLightInfo(drawContext):
 	# Get all the lighting information in the scene
@@ -59,9 +62,9 @@ def printDrawContextLightInfo(drawContext):
 	positionCount = 0
 
 	for i in range(lightCount):
-		lightParam = drawContext.getLightParameterInformation( i, considerAllSceneLights )
+		lightParam = drawContext.getLightParameterInformation(i, considerAllSceneLights)
 		if not lightParam is None:
-			print "\tLight " + str(i) +"\n\t{"
+			print "\tLight " + str(i) + "\n\t{"
 
 			for pname in lightParam.parameterList():
 				ptype = lightParam.parameterType(pname)
@@ -98,7 +101,7 @@ def printDrawContextLightInfo(drawContext):
 				elif semantic == omr.MLightParameterInformation.kWorldPosition:
 					print "\t\t- Parameter semantic : world position"
 					floatVals = lightParam.getParameter(pname)
-					position += om.MFloatPoint( floatVals[0], floatVals[1], floatVals[2] )
+					position += om.MFloatPoint(floatVals[0], floatVals[1], floatVals[2])
 					positionCount = positionCount + 1
 				elif semantic == omr.MLightParameterInformation.kWorldDirection:
 					print "\t\t- Parameter semantic : world direction"
@@ -107,7 +110,7 @@ def printDrawContextLightInfo(drawContext):
 					print "\t\t- Parameter semantic : intensity"
 				elif semantic == omr.MLightParameterInformation.kColor:
 					print "\t\t- Parameter semantic : color"
-					color = om.MColor( lightParam.getParameter(pname) )
+					color = om.MColor(lightParam.getParameter(pname))
 				elif semantic == omr.MLightParameterInformation.kEmitsDiffuse:
 					print "\t\t- Parameter semantic : emits-diffuse"
 				elif semantic == omr.MLightParameterInformation.kEmitsSpecular:
@@ -192,11 +195,11 @@ def printDrawContextLightInfo(drawContext):
 # are invoked when the shader is to be used. The following are some examples
 # of what could be performed.
 #
-#	Example utility used by a callback to:
+# 	Example utility used by a callback to:
 #
-#	1. Print out the shader parameters for a give MShaderInsrtance
-#	2. Examine the list of render items which will be rendered with this MShaderInstance
-#	3. Examine the pass context and print out information in the context.
+# 	1. Print out the shader parameters for a give MShaderInsrtance
+# 	2. Examine the list of render items which will be rendered with this MShaderInstance
+# 	3. Examine the pass context and print out information in the context.
 #
 def callbackDataPrint(context, renderItemList, shaderInstance):
 	if not shaderInstance is None:
@@ -218,11 +221,12 @@ def callbackDataPrint(context, renderItemList, shaderInstance):
 	passSem = passCtx.passSemantics()
 	print "PASS ID[" + passId + "], PASS SEMANTICS[" + str(passSem) + "]"
 
+
 #
-#	Example utility used by callback to bind lighting information to a shader instance.
+# 	Example utility used by callback to bind lighting information to a shader instance.
 #
-#	This callback works specific with the MayaBlinnDirectionLightShadow shader example.
-#	It will explicitly binding lighting and shadowing information to the shader instance.
+# 	This callback works specific with the MayaBlinnDirectionLightShadow shader example.
+# 	It will explicitly binding lighting and shadowing information to the shader instance.
 #
 def shaderOverrideCallbackBindLightingInfo(drawContext, renderItemList, shaderInstance):
 	if shaderInstance is None:
@@ -233,7 +237,7 @@ def shaderOverrideCallbackBindLightingInfo(drawContext, renderItemList, shaderIn
 	globalShadowsOn = False
 	localShadowsOn = False
 	direction = om.MFloatVector(0.0, 0.0, 1.0)
-	lightIntensity = 0.0 # If no lights then black out the light
+	lightIntensity = 0.0  # If no lights then black out the light
 	lightColor = [ 0.0, 0.0, 0.0 ]
 
 	# Scan to find the first light that has a direction component in it
@@ -257,38 +261,38 @@ def shaderOverrideCallbackBindLightingInfo(drawContext, renderItemList, shaderIn
 			lightIntensity = 0.0
 			lightColor = [ 0.0, 0.0, 0.0 ]
 
-			lightParam = drawContext.getLightParameterInformation( i, considerAllSceneLights )
+			lightParam = drawContext.getLightParameterInformation(i, considerAllSceneLights)
 			if not lightParam is None:
 				for pname in lightParam.parameterList():
-					semantic = lightParam.parameterSemantic( pname )
+					semantic = lightParam.parameterSemantic(pname)
 					# Pick a few light parameters to pick up as an example
 					if semantic == omr.MLightParameterInformation.kWorldDirection:
-						floatVals = lightParam.getParameter( pname )
-						direction = om.MFloatVector( floatVals[0], floatVals[1], floatVals[2] )
+						floatVals = lightParam.getParameter(pname)
+						direction = om.MFloatVector(floatVals[0], floatVals[1], floatVals[2])
 						foundDirectional = True
 					elif semantic == omr.MLightParameterInformation.kIntensity:
-						floatVals = lightParam.getParameter( pname )
+						floatVals = lightParam.getParameter(pname)
 						lightIntensity = floatVals[0]
 					elif semantic == omr.MLightParameterInformation.kColor:
-						lightColor = lightParam.getParameter( pname )
+						lightColor = lightParam.getParameter(pname)
 
 					# Pick up shadowing parameters
 					elif semantic == omr.MLightParameterInformation.kGlobalShadowOn:
-						intVals = lightParam.getParameter( pname )
+						intVals = lightParam.getParameter(pname)
 						if len(intVals) > 0:
 							globalShadowsOn = (intVals[0] != 0)
 					elif semantic == omr.MLightParameterInformation.kShadowOn:
-						intVals = lightParam.getParameter( pname )
+						intVals = lightParam.getParameter(pname)
 						if len(intVals) > 0:
 							localShadowsOn = (intVals[0] != 0)
 					elif semantic == omr.MLightParameterInformation.kShadowViewProj:
-						shadowViewProj = lightParam.getParameter( pname )
+						shadowViewProj = lightParam.getParameter(pname)
 					elif semantic == omr.MLightParameterInformation.kShadowMap:
-						shadowResourceTexture = lightParam.getParameter( pname )
+						shadowResourceTexture = lightParam.getParameter(pname)
 					elif semantic == omr.MLightParameterInformation.kShadowSamp:
-						samplerDesc = lightParam.getParameter( pname )
+						samplerDesc = lightParam.getParameter(pname)
 					elif semantic == omr.MLightParameterInformation.kShadowColor:
-						shadowColor = lightParam.getParameter( pname )
+						shadowColor = lightParam.getParameter(pname)
 
 			# Set shadow map and projection if shadows are turned on.
 			#
@@ -297,19 +301,19 @@ def shaderOverrideCallbackBindLightingInfo(drawContext, renderItemList, shaderIn
 				if resourceHandle > 0:
 					debugShadowBindings = False
 					try:
-						shaderInstance.setParameter("mayaShadowPCF1_shadowMap", shadowResource )
+						shaderInstance.setParameter("mayaShadowPCF1_shadowMap", shadowResource)
 						if debugShadowBindings:
 							print "Bound shadow map to shader param mayaShadowPCF1_shadowMap"
 					except:
 						pass
 					try:
-						shaderInstance.setParameter("mayaShadowPCF1_shadowViewProj", shadowViewProj )
+						shaderInstance.setParameter("mayaShadowPCF1_shadowViewProj", shadowViewProj)
 						if debugShadowBindings:
 							print "Bound shadow map transform to shader param mayaShadowPCF1_shadowViewProj"
 					except:
 						pass
 					try:
-						shaderInstance.setParameter("mayaShadowPCF1_shadowColor", shadowColor )
+						shaderInstance.setParameter("mayaShadowPCF1_shadowColor", shadowColor)
 						if debugShadowBindings:
 							print "Bound shadow map color to shader param mayaShadowPCF1_shadowColor"
 					except:
@@ -327,8 +331,9 @@ def shaderOverrideCallbackBindLightingInfo(drawContext, renderItemList, shaderIn
 	shaderInstance.setParameter("mayaShadowPCF1_mayaGlobalShadowOn", globalShadowsOn)
 	shaderInstance.setParameter("mayaShadowPCF1_mayaShadowOn", localShadowsOn)
 
+
 #
-#	Example pre-render callback attached to a shader instance
+# 	Example pre-render callback attached to a shader instance
 #
 def shaderOverridePreDrawCallback(context, renderItemList, shaderInstance):
 	print "PRE-draw callback triggered for render item list with data:"
@@ -336,22 +341,25 @@ def shaderOverridePreDrawCallback(context, renderItemList, shaderInstance):
 	print ""
 
 	print "\tLIGHTS"
-	printDrawContextLightInfo( context )
+	printDrawContextLightInfo(context)
 	print ""
 
+
 #
-#	Example post-render callback attached to a shader instance
+# 	Example post-render callback attached to a shader instance
 #
 def shaderOverridePostDrawCallback(context, renderItemList, shaderInstance):
 	print "POST-draw callback triggered for render item list with data:"
 	callbackDataPrint(context, renderItemList, shaderInstance)
 	print ""
 
+
 ###################################################################
-#	Custom HUD operation
+# 	Custom HUD operation
 #
 #
 class viewRenderHUDOperation(omr.MHUDRender):
+
 	def __init__(self):
 		omr.MHUDRender.__init__(self)
 
@@ -370,17 +378,17 @@ class viewRenderHUDOperation(omr.MHUDRender):
 		# Start draw UI
 		drawManager2D.beginDrawable()
 		# Set font color
-		drawManager2D.setColor( om.MColor( (0.455, 0.212, 0.596) ) )
+		drawManager2D.setColor(om.MColor((0.455, 0.212, 0.596)))
 		# Set font size
-		drawManager2D.setFontSize( omr.MUIDrawManager.kSmallFontSize )
+		drawManager2D.setFontSize(omr.MUIDrawManager.kSmallFontSize)
 
 		# Draw renderer name
 		dim = frameContext.getViewportDimensions()
-		x=dim[0]
-		y=dim[1]
-		w=dim[2]
-		h=dim[3]
-		drawManager2D.text( om.MPoint(w*0.5, h*0.91), "Sample VP2 Renderer Override", omr.MUIDrawManager.kCenter )
+		x = dim[0]
+		y = dim[1]
+		w = dim[2]
+		h = dim[3]
+		drawManager2D.text(om.MPoint(w * 0.5, h * 0.91), "Sample VP2 Renderer Override", omr.MUIDrawManager.kCenter)
 
 		# Draw viewport information
 		viewportInfoText = "Viewport information: x= "
@@ -391,7 +399,7 @@ class viewRenderHUDOperation(omr.MHUDRender):
 		viewportInfoText += str(w)
 		viewportInfoText += ", h= "
 		viewportInfoText += str(h)
-		drawManager2D.text( om.MPoint(w*0.5, h*0.885), viewportInfoText, omr.MUIDrawManager.kCenter )
+		drawManager2D.text(om.MPoint(w * 0.5, h * 0.885), viewportInfoText, omr.MUIDrawManager.kCenter)
 
 		# End draw UI
 		drawManager2D.endDrawable()
@@ -402,11 +410,12 @@ class viewRenderHUDOperation(omr.MHUDRender):
 
 ###################################################################
 #
-#	Custom present target operation
+# 	Custom present target operation
 #
-#	Only overrides the targets to present
+# 	Only overrides the targets to present
 #
 class viewRenderPresentTarget(omr.MPresentTarget):
+
 	def __init__(self, name):
 		omr.MPresentTarget.__init__(self, name)
 
@@ -421,25 +430,25 @@ class viewRenderPresentTarget(omr.MPresentTarget):
 	def setRenderTargets(self, targets):
 		self.mTargets = targets
 
-
 ###################################################################
-#	Custom quad operation
+# 	Custom quad operation
 #
-#	General quad operation which can be instantiated with a few
-#	different shaders.
+# 	General quad operation which can be instantiated with a few
+# 	different shaders.
 #
+
 
 class viewRenderQuadRender(omr.MQuadRender):
 	# Shader list
-	kEffectNone				= 0
-	kPost_EffectMonochrome	= 1   # Mono color shader
-	kPost_EffectEdgeDetect	= 2   # Edge detect shader
-	kPost_EffectInvert		= 3   # Invert color shader
-	kScene_Threshold		= 4   # Color threshold shader
-	kScene_BlurHoriz		= 5   # Horizontal blur shader
-	kScene_BlurVert			= 6   # Vertical blur shader
-	kSceneBlur_Blend		= 7   # Blend shader
-	kPre_MandelBrot			= 8   # Mandelbrot shader
+	kEffectNone				 = 0
+	kPost_EffectMonochrome	 = 1  # Mono color shader
+	kPost_EffectEdgeDetect	 = 2  # Edge detect shader
+	kPost_EffectInvert		 = 3  # Invert color shader
+	kScene_Threshold		 = 4  # Color threshold shader
+	kScene_BlurHoriz		 = 5  # Horizontal blur shader
+	kScene_BlurVert			 = 6  # Vertical blur shader
+	kSceneBlur_Blend		 = 7  # Blend shader
+	kPre_MandelBrot			 = 8  # Mandelbrot shader
 
 	def __init__(self, name):
 		omr.MQuadRender.__init__(self, name)
@@ -481,21 +490,21 @@ class viewRenderQuadRender(omr.MQuadRender):
 				# effect + technique a different shader instance is created.
 				#
 				if self.mShader == self.kPre_MandelBrot:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "MandelBrot", "" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("MandelBrot", "")
 				elif self.mShader == self.kPost_EffectMonochrome:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "FilterMonochrome", "" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("FilterMonochrome", "")
 				elif self.mShader == self.kPost_EffectEdgeDetect:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "FilterEdgeDetect", "" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("FilterEdgeDetect", "")
 				elif self.mShader == self.kPost_EffectInvert:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "Invert", "" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("Invert", "")
 				elif self.mShader == self.kScene_Threshold:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "Threshold", "" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("Threshold", "")
 				elif self.mShader == self.kScene_BlurHoriz:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "Blur", "BlurHoriz" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("Blur", "BlurHoriz")
 				elif self.mShader == self.kScene_BlurVert:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "Blur", "BlurVert" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("Blur", "BlurVert")
 				elif self.mShader == self.kSceneBlur_Blend:
-					self.mShaderInstance = shaderMgr.getEffectsFileShader( "Blend", "Add" )
+					self.mShaderInstance = shaderMgr.getEffectsFileShader("Blend", "Add")
 
 		# Set parameters on the shader instance.
 		#
@@ -528,7 +537,7 @@ class viewRenderQuadRender(omr.MQuadRender):
 				except:
 					print "Could not set input render target / texture parameter on threshold shader"
 					return None
-				self.mShaderInstance.setParameter("gBrightThreshold", 0.7 )
+				self.mShaderInstance.setParameter("gBrightThreshold", 0.7)
 
 			elif self.mShader == self.kScene_BlurHoriz:
 				# Set the input texture parameter 'gSourceTex' to use
@@ -561,7 +570,7 @@ class viewRenderQuadRender(omr.MQuadRender):
 					self.mShaderInstance.setParameter("gSourceTex2", self.mTargets[kMyBlurTarget])
 				except:
 					return None
-				self.mShaderInstance.setParameter("gBlendSrc", 0.3 )
+				self.mShaderInstance.setParameter("gBlendSrc", 0.3)
 
 			elif self.mShader == self.kPost_EffectMonochrome:
 				# Set the input texture parameter 'gInputTex' to use
@@ -580,8 +589,8 @@ class viewRenderQuadRender(omr.MQuadRender):
 				except:
 					print "Could not set input render target / texture parameter on edge detect shader"
 					return None
-				self.mShaderInstance.setParameter("gThickness", 1.0 )
-				self.mShaderInstance.setParameter("gThreshold", 0.1 )
+				self.mShaderInstance.setParameter("gThickness", 1.0)
+				self.mShaderInstance.setParameter("gThreshold", 0.1)
 
 		return self.mShaderInstance
 
@@ -604,12 +613,12 @@ class viewRenderQuadRender(omr.MQuadRender):
 		clearOp = self.mClearOperation
 		# Want to clear everything since the quad render is the first operation.
 		if self.mShader == self.kPre_MandelBrot:
-			clearOp.setClearGradient( False )
-			clearOp.setMask( omr.MClearOperation.kClearAll )
+			clearOp.setClearGradient(False)
+			clearOp.setMask(omr.MClearOperation.kClearAll)
 		# This is a post processing operation, so we don't want to clear anything
 		else:
-			clearOp.setClearGradient( False )
-			clearOp.setMask( omr.MClearOperation.kClearNone )
+			clearOp.setClearGradient(False)
+			clearOp.setMask(omr.MClearOperation.kClearNone)
 		return clearOp
 
 	def setRenderTargets(self, targets):
@@ -626,15 +635,16 @@ class viewRenderQuadRender(omr.MQuadRender):
 
 
 ###################################################################
-#	Simple scene operation
+# 	Simple scene operation
 #
-#	Example of just overriding a few options on the scene render.
+# 	Example of just overriding a few options on the scene render.
 #
 class simpleViewRenderSceneRender(omr.MSceneRender):
+
 	def __init__(self, name):
 		omr.MSceneRender.__init__(self, name)
 
-		self.mViewRectangle = om.MFloatPoint(0.0, 0.0, 1.0, 1.0) # 100 % of target size
+		self.mViewRectangle = om.MFloatPoint(0.0, 0.0, 1.0, 1.0)  # 100 % of target size
 
 	def viewportRectangleOverride(self):
 		# Enable this flag to use viewport sizing
@@ -649,19 +659,20 @@ class simpleViewRenderSceneRender(omr.MSceneRender):
 		val1 = [ 0.0, 0.2, 0.8, 1.0 ]
 		val2 = [ 0.5, 0.4, 0.1, 1.0 ]
 		clearOp = self.mClearOperation
-		clearOp.setClearColor( val1 )
-		clearOp.setClearColor2( val2 )
-		clearOp.setClearGradient( True )
+		clearOp.setClearColor(val1)
+		clearOp.setClearColor2(val2)
+		clearOp.setClearGradient(True)
 		return clearOp
 
 
 ###################################################################
-#	Custom scene operation
+# 	Custom scene operation
 #
-#	A scene render which is reused as necessary with different
-#	override parameters
+# 	A scene render which is reused as necessary with different
+# 	override parameters
 #
 class viewRenderSceneRender(omr.MSceneRender):
+
 	def __init__(self, name, sceneFilter, clearMask):
 		omr.MSceneRender.__init__(self, name)
 
@@ -672,7 +683,7 @@ class viewRenderSceneRender(omr.MSceneRender):
 		# Camera override
 		self.mCameraOverride = omr.MCameraOverride()
 		# Viewport rectangle override
-		self.mViewRectangle = om.MFloatPoint(0.0, 0.0, 1.0, 1.0) # 100 % of target size
+		self.mViewRectangle = om.MFloatPoint(0.0, 0.0, 1.0, 1.0)  # 100 % of target size
 		# Available render targets
 		self.mTargets = None
 		# Shader override for surfaces
@@ -692,11 +703,10 @@ class viewRenderSceneRender(omr.MSceneRender):
 		self.mOverrideCullingMode = False
 		self.mDebugTargetResourceHandle = False
 		self.mOverrrideM3dViewDisplayMode = False
-		self.mPrevDisplayStyle = omui.M3dView.kGouraudShaded # Track previous display style of override set
+		self.mPrevDisplayStyle = omui.M3dView.kGouraudShaded  # Track previous display style of override set
 		self.mFilterDrawNothing = False
 		self.mFilterDrawSelected = False
 		self.mEnableSRGBWrite = False
-
 
 	def __del__(self):
 		if not self.mShaderOverride is None:
@@ -739,7 +749,7 @@ class viewRenderSceneRender(omr.MSceneRender):
 	# 'regular' viewport display mode available from the viewport menus.
 	def displayModeOverride(self):
 		if self.mOverrideDisplayMode:
-			return ( omr.MSceneRender.kBoundingBox | omr.MSceneRender.kShaded )
+			return (omr.MSceneRender.kBoundingBox | omr.MSceneRender.kShaded)
 		return omr.MSceneRender.kNoDisplayModeOverride
 
 	# Example Lighting mode override. In this example
@@ -773,7 +783,7 @@ class viewRenderSceneRender(omr.MSceneRender):
 			if len(self.mPanelName) > 0:
 				view = omui.M3dView.getM3dViewFromModelPanel(self.mPanelName)
 				self.mPrevDisplayStyle = view.displayStyle();
-				view.setDisplayStyle( omui.M3dView.kGouraudShaded )
+				view.setDisplayStyle(omui.M3dView.kGouraudShaded)
 
 	# Post-render example.
 	# In this example we can debug the resource handle of the active render target
@@ -795,7 +805,7 @@ class viewRenderSceneRender(omr.MSceneRender):
 		if self.mOverrrideM3dViewDisplayMode:
 			if len(self.mPanelName) > 0:
 				view = omui.M3dView.getM3dViewFromModelPanel(self.mPanelName)
-				view.setDisplayStyle( self.mPrevDisplayStyle )
+				view.setDisplayStyle(self.mPrevDisplayStyle)
 
 	# Object type exclusions example.
 	# In this example we want to hide cameras
@@ -831,7 +841,7 @@ class viewRenderSceneRender(omr.MSceneRender):
 				iter = om.MItSelectionList(selList)
 				while not iter.isDone():
 					comp = iter.getComponent()
-					self.mSelectionList.add( comp[0], comp[1] )
+					self.mSelectionList.add(comp[0], comp[1])
 					iter.next()
 
 			if self.mSelectionList.length() > 0:
@@ -893,7 +903,7 @@ class viewRenderSceneRender(omr.MSceneRender):
 							preCallBack = shaderOverridePreDrawCallback
 						if self.mAttachPrePostShaderCallback:
 							postCallBack = shaderOverridePostDrawCallback
-						self.mShaderOverride = shaderManager.getStockShader( omr.MShaderManager.k3dBlinnShader, preCallBack, postCallBack)
+						self.mShaderOverride = shaderManager.getStockShader(omr.MShaderManager.k3dBlinnShader, preCallBack, postCallBack)
 
 						if not self.mShaderOverride is None:
 							print "\t" + self.name() + " : Set stock shader override " + str(omr.MShaderManager.k3dBlinnShader)
@@ -914,27 +924,27 @@ class viewRenderSceneRender(omr.MSceneRender):
 	# Pre UI draw
 	def addPreUIDrawables(self, drawManager, frameContext):
 		drawManager.beginDrawable()
-		drawManager.setColor( om.MColor( (0.1, 0.5, 0.95) ) )
-		drawManager.setFontSize( omr.MUIDrawManager.kSmallFontSize )
-		drawManager.text( om.MPoint( -2, 2, -2 ), "Pre UI draw test in Scene operation", omr.MUIDrawManager.kRight )
-		drawManager.line( om.MPoint( -2, 0, -2 ), om.MPoint( -2, 2, -2 ) )
-		drawManager.setColor( om.MColor( (1.0, 1.0, 1.0) ) )
-		drawManager.sphere( om.MPoint( -2, 2, -2 ), 0.8, False )
-		drawManager.setColor( om.MColor( (0.1, 0.5, 0.95, 0.4) ) )
-		drawManager.sphere( om.MPoint( -2, 2, -2 ), 0.8, True )
+		drawManager.setColor(om.MColor((0.1, 0.5, 0.95)))
+		drawManager.setFontSize(omr.MUIDrawManager.kSmallFontSize)
+		drawManager.text(om.MPoint(-2, 2, -2), "Pre UI draw test in Scene operation", omr.MUIDrawManager.kRight)
+		drawManager.line(om.MPoint(-2, 0, -2), om.MPoint(-2, 2, -2))
+		drawManager.setColor(om.MColor((1.0, 1.0, 1.0)))
+		drawManager.sphere(om.MPoint(-2, 2, -2), 0.8, False)
+		drawManager.setColor(om.MColor((0.1, 0.5, 0.95, 0.4)))
+		drawManager.sphere(om.MPoint(-2, 2, -2), 0.8, True)
 		drawManager.endDrawable()
 
 	# Post UI draw
 	def addPostUIDrawables(self, drawManager, frameContext):
 		drawManager.beginDrawable()
-		drawManager.setColor( om.MColor( (0.05, 0.95, 0.34) ) )
-		drawManager.setFontSize( omr.MUIDrawManager.kSmallFontSize )
-		drawManager.text( om.MPoint( 2, 2, 2 ), "Post UI draw test in Scene operation", omr.MUIDrawManager.kLeft )
-		drawManager.line( om.MPoint( 2, 0, 2), om.MPoint( 2, 2, 2 ) )
-		drawManager.setColor( om.MColor( (1.0, 1.0, 1.0) ) )
-		drawManager.sphere( om.MPoint( 2, 2, 2 ), 0.8, False )
-		drawManager.setColor( om.MColor( (0.05, 0.95, 0.34, 0.4) ) )
-		drawManager.sphere( om.MPoint( 2, 2, 2 ), 0.8, True )
+		drawManager.setColor(om.MColor((0.05, 0.95, 0.34)))
+		drawManager.setFontSize(omr.MUIDrawManager.kSmallFontSize)
+		drawManager.text(om.MPoint(2, 2, 2), "Post UI draw test in Scene operation", omr.MUIDrawManager.kLeft)
+		drawManager.line(om.MPoint(2, 0, 2), om.MPoint(2, 2, 2))
+		drawManager.setColor(om.MColor((1.0, 1.0, 1.0)))
+		drawManager.sphere(om.MPoint(2, 2, 2), 0.8, False)
+		drawManager.setColor(om.MColor((0.05, 0.95, 0.34, 0.4)))
+		drawManager.sphere(om.MPoint(2, 2, 2), 0.8, True)
 		drawManager.endDrawable()
 
 	def panelName(self):
@@ -965,13 +975,14 @@ class viewRenderSceneRender(omr.MSceneRender):
 	def enableSRGBWriteFlag(self):
 		return self.mEnableSRGBWrite
 
+
 ###################################################################
-##
-##	A very simplistic custom scene draw example which just draws
-##	coloured bounding boxes for surface types.
-##
-##	Used by the custom user operation (viewRenderUserOperation)
-##
+# #
+# #	A very simplistic custom scene draw example which just draws
+# #	coloured bounding boxes for surface types.
+# #
+# #	Used by the custom user operation (viewRenderUserOperation)
+# #
 ###################################################################
 class MCustomSceneDraw:
 
@@ -981,39 +992,39 @@ class MCustomSceneDraw:
 			array.append(matrix[i])
 		return array
 
-	## Some simple code to draw a wireframe bounding box in OpenGL
+	# # Some simple code to draw a wireframe bounding box in OpenGL
 	def drawBounds(self, dagPath, box):
 		matrix = dagPath.inclusiveMatrix()
 		minPt = box.min
 		maxPt = box.max
 
-		bottomLeftFront  = [ minPt.x, minPt.y, minPt.z ]
-		topLeftFront     = [ minPt.x, maxPt.y, minPt.z ]
+		bottomLeftFront = [ minPt.x, minPt.y, minPt.z ]
+		topLeftFront = [ minPt.x, maxPt.y, minPt.z ]
 		bottomRightFront = [ maxPt.x, minPt.y, minPt.z ]
-		topRightFront    = [ maxPt.x, maxPt.y, minPt.z ]
-		bottomLeftBack   = [ minPt.x, minPt.y, maxPt.z ]
-		topLeftBack      = [ minPt.x, maxPt.y, maxPt.z ]
-		bottomRightBack  = [ maxPt.x, minPt.y, maxPt.z ]
-		topRightBack     = [ maxPt.x, maxPt.y, maxPt.z ]
+		topRightFront = [ maxPt.x, maxPt.y, minPt.z ]
+		bottomLeftBack = [ minPt.x, minPt.y, maxPt.z ]
+		topLeftBack = [ minPt.x, maxPt.y, maxPt.z ]
+		bottomRightBack = [ maxPt.x, minPt.y, maxPt.z ]
+		topRightBack = [ maxPt.x, maxPt.y, maxPt.z ]
 
-		glMatrixMode( GL_MODELVIEW )
+		glMatrixMode(GL_MODELVIEW)
 		glPushMatrix()
-		glMultMatrixd( self.matrixAsArray(matrix) )
+		glMultMatrixd(self.matrixAsArray(matrix))
 
-		glBegin( GL_LINE_STRIP )
-		glVertex3dv( bottomLeftFront )
-		glVertex3dv( bottomLeftBack )
-		glVertex3dv( topLeftBack )
-		glVertex3dv( topLeftFront )
-		glVertex3dv( bottomLeftFront )
-		glVertex3dv( bottomRightFront )
-		glVertex3dv( bottomRightBack)
-		glVertex3dv( topRightBack )
-		glVertex3dv( topRightFront )
-		glVertex3dv( bottomRightFront )
+		glBegin(GL_LINE_STRIP)
+		glVertex3dv(bottomLeftFront)
+		glVertex3dv(bottomLeftBack)
+		glVertex3dv(topLeftBack)
+		glVertex3dv(topLeftFront)
+		glVertex3dv(bottomLeftFront)
+		glVertex3dv(bottomRightFront)
+		glVertex3dv(bottomRightBack)
+		glVertex3dv(topRightBack)
+		glVertex3dv(topRightFront)
+		glVertex3dv(bottomRightFront)
 		glEnd()
 
-		glBegin( GL_LINES )
+		glBegin(GL_LINES)
 		glVertex3dv(bottomLeftBack)
 		glVertex3dv(bottomRightBack)
 
@@ -1026,7 +1037,7 @@ class MCustomSceneDraw:
 
 		glPopMatrix()
 
-	## Draw a scene full of bounding boxes
+	# # Draw a scene full of bounding boxes
 	def draw(self, cameraPath, size):
 		if not cameraPath.isValid:
 			return False
@@ -1102,20 +1113,22 @@ class MCustomSceneDraw:
 		"""
 		return True
 
+
 ###################################################################
 #
-#	Custom user operation. One approach to adding a pre and
-#	post scene operations. In this approach only 1 operation
-#	is reused twice with local state as to when it is being
-#	used. Another approach which may be more suitable for when
-#	global state is changed is to create 2 instances of this
-#	operation and keep global state on the override instead of
-#	locally here.
+# 	Custom user operation. One approach to adding a pre and
+# 	post scene operations. In this approach only 1 operation
+# 	is reused twice with local state as to when it is being
+# 	used. Another approach which may be more suitable for when
+# 	global state is changed is to create 2 instances of this
+# 	operation and keep global state on the override instead of
+# 	locally here.
 #
-#	The cost of an override is very small so creating more instances
-#	can provide a clearer and cleaner render loop logic.
+# 	The cost of an override is very small so creating more instances
+# 	can provide a clearer and cleaner render loop logic.
 #
 class viewRenderUserOperation(omr.MUserRenderOperation):
+
 	def __init__(self, name):
 		omr.MUserRenderOperation.__init__(self, name)
 
@@ -1124,7 +1137,7 @@ class viewRenderUserOperation(omr.MUserRenderOperation):
 		# Camera override
 		self.mCameraOverride = omr.MCameraOverride()
 		# Viewport rectangle override
-		self.mViewRectangle = om.MFloatPoint(0.0, 0.0, 1.0, 1.0) # 100 % of target size
+		self.mViewRectangle = om.MFloatPoint(0.0, 0.0, 1.0, 1.0)  # 100 % of target size
 		# Available targets
 		self.mTargets = None
 		# sRGB write flag
@@ -1154,12 +1167,12 @@ class viewRenderUserOperation(omr.MUserRenderOperation):
 		# contextual information can be extracted.
 		#
 		overrideName = omr.MRenderer.activeRenderOverride()
-		overrideFunc = omr.MRenderer.findRenderOverride( overrideName )
+		overrideFunc = omr.MRenderer.findRenderOverride(overrideName)
 
 		# Some sample code to debug lighting information in the MDrawContext
 		#
 		if self.fDebugLightingInfo:
-			printDrawContextLightInfo( drawContext )
+			printDrawContextLightInfo(drawContext)
 
 		# Some sample code to debug other MDrawContext information
 		#
@@ -1181,23 +1194,23 @@ class viewRenderUserOperation(omr.MUserRenderOperation):
 		#
 		if len(self.mPanelName) > 0:
 			view = omui.M3dView.getM3dViewFromModelPanel(self.mPanelName)
-			## Get the current viewport and scale it relative to that
-			##
+			# # Get the current viewport and scale it relative to that
+			# #
 			targetSize = drawContext.getRenderTargetSize()
 
 			if self.fDrawLabel:
 				testString = "Drawing with override: "
 				testString += overrideFunc.name()
 				pos = om.MPoint(0.0, 0.0, 0.0)
-				glColor3f( 1.0, 1.0, 1.0 )
-				view.drawText( testString, pos )
+				glColor3f(1.0, 1.0, 1.0)
+				view.drawText(testString, pos)
 
-			## Some user drawing of scene bounding boxes
-			##
+			# # Some user drawing of scene bounding boxes
+			# #
 			if self.fDrawBoundingBoxes:
 				cameraPath = view.getCamera()
 				userDraw = MCustomSceneDraw()
-				userDraw.draw( cameraPath, targetSize )
+				userDraw.draw(cameraPath, targetSize)
 
 	def cameraOverride(self):
 		if self.fUserCameraOverride:
@@ -1221,13 +1234,13 @@ class viewRenderUserOperation(omr.MUserRenderOperation):
 
 	def addUIDrawables(self, drawManager, frameContext):
 		drawManager.beginDrawable()
-		drawManager.setColor( om.MColor( (0.95, 0.5, 0.1) ) )
-		drawManager.text( om.MPoint( 0, 2, 0 ), "UI draw test in user operation" )
-		drawManager.line( om.MPoint( 0, 0, 0), om.MPoint( 0, 2, 0 ) )
-		drawManager.setColor( om.MColor( (1.0, 1.0, 1.0) ) )
-		drawManager.sphere( om.MPoint( 0, 2, 0 ), 0.8, False )
-		drawManager.setColor( om.MColor( (0.95, 0.5, 0.1, 0.4) ) )
-		drawManager.sphere( om.MPoint( 0, 2, 0 ), 0.8, True )
+		drawManager.setColor(om.MColor((0.95, 0.5, 0.1)))
+		drawManager.text(om.MPoint(0, 2, 0), "UI draw test in user operation")
+		drawManager.line(om.MPoint(0, 0, 0), om.MPoint(0, 2, 0))
+		drawManager.setColor(om.MColor((1.0, 1.0, 1.0)))
+		drawManager.sphere(om.MPoint(0, 2, 0), 0.8, False)
+		drawManager.setColor(om.MColor((0.95, 0.5, 0.1, 0.4)))
+		drawManager.sphere(om.MPoint(0, 2, 0), 0.8, True)
 		drawManager.endDrawable()
 
 	def setRenderTargets(self, targets):
@@ -1250,30 +1263,31 @@ class viewRenderUserOperation(omr.MUserRenderOperation):
 
 
 ###################################################################
-#	Sample custom render override class.
+# 	Sample custom render override class.
 #
-#	Is responsible for setting up the render loop operations and
-#	updating resources for each frame render as well as any
-#	rendering options.
+# 	Is responsible for setting up the render loop operations and
+# 	updating resources for each frame render as well as any
+# 	rendering options.
 #
-#	By default the plugin will perform a number of operations
-#	in order to:
+# 	By default the plugin will perform a number of operations
+# 	in order to:
 #
-#	1) Draw a procedurally generated background
-#	2) Draw the non-UI parts of the scene using internal logic.
-#	3) Threshold the scene
-#	4) Blur the thresholded output
-#	5) Combine the thresholded output with the original scene (resulting
-#	   in a "glow")
-#	6a) Draw the UI parts of the scene using internal logic.
-#	6b) Perform an option custom user operation for additional UI.
-#	7) Draw the 2D HUD
-#	8) 'Present' the final output
+# 	1) Draw a procedurally generated background
+# 	2) Draw the non-UI parts of the scene using internal logic.
+# 	3) Threshold the scene
+# 	4) Blur the thresholded output
+# 	5) Combine the thresholded output with the original scene (resulting
+# 	   in a "glow")
+# 	6a) Draw the UI parts of the scene using internal logic.
+# 	6b) Perform an option custom user operation for additional UI.
+# 	7) Draw the 2D HUD
+# 	8) 'Present' the final output
 #
-#	A number of intermediate render targets are created to hold contents
-#	which are passed from operation to operation.
+# 	A number of intermediate render targets are created to hold contents
+# 	which are passed from operation to operation.
 #
 class viewRenderOverride(omr.MRenderOverride):
+
 	def __init__(self, name):
 		omr.MRenderOverride.__init__(self, name)
 
@@ -1303,7 +1317,7 @@ class viewRenderOverride(omr.MRenderOverride):
 			self.mTargetSupportsSRGBWrite.append(False)
 
 		# Init target information for the override
-		sampleCount = 1 # no multi-sampling
+		sampleCount = 1  # no multi-sampling
 		colorFormat = omr.MRenderer.kR8G8B8A8_UNORM
 		depthFormat = omr.MRenderer.kD24S8
 
@@ -1323,7 +1337,7 @@ class viewRenderOverride(omr.MRenderOverride):
 		self.mTargetSupportsSRGBWrite[kMyDepthTarget] = False
 
 		self.mTargetOverrideNames	[kMyBlurTarget] = "__viewRenderOverrideBlurTarget__"
-		self.mTargetDescriptions 	[kMyBlurTarget]= omr.MRenderTargetDescription(self.mTargetOverrideNames[kMyBlurTarget], 256, 256, sampleCount, colorFormat, 0, False)
+		self.mTargetDescriptions 	[kMyBlurTarget] = omr.MRenderTargetDescription(self.mTargetOverrideNames[kMyBlurTarget], 256, 256, sampleCount, colorFormat, 0, False)
 		self.mTargets				[kMyBlurTarget] = None
 		self.mTargetSupportsSRGBWrite[kMyBlurTarget] = False
 
@@ -1368,7 +1382,7 @@ class viewRenderOverride(omr.MRenderOverride):
 
 	# Return that this plugin supports both GL and DX draw APIs
 	def supportedDrawAPIs(self):
-		return ( omr.MRenderer.kOpenGL | omr.MRenderer.kDirectX11 | omr.MRenderer.kOpenGLCoreProfile )
+		return (omr.MRenderer.kOpenGL | omr.MRenderer.kDirectX11 | omr.MRenderer.kOpenGLCoreProfile)
 
 	# Initialize "iterator". We keep a list of operations indexed
 	# by mCurrentOperation. Set to 0 to point to the first operation.
@@ -1380,7 +1394,7 @@ class viewRenderOverride(omr.MRenderOverride):
 	def renderOperation(self):
 		if self.mCurrentOperation >= 0 and self.mCurrentOperation < kNumberOfOps:
 			while self.mRenderOperations[self.mCurrentOperation] is None:
-				self.mCurrentOperation = self.mCurrentOperation+1
+				self.mCurrentOperation = self.mCurrentOperation + 1
 				if self.mCurrentOperation >= kNumberOfOps:
 					return None
 
@@ -1411,7 +1425,7 @@ class viewRenderOverride(omr.MRenderOverride):
 		targetWidth = targetSize[0]
 		targetHeight = targetSize[1]
 
-		#if self.mTargetDescriptions[kMyColorTarget].width() != targetWidth or self.mTargetDescriptions[kMyColorTarget].height() != targetHeight:
+		# if self.mTargetDescriptions[kMyColorTarget].width() != targetWidth or self.mTargetDescriptions[kMyColorTarget].height() != targetHeight:
 			# A resize occured
 
 		# Note that the render target sizes could be set to be
@@ -1420,8 +1434,8 @@ class viewRenderOverride(omr.MRenderOverride):
 
 		# Update size value for all target descriptions kept
 		for targetId in range(kTargetCount):
-			self.mTargetDescriptions[targetId].setWidth( targetWidth )
-			self.mTargetDescriptions[targetId].setHeight( targetHeight )
+			self.mTargetDescriptions[targetId].setWidth(targetWidth)
+			self.mTargetDescriptions[targetId].setHeight(targetHeight)
 
 		# Keep track of whether the main color target can support sRGB write
 		colorTargetSupportsSGRBWrite = False
@@ -1446,9 +1460,9 @@ class viewRenderOverride(omr.MRenderOverride):
 				# Set unordered write access flag if test enabled.
 				supportsSRGBWrite = False
 				if omr.MRenderer.drawAPI() != omr.MRenderer.kOpenGL:
-					supportsSRGBWrite = targetManager.formatSupportsSRGBWrite( self.mTargetDescriptions[targetId].rasterFormat() )
+					supportsSRGBWrite = targetManager.formatSupportsSRGBWrite(self.mTargetDescriptions[targetId].rasterFormat())
 					self.mTargetSupportsSRGBWrite[targetId] = supportsSRGBWrite
-				self.mTargetDescriptions[targetId].setAllowsUnorderedAccess( testUnorderedWriteAccess )
+				self.mTargetDescriptions[targetId].setAllowsUnorderedAccess(testUnorderedWriteAccess)
 
 				# Keep track of whether the main color target can support sRGB write
 				if targetId == kMyColorTarget:
@@ -1463,15 +1477,15 @@ class viewRenderOverride(omr.MRenderOverride):
 
 				# Create a new target
 				if self.mTargets[targetId] is None:
-					self.mTargets[targetId] = targetManager.acquireRenderTarget( self.mTargetDescriptions[targetId] )
+					self.mTargets[targetId] = targetManager.acquireRenderTarget(self.mTargetDescriptions[targetId])
 
 				# "Update" using a description will resize as necessary
 				else:
-					self.mTargets[targetId].updateDescription( self.mTargetDescriptions[targetId] )
+					self.mTargets[targetId].updateDescription(self.mTargetDescriptions[targetId])
 
 				if testUnorderedWriteAccess and not self.mTargets[targetId] is None:
 					returnDesc = self.mTargets[targetId].targetDescription()
-					self.mTargetDescriptions[targetId].setAllowsUnorderedAccess( returnDesc.allowsUnorderedAccess() )
+					self.mTargetDescriptions[targetId].setAllowsUnorderedAccess(returnDesc.allowsUnorderedAccess())
 					print "Acquire target[" + returnDesc.name() + "] with unordered access = " + str(returnDesc.allowsUnorderedAccess()) + ". Should fail if attempting with depth target = " + str(targetId == kMyDepthTarget)
 
 		# Update the render targets on the individual operations
@@ -1487,22 +1501,22 @@ class viewRenderOverride(omr.MRenderOverride):
 		sceneOp = self.mRenderOperations[kMaya3dSceneRender]
 		if not sceneOp is None:
 			sceneOp.setRenderTargets(self.mTargets)
-			sceneOp.setEnableSRGBWriteFlag( colorTargetSupportsSGRBWrite )
+			sceneOp.setEnableSRGBWriteFlag(colorTargetSupportsSGRBWrite)
 
 		opaqueSceneOp = self.mRenderOperations[kMaya3dSceneRenderOpaque]
 		if not opaqueSceneOp is None:
 			opaqueSceneOp.setRenderTargets(self.mTargets)
-			opaqueSceneOp.setEnableSRGBWriteFlag( colorTargetSupportsSGRBWrite )
+			opaqueSceneOp.setEnableSRGBWriteFlag(colorTargetSupportsSGRBWrite)
 
 		transparentSceneOp = self.mRenderOperations[kMaya3dSceneRenderTransparent]
 		if not transparentSceneOp is None:
 			transparentSceneOp.setRenderTargets(self.mTargets)
-			transparentSceneOp.setEnableSRGBWriteFlag( colorTargetSupportsSGRBWrite )
+			transparentSceneOp.setEnableSRGBWriteFlag(colorTargetSupportsSGRBWrite)
 
 		uiSceneOp = self.mRenderOperations[kMaya3dSceneRenderUI]
 		if not uiSceneOp is None:
 			uiSceneOp.setRenderTargets(self.mTargets)
-			uiSceneOp.setEnableSRGBWriteFlag( False ) # Don't enable sRGB write for UI
+			uiSceneOp.setEnableSRGBWriteFlag(False)  # Don't enable sRGB write for UI
 
 		quadOp2 = self.mRenderOperations[kPostOperation1]
 		if not quadOp2 is None:
@@ -1515,7 +1529,7 @@ class viewRenderOverride(omr.MRenderOverride):
 		userOp = self.mRenderOperations[kUserOpNumber]
 		if not userOp is None:
 			userOp.setRenderTargets(self.mTargets)
-			userOp.setEnableSRGBWriteFlag( colorTargetSupportsSGRBWrite ) # Enable sRGB write for user ops
+			userOp.setEnableSRGBWriteFlag(colorTargetSupportsSGRBWrite)  # Enable sRGB write for user ops
 
 		presentOp = self.mRenderOperations[kPresentOp]
 		if not presentOp is None:
@@ -1547,7 +1561,7 @@ class viewRenderOverride(omr.MRenderOverride):
 	# Here we set up the render loop logic and allocate any necessary resources.
 	# The render loop logic setup is done by setting up a list of
 	# render operations which will be returned by the "iterator" calls.
-	def setup(self, destination ):
+	def setup(self, destination):
 		if self.mDebugOverride:
 			print self.name() + " : Perform setup with panel [" + destination + "]"
 
@@ -1572,7 +1586,7 @@ class viewRenderOverride(omr.MRenderOverride):
 				self.mRenderOperations[kBackgroundBlit] = None
 
 				self.mRenderOperationNames[kMaya3dSceneRender] = "__MySimpleSceneRender"
-				sceneOp = simpleViewRenderSceneRender( self.mRenderOperationNames[kMaya3dSceneRender] )
+				sceneOp = simpleViewRenderSceneRender(self.mRenderOperationNames[kMaya3dSceneRender])
 				self.mRenderOperations[kMaya3dSceneRender] = sceneOp
 
 				# NULL out any additional opertions used for the "complex" render loop
@@ -1590,7 +1604,7 @@ class viewRenderOverride(omr.MRenderOverride):
 				self.mRenderOperationNames[kHUDBlit] = self.mRenderOperations[kHUDBlit].name()
 
 				self.mRenderOperationNames[kPresentOp] = "__MyPresentTarget"
-				self.mRenderOperations[kPresentOp] = viewRenderPresentTarget( self.mRenderOperationNames[kPresentOp] )
+				self.mRenderOperations[kPresentOp] = viewRenderPresentTarget(self.mRenderOperationNames[kPresentOp])
 				self.mRenderOperationNames[kPresentOp] = self.mRenderOperations[kPresentOp].name()
 
 			# Sample which performs the full "complex" render loop
@@ -1601,8 +1615,8 @@ class viewRenderOverride(omr.MRenderOverride):
 				# Pre scene quad render to render a procedurally drawn background
 				#
 				self.mRenderOperationNames[kBackgroundBlit] = "__MyPreQuadRender"
-				quadOp = viewRenderQuadRender( self.mRenderOperationNames[kBackgroundBlit] )
-				quadOp.setShader( viewRenderQuadRender.kPre_MandelBrot ) # We use a shader override to render the background
+				quadOp = viewRenderQuadRender(self.mRenderOperationNames[kBackgroundBlit])
+				quadOp.setShader(viewRenderQuadRender.kPre_MandelBrot)  # We use a shader override to render the background
 				quadOp.setViewRectangle(rect)
 				self.mRenderOperations[kBackgroundBlit] = quadOp
 
@@ -1624,22 +1638,22 @@ class viewRenderOverride(omr.MRenderOverride):
 				if self.mSplitUIDraw:
 					# opaque
 					sceneOp = None
-					sDrawOpaque = True # can disable if desired
+					sDrawOpaque = True  # can disable if desired
 					if sDrawOpaque:
 						self.mRenderOperationNames[kMaya3dSceneRenderOpaque] = "__MyStdSceneRenderOpaque"
 						clearMask = omr.MClearOperation.kClearDepth | omr.MClearOperation.kClearStencil
-						sceneOp = viewRenderSceneRender( self.mRenderOperationNames[kMaya3dSceneRenderOpaque], omr.MSceneRender.kRenderOpaqueShadedItems, clearMask )
+						sceneOp = viewRenderSceneRender(self.mRenderOperationNames[kMaya3dSceneRenderOpaque], omr.MSceneRender.kRenderOpaqueShadedItems, clearMask)
 						sceneOp.setViewRectangle(rect)
 						self.mRenderOperations[kMaya3dSceneRenderOpaque] = sceneOp
 
 					# transparent, clear nothing since needs to draw on top of opaque
-					sDrawTransparent = True # can disable if desired
+					sDrawTransparent = True  # can disable if desired
 					if sDrawTransparent:
 						self.mRenderOperationNames[kMaya3dSceneRenderTransparent] = "__MyStdSceneRenderTransparent"
 						clearMask = omr.MClearOperation.kClearDepth | omr.MClearOperation.kClearStencil
 						if sDrawOpaque:
 							clearMask = omr.MClearOperation.kClearNone
-						sceneOp = viewRenderSceneRender( self.mRenderOperationNames[kMaya3dSceneRenderTransparent], omr.MSceneRender.kRenderTransparentShadedItems, clearMask )
+						sceneOp = viewRenderSceneRender(self.mRenderOperationNames[kMaya3dSceneRenderTransparent], omr.MSceneRender.kRenderTransparentShadedItems, clearMask)
 						sceneOp.setViewRectangle(rect)
 						self.mRenderOperations[kMaya3dSceneRenderTransparent] = sceneOp
 
@@ -1648,14 +1662,14 @@ class viewRenderOverride(omr.MRenderOverride):
 					clearMask = omr.MClearOperation.kClearDepth | omr.MClearOperation.kClearStencil
 					if sDrawOpaque or sDrawTransparent:
 						clearMask = omr.MClearOperation.kClearStencil
-					sceneOp = viewRenderSceneRender( self.mRenderOperationNames[kMaya3dSceneRenderUI], omr.MSceneRender.kRenderUIItems, clearMask )
+					sceneOp = viewRenderSceneRender(self.mRenderOperationNames[kMaya3dSceneRenderUI], omr.MSceneRender.kRenderUIItems, clearMask)
 					sceneOp.setViewRectangle(rect)
 					self.mRenderOperations[kMaya3dSceneRenderUI] = sceneOp
 				else:
 					# will draw all of opaque, transparent and ui at once
 					self.mRenderOperationNames[kMaya3dSceneRender] = "__MyStdSceneRender"
 					clearMask = omr.MClearOperation.kClearDepth | omr.MClearOperation.kClearStencil
-					sceneOp = viewRenderSceneRender( self.mRenderOperationNames[kMaya3dSceneRender], omr.MSceneRender.kNoSceneFilterOverride, clearMask )
+					sceneOp = viewRenderSceneRender(self.mRenderOperationNames[kMaya3dSceneRender], omr.MSceneRender.kNoSceneFilterOverride, clearMask)
 					sceneOp.setViewRectangle(rect)
 					self.mRenderOperations[kMaya3dSceneRender] = sceneOp
 
@@ -1664,33 +1678,33 @@ class viewRenderOverride(omr.MRenderOverride):
 				# render target with the output of this set of operations (thresholded blurred scene)
 				#
 				self.mRenderOperationNames[kThresholdOp] = "__ThresholdColor"
-				quadThreshold = viewRenderQuadRender( self.mRenderOperationNames[kThresholdOp] )
-				quadThreshold.setShader( viewRenderQuadRender.kScene_Threshold ) # Use threshold shader
+				quadThreshold = viewRenderQuadRender(self.mRenderOperationNames[kThresholdOp])
+				quadThreshold.setShader(viewRenderQuadRender.kScene_Threshold)  # Use threshold shader
 				quadThreshold.setViewRectangle(rect)
 				self.mRenderOperations[kThresholdOp] = quadThreshold
 
 				self.mRenderOperationNames[kHorizBlurOp] = "__HorizontalBlur"
-				quadHBlur = viewRenderQuadRender( self.mRenderOperationNames[kHorizBlurOp] )
-				quadHBlur.setShader( viewRenderQuadRender.kScene_BlurHoriz ) # Use horizontal blur shader
+				quadHBlur = viewRenderQuadRender(self.mRenderOperationNames[kHorizBlurOp])
+				quadHBlur.setShader(viewRenderQuadRender.kScene_BlurHoriz)  # Use horizontal blur shader
 				quadHBlur.setViewRectangle(rect)
 				self.mRenderOperations[kHorizBlurOp] = quadHBlur
 
 				self.mRenderOperationNames[kVertBlurOp] = "__VerticalBlur"
-				quadVBlur = viewRenderQuadRender( self.mRenderOperationNames[kVertBlurOp] )
-				quadVBlur.setShader( viewRenderQuadRender.kScene_BlurVert ) # Use vertical blur shader
+				quadVBlur = viewRenderQuadRender(self.mRenderOperationNames[kVertBlurOp])
+				quadVBlur.setShader(viewRenderQuadRender.kScene_BlurVert)  # Use vertical blur shader
 				quadVBlur.setViewRectangle(rect)
 				self.mRenderOperations[kVertBlurOp] = quadVBlur
 
 				self.mRenderOperationNames[kBlendOp] = "__SceneBlurBlend"
-				quadBlend = viewRenderQuadRender( self.mRenderOperationNames[kBlendOp] )
-				quadBlend.setShader( viewRenderQuadRender.kSceneBlur_Blend ) # Use color blend shader
+				quadBlend = viewRenderQuadRender(self.mRenderOperationNames[kBlendOp])
+				quadBlend.setShader(viewRenderQuadRender.kSceneBlur_Blend)  # Use color blend shader
 				quadBlend.setViewRectangle(rect)
 				self.mRenderOperations[kBlendOp] = quadBlend
 
 				# Sample custom operation which will peform a custom "scene render"
 				#
 				self.mRenderOperationNames[kUserOpNumber] = "__MyCustomSceneRender"
-				userOp = viewRenderUserOperation( self.mRenderOperationNames[kUserOpNumber] )
+				userOp = viewRenderUserOperation(self.mRenderOperationNames[kUserOpNumber])
 				userOp.setViewRectangle(rect)
 				self.mRenderOperations[kUserOpNumber] = userOp
 
@@ -1699,8 +1713,8 @@ class viewRenderOverride(omr.MRenderOverride):
 				# Some sample post scene quad render operations
 				# a. Monochrome quad render with custom shader
 				self.mRenderOperationNames[kPostOperation1] = "__PostOperation1"
-				quadOp2 = viewRenderQuadRender( self.mRenderOperationNames[kPostOperation1] )
-				quadOp2.setShader( viewRenderQuadRender.kPost_EffectMonochrome )
+				quadOp2 = viewRenderQuadRender(self.mRenderOperationNames[kPostOperation1])
+				quadOp2.setShader(viewRenderQuadRender.kPost_EffectMonochrome)
 				quadOp2.setViewRectangle(rect)
 				if wantPostQuadOps:
 					self.mRenderOperations[kPostOperation1] = quadOp2
@@ -1709,8 +1723,8 @@ class viewRenderOverride(omr.MRenderOverride):
 
 				# b. Invert quad render with custom shader
 				self.mRenderOperationNames[kPostOperation2] = "__PostOperation2"
-				quadOp3 = viewRenderQuadRender( self.mRenderOperationNames[kPostOperation2] )
-				quadOp3.setShader( viewRenderQuadRender.kPost_EffectInvert )
+				quadOp3 = viewRenderQuadRender(self.mRenderOperationNames[kPostOperation2])
+				quadOp3.setShader(viewRenderQuadRender.kPost_EffectInvert)
 				quadOp3.setViewRectangle(rect)
 				if wantPostQuadOps:
 					self.mRenderOperations[kPostOperation2] = quadOp3
@@ -1721,7 +1735,7 @@ class viewRenderOverride(omr.MRenderOverride):
 				# Operation is a no-op for batch rendering as there is no on-screen
 				# buffer to send the result to.
 				self.mRenderOperationNames[kPresentOp] = "__MyPresentTarget"
-				self.mRenderOperations[kPresentOp] = viewRenderPresentTarget( self.mRenderOperationNames[kPresentOp] )
+				self.mRenderOperations[kPresentOp] = viewRenderPresentTarget(self.mRenderOperationNames[kPresentOp])
 				self.mRenderOperationNames[kPresentOp] = self.mRenderOperations[kPresentOp].name()
 
 				# A preset 2D HUD render operation
@@ -1736,15 +1750,15 @@ class viewRenderOverride(omr.MRenderOverride):
 			# Set the name of the panel on operations which may use the panel
 			# name to find out the associated M3dView.
 			if not self.mRenderOperations[kMaya3dSceneRender] is None:
-				self.mRenderOperations[kMaya3dSceneRender].setPanelName( self.mPanelName )
+				self.mRenderOperations[kMaya3dSceneRender].setPanelName(self.mPanelName)
 			if not self.mRenderOperations[kMaya3dSceneRenderOpaque] is None:
-				self.mRenderOperations[kMaya3dSceneRenderOpaque].setPanelName( self.mPanelName )
+				self.mRenderOperations[kMaya3dSceneRenderOpaque].setPanelName(self.mPanelName)
 			if not self.mRenderOperations[kMaya3dSceneRenderTransparent] is None:
-				self.mRenderOperations[kMaya3dSceneRenderTransparent].setPanelName( self.mPanelName )
+				self.mRenderOperations[kMaya3dSceneRenderTransparent].setPanelName(self.mPanelName)
 			if not self.mRenderOperations[kMaya3dSceneRenderUI] is None:
-				self.mRenderOperations[kMaya3dSceneRenderUI].setPanelName( self.mPanelName )
+				self.mRenderOperations[kMaya3dSceneRenderUI].setPanelName(self.mPanelName)
 			if not self.mRenderOperations[kUserOpNumber] is None:
-				self.mRenderOperations[kUserOpNumber].setPanelName( self.mPanelName )
+				self.mRenderOperations[kUserOpNumber].setPanelName(self.mPanelName)
 
 		self.mCurrentOperation = -1
 
@@ -1782,24 +1796,26 @@ class viewRenderOverride(omr.MRenderOverride):
 
 viewRenderOverrideInstance = None
 
+
 #
-#	Register an override and associated command
+# 	Register an override and associated command
 #
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj) 
 	try:
 		global viewRenderOverrideInstance
-		viewRenderOverrideInstance = viewRenderOverride( "my_viewRenderOverride" )
+		viewRenderOverrideInstance = viewRenderOverride("my_viewRenderOverride")
 		omr.MRenderer.registerOverride(viewRenderOverrideInstance)
 	except:
 		sys.stderr.write("registerOverride\n")
 		raise
 
+
 #
-#	When uninitializing the plugin, make sure to deregister the
-#	override and then delete the instance which is being kept here.
+# 	When uninitializing the plugin, make sure to deregister the
+# 	override and then delete the instance which is being kept here.
 #
-#	Also remove the command used to set options on the override
+# 	Also remove the command used to set options on the override
 #
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj) 

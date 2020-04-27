@@ -1,37 +1,37 @@
 ##-*****************************************************************************
-##
-## Copyright (c) 2009-2011,
-##  Sony Pictures Imageworks, Inc. and
-##  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
-##
-## All rights reserved.
-##
-## Redistribution and use in source and binary forms, with or without
-## modification, are permitted provided that the following conditions are
-## met:
-## *       Redistributions of source code must retain the above copyright
-## notice, this list of conditions and the following disclaimer.
-## *       Redistributions in binary form must reproduce the above
-## copyright notice, this list of conditions and the following disclaimer
-## in the documentation and/or other materials provided with the
-## distribution.
-## *       Neither the name of Sony Pictures Imageworks, nor
-## Industrial Light & Magic nor the names of their contributors may be used
-## to endorse or promote products derived from this software without specific
-## prior written permission.
-##
-## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-## A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-## OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-## SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-## LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-## DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-## THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-##
+# #
+# # Copyright (c) 2009-2011,
+# #  Sony Pictures Imageworks, Inc. and
+# #  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
+# #
+# # All rights reserved.
+# #
+# # Redistribution and use in source and binary forms, with or without
+# # modification, are permitted provided that the following conditions are
+# # met:
+# # *       Redistributions of source code must retain the above copyright
+# # notice, this list of conditions and the following disclaimer.
+# # *       Redistributions in binary form must reproduce the above
+# # copyright notice, this list of conditions and the following disclaimer
+# # in the documentation and/or other materials provided with the
+# # distribution.
+# # *       Neither the name of Sony Pictures Imageworks, nor
+# # Industrial Light & Magic nor the names of their contributors may be used
+# # to endorse or promote products derived from this software without specific
+# # prior written permission.
+# #
+# # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# # A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# # OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# # SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# # LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# # DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# #
 ##-*****************************************************************************
 
 from maya import cmds as MayaCmds
@@ -40,6 +40,7 @@ import os
 import subprocess
 import unittest
 import util
+
 
 class AnimMeshTest(unittest.TestCase):
 
@@ -58,13 +59,13 @@ class AnimMeshTest(unittest.TestCase):
         numFaceConnects = 24
 
         vtx_1 = OpenMaya.MFloatPoint(-0.5, -0.5, -0.5)
-        vtx_2 = OpenMaya.MFloatPoint( 0.5, -0.5, -0.5)
-        vtx_3 = OpenMaya.MFloatPoint( 0.5, -0.5,  0.5)
-        vtx_4 = OpenMaya.MFloatPoint(-0.5, -0.5,  0.5)
-        vtx_5 = OpenMaya.MFloatPoint(-0.5,  0.5, -0.5)
-        vtx_6 = OpenMaya.MFloatPoint(-0.5,  0.5,  0.5)
-        vtx_7 = OpenMaya.MFloatPoint( 0.5,  0.5,  0.5)
-        vtx_8 = OpenMaya.MFloatPoint( 0.5,  0.5, -0.5)
+        vtx_2 = OpenMaya.MFloatPoint(0.5, -0.5, -0.5)
+        vtx_3 = OpenMaya.MFloatPoint(0.5, -0.5, 0.5)
+        vtx_4 = OpenMaya.MFloatPoint(-0.5, -0.5, 0.5)
+        vtx_5 = OpenMaya.MFloatPoint(-0.5, 0.5, -0.5)
+        vtx_6 = OpenMaya.MFloatPoint(-0.5, 0.5, 0.5)
+        vtx_7 = OpenMaya.MFloatPoint(0.5, 0.5, 0.5)
+        vtx_8 = OpenMaya.MFloatPoint(0.5, 0.5, -0.5)
 
         points = OpenMaya.MFloatPointArray()
         points.setLength(8)
@@ -123,7 +124,7 @@ class AnimMeshTest(unittest.TestCase):
         meshFn.setName(shapeName)
 
         # add SPT_HwColor attributes
-        MayaCmds.select( shapeName )
+        MayaCmds.select(shapeName)
         MayaCmds.addAttr(longName='SPT_HwColor', usedAsColor=True,
             attributeType='float3')
         MayaCmds.addAttr(longName='SPT_HwColorR', attributeType='float',
@@ -134,29 +135,29 @@ class AnimMeshTest(unittest.TestCase):
             parent='SPT_HwColor')
 
         # set colors
-        MayaCmds.setAttr(shapeName+'.SPT_HwColor', 0.50, 0.15, 0.75,
+        MayaCmds.setAttr(shapeName + '.SPT_HwColor', 0.50, 0.15, 0.75,
             type='float3')
 
         MayaCmds.currentTime(1, update=True)
         MayaCmds.setKeyframe('polyShape.vtx[0:7]')
         # colors
-        MayaCmds.setKeyframe( shapeName+'.SPT_HwColor')
+        MayaCmds.setKeyframe(shapeName + '.SPT_HwColor')
 
         MayaCmds.currentTime(24, update=True)
         MayaCmds.setKeyframe('polyShape.vtx[0:7]')
         # colors
-        MayaCmds.setKeyframe( shapeName+'.SPT_HwColor')
+        MayaCmds.setKeyframe(shapeName + '.SPT_HwColor')
 
         MayaCmds.currentTime(12, update=True)
 
         vtx_11 = OpenMaya.MFloatPoint(-1.0, -1.0, -1.0)
-        vtx_22 = OpenMaya.MFloatPoint( 1.0, -1.0, -1.0)
-        vtx_33 = OpenMaya.MFloatPoint( 1.0, -1.0,  1.0)
-        vtx_44 = OpenMaya.MFloatPoint(-1.0, -1.0,  1.0)
-        vtx_55 = OpenMaya.MFloatPoint(-1.0,  1.0, -1.0)
-        vtx_66 = OpenMaya.MFloatPoint(-1.0,  1.0,  1.0)
-        vtx_77 = OpenMaya.MFloatPoint( 1.0,  1.0,  1.0)
-        vtx_88 = OpenMaya.MFloatPoint( 1.0,  1.0, -1.0)
+        vtx_22 = OpenMaya.MFloatPoint(1.0, -1.0, -1.0)
+        vtx_33 = OpenMaya.MFloatPoint(1.0, -1.0, 1.0)
+        vtx_44 = OpenMaya.MFloatPoint(-1.0, -1.0, 1.0)
+        vtx_55 = OpenMaya.MFloatPoint(-1.0, 1.0, -1.0)
+        vtx_66 = OpenMaya.MFloatPoint(-1.0, 1.0, 1.0)
+        vtx_77 = OpenMaya.MFloatPoint(1.0, 1.0, 1.0)
+        vtx_88 = OpenMaya.MFloatPoint(1.0, 1.0, -1.0)
         points.set(vtx_11, 0)
         points.set(vtx_22, 1)
         points.set(vtx_33, 2)
@@ -167,12 +168,12 @@ class AnimMeshTest(unittest.TestCase):
         points.set(vtx_88, 7)
         meshFn.setPoints(points)
 
-        MayaCmds.setAttr( shapeName+'.SPT_HwColor', 0.15, 0.5, 0.15,
+        MayaCmds.setAttr(shapeName + '.SPT_HwColor', 0.15, 0.5, 0.15,
             type='float3')
 
         MayaCmds.setKeyframe('polyShape.vtx[0:7]')
         # colors
-        MayaCmds.setKeyframe( shapeName+'.SPT_HwColor')
+        MayaCmds.setKeyframe(shapeName + '.SPT_HwColor')
 
         self.__files.append(util.expandFileName('animSPT_HwColor.abc'))
         self.__files.append(util.expandFileName('animSPT_HwColor_01_14.abc'))
@@ -191,30 +192,30 @@ class AnimMeshTest(unittest.TestCase):
         # check colors
 
         MayaCmds.currentTime(1, update=True)
-        colorVec_1 = MayaCmds.getAttr(shapeName+'.SPT_HwColor')[0]
+        colorVec_1 = MayaCmds.getAttr(shapeName + '.SPT_HwColor')[0]
         self.failUnlessAlmostEqual(colorVec_1[0], 0.50, places)
         self.failUnlessAlmostEqual(colorVec_1[1], 0.15, places)
         self.failUnlessAlmostEqual(colorVec_1[2], 0.75, places)
 
         MayaCmds.currentTime(2, update=True)
         # only needed for interpolation test on frame 1.422
-        colorVec_2 = MayaCmds.getAttr(shapeName+'.SPT_HwColor')[0]
+        colorVec_2 = MayaCmds.getAttr(shapeName + '.SPT_HwColor')[0]
 
         setTime = MayaCmds.currentTime(1.422, update=True)
         alpha = (setTime - 1) / (2 - 1)
-        colorVec = MayaCmds.getAttr(shapeName+'.SPT_HwColor')[0]
-        self.failUnlessAlmostEqual(colorVec[0], (1-alpha)*colorVec_1[0]+alpha*colorVec_2[0], places)
-        self.failUnlessAlmostEqual(colorVec[1], (1-alpha)*colorVec_1[1]+alpha*colorVec_2[1], places)
-        self.failUnlessAlmostEqual(colorVec[2], (1-alpha)*colorVec_1[2]+alpha*colorVec_2[2], places)
+        colorVec = MayaCmds.getAttr(shapeName + '.SPT_HwColor')[0]
+        self.failUnlessAlmostEqual(colorVec[0], (1 - alpha) * colorVec_1[0] + alpha * colorVec_2[0], places)
+        self.failUnlessAlmostEqual(colorVec[1], (1 - alpha) * colorVec_1[1] + alpha * colorVec_2[1], places)
+        self.failUnlessAlmostEqual(colorVec[2], (1 - alpha) * colorVec_1[2] + alpha * colorVec_2[2], places)
 
         MayaCmds.currentTime(12, update=True)
-        colorVec = MayaCmds.getAttr( shapeName+'.SPT_HwColor' )[0]
-        self.failUnlessAlmostEqual( colorVec[0], 0.15, places)
-        self.failUnlessAlmostEqual( colorVec[1], 0.50, places)
-        self.failUnlessAlmostEqual( colorVec[2], 0.15, places)
+        colorVec = MayaCmds.getAttr(shapeName + '.SPT_HwColor')[0]
+        self.failUnlessAlmostEqual(colorVec[0], 0.15, places)
+        self.failUnlessAlmostEqual(colorVec[1], 0.50, places)
+        self.failUnlessAlmostEqual(colorVec[2], 0.15, places)
 
         MayaCmds.currentTime(24, update=True)
-        colorVec = MayaCmds.getAttr(shapeName+'.SPT_HwColor')[0]
+        colorVec = MayaCmds.getAttr(shapeName + '.SPT_HwColor')[0]
         self.failUnlessAlmostEqual(colorVec[0], 0.50, places)
         self.failUnlessAlmostEqual(colorVec[1], 0.15, places)
         self.failUnlessAlmostEqual(colorVec[2], 0.75, places)

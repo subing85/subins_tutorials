@@ -3,10 +3,10 @@ import os
 import sys
 sys.path.append('/venture/subins_tutorials')
 
-
 from studioPipe import resources
 from studioPipe.api import studioPreferences
 reload(studioPreferences)
+
 
 class Connect(object):
     
@@ -28,7 +28,7 @@ class Connect(object):
     def find_exists(self):
         input_data = self.get_exists_output()        
         for k, v in input_data.items():
-            if k=='enable':
+            if k == 'enable':
                 continue            
             if k.upper() not in os.environ:
                 print k.upper(), 'not found'
@@ -39,10 +39,9 @@ class Connect(object):
     def set(self):
         input_data = self.get_exists_output()        
         for k, v in input_data.items():
-            if k=='enable':
+            if k == 'enable':
                 continue
             os.environ[k.upper()] = str(v)
-
             
 #===============================================================================
 # a = Connect()

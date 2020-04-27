@@ -1,4 +1,4 @@
-#-
+# -
 # ===========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -6,12 +6,13 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 # ===========================================================================
-#+
+# +
 
 import sys
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
 import maya.api.OpenMayaRender as omr
+
 
 def maya_useNewAPI():
 	"""
@@ -19,6 +20,7 @@ def maya_useNewAPI():
 	expects to be passed, objects created using the Maya Python API 2.0.
 	"""
 	pass
+
 
 kText = 0
 kLine = 1
@@ -29,33 +31,34 @@ kSphere = 5
 kCircle = 6
 kArc = 7
 
+
 class uiDrawManager(omui.MPxLocatorNode):
 	id = om.MTypeId(0x0008002A)
 	drawDbClassification = "drawdb/geometry/uiDrawManager"
 	drawRegistrantId = "uiDrawManagerPlugin"
 
-	## ui type attribute
+	# # ui type attribute
 	aUIType = None
 
-	## color
+	# # color
 	aPrimitiveColor = None
 	aPrimitiveTransparency = None
 
-	## line width and line style attributes
+	# # line width and line style attributes
 	aLineWidth = None
 	aLineStyle = None
 
-	## fill attribute
+	# # fill attribute
 	aIsFilled = None
 
-	## radius attribute
+	# # radius attribute
 	aRadius = None
 
-	## 2D attributes
+	# # 2D attributes
 	aDraw2D = None
 	aPosition = None
 
-	## Text attributes
+	# # Text attributes
 	aTextAlignment = None
 	eTextIncline = None
 	aTextWeight = None
@@ -68,25 +71,25 @@ class uiDrawManager(omui.MPxLocatorNode):
 	aTextFontSize = None
 	aFontFaceName = None
 
-	## point attributes
+	# # point attributes
 	aPointSize = None
 
-	## line attributes
+	# # line attributes
 	aLineStartPoint = None
 	aLineEndPoint = None
 
-	## rect attributes
+	# # rect attributes
 	aRectUp = None
 	aRectNormal = None
 	aRectScale = None
 
-	## quad attributes
+	# # quad attributes
 	aQuadVertex = [None, None, None, None]
 
-	## circle attributes
+	# # circle attributes
 	aCircleNormal = None
 
-	## arc attributes
+	# # arc attributes
 	aArcStart = None
 	aArcEnd = None
 	aArcNormal = None
@@ -106,7 +109,7 @@ class uiDrawManager(omui.MPxLocatorNode):
 		eAttr = om.MFnEnumAttribute()
 		typedAttr = om.MFnTypedAttribute()
 
-		## Add ui type attribute
+		# # Add ui type attribute
 		uiDrawManager.aUIType = eAttr.create("uiType", "ut", kText)
 		eAttr.addField("text", kText)
 		eAttr.addField("line", kLine)
@@ -118,19 +121,19 @@ class uiDrawManager(omui.MPxLocatorNode):
 		eAttr.addField("arc", kArc)
 		om.MPxNode.addAttribute(uiDrawManager.aUIType)
 
-		## Add color attribute
+		# # Add color attribute
 		uiDrawManager.aPrimitiveColor = nAttr.create("primitiveColor", "pc", om.MFnNumericData.k3Float)
 		nAttr.default = (1.0, 0.0, 0.0)
 		nAttr.usedAsColor = True
 		om.MPxNode.addAttribute(uiDrawManager.aPrimitiveColor)
 
-		## Add transparency attribute
+		# # Add transparency attribute
 		uiDrawManager.aPrimitiveTransparency = nAttr.create("primitiveTransparency", "pt", om.MFnNumericData.kFloat, 0.0)
 		nAttr.setSoftMin(0.0)
 		nAttr.setSoftMax(1.0)
 		om.MPxNode.addAttribute(uiDrawManager.aPrimitiveTransparency)
 
-		## add line width and line style attributes
+		# # add line width and line style attributes
 		uiDrawManager.aLineWidth = nAttr.create("lineWidth", "lw", om.MFnNumericData.kFloat, 2.0)
 		om.MPxNode.addAttribute(uiDrawManager.aLineWidth)
 
@@ -142,15 +145,15 @@ class uiDrawManager(omui.MPxLocatorNode):
 		eAttr.addField("dotted", omr.MUIDrawManager.kDotted)
 		om.MPxNode.addAttribute(uiDrawManager.aLineStyle)
 
-		## Add filled attribute
+		# # Add filled attribute
 		uiDrawManager.aIsFilled = nAttr.create("isFilled", "if", om.MFnNumericData.kBoolean, 0)
 		om.MPxNode.addAttribute(uiDrawManager.aIsFilled)
 
-		## Add radius attribute
+		# # Add radius attribute
 		uiDrawManager.aRadius = nAttr.create("radius", "ra", om.MFnNumericData.kDouble, 1.0)
 		om.MPxNode.addAttribute(uiDrawManager.aRadius)
 
-		## add 2D attributes
+		# # add 2D attributes
 		uiDrawManager.aDraw2D = nAttr.create("draw2D", "d2", om.MFnNumericData.kBoolean, 0)
 		om.MPxNode.addAttribute(uiDrawManager.aDraw2D)
 
@@ -158,7 +161,7 @@ class uiDrawManager(omui.MPxLocatorNode):
 		nAttr.default = (0.0, 0.0, 0.001)
 		om.MPxNode.addAttribute(uiDrawManager.aPosition)
 
-		## Add text attributes.
+		# # Add text attributes.
 		stringFn = om.MFnStringData()
 		defaultText = stringFn.create("uiDrawManager-Text")
 		uiDrawManager.aText = typedAttr.create("text", "t", om.MFnData.kString, defaultText)
@@ -221,11 +224,11 @@ class uiDrawManager(omui.MPxLocatorNode):
 		nAttr.setSoftMax(1.0)
 		om.MPxNode.addAttribute(uiDrawManager.aTextBoxTransparency)
 
-		## add point attributes
+		# # add point attributes
 		uiDrawManager.aPointSize = nAttr.create("pointSize", "ps", om.MFnNumericData.kFloat, 2.0)
 		om.MPxNode.addAttribute(uiDrawManager.aPointSize)
 
-		## add line attributes
+		# # add line attributes
 		uiDrawManager.aLineStartPoint = nAttr.create("lineStartPoint", "lsp", om.MFnNumericData.k3Double)
 		nAttr.default = (0.0, 0.0, 0.0)
 		om.MPxNode.addAttribute(uiDrawManager.aLineStartPoint)
@@ -234,7 +237,7 @@ class uiDrawManager(omui.MPxLocatorNode):
 		nAttr.default = (1.0, 1.0, 1.0)
 		om.MPxNode.addAttribute(uiDrawManager.aLineEndPoint)
 
-		## add rect attributes
+		# # add rect attributes
 		uiDrawManager.aRectUp = nAttr.create("rectUp", "ru", om.MFnNumericData.k3Double)
 		nAttr.default = (0.0, 1.0, 0.0)
 		om.MPxNode.addAttribute(uiDrawManager.aRectUp)
@@ -247,7 +250,7 @@ class uiDrawManager(omui.MPxLocatorNode):
 		nAttr.default = (1.0, 1.0)
 		om.MPxNode.addAttribute(uiDrawManager.aRectScale)
 
-		## add quad attributes
+		# # add quad attributes
 		defaultPosition = [ (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (0.0, 1.0, 0.0) ]
 		for i in range(4):
 			fullName = "quadVertex" + str(i)
@@ -256,12 +259,12 @@ class uiDrawManager(omui.MPxLocatorNode):
 			nAttr.default = defaultPosition[i]
 			om.MPxNode.addAttribute(uiDrawManager.aQuadVertex[i])
 
-		## add circle attributes
+		# # add circle attributes
 		uiDrawManager.aCircleNormal = nAttr.create("circleNormal", "cn", om.MFnNumericData.k3Double)
 		nAttr.default = (0.0, 0.0, 1.0)
 		om.MPxNode.addAttribute(uiDrawManager.aCircleNormal)
 
-		## add arc attributes
+		# # add arc attributes
 		uiDrawManager.aArcStart = nAttr.create("arcStartVector", "asv", om.MFnNumericData.k3Double)
 		nAttr.default = (1.0, 0.0, 0.0)
 		om.MPxNode.addAttribute(uiDrawManager.aArcStart)
@@ -277,10 +280,11 @@ class uiDrawManager(omui.MPxLocatorNode):
 
 ##---------------------------------------------------------------------------
 ##---------------------------------------------------------------------------
-## Viewport 2.0 override implementation
+# # Viewport 2.0 override implementation
 ##---------------------------------------------------------------------------
 ##---------------------------------------------------------------------------
 class uiDrawManagerData(om.MUserData):
+
 	def __init__(self):
 		om.MUserData.__init__(self, False)
 		self.fUIType = kText
@@ -323,6 +327,7 @@ class uiDrawManagerData(om.MUserData):
 
 ################################################################################################
 class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
+
 	def __init__(self, obj):
 		omr.MPxDrawOverride.__init__(self, obj, uiDrawManagerDrawOverride.draw)
 
@@ -352,42 +357,42 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 		if uiDrawManagerNode.isNull():
 			return
 
-		## retrieve uiType
+		# # retrieve uiType
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aUIType)
 		data.fUIType = plug.asShort()
 
-		## common attributes
-		## retrieve color
+		# # common attributes
+		# # retrieve color
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aPrimitiveColor)
 		o = plug.asMObject()
 		nData = om.MFnNumericData(o)
 		data.fColor = om.MColor(nData.getData())
 
-		## retrieve transparency
+		# # retrieve transparency
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aPrimitiveTransparency)
 		data.fColor.a = 1.0 - plug.asFloat()
 
-		## retrieve line width
+		# # retrieve line width
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aLineWidth)
 		data.fLineWidth = plug.asFloat()
 
-		## retrieve line style
+		# # retrieve line style
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aLineStyle)
 		data.fLineStyle = plug.asShort()
 
-		## retrieve filled flag
+		# # retrieve filled flag
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aIsFilled)
 		data.fIsFilled = plug.asBool()
 
-		## retrieve radius
+		# # retrieve radius
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aRadius)
 		data.fRadius = plug.asDouble()
 
-		## retrieve 2D flag
+		# # retrieve 2D flag
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aDraw2D)
 		data.fDraw2D = plug.asBool()
 
-		## retrieve screen position
+		# # retrieve screen position
 		plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aPosition)
 		o = plug.asMObject()
 		nData = om.MFnNumericData(o)
@@ -395,68 +400,68 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 		data.fPosition.w = 1.0
 
 		if data.fUIType == kText:
-			## retrieve text
+			# # retrieve text
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aText)
 			data.fText = plug.asString()
 
-			## retrieve text font size
+			# # retrieve text font size
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextFontSize)
 			data.fTextFontSize = max(plug.asInt(), 0)
 
-			## retrieve font face index
+			# # retrieve font face index
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aFontFaceName)
 			data.fFontFaceIndex = plug.asInt()
 
-			## retrieve text alignment
+			# # retrieve text alignment
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextAlignment)
 			data.fTextAlignment = plug.asShort()
 
-			## retrieve text incline
+			# # retrieve text incline
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.eTextIncline)
 			data.fTextIncline = plug.asInt()
 
-			## retrieve text weight
+			# # retrieve text weight
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextWeight)
 			data.fTextWeight = plug.asInt()
 
-			## retrieve text stretch
+			# # retrieve text stretch
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextStretch)
 			data.fTextStretch = plug.asInt()
 
-			## retrieve text line
+			# # retrieve text line
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextLine)
 			data.fTextLine = plug.asInt()
 
-			## retrieve text box size
+			# # retrieve text box size
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextBoxSize)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fTextBoxSize = nData.getData()
 
-			## retrieve text box color
+			# # retrieve text box color
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextBoxColor)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fTextBoxColor = om.MColor(nData.getData())
 
-			## retrieve text box transparency
+			# # retrieve text box transparency
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aTextBoxTransparency)
 			data.fTextBoxColor.a = 1.0 - plug.asFloat()
 
 		elif data.fUIType == kPoint:
-			## retrieve point size
+			# # retrieve point size
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aPointSize)
 			data.fPointSize = plug.asFloat()
 
 		elif data.fUIType == kLine:
-			## retrieve line start point
+			# # retrieve line start point
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aLineStartPoint)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fLineStartPoint = om.MPoint(nData.getData())
 			data.fLineStartPoint.w = 1.0
 
-			## retrieve line end point
+			# # retrieve line end point
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aLineEndPoint)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
@@ -464,26 +469,26 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			data.fLineEndPoint.w = 1.0
 
 		elif data.fUIType == kRect:
-			## retrieve rect up vector
+			# # retrieve rect up vector
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aRectUp)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fRectUp = om.MVector(nData.getData())
 
-			## retrieve rect normal vector
+			# # retrieve rect normal vector
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aRectNormal)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fRectNormal = om.MVector(nData.getData())
 
-			## retrieve rect scale
+			# # retrieve rect scale
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aRectScale)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fRectScale = nData.getData()
 
 		elif data.fUIType == kQuad:
-			## retrieve quad vertices
+			# # retrieve quad vertices
 			for i in range(4):
 				plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aQuadVertex[i])
 				o = plug.asMObject()
@@ -491,26 +496,26 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 				data.fQuadVertex[i] = om.MPoint(nData.getData())
 
 		elif data.fUIType == kCircle:
-			## retrieve circle normal
+			# # retrieve circle normal
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aCircleNormal)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fCircleNormal = om.MVector(nData.getData())
 
 		elif data.fUIType == kArc:
-			## retrieve arc start vector
+			# # retrieve arc start vector
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aArcStart)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fArcStart = om.MVector(nData.getData())
 
-			## retrieve arc end vector
+			# # retrieve arc end vector
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aArcEnd)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
 			data.fArcEnd = om.MVector(nData.getData())
 
-			## retrieve arc normal
+			# # retrieve arc normal
 			plug = om.MPlug(uiDrawManagerNode, uiDrawManager.aArcNormal)
 			o = plug.asMObject()
 			nData = om.MFnNumericData(o)
@@ -532,9 +537,9 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			return
 
 		if data.fUIType == kText:
-			## Draw a text "uiDrawManager"
-			## All drawing operations must take place between calls to beginDrawable()
-			## and endDrawable().
+			# # Draw a text "uiDrawManager"
+			# # All drawing operations must take place between calls to beginDrawable()
+			# # and endDrawable().
 			drawManager.beginDrawable()
 
 			drawManager.setColor(data.fColor)
@@ -552,12 +557,12 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 				boxSize = None
 
 			if data.fDraw2D:
-				## uiDrawManagerData::fPosition gives a screen space position
-				## where 2D UI item is located.
+				# # uiDrawManagerData::fPosition gives a screen space position
+				# # where 2D UI item is located.
 				drawManager.text2d(data.fPosition, data.fText, data.fTextAlignment, boxSize, data.fTextBoxColor, False)
 
 			else:
-				## for 3D items, place it at the origin of the world space.
+				# # for 3D items, place it at the origin of the world space.
 				drawManager.text(data.fPosition, data.fText, data.fTextAlignment, boxSize, data.fTextBoxColor, False)
 
 			drawManager.endDrawable()
@@ -599,13 +604,13 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			drawManager.setLineStyle(data.fLineStyle)
 
 			if data.fDraw2D:
-				## For 2d rectangle, an up vector in screen space is used to determine its X
-				## and Y directions. In addition, "fRectScale" (in pixels)
-				## specify the half-lengths of the 2d rectangle.
+				# # For 2d rectangle, an up vector in screen space is used to determine its X
+				# # and Y directions. In addition, "fRectScale" (in pixels)
+				# # specify the half-lengths of the 2d rectangle.
 				drawManager.rect2d(data.fPosition, data.fRectUp, data.fRectScale[0], data.fRectScale[1], data.fIsFilled)
 
 			else:
-				## For 3d rectangle, the up vector should not be parallel with the normal vector.
+				# # For 3d rectangle, the up vector should not be parallel with the normal vector.
 				drawManager.rect(data.fPosition, data.fRectUp, data.fRectNormal, data.fRectScale[0], data.fRectScale[1], data.fIsFilled)
 
 			drawManager.endDrawable()
@@ -618,12 +623,12 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			drawManager.setLineWidth(data.fLineWidth)
 			drawManager.setLineStyle(data.fLineStyle)
 
-			## prepare primitive type
+			# # prepare primitive type
 			mode = omr.MUIDrawManager.kClosedLine
 			if data.fIsFilled:
 				mode = omr.MUIDrawManager.kTriStrip
 
-			## prepare position list and index
+			# # prepare position list and index
 			position = om.MPointArray()
 			index = om.MUintArray()
 			for i in range(4):
@@ -633,7 +638,7 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			if not data.fIsFilled:
 				index = None
 
-			## draw mesh
+			# # draw mesh
 			if data.fDraw2D:
 				drawManager.mesh2d(mode, position, None, index)
 
@@ -661,7 +666,7 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			drawManager.setLineStyle(data.fLineStyle)
 
 			if data.fDraw2D:
-				## The radius in specified as pixel unit for 2d items.
+				# # The radius in specified as pixel unit for 2d items.
 				drawManager.circle2d(data.fPosition, data.fRadius, data.fIsFilled)
 
 			else:
@@ -677,13 +682,13 @@ class uiDrawManagerDrawOverride(omr.MPxDrawOverride):
 			drawManager.setLineStyle(data.fLineStyle)
 
 			if data.fDraw2D:
-				## If 2d, the range of the arc is defined by the start and end vectors
-				## specified in screen space.
+				# # If 2d, the range of the arc is defined by the start and end vectors
+				# # specified in screen space.
 				drawManager.arc2d(data.fPosition, data.fArcStart, data.fArcEnd, data.fRadius, data.fIsFilled)
 
 			else:
-				## For 3d arc, the projections of the start and end vectors onto the arc plane(
-				## determined by the normal vector) determine the range of the arc.
+				# # For 3d arc, the projections of the start and end vectors onto the arc plane(
+				# # determined by the normal vector) determine the range of the arc.
 				drawManager.arc(data.fPosition, data.fArcStart, data.fArcEnd, data.fArcNormal, data.fRadius, data.fIsFilled)
 
 			drawManager.endDrawable()
@@ -705,6 +710,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register override\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

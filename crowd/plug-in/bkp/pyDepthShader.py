@@ -1,4 +1,4 @@
-#-
+# -
 # ===========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -6,11 +6,12 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 # ===========================================================================
-#+
+# +
 
 from string import *
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaRender as omr
+
 
 def maya_useNewAPI():
 	"""
@@ -19,12 +20,13 @@ def maya_useNewAPI():
 	"""
 	pass
 
+
 ##################################################################
-## Plugin Depth Shader Class Declaration
+# # Plugin Depth Shader Class Declaration
 ##################################################################
 class depthShader(om.MPxNode):
 	# Id tag for use with binary file format
-	id = om.MTypeId( 0x81002 )
+	id = om.MTypeId(0x81002)
 
 	# Input attributes
 	aColorNear = None
@@ -51,15 +53,14 @@ class depthShader(om.MPxNode):
 		nAttr.storable = True
 		nAttr.readable = True
 		nAttr.writable = True
-		nAttr.default = (0.0, 1.0, 0.0)			# Green
-
+		nAttr.default = (0.0, 1.0, 0.0)  # Green
 
 		depthShader.aColorFar = nAttr.createColor("colorFar", "cf")
 		nAttr.keyable = True
 		nAttr.storable = True
 		nAttr.readable = True
 		nAttr.writable = True
-		nAttr.default = (0.0, 0.0, 1.0)			# Blue
+		nAttr.default = (0.0, 0.0, 1.0)  # Blue
 
 		depthShader.aNear = nAttr.create("near", "n", om.MFnNumericData.kFloat)
 		nAttr.keyable = True
@@ -111,34 +112,36 @@ class depthShader(om.MPxNode):
 	def compute(self, plug, block):
 		# outColor or individial R, G, B channel
 		if (plug != depthShader.aOutColor) and (plug.parent() != depthShader.aOutColor):
-			return None # let Maya handle this attribute
+			return None  # let Maya handle this attribute
 
 		# get sample surface shading parameters
-		pCamera   = block.inputValue(depthShader.aPointCamera).asFloatVector()
-		cNear     = block.inputValue(depthShader.aColorNear).asFloatVector()
-		cFar      = block.inputValue(depthShader.aColorFar).asFloatVector()
-		nearClip  = block.inputValue(depthShader.aNear).asFloat()
-		farClip   = block.inputValue(depthShader.aFar).asFloat()
+		pCamera = block.inputValue(depthShader.aPointCamera).asFloatVector()
+		cNear = block.inputValue(depthShader.aColorNear).asFloatVector()
+		cFar = block.inputValue(depthShader.aColorFar).asFloatVector()
+		nearClip = block.inputValue(depthShader.aNear).asFloat()
+		farClip = block.inputValue(depthShader.aFar).asFloat()
 
 		# pCamera.z is negative
 		ratio = 1.0
 		dist = farClip - nearClip
 		if dist != 0:
 			ratio = (farClip + pCamera.z) / dist
-		resultColor = cNear * ratio + cFar*(1.0 - ratio)
+		resultColor = cNear * ratio + cFar * (1.0 - ratio)
 
 		# set ouput color attribute
-		outColorHandle = block.outputValue( depthShader.aOutColor )
-		outColorHandle.setMFloatVector( resultColor )
+		outColorHandle = block.outputValue(depthShader.aOutColor)
+		outColorHandle.setMFloatVector(resultColor)
 		outColorHandle.setClean()
 
 	def postConstructor(self):
 		self.setMPSafe(True)
 
+
 ##################################################################
-## Plugin Depth Shader Override Class Declaration
+# # Plugin Depth Shader Override Class Declaration
 ##################################################################
 class depthShaderOverride(omr.MPxSurfaceShadingNodeOverride):
+
 	@staticmethod
 	def creator(obj):
 		return depthShaderOverride(obj)
@@ -150,7 +153,7 @@ class depthShaderOverride(omr.MPxSurfaceShadingNodeOverride):
 		fragmentMgr = omr.MRenderer.getFragmentManager()
 		if fragmentMgr != None:
 			if not fragmentMgr.hasFragment("depthShaderPluginFragment"):
-				fragmentBody  = "<fragment uiName=\"depthShaderPluginFragment\" name=\"depthShaderPluginFragment\" type=\"plumbing\" class=\"ShadeFragment\" version=\"1.0\">"
+				fragmentBody = "<fragment uiName=\"depthShaderPluginFragment\" name=\"depthShaderPluginFragment\" type=\"plumbing\" class=\"ShadeFragment\" version=\"1.0\">"
 				fragmentBody += "	<description><![CDATA[Depth shader fragment]]></description>"
 				fragmentBody += "	<properties>"
 				fragmentBody += "		<float name=\"depthValue\" />"
@@ -196,7 +199,7 @@ class depthShaderOverride(omr.MPxSurfaceShadingNodeOverride):
 				fragmentMgr.addShadeFragmentFromBuffer(fragmentBody, False)
 
 			if not fragmentMgr.hasFragment("depthShaderPluginInterpolantFragment"):
-				vertexFragmentBody  = "<fragment uiName=\"depthShaderPluginInterpolantFragment\" name=\"depthShaderPluginInterpolantFragment\" type=\"interpolant\" class=\"ShadeFragment\" version=\"1.0\">"
+				vertexFragmentBody = "<fragment uiName=\"depthShaderPluginInterpolantFragment\" name=\"depthShaderPluginInterpolantFragment\" type=\"interpolant\" class=\"ShadeFragment\" version=\"1.0\">"
 				vertexFragmentBody += "	<description><![CDATA[Depth shader vertex fragment]]></description>"
 				vertexFragmentBody += "	<properties>"
 				vertexFragmentBody += "		<float3 name=\"Pm\" semantic=\"Pm\" flags=\"varyingInputParam\" />"
@@ -252,7 +255,7 @@ class depthShaderOverride(omr.MPxSurfaceShadingNodeOverride):
 				fragmentMgr.addShadeFragmentFromBuffer(vertexFragmentBody, False)
 
 			if not fragmentMgr.hasFragment("depthShaderPluginGraph"):
-				fragmentGraphBody  = "<fragment_graph name=\"depthShaderPluginGraph\" ref=\"depthShaderPluginGraph\" class=\"FragmentGraph\" version=\"1.0\">"
+				fragmentGraphBody = "<fragment_graph name=\"depthShaderPluginGraph\" ref=\"depthShaderPluginGraph\" class=\"FragmentGraph\" version=\"1.0\">"
 				fragmentGraphBody += "	<fragments>"
 				fragmentGraphBody += "			<fragment_ref name=\"depthShaderPluginFragment\" ref=\"depthShaderPluginFragment\" />"
 				fragmentGraphBody += "			<fragment_ref name=\"depthShaderPluginInterpolantFragment\" ref=\"depthShaderPluginInterpolantFragment\" />"
@@ -287,10 +290,12 @@ class depthShaderOverride(omr.MPxSurfaceShadingNodeOverride):
 	def fragmentName(self):
 		return "depthShaderPluginGraph"
 
-##
-## Plugin setup
+
+# #
+# # Plugin setup
 #######################################################
 sRegistrantId = "depthShaderPlugin"
+
 
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "4.5", "Any")
@@ -307,6 +312,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register override\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

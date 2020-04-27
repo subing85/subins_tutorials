@@ -34,43 +34,44 @@
 #
 #-******************************************************************************
 
-
 from alembic.Abc import *
 from alembic.AbcCoreAbstract import *
 
 testList = []
 
+
 def testObjOut():
     """write a few oarchives to test layering on objects"""
 
     # writing the boring base
-    layerA = OArchive( 'layerObjA.abc' )
-    objAA = OObject( layerA.getTop(), "A" )
-    objAAA = OObject( objAA, "A" )
+    layerA = OArchive('layerObjA.abc')
+    objAA = OObject(layerA.getTop(), "A")
+    objAAA = OObject(objAA, "A")
 
-    objAB = OObject( layerA.getTop(), "B" )
-    objABA = OObject( objAB, "A" )
-    objABB = OObject( objAB, "B" )
+    objAB = OObject(layerA.getTop(), "B")
+    objABA = OObject(objAB, "A")
+    objABB = OObject(objAB, "B")
 
-    objAC = OObject( layerA.getTop(), "C" )
-    objACA = OObject( objAC, "A" )
-    objACB = OObject( objAC, "B" )
+    objAC = OObject(layerA.getTop(), "C")
+    objACA = OObject(objAC, "A")
+    objACB = OObject(objAC, "B")
 
     # writing the more exciting layer
-    layerB = OArchive( 'layerObjB.abc' )
-    objBA = OObject( layerB.getTop(), "A" )
-    objBAA = OObject( objBA, "A" )
-    objBAAB = OObject( objBAA, "B" )  # newly added
-    objBAB = OObject( objBA, "B" ) # newly added
+    layerB = OArchive('layerObjB.abc')
+    objBA = OObject(layerB.getTop(), "A")
+    objBAA = OObject(objBA, "A")
+    objBAAB = OObject(objBAA, "B")  # newly added
+    objBAB = OObject(objBA, "B")  # newly added
 
     md = MetaData()
     SetReplace(md, True)
-    objBB = OObject( layerB.getTop(), "B", md)
-    objBBC = OObject( objBB, "C" ) # with replace A and B will be gone
+    objBB = OObject(layerB.getTop(), "B", md)
+    objBBC = OObject(objBB, "C")  # with replace A and B will be gone
 
     md = MetaData()
     SetPrune(md, True)
-    objBC = OObject( layerB.getTop(), "C", md )
+    objBC = OObject(layerB.getTop(), "C", md)
+
 
 def testObjIn():
     """read the archives as layered to test layering on objects"""
@@ -94,37 +95,39 @@ def testObjIn():
     objB = IObject(obj, 'B')
     assert objB.getNumChildren() == 1 and IObject(objB, 'C').valid()
 
+
 def testPropOut():
     """write a few oarchives to test property layering"""
 
     # writing the boring base
-    layerA = OArchive( 'layerPropA.abc' )
-    propAA = OCompoundProperty( layerA.getTop().getProperties(), "A" )
-    propAAA = OCompoundProperty( propAA, "A" )
+    layerA = OArchive('layerPropA.abc')
+    propAA = OCompoundProperty(layerA.getTop().getProperties(), "A")
+    propAAA = OCompoundProperty(propAA, "A")
 
-    propAB = OCompoundProperty( layerA.getTop().getProperties(), "B" )
-    propABA = OCompoundProperty( propAB, "A" )
-    propABB = OCompoundProperty( propAB, "B" )
+    propAB = OCompoundProperty(layerA.getTop().getProperties(), "B")
+    propABA = OCompoundProperty(propAB, "A")
+    propABB = OCompoundProperty(propAB, "B")
 
-    propAC = OCompoundProperty( layerA.getTop().getProperties(), "C" )
-    propACA = OCompoundProperty( propAC, "A" )
-    propACB = OCompoundProperty( propAC, "B" )
+    propAC = OCompoundProperty(layerA.getTop().getProperties(), "C")
+    propACA = OCompoundProperty(propAC, "A")
+    propACB = OCompoundProperty(propAC, "B")
 
     # writing the more exciting layer
-    layerB = OArchive( 'layerPropB.abc' )
-    propBA = OCompoundProperty( layerB.getTop().getProperties(), "A" )
-    propBAA = OCompoundProperty( propBA, "A" )
-    propBAAB = OCompoundProperty( propBAA, "B" )  # newly added
-    propBAB = OCompoundProperty( propBA, "B" ) # newly added
+    layerB = OArchive('layerPropB.abc')
+    propBA = OCompoundProperty(layerB.getTop().getProperties(), "A")
+    propBAA = OCompoundProperty(propBA, "A")
+    propBAAB = OCompoundProperty(propBAA, "B")  # newly added
+    propBAB = OCompoundProperty(propBA, "B")  # newly added
 
     md = MetaData()
     SetReplace(md, True)
-    propBB = OCompoundProperty( layerB.getTop().getProperties(), "B", md)
-    propBBC = OCompoundProperty( propBB, "C" )
+    propBB = OCompoundProperty(layerB.getTop().getProperties(), "B", md)
+    propBBC = OCompoundProperty(propBB, "C")
 
     md = MetaData()
     SetPrune(md, True)
-    propBC = OCompoundProperty( layerB.getTop().getProperties(), "C", md )
+    propBC = OCompoundProperty(layerB.getTop().getProperties(), "C", md)
+
 
 def testPropIn():
     """read the archives as layered to test property layering"""
@@ -148,17 +151,21 @@ def testPropIn():
     propB = ICompoundProperty(prop, 'B')
     assert propB.getNumProperties() == 1 and ICompoundProperty(propB, 'C').valid()
 
+
 def testWrapObjLayering():
     testObjOut()
     testObjIn()
 
-testList.append( ( 'testWrapObjLayering', testWrapObjLayering ) )
+
+testList.append(('testWrapObjLayering', testWrapObjLayering))
+
 
 def testWrapPropLayering():
     testPropOut()
     testPropIn()
 
-testList.append( ( 'testWrapPropLayering', testWrapPropLayering ) )
+
+testList.append(('testWrapPropLayering', testWrapPropLayering))
 
 # -------------------------------------------------------------------------
 # Main loop

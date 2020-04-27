@@ -7,7 +7,6 @@ import warnings
 
 from pprint import pprint
 
-
 from studioPipe import resources
 from studioPipe.core import studioConfig
 from studioPipe.core import studioImage
@@ -46,13 +45,12 @@ class Connect(object):
         if 'tag' in kwargs:
             self.tag = kwargs['tag']
         if 'show' in kwargs:
-            self.name = '%s_%s'%(self.name, kwargs['show'])
+            self.name = '%s_%s' % (self.name, kwargs['show'])
             
         self.format = '.json'
         self.full_path = os.path.join(
             self.dirname, self.localhost, '%s%s' % (self.name, self.format))
         self.icon_format = '.png'
-
 
     #########################
     def has(self, discipline_name):
@@ -129,7 +127,7 @@ class Connect(object):
         if data:
             for index, content in data.items():
                 for k, v in content.items():  
-                    if show!=k:
+                    if show != k:
                         continue
                     exists_data = v
                     break
@@ -217,18 +215,10 @@ class Connect(object):
         if show not in shows:
             return None   
         return shows.index(show)
-        
-        
 
 #===============================================================================
 # a = Connect()
 # b = a.getSpecificTypes() 
 # pprint(b)
 #===============================================================================
-
-
-
-
-
-
 

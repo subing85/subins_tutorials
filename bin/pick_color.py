@@ -2,6 +2,7 @@ import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+
 class TREEWIDGET (QtGui.QWidget):
     
     def __init__(self):
@@ -16,7 +17,7 @@ class TREEWIDGET (QtGui.QWidget):
         self.button_color.setText ('Color')
         
         self.button_color.clicked.connect (self.color)
-        #self.button_color.clicked.connect (self.enable)
+        # self.button_color.clicked.connect (self.enable)
 
         self.lineEdit_qt = QtGui.QLineEdit(self)
         self.lineEdit_qt.setGeometry(QtCore.QRect(10, 40, 150, 25))        
@@ -25,19 +26,18 @@ class TREEWIDGET (QtGui.QWidget):
         self.lineEdit_rgb = QtGui.QLineEdit(self)
         self.lineEdit_rgb.setGeometry(QtCore.QRect(10, 70, 150, 25))        
         self.lineEdit_rgb.setObjectName ('lineEdit')
-                
 
         self.resize(180, 130)
-        #self.addItems () 
+        # self.addItems () 
         self.show()            
         
     def color (self) :
-        colorQt     = QtGui.QColorDialog.getColor ()
+        colorQt = QtGui.QColorDialog.getColor ()
         
         print colorQt.name()
-        #if colorQt.isvalid() :
-        if 1==1 :
-            rgb     = [colorQt.red (), colorQt.green (), colorQt.blue ()]            
+        # if colorQt.isvalid() :
+        if 1 == 1 :
+            rgb = [colorQt.red (), colorQt.green (), colorQt.blue ()]            
             print rgb, '\t', colorQt.name()
             
             self.lineEdit_qt.setText (str(colorQt.name()))
@@ -49,6 +49,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
     ex = TREEWIDGET()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Description: 
@@ -67,14 +67,14 @@
 #
 # Usage:
 #
-#	Run the script:
+# 	Run the script:
 #
-#	import maya
-#	maya.cmds.loadPlugin("customImagePlane.py")
-#	imageP = maya.cmds.createNode("spCustomImagePlane")
-#	maya.cmds.connectAttr( imageP + ".message", "perspShape.imagePlane[0]", force = True )
+# 	import maya
+# 	maya.cmds.loadPlugin("customImagePlane.py")
+# 	imageP = maya.cmds.createNode("spCustomImagePlane")
+# 	maya.cmds.connectAttr( imageP + ".message", "perspShape.imagePlane[0]", force = True )
 #
-#	Then assign an image to the customImagePlane node
+# 	Then assign an image to the customImagePlane node
 #
 
 import maya.OpenMaya as OpenMaya
@@ -83,6 +83,7 @@ import sys
 
 kPluginNodeTypeName = "spCustomImagePlane"
 kPluginNodeId = OpenMaya.MTypeId(0x87016)
+
 
 # Node definition
 class customImagePlane(OpenMayaMPx.MPxImagePlane):
@@ -95,20 +96,20 @@ class customImagePlane(OpenMayaMPx.MPxImagePlane):
 	def __init__(self):
 		OpenMayaMPx.MPxImagePlane.__init__(self)
 		
-	def getInternalValueInContext( self, plug, handle, context ):
+	def getInternalValueInContext(self, plug, handle, context):
 		if plug == self.aTransparency:
-			handle.setDouble( self.fTransparency )
+			handle.setDouble(self.fTransparency)
 			return True
 		
-		return OpenMayaMPx.MPxImagePlane.getInternalValueInContext( self, plug, handle, context )
+		return OpenMayaMPx.MPxImagePlane.getInternalValueInContext(self, plug, handle, context)
 	
-	def setInternalValueInContext( self, plug, handle, context ):
+	def setInternalValueInContext(self, plug, handle, context):
 		if plug == self.aTransparency:
 			self.fTransparency = handle.asDouble()
 			self.setImageDirty()
 			return True
 		
-		return OpenMayaMPx.MPxImagePlane.setInternalValueInContext( self, plug, handle, context )	
+		return OpenMayaMPx.MPxImagePlane.setInternalValueInContext(self, plug, handle, context)	
 		
 	def loadImageMap(self, fileName, frame, image):
 		try:	
@@ -120,7 +121,7 @@ class customImagePlane(OpenMayaMPx.MPxImagePlane):
 			widthPtr = widthUtil.asUintPtr()
 			heightUtil = OpenMaya.MScriptUtil(0)
 			heightPtr = heightUtil.asUintPtr()
-			image.getSize( widthPtr, heightPtr )
+			image.getSize(widthPtr, heightPtr)
 			
 			width = widthUtil.getUint(widthPtr)
 			height = heightUtil.getUint(heightPtr)		
@@ -128,40 +129,42 @@ class customImagePlane(OpenMayaMPx.MPxImagePlane):
 			
 			# Implement transparency
 			charPixelPtr = image.pixels()
-			for i in range( 0, size, 4 ):
-				alphaIndex = (i*4)+3
-				alpha = OpenMayaScript.getCharArrayItem(charPixelPtr,alphaIndex)
-				OpenMayaScript.setCharArray( alpha * (1.0 - self.fTransparency), alphaIndex )
+			for i in range(0, size, 4):
+				alphaIndex = (i * 4) + 3
+				alpha = OpenMayaScript.getCharArrayItem(charPixelPtr, alphaIndex)
+				OpenMayaScript.setCharArray(alpha * (1.0 - self.fTransparency), alphaIndex)
 			
 			# Implement use depth map
 			thisNode = self.thisMObject()
 			fnThisNode = OpenMaya.MFnDependencyNode(thisNode)
 			useDepthMap = fnThisNode.attribute("useDepthMap")
-			depthMap = OpenMaya.MPlug( thisNode, useDepthMap )
+			depthMap = OpenMaya.MPlug(thisNode, useDepthMap)
 			value = depthMap.asBool()
 			
 			if value:				
 				buffer = []			
 				c = 0
-				for i in range( 0, height ):
-					for j in range( 0, width ):
-						if i > height/2.0:
+				for i in range(0, height):
+					for j in range(0, width):
+						if i > height / 2.0:
 							buffer.insert(c, -1.0)
 						else:
 							buffer.insert(c, 0.0)
-						c+=1
+						c += 1
 						
 				depthMapArray = OpenMaya.MScriptUtil()
-				depthMapArray.createFromList( buffer )
+				depthMapArray.createFromList(buffer)
 				depthMapArrayFloatPtr = depthMapArray.asFloatPtr()
-				image.setDepthMap( depthMapArrayFloatPtr, width, height )
+				image.setDepthMap(depthMapArrayFloatPtr, width, height)
 				
 		except:
 			pass
+
 			
 # creator
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( customImagePlane() )
+	return OpenMayaMPx.asMPxPtr(customImagePlane())
+
 	
 # initializer
 def nodeInitializer():
@@ -176,14 +179,15 @@ def nodeInitializer():
 	nAttr.setKeyable(True)
 	
 	customImagePlane.addAttribute(customImagePlane.aTransparency)
+
 	
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject, "Autodesk", "1.0", "Any")
 	try:
-		mplugin.registerNode( kPluginNodeTypeName, kPluginNodeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kImagePlaneNode )
+		mplugin.registerNode(kPluginNodeTypeName, kPluginNodeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kImagePlaneNode)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise
 
 
@@ -191,7 +195,7 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( kPluginNodeId )
+		mplugin.deregisterNode(kPluginNodeId)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise

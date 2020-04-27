@@ -8,7 +8,6 @@ from crowd.api import crowdProxy
 reload(crowdAttributes)
 reload(crowdProxy)
 
-
 CROWD_ATTRIBUTES = crowdAttributes.Connect()
 CROWD_PROXY = crowdProxy.Connect()
 
@@ -35,7 +34,6 @@ def uninitializePlugin(mobject):  # uninitialize the script plug-in
     except:
         sys.stderr.write("Failed to deregister node: %s" % PLUGIN_CMD_NAME)
         raise
-
 
 #=========================================================================
 # PROXY_NODE = proxyNode.Connect()

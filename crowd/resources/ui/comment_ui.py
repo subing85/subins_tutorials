@@ -14,6 +14,7 @@ window.show()
 '''
 reload(crowdPublish)
 
+
 class Connect(QtGui.QWidget):
 
     def __init__(self, parent=None):

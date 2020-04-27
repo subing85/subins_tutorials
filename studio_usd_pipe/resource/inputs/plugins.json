@@ -10,7 +10,7 @@
     "enable": true,
    	"type": "plugins",
     "data": { 
-    	"plugins": [
+    	"maya": [
     		"mtoa",
 			"AbcExport",
 			"AbcImport",

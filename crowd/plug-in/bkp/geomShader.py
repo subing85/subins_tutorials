@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 import sys
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
@@ -43,7 +43,9 @@ kPluginNodeName = "spGeomShader"
 kPluginNodeClassify = "utility/color"
 kPluginNodeId = OpenMaya.MTypeId(0x8700E)
 
+
 class geomShader(OpenMayaMPx.MPxNode):
+
 	def __init__(self):
 		OpenMayaMPx.MPxNode.__init__(self)
 		aOutColor = OpenMaya.MObject()
@@ -53,17 +55,17 @@ class geomShader(OpenMayaMPx.MPxNode):
 
 	def compute(self, plug, block):
 		if plug == geomShader.aOutColor or plug.parent() == geomShader.aOutColor:
-			resultColor = OpenMaya.MFloatVector(0.0,0.0,0.0)
+			resultColor = OpenMaya.MFloatVector(0.0, 0.0, 0.0)
 			
-			point = block.inputValue( geomShader.aPoint ).asFloatVector()
-			scale = block.inputValue( geomShader.aScale ).asFloatVector()
-			offset = block.inputValue( geomShader.aOffset ).asFloatVector()
+			point = block.inputValue(geomShader.aPoint).asFloatVector()
+			scale = block.inputValue(geomShader.aScale).asFloatVector()
+			offset = block.inputValue(geomShader.aOffset).asFloatVector()
 
 			resultColor.x = point.x * scale.x + offset.x
 			resultColor.y = point.y * scale.y + offset.y
 			resultColor.x = point.z * scale.z + offset.z
 
-			outColorHandle = block.outputValue( geomShader.aOutColor )
+			outColorHandle = block.outputValue(geomShader.aOutColor)
 			outColorHandle.setMFloatVector(resultColor)
 			outColorHandle.setClean()
 		else:
@@ -71,7 +73,8 @@ class geomShader(OpenMayaMPx.MPxNode):
 
 
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( geomShader() )
+	return OpenMayaMPx.asMPxPtr(geomShader())
+
 
 def nodeInitializer():
 	nAttr = OpenMaya.MFnNumericAttribute()
@@ -126,18 +129,19 @@ def nodeInitializer():
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.registerNode( kPluginNodeName, kPluginNodeId, nodeCreator, 
-					nodeInitializer, OpenMayaMPx.MPxNode.kDependNode, kPluginNodeClassify )
+		mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator,
+					nodeInitializer, OpenMayaMPx.MPxNode.kDependNode, kPluginNodeClassify)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeName)
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( kPluginNodeId )
+		mplugin.deregisterNode(kPluginNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % kPluginNodeName )
+		sys.stderr.write("Failed to deregister node: %s" % kPluginNodeName)
 		raise
 	

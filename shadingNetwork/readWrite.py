@@ -14,19 +14,19 @@ Description
     input - update the "shadingEngineList" variable (line number 26, 27, 29).  
 '''
 
-#Read and write(export) the shader networks to custom data format
+# Read and write(export) the shader networks to custom data format
 import pymel.core as pm
 import json
 import pprint
 import os
 
-defaultShadingEngines = ['initialParticleSE',  'initialShadingGroup'] #default shading engines
+defaultShadingEngines = ['initialParticleSE', 'initialShadingGroup']  # default shading engines
 
-#write (export) multiple shader networks
-#shadingEngineList = ['Body_VRayMtlSG', ''Teeth_VRayMtol_ShaderSG']
+# write (export) multiple shader networks
+# shadingEngineList = ['Body_VRayMtlSG', ''Teeth_VRayMtol_ShaderSG']
 shadingEngineList = ['Body_VRayMtlSG']
-#write (export) all shader networks
-#shadingEngineList = pm.ls(type='shadingEngine')
+# write (export) all shader networks
+# shadingEngineList = pm.ls(type='shadingEngine')
 
 shaderNetworkData = {}
 
@@ -43,10 +43,10 @@ for eachShadingEngine in shadingEngineList:
     
     for eachNode in historyList:
                 
-        #get node a nd node type
+        # get node a nd node type
         nodes.setdefault(eachNode.name(), eachNode.type())
         
-        #get node attribute and attribute value        
+        # get node attribute and attribute value        
         attributeList = eachNode.listAttr(r=True, w=True, u=True, m=True, hd=True)
         attributeValue = {}      
         
@@ -54,21 +54,21 @@ for eachShadingEngine in shadingEngineList:
             continue
                   
         for eachAttribute in attributeList:
-            if eachAttribute.type()=='attributeAlias':
+            if eachAttribute.type() == 'attributeAlias':
                 continue
             
             currentValue = eachAttribute.get()  
                        
-            if currentValue==None:
+            if currentValue == None:
                 currentValue = 'None'
                 
-            if type(currentValue)==bool:
+            if type(currentValue) == bool:
                 currentValue = int(currentValue)
                                            
             attributeValue.setdefault(eachAttribute.name(), currentValue)                                    
         attributes.setdefault(eachNode.name(), attributeValue)
         
-        #get node connections 
+        # get node connections 
         connectionList = eachNode.listConnections(s=False, d=True, p=True)
         sourceConnections = {}         
         if not connectionList:
@@ -80,23 +80,23 @@ for eachShadingEngine in shadingEngineList:
             sourceConnections.setdefault(sourceAttribute[0].name(), []).append(eachConnection.name())      
         connections.setdefault(eachNode.name(), sourceConnections)
         
-    #get shader assign geometries
+    # get shader assign geometries
     geometryList = pyNode.attr('dagSetMembers').listConnections(s=True, d=False)    
     if geometryList:
         for eachGeometry in geometryList:
             geometries.append(eachGeometry.name())        
 
-    #Final data
+    # Final data
     networks = {}        
     networks['nodes'] = nodes
     networks['attributes'] = attributes
     networks['connections'] = connections
     networks['geometries'] = geometries
-    #pprint.pprint (networks)
+    # pprint.pprint (networks)
     
     shaderNetworkData.setdefault(pyNode.name(), networks)
 
-#write data
+# write data
 filePath = os.path.join(os.environ['temp'], 'myTestShader.shader')
 shaderData = open(filePath, 'w')
 jsonData = json.dumps(shaderNetworkData, indent=4)       

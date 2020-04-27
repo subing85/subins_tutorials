@@ -4,10 +4,11 @@ from pymel import core
 from crowd.core import generic
 from maya import OpenMaya
 
+
 def create_animation(inputs):
     skeleton_data = generic.get_root_children()
     skeletons = skeleton_data.keys() + skeleton_data.values()
-    bake = core.bakeResults(skeletons, sm=True, t=(1,16), sb=True,
+    bake = core.bakeResults(skeletons, sm=True, t=(1, 16), sb=True,
          osr=True)
     
     if not bake:

@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Creation Date:   3 October 2006
@@ -42,14 +42,14 @@
 # Example Plugin: torusField.py
 #
 #  Description
-#	The torusField node implements an attraction-and-repel field.
+# 	The torusField node implements an attraction-and-repel field.
 #
-#	The field repels all objects between itself and repelDistance attribute
-#	and attracts objects greater than attractDistance attribute from itself.  
-#	This will eventually result in the objects clustering
-#	in a torus shape around the field.
+# 	The field repels all objects between itself and repelDistance attribute
+# 	and attracts objects greater than attractDistance attribute from itself.  
+# 	This will eventually result in the objects clustering
+# 	in a torus shape around the field.
 #
-#	See torusFieldTest.py for usage
+# 	See torusFieldTest.py for usage
 #
 
 import math, sys
@@ -64,9 +64,10 @@ kPluginNodeId = OpenMaya.MTypeId(0x87008)
 glRenderer = OpenMayaRender.MHardwareRenderer.theRenderer()
 glFT = glRenderer.glFunctionTable()
 
+
 def statusError(msg):
 	sys.stderr.write("%s\n" % message)
-	raise	# called from exception handlers only, reraise exception
+	raise  # called from exception handlers only, reraise exception
 
 
 # Node definition
@@ -100,10 +101,8 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 	#
 	aSwarmPhase = OpenMaya.MObject()
 
-
 	def __init__(self):
 		OpenMayaMPx.MPxFieldNode.__init__(self)
-
 
 	def compute(self, plug, block):
 		"""
@@ -208,7 +207,6 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		hOut.setMObject(dOutputForce)
 		block.setClean(plug)
 
-
 	def draw (self, view, path, style, status):
 		"""
 		Draw a set of rings to symbolie the field. This does not override default icon, you can do that by implementing the iconBitmap() function
@@ -226,13 +224,12 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 			for i in range(EDGES):
 				glFT.glBegin(OpenMayaRender.MGL_LINE_STRIP)
 				p0 = TORUS_2PI * i / EDGES
-				p1 = TORUS_2PI * (i+1) / EDGES
+				p1 = TORUS_2PI * (i + 1) / EDGES
 				glFT.glVertex2f(math.cos(p0), math.sin(p0))
 				glFT.glVertex2f(math.cos(p1), math.sin(p1))
 				glFT.glEnd()
 			glFT.glPopMatrix()
 		view.endGL()
-
 
 	def getForceAtPoint(self, points, velocities, masses, forceArray, deltaTime):
 		"""
@@ -246,24 +243,21 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		else:
 			self.__applyNoMaxDist(block, points, velocities, masses, forceArray)
 
-
 	def iconSizeAndOrigin(self, width, height, xbo, ybo):
-		OpenMaya.MScriptUtil.setUint( width, 32 )
-		OpenMaya.MScriptUtil.setUint( height, 32 )
-		OpenMaya.MScriptUtil.setUint( xbo, 4 )
-		OpenMaya.MScriptUtil.setUint( ybo, 4 )
-
+		OpenMaya.MScriptUtil.setUint(width, 32)
+		OpenMaya.MScriptUtil.setUint(height, 32)
+		OpenMaya.MScriptUtil.setUint(xbo, 4)
+		OpenMaya.MScriptUtil.setUint(ybo, 4)
 
 	def iconBitmap(self, bitmap):
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 0, 0x18 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 4, 0x66 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 8, 0xC3 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 12, 0x81 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 16, 0x81 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 20, 0xC3 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 24, 0x66 )
-		OpenMaya.MScriptUtil.setUcharArray( bitmap, 28, 0x18 )
-
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 0, 0x18)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 4, 0x66)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 8, 0xC3)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 12, 0x81)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 16, 0x81)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 20, 0xC3)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 24, 0x66)
+		OpenMaya.MScriptUtil.setUcharArray(bitmap, 28, 0x18)
 
 	# methods to compute output force.
 	#
@@ -303,13 +297,13 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		# meaningful. No max distance and no attenuation.
 		#
 		for ptIndex in range(receptorSize):
-			forceV = OpenMaya.MVector(0.0,0.0,0.0)
+			forceV = OpenMaya.MVector(0.0, 0.0, 0.0)
 			receptorPoint = points[ptIndex]
 
 			# Apply from every field position to every receptor position.
 			#
 			distance = 0.0
-			for i in range(fieldPosCount-1, -1, -1):
+			for i in range(fieldPosCount - 1, -1, -1):
 				difference = receptorPoint - posArray[i]
 				distance = difference.length()
 
@@ -336,17 +330,17 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 
 					# Add swarm in here
 					#
-					for i in range(fieldPosCount-1, -1, -1):
+					for i in range(fieldPosCount - 1, -1, -1):
 						difference = receptorPoint - posArray[i]
 						difference = (difference + phase) * frequency
 
 						noiseEffect = [ difference[i] for i in range(3) ]
-						if( (noiseEffect[0] < -2147483647.0) or
-							(noiseEffect[0] >  2147483647.0) or
+						if((noiseEffect[0] < -2147483647.0) or
+							(noiseEffect[0] > 2147483647.0) or
 							(noiseEffect[1] < -2147483647.0) or
-							(noiseEffect[1] >  2147483647.0) or
+							(noiseEffect[1] > 2147483647.0) or
 							(noiseEffect[2] < -2147483647.0) or
-							(noiseEffect[2] >  2147483647.0) ):
+							(noiseEffect[2] > 2147483647.0)):
 							continue
 
 						noiseOut = self.__noiseFunction(noiseEffect)
@@ -356,7 +350,6 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 						forceV += swarmForce
 
 			outputForce.append(forceV)
-
 
 	def __applyMaxDist(self, block, points, velocities, masses, outputForce):
 		"""
@@ -396,17 +389,17 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 
 			# Apply from every field position to every receptor position.
 			#
-			forceV = OpenMaya.MVector(0,0,0)
-			sumForceV = OpenMaya.MVector(0,0,0)
-			for i in range(fieldPosCount-1, -1, -1):
-				difference = receptorPoint-posArray[i]
-				distance  = difference.length()
+			forceV = OpenMaya.MVector(0, 0, 0)
+			sumForceV = OpenMaya.MVector(0, 0, 0)
+			for i in range(fieldPosCount - 1, -1, -1):
+				difference = receptorPoint - posArray[i]
+				distance = difference.length()
 
 				if (distance < minDist or distance > maxDist):
 					continue
 
 				if attenValue > 0.0:
-					force = magValue * (math.pow((1.0-(distance/maxDist)),attenValue))
+					force = magValue * (math.pow((1.0 - (distance / maxDist)), attenValue))
 					forceV = difference * force
 				elif (distance <= repelDist):
 					forceV = difference * magValue
@@ -429,17 +422,17 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 
 						# Add swarm in here
 						#
-						for i in range(fieldPosCount-1, -1, -1):
+						for i in range(fieldPosCount - 1, -1, -1):
 							difference = receptorPoint - posArray[i]
 							difference = (difference + phase) * frequency
 
 							noiseEffect = [ difference[i] for i in range(3) ]
-							if( (noiseEffect[0] < -2147483647.0) or
-								(noiseEffect[0] >  2147483647.0) or
+							if((noiseEffect[0] < -2147483647.0) or
+								(noiseEffect[0] > 2147483647.0) or
 								(noiseEffect[1] < -2147483647.0) or
-								(noiseEffect[1] >  2147483647.0) or
+								(noiseEffect[1] > 2147483647.0) or
 								(noiseEffect[2] < -2147483647.0) or
-								(noiseEffect[2] >  2147483647.0) ):
+								(noiseEffect[2] > 2147483647.0)):
 								continue
 
 							noiseOut = self.__noiseFunction(noiseEffect)
@@ -449,11 +442,10 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 							forceV += swarmForce
 
 				if (maxDist > 0.0):
-					forceV *= self.falloffCurve(distance/maxDist)
+					forceV *= self.falloffCurve(distance / maxDist)
 				sumForceV += forceV
 
 			outputForce.append(sumForceV)
-
 
 	def __ownerPosition(self, block):
 		"""
@@ -499,7 +491,6 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 
 		return ownerPosArray
 
-
 	def __getWorldPosition(self):
 		thisNode = self.thisMObject()
 		fnThisNode = OpenMaya.MFnDependencyNode(thisNode)
@@ -535,26 +526,25 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		#
 		return OpenMaya.MVector(worldMatrix(3, 0), worldMatrix(3, 1), worldMatrix(3, 2))
 
-
 	def __noiseFunction(self, inNoise):
 		"""
 		A noise function
 		"""
 		# Shared data for noise computation
 		#
-		xlim = [ [0,0], [0,0], [0,0] ] # integer bound for point
-		xarg = [0.0, 0.0, 0.0 ] # fractional part
+		xlim = [ [0, 0], [0, 0], [0, 0] ]  # integer bound for point
+		xarg = [0.0, 0.0, 0.0 ]  # fractional part
 
 		# Helper functions to compute noise
 		#
-		rand3a = lambda x,y,z: frand(67*(x)+59*(y)+71*(z))
-		rand3b = lambda x,y,z: frand(73*(x)+79*(y)+83*(z))
-		rand3c = lambda x,y,z: frand(89*(x)+97*(y)+101*(z))
-		rand3d = lambda x,y,z: frand(103*(x)+107*(y)+109*(z))
+		rand3a = lambda x, y, z: frand(67 * (x) + 59 * (y) + 71 * (z))
+		rand3b = lambda x, y, z: frand(73 * (x) + 79 * (y) + 83 * (z))
+		rand3c = lambda x, y, z: frand(89 * (x) + 97 * (y) + 101 * (z))
+		rand3d = lambda x, y, z: frand(103 * (x) + 107 * (y) + 109 * (z))
 
 		def frand(s):
-			seed = s << 13^s
-			return (1.0 - ((s*(s*s*15731+789221)+1376312589) & 0x7fffffff)/1073741824.0)
+			seed = s << 13 ^ s
+			return (1.0 - ((s * (s * s * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0)
 
 		def hermite(p0, p1, r0, r1, t):
 			t2 = t * t
@@ -562,19 +552,19 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 			_3t2 = 3.0 * t2
 			_2t3 = 2.0 * t3 
 
-			return (p0*(_2t3-_3t2+1) + p1*(-_2t3+_3t2) + r0*(t3-2.0*t2+t) + r1*(t3-t2))
+			return (p0 * (_2t3 - _3t2 + 1) + p1 * (-_2t3 + _3t2) + r0 * (t3 - 2.0 * t2 + t) + r1 * (t3 - t2))
 
 		def interpolate(i, n):
 			f = [ 0.0, 0.0, 0.0, 0.0 ]
-			if n == 0: # at 0, return lattice value
-				f[0] = rand3a( xlim[0][i&1], xlim[1][i>>1&1], xlim[2][i>>2] )
-				f[1] = rand3b( xlim[0][i&1], xlim[1][i>>1&1], xlim[2][i>>2] )
-				f[2] = rand3c( xlim[0][i&1], xlim[1][i>>1&1], xlim[2][i>>2] )
-				f[3] = rand3d( xlim[0][i&1], xlim[1][i>>1&1], xlim[2][i>>2] )
+			if n == 0:  # at 0, return lattice value
+				f[0] = rand3a(xlim[0][i & 1], xlim[1][i >> 1 & 1], xlim[2][i >> 2])
+				f[1] = rand3b(xlim[0][i & 1], xlim[1][i >> 1 & 1], xlim[2][i >> 2])
+				f[2] = rand3c(xlim[0][i & 1], xlim[1][i >> 1 & 1], xlim[2][i >> 2])
+				f[3] = rand3d(xlim[0][i & 1], xlim[1][i >> 1 & 1], xlim[2][i >> 2])
 			else:
 				n -= 1
-				f0 = interpolate(i, n) # compute first half
-				f1 = interpolate(i | 1<<n, n) # compute second half
+				f0 = interpolate(i, n)  # compute first half
+				f1 = interpolate(i | 1 << n, n)  # compute second half
 
 				# use linear interpolation for slopes
 				f[0] = (1.0 - xarg[n]) * f0[0] + xarg[n] * f1[0]
@@ -599,7 +589,6 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 
 		return interpolate(0, 3)
 
-
 	# methods to get attribute value.
 	#
 	def __magnitudeValue(self, block):
@@ -607,30 +596,25 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		hValue = block.inputValue(magnitude)
 		return hValue.asDouble()
 
-
 	def __attenuationValue(self, block):
 		attenuation = OpenMayaMPx.cvar.MPxFieldNode_mAttenuation
 		hValue = block.inputValue(attenuation)
 		return hValue.asDouble()
-
 
 	def __maxDistanceValue(self, block):
 		maxDistance = OpenMayaMPx.cvar.MPxFieldNode_mMaxDistance
 		hValue = block.inputValue(maxDistance)
 		return hValue.asDouble()
 
-
 	def __useMaxDistanceValue(self, block):
 		useMaxDistance = OpenMayaMPx.cvar.MPxFieldNode_mUseMaxDistance
 		hValue = block.inputValue(useMaxDistance)
 		return hValue.asBool()
 
-
 	def __applyPerVertexValue(self, block):
 		applyPerVertex = OpenMayaMPx.cvar.MPxFieldNode_mApplyPerVertex
 		hValue = block.inputValue(applyPerVertex)
 		return hValue.asBool()
-
 
 	# methods to get attribute value of local attributes.
 	#
@@ -638,36 +622,29 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		hValue = block.inputValue(TorusField.aMinDistance)
 		return hValue.asDouble()
 
-
 	def __attractDistanceValue(self, block):
 		hValue = block.inputValue(TorusField.aAttractDistance)
 		return hValue.asDouble()
-
 
 	def __repelDistanceValue(self, block):
 		hValue = block.inputValue(TorusField.aRepelDistance)
 		return hValue.asDouble()
 
-
 	def __dragValue(self, block):
 		hValue = block.inputValue(TorusField.aDrag)
 		return hValue.asDouble()
-
 
 	def __swarmAmplitudeValue(self, block):
 		hValue = block.inputValue(TorusField.aSwarmAmplitude)
 		return hValue.asDouble()
 
-
 	def __swarmFrequencyValue(self, block):
 		hValue = block.inputValue(TorusField.aSwarmFrequency)
 		return hValue.asDouble()
 
-
 	def __swarmPhaseValue(self, block):
 		hValue = block.inputValue(TorusField.aSwarmPhase)
 		return hValue.asDouble()
-
 
 	def __ownerCentroidValue(self, block):
 		ownerCentroidX = OpenMayaMPx.cvar.MPxFieldNode_mOwnerCentroidX
@@ -679,7 +656,6 @@ class TorusField(OpenMayaMPx.MPxFieldNode):
 		return OpenMaya.MVector(hValueX.asDouble(),
 									hValueY.asDouble(),
 									hValueZ.asDouble())
-
 
 ############################################################################
 

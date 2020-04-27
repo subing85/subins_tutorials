@@ -39,11 +39,12 @@ from alembic.AbcCoreAbstract import *
 from alembic.Abc import *
 from alembic.Util import *
 
-def visitSmallArraySamples( iProp, iIndent ):
+
+def visitSmallArraySamples(iProp, iIndent):
     indent = " " * iIndent
 
-    for i, s in enumerate( iProp.arraySamples ):
-        print "%ssample %d:" % ( indent, i )
+    for i, s in enumerate(iProp.arraySamples):
+        print "%ssample %d:" % (indent, i)
         if s is None:
             print indent, "********** Got nothing **********"
         else:
@@ -52,21 +53,23 @@ def visitSmallArraySamples( iProp, iIndent ):
                 print j,
             print
 
-def visitScalarSamples( iProp, iIndent ):
+
+def visitScalarSamples(iProp, iIndent):
     indent = " " * iIndent
 
-    for i, s in enumerate( iProp.scalarSamples ):
-        print "%ssample %d:" % ( indent, i )
+    for i, s in enumerate(iProp.scalarSamples):
+        print "%ssample %d:" % (indent, i)
         if s is None:
             print indent, "********** Got nothing **********"
         else:
-            print "%s%s" % ( indent, s )
+            print "%s%s" % (indent, s)
 
-def visitArraySamples( iProp, iIndent ):
+
+def visitArraySamples(iProp, iIndent):
     indent = " " * iIndent
 
-    for i, s in enumerate( iProp.samples ):
-        print "%ssample %d:" % ( indent, i )
+    for i, s in enumerate(iProp.samples):
+        print "%ssample %d:" % (indent, i)
         if s is None:
             print indent, "********** Got nothing **********"
         else:
@@ -75,47 +78,50 @@ def visitArraySamples( iProp, iIndent ):
                 print j,
             print 
 
-def visitCompoundProperty( iProp, iIndent ):
+
+def visitCompoundProperty(iProp, iIndent):
     indent = " " * iIndent
     ptype = "CompoundProperty"
     name = "name=%s" % iProp.getName()
-    interp = "schema=%s" % iProp.getMetaData().get( "schema" )
+    interp = "schema=%s" % iProp.getMetaData().get("schema")
 
-    print "%s%s %s; %s" % ( indent, ptype, name, interp )
+    print "%s%s %s; %s" % (indent, ptype, name, interp)
 
-    visitProperties( iProp, iIndent+2 )
+    visitProperties(iProp, iIndent + 2)
 
-def visitSimpleProperty( iProp, iIndent ):
+
+def visitSimpleProperty(iProp, iIndent):
     indent = " " * iIndent
     ptype = "ScalarProperty" if iProp.isScalar() else "ArrayProperty"
     name = "name=%s" % iProp.getName()
-    md = "interpretation=%s" % iProp.getMetaData().get( "interpretation" )
+    md = "interpretation=%s" % iProp.getMetaData().get("interpretation")
     dtype = "datatype=%s" % iProp.getDataType()
-    numsamps = "numsamps=%s" %iProp.getNumSamples()
+    numsamps = "numsamps=%s" % iProp.getNumSamples()
 
-    print "%s%s %s; %s; %s; %s" % ( indent, ptype, name, md, dtype, numsamps )
+    print "%s%s %s; %s; %s; %s" % (indent, ptype, name, md, dtype, numsamps)
 
     if iProp.isScalar():
         if iProp.getDataType().getExtent() == 1:
-            visitScalarSamples( iProp, iIndent+2 )
-        elif len( iProp.getMetaData().get( "interpretation" ) ) > 0:
-            visitScalarSamples( iProp, iIndent+2 )
+            visitScalarSamples(iProp, iIndent + 2)
+        elif len(iProp.getMetaData().get("interpretation")) > 0:
+            visitScalarSamples(iProp, iIndent + 2)
         else:
-            visitSmallArraySamples( iProp, iIndent+2 )
+            visitSmallArraySamples(iProp, iIndent + 2)
     else:
-        visitArraySamples( iProp, iIndent+2 )
+        visitArraySamples(iProp, iIndent + 2)
 
 
-def visitProperties( iParent, iIndent ):
+def visitProperties(iParent, iIndent):
     for header in iParent.propertyheaders:
-        prop = iParent.getProperty( header.getName() )
+        prop = iParent.getProperty(header.getName())
 
         if header.isCompound():
-            visitCompoundProperty( prop, iIndent+2 )
+            visitCompoundProperty(prop, iIndent + 2)
         elif header.isScalar() or header.isArray():
-            visitSimpleProperty( prop, iIndent+2 )
+            visitSimpleProperty(prop, iIndent + 2)
 
-def visitObject( iObj, iIndent = 0 ):
+
+def visitObject(iObj, iIndent=0):
 
     path = iObj;
     indent = " " * iIndent
@@ -124,21 +130,22 @@ def visitObject( iObj, iIndent = 0 ):
 
     if path != "/":
         iIndent += 2
-        print "%s%s %s" % ( indent, ptype, name )
+        print "%s%s %s" % (indent, ptype, name)
 
-    visitProperties( iObj.getProperties(), iIndent )
+    visitProperties(iObj.getProperties(), iIndent)
 
     for child in iObj.children:
-        visitObject( child, iIndent )
+        visitObject(child, iIndent)
 
-def visitArchive( iArg ):
-    iArchive = IArchive( iArg )
+
+def visitArchive(iArg):
+    iArchive = IArchive(iArg)
 
     print "AbcEcho for %s" % GetLibraryVersion()
 
-    info = GetArchiveInfo ( iArchive )
+    info = GetArchiveInfo (iArchive)
 
-    if len( info['appName'] ) > 0:
+    if len(info['appName']) > 0:
         print "  file written by : %s" % info['appName']
         print "  using Alembic : %s" % info['libraryVersionString']
         print "  written on : %s" % info['whenWritten']
@@ -149,7 +156,7 @@ def visitArchive( iArg ):
         print "  (file doesn't have any ArchiveInfo)"
         print
 
-    visitObject( iArchive.getTop() )
+    visitObject(iArchive.getTop())
 
 
-map( visitArchive, [ a for a in sys.argv[1:] ] )
+map(visitArchive, [ a for a in sys.argv[1:] ])

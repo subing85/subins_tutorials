@@ -13,7 +13,6 @@ Description
     to create preview movie of the sccene
 '''
 
-
 import os
 import shutil
 import tempfile
@@ -77,7 +76,7 @@ def get_render_parameters(render_engine, width, height, start, end):
             'motionBlur': True,
             'motionBlurByFrame': 1,
             'motionBlurUseShutter': False,
-            'motionBlurShutterOpen': -0.5,
+            'motionBlurShutterOpen':-0.5,
             'motionBlurShutterClose': 0.5,
             'smoothColor': False,
             'tileWidth': 64,
@@ -377,7 +376,7 @@ def create(engine, render_camera, width, height, output, light):
     current_camera = get_camera(render_camera)
     set_camera(current_camera)
     movie = batch_render(output)
-    print "\nhttp://www.subins-toolkits.com", '\n', '-'*41     
+    print "\nhttp://www.subins-toolkits.com", '\n', '-' * 41     
     print '\nMovie path: ', movie
     return movie
 

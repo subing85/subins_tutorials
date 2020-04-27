@@ -24,6 +24,7 @@ def get_filepath_name(file_dir=None, filename=DEFAULT_OUT_FILENAME):
 
 
 class MayaAbcExporter(object):
+
     def __init__(self):
         super(MayaAbcExporter, self).__init__()
 
@@ -54,7 +55,7 @@ class MayaAbcExporter(object):
 
     def export_selected_mesh(self):
         sels = get_selected_obj_names()
-        if len(sels)>1 or not sels:
+        if len(sels) > 1 or not sels:
             print 'please select one mesh.'
             return
         all_dagpaths = get_dag_path_list(obj_name=sels[0])

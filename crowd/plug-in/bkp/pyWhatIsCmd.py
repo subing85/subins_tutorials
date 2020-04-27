@@ -10,6 +10,7 @@ maya.cmds.pyWhatIs()
 import sys
 import maya.api.OpenMaya as om
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
@@ -42,7 +43,7 @@ class PyWhatIsCmd(om.MPxCommand):
 
 			print "Name: %s" % depFn.name()
 			print "Type: %s" % node.apiTypeStr
-			sys.stdout.write( "Function Sets: " )
+			sys.stdout.write("Function Sets: ")
 			sys.stdout.write(", ".join(types) + '\n')
 
 
@@ -59,6 +60,7 @@ def initializePlugin(plugin):
 		)
 		raise
 
+
 # Uninitialize the script plug-in
 def uninitializePlugin(plugin):
 	pluginFn = om.MFnPlugin(plugin)
@@ -70,7 +72,7 @@ def uninitializePlugin(plugin):
 		)
 		raise
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All
 # rights reserved.
@@ -106,4 +108,4 @@ def uninitializePlugin(plugin):
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +

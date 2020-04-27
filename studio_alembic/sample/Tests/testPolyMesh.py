@@ -44,34 +44,36 @@ testList = []
 
 kFacevaryingScope = GeometryScope.kFacevaryingScope
 
+
 def meshOut():
     """write an oarchive with a mesh in it"""
 
-    meshyObj = OPolyMesh( OArchive( 'polyMesh1.abc' ).getTop() , 'meshy' )
+    meshyObj = OPolyMesh(OArchive('polyMesh1.abc').getTop() , 'meshy')
     mesh = meshyObj.getSchema()
 
-    uvsamp = OV2fGeomParamSample( uvs, kFacevaryingScope )
-    nsamp  = ON3fGeomParamSample( normals, kFacevaryingScope )
-    mesh_samp = OPolyMeshSchemaSample( verts, indices, counts, uvsamp, nsamp )
+    uvsamp = OV2fGeomParamSample(uvs, kFacevaryingScope)
+    nsamp = ON3fGeomParamSample(normals, kFacevaryingScope)
+    mesh_samp = OPolyMeshSchemaSample(verts, indices, counts, uvsamp, nsamp)
 
     mesh.setUVSourceName("NienNunb")
 
     cbox = Box3d()
-    cbox.extendBy( V3d( 1.0, -1.0, 0.0 ) )
-    cbox.extendBy( V3d( -1.0, 1.0, 3.0 ) )
-    mesh.getChildBoundsProperty().setValue( cbox )
-    mesh.getChildBoundsProperty().setValue( cbox )
+    cbox.extendBy(V3d(1.0, -1.0, 0.0))
+    cbox.extendBy(V3d(-1.0, 1.0, 3.0))
+    mesh.getChildBoundsProperty().setValue(cbox)
+    mesh.getChildBoundsProperty().setValue(cbox)
 
-    mesh.set( mesh_samp )
-    mesh.set( mesh_samp )
+    mesh.set(mesh_samp)
+    mesh.set(mesh_samp)
+
 
 def meshIn():
     """read an iarchive with a mesh in it"""
 
-    geomBase = IGeomBaseObject( IArchive( 'polyMesh1.abc' ).getTop(), 'meshy' )
+    geomBase = IGeomBaseObject(IArchive('polyMesh1.abc').getTop(), 'meshy')
     assert geomBase.getSchema().getSelfBoundsProperty().valid()
 
-    meshyObj = IPolyMesh( IArchive( 'polyMesh1.abc' ).getTop(), 'meshy' )
+    meshyObj = IPolyMesh(IArchive('polyMesh1.abc').getTop(), 'meshy')
     mesh = meshyObj.getSchema()
     N = mesh.getNormalsParam()
     uv = mesh.getUVsParam()
@@ -83,10 +85,10 @@ def meshIn():
     meshSamp = mesh.getValue()
     baseSamp = geomBase.getSchema().getValue()
 
-    assert meshSamp.getSelfBounds().min() == V3d( -1.0, -1.0, -1.0 )
-    assert meshSamp.getSelfBounds().max() == V3d(  1.0,  1.0,  1.0 )
-    assert baseSamp.getSelfBounds().min() == V3d( -1.0, -1.0, -1.0 )
-    assert baseSamp.getSelfBounds().max() == V3d(  1.0,  1.0,  1.0 )
+    assert meshSamp.getSelfBounds().min() == V3d(-1.0, -1.0, -1.0)
+    assert meshSamp.getSelfBounds().max() == V3d(1.0, 1.0, 1.0)
+    assert baseSamp.getSelfBounds().min() == V3d(-1.0, -1.0, -1.0)
+    assert baseSamp.getSelfBounds().max() == V3d(1.0, 1.0, 1.0)
 
     arbattrs = mesh.getArbGeomParams()
     assert not arbattrs
@@ -96,7 +98,7 @@ def meshIn():
     assert N.isConstant()
     assert uv.isConstant()
 
-    for i in range( len( nsp ) ):
+    for i in range(len(nsp)):
         assert nsp[i] == normals[i]
 
     uvsamp = uv.getIndexedValue()
@@ -104,37 +106,39 @@ def meshIn():
     assert uvsamp.getIndices()[1] == 1
     uv2 = uvsamp.getVals()[2]
 
-    assert uv2 == V2f( 1.0, 1.0 )
+    assert uv2 == V2f(1.0, 1.0)
 
     positions = meshSamp.getPositions()
-    for i in range( len( positions ) ):
+    for i in range(len(positions)):
         assert positions[i] == verts[i]
+
 
 def meshLayerOut():
     """write a boring oarchive with a mesh and an oarchive with just uvs"""
 
     # the boring one
-    meshyObj = OPolyMesh( OArchive( 'polyMeshLayerA.abc' ).getTop() , 'meshy' )
+    meshyObj = OPolyMesh(OArchive('polyMeshLayerA.abc').getTop() , 'meshy')
     mesh = meshyObj.getSchema()
 
-    mesh_samp = OPolyMeshSchemaSample( verts, indices, counts )
-    mesh.set( mesh_samp )
+    mesh_samp = OPolyMeshSchemaSample(verts, indices, counts)
+    mesh.set(mesh_samp)
 
     # now just the UVs
-    rootB = OArchive( 'polyMeshLayerB.abc' ).getTop()
-    meshyObjB = OPolyMesh( rootB, 'meshy', SparseFlag.kSparse )
+    rootB = OArchive('polyMeshLayerB.abc').getTop()
+    meshyObjB = OPolyMesh(rootB, 'meshy', SparseFlag.kSparse)
     mesh = meshyObjB.getSchema()
 
     mesh_samp = OPolyMeshSchemaSample()
-    uvsamp = OV2fGeomParamSample( uvs, kFacevaryingScope )
-    mesh_samp.setUVs( uvsamp )
-    mesh.set( mesh_samp )
+    uvsamp = OV2fGeomParamSample(uvs, kFacevaryingScope)
+    mesh_samp.setUVs(uvsamp)
+    mesh.set(mesh_samp)
+
 
 def meshLayerIn():
     """read the mesh layering the uvs on top"""
 
     layers = ['polyMeshLayerA.abc', 'polyMeshLayerB.abc']
-    meshyObj = IPolyMesh( IArchive( layers ).getTop(), 'meshy' )
+    meshyObj = IPolyMesh(IArchive(layers).getTop(), 'meshy')
     mesh = meshyObj.getSchema()
 
     uv = mesh.getUVsParam()
@@ -147,20 +151,24 @@ def meshLayerIn():
     meshSamp = mesh.getValue()
 
     positions = meshSamp.getPositions()
-    for i in range( len( positions ) ):
+    for i in range(len(positions)):
         assert positions[i] == verts[i]
+
 
 def testPolyMeshBinding():
     meshOut()
     meshIn()
 
-testList.append( ( 'testPolyMeshBinding', testPolyMeshBinding ) )
+
+testList.append(('testPolyMeshBinding', testPolyMeshBinding))
+
 
 def testPolyMeshLayering():
     meshLayerOut()
     meshLayerIn()
 
-testList.append( ( 'testPolyMeshLayering', testPolyMeshLayering ) )
+
+testList.append(('testPolyMeshLayering', testPolyMeshLayering))
 
 # -------------------------------------------------------------------------
 # Main loop

@@ -22,6 +22,7 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'Clear all polygon uvs!...'
 SEPARATOR = True
 
+
 def execute():
     from pymel import core
     core.studioUV(cl=True, s='all')

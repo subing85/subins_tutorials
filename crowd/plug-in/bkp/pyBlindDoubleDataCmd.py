@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -7,12 +7,13 @@
 # or which otherwise accompanies this software in either electronic
 # or hard copy form.
 # ==========================================================================
-#+
+# +
 
 import sys
 import io
 import pickle
 import maya.api.OpenMaya as om
+
 
 def maya_useNewAPI():
 	"""
@@ -23,12 +24,12 @@ def maya_useNewAPI():
 
 
 ##############################################################################
-##
-## Proxy data class implementation
-##
+# #
+# # Proxy data class implementation
+# #
 ##############################################################################
 class blindDoubleData(om.MPxData):
-	s_id = om.MTypeId( 0x80003 )
+	s_id = om.MTypeId(0x80003)
 	s_name = "blindDoubleData"
 	fValue = 0
 
@@ -42,7 +43,7 @@ class blindDoubleData(om.MPxData):
 	def readASCII(self, args, lastParsedElement):
 		if len(args) > 0:
 			self.fValue = args.asDouble(lastParsedElement)
-			lastParsedElement = lastParsedElement+1
+			lastParsedElement = lastParsedElement + 1
 		return lastParsedElement
 
 	def readBinary(self, istream, length):
@@ -63,7 +64,7 @@ class blindDoubleData(om.MPxData):
 		rawData = io.BytesIO()
 		writer = pickle.Pickler(rawData)
 
-		writer.dump( self.fValue )
+		writer.dump(self.fValue)
 
 		ostream[:] = rawData.getvalue()
 
@@ -79,10 +80,11 @@ class blindDoubleData(om.MPxData):
 	def setValue(self, newValue):
 		self.fValue = newValue
 
+
 ##############################################################################
-##
-## Command class implementation
-##
+# #
+# # Command class implementation
+# #
 ##############################################################################
 class blindDoubleDataCmd(om.MPxCommand):
 	s_name = "blindDoubleData"
@@ -124,24 +126,24 @@ class blindDoubleDataCmd(om.MPxCommand):
 			#
 			fnAttr = om.MFnTypedAttribute()
 			briefName = "BDD"
-			newAttr = fnAttr.create( fullName, briefName, blindDoubleData.s_id )
+			newAttr = fnAttr.create(fullName, briefName, blindDoubleData.s_id)
 
 			# Now add the new attribute to the current dependency node
 			#
-			fnDN.addAttribute( newAttr )
+			fnDN.addAttribute(newAttr)
 
 			# Create a plug to set and retrive value off the node.
 			#
-			plug = om.MPlug( dependNode, newAttr )
+			plug = om.MPlug(dependNode, newAttr)
 
 			# Instantiate blindDoubleData and set its value.
 			#
 			newData = blindDoubleData()
-			newData.setValue( 3.2 )
+			newData.setValue(3.2)
 
 			# Set the value for the plug.
 			#
-			plug.setMPxData( newData )
+			plug.setMPxData(newData)
 
 			# Now try to retrieve the value off the plug as an MObject.
 			#
@@ -149,7 +151,7 @@ class blindDoubleDataCmd(om.MPxCommand):
 
 			# Convert the data back to MPxData.
 			#
-			pdFn = om.MFnPluginData( sData )
+			pdFn = om.MFnPluginData(sData)
 			data = pdFn.data()
 			assert(isinstance(data, blindDoubleData))
 
@@ -159,11 +161,12 @@ class blindDoubleDataCmd(om.MPxCommand):
 	def isUndoable(self):
 		return True
 
+
 ##############################################################################
-##
-## The following routines are used to register/unregister
-## the command we are creating within Maya
-##
+# #
+# # The following routines are used to register/unregister
+# # the command we are creating within Maya
+# #
 ##############################################################################
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "3.0", "Any")
@@ -178,6 +181,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register command\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

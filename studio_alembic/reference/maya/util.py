@@ -1,37 +1,37 @@
 ##-*****************************************************************************
-##
-## Copyright (c) 2009-2011,
-##  Sony Pictures Imageworks, Inc. and
-##  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
-##
-## All rights reserved.
-##
-## Redistribution and use in source and binary forms, with or without
-## modification, are permitted provided that the following conditions are
-## met:
-## *       Redistributions of source code must retain the above copyright
-## notice, this list of conditions and the following disclaimer.
-## *       Redistributions in binary form must reproduce the above
-## copyright notice, this list of conditions and the following disclaimer
-## in the documentation and/or other materials provided with the
-## distribution.
-## *       Neither the name of Sony Pictures Imageworks, nor
-## Industrial Light & Magic nor the names of their contributors may be used
-## to endorse or promote products derived from this software without specific
-## prior written permission.
-##
-## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-## A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-## OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-## SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-## LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-## DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-## THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-##
+# #
+# # Copyright (c) 2009-2011,
+# #  Sony Pictures Imageworks, Inc. and
+# #  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
+# #
+# # All rights reserved.
+# #
+# # Redistribution and use in source and binary forms, with or without
+# # modification, are permitted provided that the following conditions are
+# # met:
+# # *       Redistributions of source code must retain the above copyright
+# # notice, this list of conditions and the following disclaimer.
+# # *       Redistributions in binary form must reproduce the above
+# # copyright notice, this list of conditions and the following disclaimer
+# # in the documentation and/or other materials provided with the
+# # distribution.
+# # *       Neither the name of Sony Pictures Imageworks, nor
+# # Industrial Light & Magic nor the names of their contributors may be used
+# # to endorse or promote products derived from this software without specific
+# # prior written permission.
+# #
+# # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# # A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# # OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# # SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# # LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# # DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# #
 ##-*****************************************************************************
 
 from maya import cmds as MayaCmds
@@ -39,10 +39,12 @@ import maya.OpenMaya as OpenMaya
 import os
 import math
 
+
 # adds the current working directory so tools don't get confused about where we
 # are storing files
 def expandFileName(name):
     return os.getcwd() + os.path.sep + name
+
 
 # compare the two floating point values
 def floatDiff(val1, val2, tolerance):
@@ -51,13 +53,15 @@ def floatDiff(val1, val2, tolerance):
         return True
     return False
 
+
 # function that returns a node object given a name
 def getObjFromName(nodeName):
     selectionList = OpenMaya.MSelectionList()
-    selectionList.add( nodeName )
+    selectionList.add(nodeName)
     obj = OpenMaya.MObject()
     selectionList.getDependNode(0, obj)
     return obj
+
 
 # function that finds a plug given a node object and plug name
 def getPlugFromName(attrName, nodeObj):
@@ -65,6 +69,7 @@ def getPlugFromName(attrName, nodeObj):
     attrObj = fnDepNode.attribute(attrName)
     plug = OpenMaya.MPlug(nodeObj, attrObj)
     return plug
+
 
 # meaning of return value:
 #   0 if array1 = array2
@@ -84,6 +89,7 @@ def compareArray(array1, array2):
             return -1
     return 0
 
+
 # return True if the two point arrays are exactly the same
 def comparePointArray(array1, array2):
     len1 = array1.length()
@@ -95,8 +101,9 @@ def comparePointArray(array1, array2):
             return False
     return True
 
+
 # return True if the two meshes are identical
-def compareMesh( nodeName1, nodeName2 ):
+def compareMesh(nodeName1, nodeName2):
 
     # basic error checking
     obj1 = getObjFromName(nodeName1)
@@ -106,8 +113,8 @@ def compareMesh( nodeName1, nodeName2 ):
     if not obj2.hasFn(OpenMaya.MFn.kMesh):
         return False
 
-    polyIt1 = OpenMaya.MItMeshPolygon( obj1 )
-    polyIt2 = OpenMaya.MItMeshPolygon( obj2 )
+    polyIt1 = OpenMaya.MItMeshPolygon(obj1)
+    polyIt2 = OpenMaya.MItMeshPolygon(obj2)
 
     if polyIt1.count() != polyIt2.count():
         return False
@@ -120,7 +127,7 @@ def compareMesh( nodeName1, nodeName2 ):
     pointArray1 = OpenMaya.MPointArray()
     pointArray2 = OpenMaya.MPointArray()
 
-    while  polyIt1.isDone()==False and polyIt2.isDone()==False :
+    while  polyIt1.isDone() == False and polyIt2.isDone() == False :
 
         # compare vertex indices
         polyIt1.getVertices(vertices1)
@@ -131,7 +138,7 @@ def compareMesh( nodeName1, nodeName2 ):
         # compare vertex positions
         polyIt1.getPoints(pointArray1)
         polyIt2.getPoints(pointArray2)
-        if not comparePointArray( pointArray1, pointArray2 ):
+        if not comparePointArray(pointArray1, pointArray2):
             return False
 
         polyIt1.next()
@@ -141,6 +148,7 @@ def compareMesh( nodeName1, nodeName2 ):
         return True
 
     return False
+
 
 # return True if the two Nurbs Surfaces are identical
 def compareNurbsSurface(nodeName1, nodeName2):
@@ -202,10 +210,10 @@ def compareNurbsSurface(nodeName1, nodeName2):
     knotsV2 = OpenMaya.MDoubleArray()
     fn2.getKnotsInV(knotsV2)
 
-    if compareArray( knotsU1, knotsU2 ) != 0:
+    if compareArray(knotsU1, knotsU2) != 0:
         return False
 
-    if compareArray( knotsV1, knotsV2 ) != 0:
+    if compareArray(knotsV1, knotsV2) != 0:
         return False
 
     # trim curves
@@ -229,35 +237,35 @@ def compareLocator(nodeName1, nodeName2):
     if not obj2.hasFn(OpenMaya.MFn.kLocator):
         return False
 
-    if not floatDiff(MayaCmds.getAttr(nodeName1+'.localPositionX'),
-        MayaCmds.getAttr(nodeName2+'.localPositionX'), 4):
+    if not floatDiff(MayaCmds.getAttr(nodeName1 + '.localPositionX'),
+        MayaCmds.getAttr(nodeName2 + '.localPositionX'), 4):
         return False
 
-    if not floatDiff(MayaCmds.getAttr(nodeName1+'.localPositionY'),
-        MayaCmds.getAttr(nodeName2+'.localPositionY'), 4):
+    if not floatDiff(MayaCmds.getAttr(nodeName1 + '.localPositionY'),
+        MayaCmds.getAttr(nodeName2 + '.localPositionY'), 4):
         return False
 
-    if not floatDiff(MayaCmds.getAttr(nodeName1+'.localPositionZ'),
-        MayaCmds.getAttr(nodeName2+'.localPositionZ'), 4):
+    if not floatDiff(MayaCmds.getAttr(nodeName1 + '.localPositionZ'),
+        MayaCmds.getAttr(nodeName2 + '.localPositionZ'), 4):
         return False
 
-    if not floatDiff(MayaCmds.getAttr(nodeName1+'.localScaleX'),
-        MayaCmds.getAttr(nodeName2+'.localScaleX'), 4):
+    if not floatDiff(MayaCmds.getAttr(nodeName1 + '.localScaleX'),
+        MayaCmds.getAttr(nodeName2 + '.localScaleX'), 4):
         return False
 
-    if not floatDiff(MayaCmds.getAttr(nodeName1+'.localScaleY'),
-        MayaCmds.getAttr(nodeName2+'.localScaleY'), 4):
+    if not floatDiff(MayaCmds.getAttr(nodeName1 + '.localScaleY'),
+        MayaCmds.getAttr(nodeName2 + '.localScaleY'), 4):
         return False
 
-    if not floatDiff(MayaCmds.getAttr(nodeName1+'.localScaleZ'),
-        MayaCmds.getAttr(nodeName2+'.localScaleZ'), 4):
+    if not floatDiff(MayaCmds.getAttr(nodeName1 + '.localScaleZ'),
+        MayaCmds.getAttr(nodeName2 + '.localScaleZ'), 4):
         return False
 
     return True
 
 
 # return True if the two cameras are identical
-def compareCamera( nodeName1, nodeName2 ):
+def compareCamera(nodeName1, nodeName2):
 
     # basic error checking
     obj1 = getObjFromName(nodeName1)
@@ -268,8 +276,8 @@ def compareCamera( nodeName1, nodeName2 ):
     if not obj2.hasFn(OpenMaya.MFn.kCamera):
         return False
 
-    fn1 = OpenMaya.MFnCamera( obj1 )
-    fn2 = OpenMaya.MFnCamera( obj2 )
+    fn1 = OpenMaya.MFnCamera(obj1)
+    fn2 = OpenMaya.MFnCamera(obj2)
 
     if fn1.filmFit() != fn2.filmFit():
         print "differ in filmFit"
@@ -381,6 +389,7 @@ def compareCamera( nodeName1, nodeName2 ):
         return False
 
     return True
+
 
 # return True if the two Nurbs curves are identical
 def compareNurbsCurve(nodeName1, nodeName2):

@@ -21,6 +21,7 @@ from studio_alembic.core import fileIO
 
 reload(fileIO)
 
+
 class Connect(OpenMayaMPx.MPxCommand):
 
     k_plugin_name = 'studioAlembic'

@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 # import maya
 # maya.cmds.loadPlugin("yTwistNode.py")
@@ -60,22 +60,25 @@ else:
 	outputGeom = OpenMayaMPx.cvar.MPxGeometryFilter_outputGeom
 	envelope = OpenMayaMPx.cvar.MPxGeometryFilter_envelope
 
+
 # Node definition
 class yTwistNode(OpenMayaMPx.MPxDeformerNode):
 	# class variables
 	angle = OpenMaya.MObject()
+
 	# constructor
 	def __init__(self):
 		OpenMayaMPx.MPxDeformerNode.__init__(self)
+
 	# deform
-	def deform(self,dataBlock,geomIter,matrix,multiIndex):
+	def deform(self, dataBlock, geomIter, matrix, multiIndex):
 		#
 		# get the angle from the datablock
-		angleHandle = dataBlock.inputValue( self.angle )
+		angleHandle = dataBlock.inputValue(self.angle)
 		angleValue = angleHandle.asDouble()
 		#
 		# get the envelope
-		envelopeHandle = dataBlock.inputValue( envelope )
+		envelopeHandle = dataBlock.inputValue(envelope)
 		envelopeValue = envelopeHandle.asFloat()
 		#
 		# iterate over the object and change the angle
@@ -83,46 +86,49 @@ class yTwistNode(OpenMayaMPx.MPxDeformerNode):
 			point = geomIter.position()
 			ff = angleValue * point.y * envelopeValue
 			if ff != 0.0:
-				cct= math.cos(ff)
-				cst= math.sin(ff)
-				tt= point.x*cct-point.z*cst
-				point.z= point.x*cst + point.z*cct
-				point.x=tt
-			geomIter.setPosition( point )
+				cct = math.cos(ff)
+				cst = math.sin(ff)
+				tt = point.x * cct - point.z * cst
+				point.z = point.x * cst + point.z * cct
+				point.x = tt
+			geomIter.setPosition(point)
 			geomIter.next()
+
 				
 # creator
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( yTwistNode() )
+	return OpenMayaMPx.asMPxPtr(yTwistNode())
+
 
 # initializer
 def nodeInitializer():
 	# angle
 	nAttr = OpenMaya.MFnNumericAttribute()
-	yTwistNode.angle = nAttr.create( "angle", "fa", OpenMaya.MFnNumericData.kDouble, 0.0 )
-	#nAttr.setDefault(0.0)
+	yTwistNode.angle = nAttr.create("angle", "fa", OpenMaya.MFnNumericData.kDouble, 0.0)
+	# nAttr.setDefault(0.0)
 	nAttr.setKeyable(True)
 	# add attribute
 	try:
-		yTwistNode.addAttribute( yTwistNode.angle )
-		yTwistNode.attributeAffects( yTwistNode.angle, outputGeom )
+		yTwistNode.addAttribute(yTwistNode.angle)
+		yTwistNode.attributeAffects(yTwistNode.angle, outputGeom)
 	except:
-		sys.stderr.write( "Failed to create attributes of %s node\n", kPluginNodeTypeName )
+		sys.stderr.write("Failed to create attributes of %s node\n", kPluginNodeTypeName)
+
 	
 # initialize the script plug-in
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.registerNode( kPluginNodeTypeName, yTwistNodeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kDeformerNode )
+		mplugin.registerNode(kPluginNodeTypeName, yTwistNodeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kDeformerNode)
 	except:
-		sys.stderr.write( "Failed to register node: %s\n" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s\n" % kPluginNodeTypeName)
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( yTwistNodeId )
+		mplugin.deregisterNode(yTwistNodeId)
 	except:
-		sys.stderr.write( "Failed to unregister node: %s\n" % kPluginNodeTypeName )
-
+		sys.stderr.write("Failed to unregister node: %s\n" % kPluginNodeTypeName)
 	

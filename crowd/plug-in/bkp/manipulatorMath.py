@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,9 +34,10 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 import maya.OpenMaya as OpenMaya
+
 
 # 
 # simple plane math class
@@ -53,7 +54,7 @@ class planeMath:
 		c = 0
 		d = 0
 
-	def setPlane(self,pointOnPlane,normalToPlane):
+	def setPlane(self, pointOnPlane, normalToPlane):
 		_normalToPlane = normalToPlane
 		_normalToPlane.normalize()
 
@@ -61,22 +62,22 @@ class planeMath:
 		self.a = _normalToPlane.x
 		self.b = _normalToPlane.y
 		self.c = _normalToPlane.z
-		self.d = -(self.a*pointOnPlane.x + self.b*pointOnPlane.y + self.c*pointOnPlane.z)
+		self.d = -(self.a * pointOnPlane.x + self.b * pointOnPlane.y + self.c * pointOnPlane.z)
 
-	def intersect(self,linePoint,lineDirection):
+	def intersect(self, linePoint, lineDirection):
 		intersectionPoint = OpenMaya.MPoint()
-		denominator = self.a*lineDirection.x + self.b*lineDirection.y + self.c*lineDirection.z
+		denominator = self.a * lineDirection.x + self.b * lineDirection.y + self.c * lineDirection.z
 		# Verify that the vector and the plane are not parallel.
 		if denominator < .00001:
-			return (False,intersectionPoint)
+			return (False, intersectionPoint)
 
-		t = -(self.d + self.a*linePoint.x + self.b*linePoint.y + self.c*linePoint.z) / denominator
+		t = -(self.d + self.a * linePoint.x + self.b * linePoint.y + self.c * linePoint.z) / denominator
 
 		# Calculate the intersection point.
-		scaledLineDirection = OpenMaya.MVector(lineDirection.x*t,lineDirection.y*t,lineDirection.z*t)
+		scaledLineDirection = OpenMaya.MVector(lineDirection.x * t, lineDirection.y * t, lineDirection.z * t)
 		intersectionPoint = linePoint + scaledLineDirection
 
-		return (True,intersectionPoint)
+		return (True, intersectionPoint)
 
 
 #
@@ -87,31 +88,34 @@ class lineMath:
 	point = None
 	direction = None
 
-	def setLine(self,linePoint,lineDirection):
+	def setLine(self, linePoint, lineDirection):
 		self.point = linePoint
 		self.direction = lineDirection
 		self.direction.normalize()
 			
-	def closestPoint(self,toPoint):
-		t = self.direction * ( toPoint - self.point )
-		closest = self.point + ( self.direction * t )
-		return (True,closest)
+	def closestPoint(self, toPoint):
+		t = self.direction * (toPoint - self.point)
+		closest = self.point + (self.direction * t)
+		return (True, closest)
 		
 
 #
 # simple degree radian converted
 class degreeRadianConverter:
 	M_PI = 3.14159265358979323846
-	def degreesToRadians(self,degrees):
-		return degrees * ( self.M_PI / 180.0 )
-	def radiansToDegrees(self,radians):
-		return radians * ( 180.0  / self.M_PI)
+
+	def degreesToRadians(self, degrees):
+		return degrees * (self.M_PI / 180.0)
+
+	def radiansToDegrees(self, radians):
+		return radians * (180.0 / self.M_PI)
+
 
 #
 # utility function to return the
 # value which has the max abs
 # -10,3,4 returns -10
-def maxOfAbsThree(a,b,c):
+def maxOfAbsThree(a, b, c):
 	aa = abs(a)
 	ab = abs(b)
 	ac = abs(c)
@@ -121,29 +125,31 @@ def maxOfAbsThree(a,b,c):
 		return b
 	return c
 
+
 #
 # tests for the math classes
 #
 def testModule():
 	# degreeRadianConverter
 	drc = degreeRadianConverter()
-	r = drc.degreesToRadians( 45 )
-	print r, " ", r*4
+	r = drc.degreesToRadians(45)
+	print r, " ", r * 4
 
-	d = drc.radiansToDegrees( drc.M_PI/4.0 )
+	d = drc.radiansToDegrees(drc.M_PI / 4.0)
 	print d
 
 	# lineMath
 	lm = lineMath()
-	point = OpenMaya.MPoint(0,1,0)
-	direction = OpenMaya.MVector( 1,1,0)
-	lm.setLine( point, direction )
-	toPoint = OpenMaya.MPoint(3,0,0)
-	(worked,closestPoint) = lm.closestPoint(toPoint)
+	point = OpenMaya.MPoint(0, 1, 0)
+	direction = OpenMaya.MVector(1, 1, 0)
+	lm.setLine(point, direction)
+	toPoint = OpenMaya.MPoint(3, 0, 0)
+	(worked, closestPoint) = lm.closestPoint(toPoint)
 	if worked:
-		print "closest point to line: %g %g %g" % (closestPoint.x,closestPoint.y,closestPoint.z)
+		print "closest point to line: %g %g %g" % (closestPoint.x, closestPoint.y, closestPoint.z)
 	else:
 		print "Failed to find closest point to line"
+
 
 #
 # invoke test if  run from the 
@@ -151,6 +157,4 @@ def testModule():
 #
 if __name__ == "__main__":
 	testModule()
-
-
 

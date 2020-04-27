@@ -40,12 +40,14 @@ import traceback
 
 testList = []
 
+
 def archiveOut():
     """write out an archive with an object tree"""
 
     archive = alembic.Abc.OArchive("iterator.abc")
     childObj = alembic.Abc.OObject(archive.getTop(), "childObj")
-    grandChildObj = alembic.Abc.OObject(childObj, "grandChildObj" )
+    grandChildObj = alembic.Abc.OObject(childObj, "grandChildObj")
+
 
 def archiveIn():
     """read in archive with an object tree"""
@@ -58,9 +60,11 @@ def archiveIn():
 
     assert grandChildObject.getName() == "grandChildObj"
 
+
 def testIteratorBinding():
     archiveOut()
     archiveIn()
+
 
 testList.append(('testIteratorBinding', testIteratorBinding))
 

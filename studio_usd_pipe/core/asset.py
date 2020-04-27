@@ -1,509 +1,284 @@
-
 import os
 import copy
 import json
-import time
-import shutil
-import getpass
-import tempfile
+
+from datetime import datetime
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import mayapack
-from studio_usd_pipe.core import database
-from studio_usd_pipe.core import preferences
-
-reload(mayapack)
-reload(database)
+from studio_usd_pipe.core import common
 
 
-class Asset(object):
-    
-    def __init__(self, subfield=None):      
-        self.standalone = False
-        self.data = {}        
-        self.subfield = subfield        
-        self.width, self.height = 640, 400
-        self.entity = 'assets'         
-        self.temp_entity = 'studio_asset'      
-        self.asset_ids = [
-            'sentity',
-            'scaption',
-            'stype',
-            'stag',
-            'sversion',
-            'smodified',
-            'slocation',
-            'sdescription'
-            ]
+def get_root():
+    return 'asset'
 
-        self.mpack = mayapack.Pack()
-        self.set_inputs()
-        self.dbs = database.DataBase(self.entity)
-        
-    def get(self):
-        data = self.dbs.get()        
-        db_data = {}
-        for table, contents in data.items():    
-            keys = {
-                'tag': contents['tag'],
-                'caption': contents['caption'],
-                'user': contents['user'],
-                'date': contents['date'],
-                'location': contents['location'],
-                'type': contents['type']        
-                }
-            if contents['caption'] not in db_data:
-                db_data.setdefault(contents['caption'], {})
-            if contents['subfield'] not in db_data[contents['caption']]:
-                db_data[contents['caption']].setdefault(contents['subfield'], {}) 
-            db_data[contents['caption']][contents['subfield']].setdefault(
-                contents['version'], keys)
-        return db_data
-    
-    def get_subfields(self, caption):
-        data = self.get()
-        subfield_data = {}
-        for k, v in data.items():    
-            if k!=caption:
-                continue        
-            subfield_data.update(v)  
-        return subfield_data
-    
-    def get_version_data(self, caption, subfield):
-        data = self.get_subfields(caption)
-        version_data = {}
-        for k, v in data.items():    
-            if k!=subfield:
-                continue        
-            version_data.update(v)        
-        return version_data
 
-    def get_asset_data(self, caption, subfield, version):        
-        data = self.get_subfields(caption)
-        if subfield not in data:
-            raise ValueError(
-                'Not found <{}> in the database'.format(subfield))
-        if version not in data[subfield]:
-            raise ValueError(
-                'Not found <{} {}> in the database'.format(subfield, version))
-        return data[subfield][version]
-    
-    def get_asset_more_data(self, caption, subfield, version):
-        manifest_path = os.path.join(
-            self.show_path,
-            self.entity,
-            caption,
-            subfield,
-            version,
-            '{}.manifest'.format(caption)
-            )
-        data = resource.get_input_data(manifest_path)
-        sorted_data = copy.deepcopy(data)
-        extrude = ['caption', 'tag', 'user', 'date', 'location', 'type']
-        for each in data:
-            if each not in extrude:
-                continue
-            sorted_data.pop(each)
-        return sorted_data
+def get_world():
+    return 'world'
 
-    def set_inputs(self):
-        pref = preferences.Preferences()
-        self.input_data = pref.get()        
-        self.db_directory = self.input_data['database_directory']   
-        self.show_icon = self.input_data['show_icon']
-        self.mayapy = self.input_data['mayapy_directory']
-        self.show_path = self.input_data['show_directory']
-    
-    def pack(self, bundle):
+
+def check_model_hierarchy():
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    top_level_nodes = smaya.extract_top_transforms()    
+    if top_level_nodes.length() == 0:        
+        return False, [None], 'not found any transform nodes'    
+    elif top_level_nodes.length() > 1:
+        nodes = []
+        for x in range(top_level_nodes.length()):
+            nodes.append(top_level_nodes[x].fullPathName())                
+        return False, nodes, 'found more than one top level transform nodes'    
+    elif not smaya.object_exists(get_root()):
+        return False, [None], 'not found %s' % get_root()    
+    return True, [get_root()], 'suitable hierarchy'
+
+
+def create_model():        
         '''
-            import time
+        :example
             from studio_usd_pipe.core import asset
-            reload(asset)        
-            asset = asset.Asset(subfield='model')        
-            bundle = {
-                'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma',
-                'caption': 'batman',
-                'version': '0.0.0',
-                'thumbnail': '/local/references/images/btas_batmodel_03.jpg',
-                'type': 'interactive',
-                'tag': 'character',
-                'description': 'test publish',
-                'time_stamp': time.time()
-                }        
-            asset.pack(bundle)         
+            mpack.asset()      
         '''
-        print json.dumps(bundle, indent=4)
-        self.data = {}
-        self.source_maya = bundle['source_file']
-        self.caption = bundle['caption']
-        self.version = bundle['version'] 
-        self.thumbnail = None
-        if 'thumbnail' in bundle:
-            self.thumbnail = bundle['thumbnail']
-        self.type = bundle['type']
-        self.tag = bundle['tag']
-        self.description = bundle['description']   
-        self.time_stamp = bundle['time_stamp'] 
-        
-        self.publish_path = os.path.join(
-            self.show_path,
-            self.entity,
-            self.caption,
-            self.subfield,
-            self.version
-            )
-        
-        self.temp_pack_path = self.make_directory(
-            os.path.join(tempfile.gettempdir(), self.temp_entity))  
+        from maya import OpenMaya
+        from studio_usd_pipe.api import studioShader
+        from studio_usd_pipe.api import studioNurbscurve  
+        smaya = studioShader.Shader()  
+        scurve = studioNurbscurve.Nurbscurve() 
+        root = get_root()
+        world = get_world()             
+        # remove depend nodes
+        depend_nodes = smaya.extract_depend_nodes(default=False)
+        for x in range(depend_nodes.length()):
+            smaya.remove_node(depend_nodes[x]) 
+        smaya.remove_nodes(depend_nodes)                
+        # make model group             
+        mesh_mobjects = smaya.extract_transform_primitive(OpenMaya.MFn.kMesh, shape=False)
+        model_dag_node = smaya.create_group(root)        
+        # make geometry hierarchy  
+        for x in range (mesh_mobjects.length()):
+            smaya.set_locked(mesh_mobjects[x].node(), attributes=None, locked=False)
+            smaya.disconnect_chanelbox(mesh_mobjects[x].node())
+            smaya.set_parent(mesh_mobjects[x], model_dag_node.object())
+            # assigin default shader
+            smaya.assign_shading_engine(mesh_mobjects[x], shading_group=None)  
+        # remove unwanted dag nodes    
+        trans_dagpath_array = smaya.extract_top_transforms(default=False)
+        for x in range (trans_dagpath_array.length()):
+            if trans_dagpath_array[x].node() == model_dag_node.object():
+                continue                       
+            smaya.remove_node(trans_dagpath_array[x].node())
+        # smaya.remove_nodes(transform_mobjects)        
+        # reset transforms
+        for x in range (mesh_mobjects.length()):
+            smaya.delete_history(mesh_mobjects[x])
+            smaya.freeze_transformations(mesh_mobjects[x])
+            smaya.set_default_position(mesh_mobjects[x].node())
+        # create world control   
+        world_dependency_node = scurve.create_world(model_dag_node, parent=True) 
+        # set the name
+        model_dag_node.setName(root)
+        world_dependency_node.setName(world)
+        # create asset id
+        id_data = resource.getAssetIDData()                   
+        smaya.create_maya_ids(model_dag_node.object(), id_data)        
+        # OpenMaya.MGlobal.selectByName(model_dag_node.fullPathName())
+        OpenMaya.MGlobal.clearSelectionList()
+        smaya.set_perspective_view()
+        return True, [root], 're-generate hierarchy'
+
+   
+def removed_asset_ids():
+    from maya import OpenMaya
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    root = get_root()
+    mobject = smaya.get_mobject(root)        
+    id_data = resource.getAssetIDData()
+    removed_ids = smaya.removed_asset_ids(mobject, id_data=id_data)
+    if not removed_ids:
+        return True, [], 'asset ids are valid'
+    return False, removed_ids, 'asset ids are invalid'
+
+
+def create_maya_ids(**kwargs):
+    from studio_usd_pipe.api import studioMaya    
+    reload(studioMaya)
+    inputs = {    
+        'spipe': kwargs['pipe'],
+        'scaption': kwargs['caption'],
+        'ssubfield': kwargs['subfield'],
+        'stype': kwargs['type'],
+        'stag': kwargs['tag'],
+        'sdependency': kwargs['dependency'],
+        'sversion':kwargs['version'],
+        'smodified': kwargs['modified'],
+        'slocation':kwargs['location'],
+        'sdescription': kwargs['description'],
+        'suser': kwargs['user']
+        }
     
-        
-        if self.subfield == 'model':
-            self.make_maya_model(force=False)
-            self.make_thumbnail()            
-            self.make_studio_model()
-            self.make_model_usd()
-            self.make_maya()
-            self.make_manifest()
-            
-        if self.subfield == 'uv':
-            self.make_maya_model(force=False)
-            self.make_thumbnail()         
-            self.make_studio_uv()
-            self.make_uv_usd()
-            self.make_maya()
-            self.make_manifest()            
-            
-        if self.subfield == 'surface':
-            self.make_maya_model(force=False)
-            self.make_thumbnail()        
-            self.make_source_images()
-            self.make_studio_surface()            
-            self.make_surface_usd()
-            self.make_surface_maya()
-            self.make_manifest()            
-                     
-        if self.subfield == 'puppet':
-            self.make_maya_model(force=False)
-            self.make_thumbnail()
-            self.make_studio_puppet()
-            # self.make_source_images()                     
-            self.make_puppet_usd()            
-            self.make_maya()
-            self.make_manifest()
-            
-        for key in self.data:
-            if not self.data[key]:
-                continue       
-            for each in self.data[key]:
-                if not each:
-                    continue                
-                os.utime(each, (self.time_stamp, self.time_stamp))
+    id_data = resource.getAssetIDData()    
+    for k, v in inputs.items():
+        id_data[k]['value'] = v    
+    smaya = studioMaya.Maya()
+    root = get_root()
+    mobject = smaya.get_mobject(root) 
+    created_data = smaya.create_maya_ids(mobject, id_data)
+    result = []    
+    for k, v in created_data.items():
+        result.append([k.encode(), v.encode()])
+    return True, result
 
 
-    def release(self):  
-        result = self.move_to_publish()        
-        if not result:
-            return        
-        date = time.strftime('%Y/%d/%B - %I/%M/%S/%p', time.gmtime(self.time_stamp))
-        kwargs = {
-            'caption': {
-                'value': self.caption,
-                'order': 0
-                },
-            'version': {
-                'value': self.version,
-                'order': 1
-                },
-            'subfield': {
-                'value': self.subfield,
-                'order': 2
-                },
-            'type': {
-                'value': self.type,
-                'order': 3
-                },
-            'tag': {
-                'value': self.tag,
-                'order': 4
-                },
-            'date': {
-                'value': date,
-                'order': 5
-                },
-            'location': {
-                'value': self.publish_path,
-                'order': 6
-                }
-            } 
-        self.dbs.create(kwargs)
+def update_asset_ids(id_data=None):
+    from maya import OpenMaya
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    root = get_root()    
+    mobject = smaya.get_mobject(root) 
+    if not id_data:
+        id_data = resource.getAssetIDData()
+    smaya.update_asset_ids(mobject, id_data=id_data)
+    return True, [id_data.keys()], 'updated with valid asset ids'
+
+
+def get_asset_ids():
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    root = get_root()
+    if not smaya.object_exists(root):
+        return None
+    mobject = smaya.get_mobject(root)
+    id_data = smaya.get_maya_id_data(mobject, id_data=None)
+    return id_data
+
+
+def create_thumbnail(input_path, ouput_path):
+    from studio_usd_pipe.core import image    
+    thumbnail = image.image_resize(
+        input_path,
+        ouput_path,
+        1024,
+        1024,
+        )             
+    return thumbnail
+
+
+def create_studio_model(output_path):
+    from studio_usd_pipe.api import studioModel
+    from studio_usd_pipe.api import studioNurbscurve   
+    smodel = studioModel.Model()
+    scurve = studioNurbscurve.Nurbscurve()
+    root = get_root()   
+    mobject = smodel.get_mobject(root)
+    mesh_data = smodel.get_model_data(mobject)
+    curve_data = scurve.get_curve_data(mobject)
+    transform_data = smodel.get_transform_data(mobject)
+    final_data = {
+        'mesh': mesh_data,
+        'curve': curve_data,
+        'transform': transform_data
+        } 
+    with (open(output_path, 'w')) as content:
+        content.write(json.dumps(final_data, indent=4))
+    return output_path
+
+
+def create_model_usd(output_path):
+    from studio_usd_pipe.api import studioUsd
+    from studio_usd_pipe.api import studioModel
+    from studio_usd_pipe.api import studioNurbscurve
+    smodel = studioModel.Model()
+    scurve = studioNurbscurve.Nurbscurve()
+    root = get_root()    
+    mobject = smodel.get_mobject(root)
+    mesh_data = smodel.get_model_data(mobject)
+    curve_data = scurve.get_curve_data(mobject)
+    asset_ids = smodel.get_maya_id_data(mobject, id_data=None)
+    final_data = {
+        'mesh': mesh_data,
+        'curve': curve_data,
+        'asset_id': asset_ids
+        }        
+    susd = studioUsd.Susd(path=output_path)                
+    susd.create_model_usd(root, final_data)
+    return output_path    
+
     
-    def move_to_publish(self):   
-        temp_pack_path = os.path.join(
-            tempfile.gettempdir(), self.temp_entity)   
-        self.make_directory(self.publish_path)  
-        for key in self.data:
-            if not self.data[key]:
-                continue
-            for each in self.data[key]:
-                if not each:
-                    continue
-                path = each.replace(temp_pack_path, self.publish_path)
-                if os.path.isdir(each):
-                    if not os.path.isdir(path):
-                        os.makedirs(path)
-                        self.set_time_stamp(path)
-                if os.path.isfile(each):                 
-                    if not os.path.isdir(os.path.dirname(path)):
-                        os.makedirs(os.path.dirname(path))
-                    try:            
-                        shutil.copy2(each, path)
-                    except Exception as IOError:
-                        print IOError
-                        return False
-        return True
+def create_maya_scene(output_path):
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    root = get_root() 
+    smaya.export_selected(root, output_path, force=True)
+    return output_path
 
-    def make_maya_model(self, force=False):
-        '''
-            import time
-            from studio_usd_pipe.core import asset
-            reload(asset)        
-            asset = asset.Asset(subfield='model')        
-            bundle = {
-                'source_file': '/venture/shows/my_hero/dumps/batman_finB.ma',
-                'caption': 'batman',
-                'version': '0.0.0',
-                'thumbnail': '/local/references/images/btas_batmodel_03.jpg',
-                'type': 'interactive',
-                'tag': 'character',
-                'description': 'test publish',
-                'time_stamp': time.time()
-                }        
-            asset.make_maya_model(bundle)        
-        '''
-        inputs = {
-            self.asset_ids[0]: self.entity,
-            self.asset_ids[1]: self.caption,
-            self.asset_ids[2]: self.type,
-            self.asset_ids[3]: self.tag,
-            self.asset_ids[4]: self.version,
-            self.asset_ids[5]: self.time_stamp,
-            self.asset_ids[6]: self.publish_path,
-            self.asset_ids[7]: self.description,
-            'node': 'model',
-            'world': 'world'
-            }
-        self.mpack.create_model(inputs, force=force)  
+
+def create_asset_manifest(output_path, **kwargs):
+    final_data = {
+        "created_by": "subin gopi",
+        "author": "Subin. Gopi (subing85@gmail.com)",
+        "#copyright": "(c) 2019, Subin Gopi All rights reserved.",
+        "last_modified": kwargs['modified'],
+        "description": "publish asset manifest",
+        "warning": "# WARNING! All changes made in this file will be lost!",
+        "enable": True,
+        "type": "manifest",
+        'data': kwargs
+        }        
+    with (open(output_path, 'w')) as content:
+        content.write(json.dumps(final_data, indent=4))
+    return output_path
+
+
+def validate_uv_sets():
+    from maya import OpenMaya
+    from studio_usd_pipe.api import studioModel
+    reload(studioModel)
+    smodel = studioModel.Model()
+    root = get_root() 
+    mobject = smodel.get_mobject(root)
+    transform_mesh = smodel.extract_transform_primitive(
+        OpenMaya.MFn.kMesh, shape=True, parent_mobject=mobject)
+    data = {}
+    for x in range(transform_mesh.length()):
+        uvsets = smodel.get_uvsets(transform_mesh[x])        
+        for uvset in uvsets:
+            valid = smodel.has_valid_uvset(transform_mesh[x], uvset)
+            data.setdefault(valid, []).append(
+                [transform_mesh[x].fullPathName(), uvset])
+    if False in data:
+        return False, data[False], 'found in-valid uvsets'
+    return True, [None], 'all uv sets are valid'
+
+
+def create_studio_uv(output_path):
+    from studio_usd_pipe.api import studioModel
+    from studio_usd_pipe.api import studioNurbscurve  
+    smodel = studioModel.Model()
+    root = get_root()
+    mobject = smodel.get_mobject(root)
+    mesh_data = smodel.get_uv_data(mobject)
+    final_data = {
+        'mesh': mesh_data,
+        }      
+    with (open(output_path, 'w')) as content:
+        content.write(json.dumps(final_data, indent=4))
+    return output_path
+
+
+def create_uv_usd(output_path):
+    from studio_usd_pipe.api import studioUsd
+    from studio_usd_pipe.api import studioModel    
+    reload(studioModel)
+    smodel = studioModel.Model()
+    root = get_root()
+    mobject = smodel.get_mobject(root)    
+    mesh_data = smodel.get_uv_data(mobject)
+    asset_ids = smodel.get_maya_id_data(mobject, id_data=None)
+    final_data = {
+        'mesh': mesh_data,
+        'asset_id': asset_ids
+        }        
+    susd = studioUsd.Susd(path=output_path)                
+    susd.create_uv_usd(root, final_data)
+    return output_path
          
-    def make_thumbnail(self):
-        inputs = {
-            'standalone': self.standalone,
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'thumbnail': self.thumbnail,
-            'time_stamp': self.time_stamp,
-            'width': 768,
-            'height': 768,
-            'force': True
-            } 
-        thumbnail = self.mpack.create_thumbnail(inputs)
-        self.data['thumbnail'] = [thumbnail]    
-                         
-    def make_maya(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }        
-        maya_file = self.mpack.create_maya(inputs)
-        self.data['maya_file'] = [maya_file]
-        
-    def make_surface_maya(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }        
-        maya_file = self.mpack.create_surface_maya(inputs)
-        self.data['maya_file'] = [maya_file]        
-        
-        
-    def make_studio_model(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }       
-        studio_model = self.mpack.create_studio_model(inputs)
-        self.data['studio_model'] = [studio_model]    
- 
-    def make_studio_uv(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }       
-        studio_uv = self.mpack.create_studio_uv(inputs)
-        self.data['studio_uv'] = [studio_uv]
-        
-    
-    def make_studio_puppet(self):
-        self.data['studio_puppet'] = None
-                
-    def make_source_images(self): 
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'publish_directory': self.publish_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': False
-            }
-        souce_data, source_images = self.mpack.create_source_images(inputs)
-        self.data['source_image_data'] = [souce_data]
-        self.data['source_images'] = source_images
-        self.data['source_images_directory'] = [os.path.join(
-            self.temp_pack_path, 'source_images')]   
-                
-    def make_studio_surface(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }       
-        studio_surface = self.mpack.create_studio_surface(inputs)
-        self.data['studio_surface'] = [studio_surface]     
- 
-    def make_model_usd(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }
-        usd = self.mpack.create_model_usd(inputs, asset_ids=self.asset_ids)
-        self.data['usd_model'] = [usd]    
-        
-    def make_uv_usd(self):   
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }        
-        usd = self.mpack.create_uv_usd(inputs, asset_ids=self.asset_ids)
-        self.data['usd_uv'] = [usd]
-        
-    def make_surface_usd(self):
-        inputs = {
-            'node': 'model',
-            'output_directory': self.temp_pack_path,
-            'caption': self.caption,
-            'time_stamp': self.time_stamp,
-            'force': True
-            }        
-        usd = self.mpack.create_surface_usd(inputs, asset_ids=self.asset_ids)
-        self.data['usd_surface'] = [usd]
-        
-    def make_puppet_usd(self):
-        self.data['usd_puppet'] = None
-    
-    def make_manifest(self):
-        source_images = None
-        if 'source_images' in self.data:
-            source_images = self.data['source_images']
-        
-        maya_file, studio_format, usd, thumbnail = [None], [None], [None], [None]
-
-        if 'maya_file' in self.data:
-            maya_data = self.data['maya_file']
-            
-            if maya_data:
-                maya_dirname = os.path.basename(maya_data[0])
-                maya_file = [os.path.join(self.publish_path, maya_dirname)]
-            else:
-                maya_file = None
-            
-        if 'studio_%s' % self.subfield in self.data:
-            studio_data = self.data['studio_%s' % self.subfield]
-            if studio_data:
-                studio_dirname = os.path.basename(studio_data[0])
-                studio_format = [os.path.join(self.publish_path, studio_dirname)]
-            else:
-                studio_format = None
-        
-        if 'usd_%s' % self.subfield in self.data:
-            usd_data = self.data['usd_%s' % self.subfield]
-            if usd_data:
-                usd_dirname = os.path.basename(usd_data[0])
-                usd = [os.path.join(self.publish_path, usd_dirname)]
-            else:
-                usd = None
-            
-        if 'thumbnail' in self.data: 
-            thumbnail_data = self.data['thumbnail']
-            if thumbnail_data:
-                thumbnail_dirname = os.path.basename(thumbnail_data[0])
-                thumbnail = [os.path.join(self.publish_path, thumbnail_dirname)]
-            else:
-                thumbnail = None
-            
-                      
-        inputs = {
-            'output_directory': self.temp_pack_path,
-            'location': self.publish_path,
-            'caption': self.caption,
-            'version': self.version,
-            'type': self.type,
-            'tag': self.tag,
-            'description': self.description,
-            'time_stamp': self.time_stamp,
-            'source_file': self.source_maya,
-            'maya': maya_file,
-            'studio_format': studio_format,
-            'usd': usd,
-            'thumbnail': thumbnail,
-            'source_images': source_images,
-            'force': True
-            }
-        
-        print '#'*50
-        print json.dumps(inputs, indent=4)
-        print '#'*50
-        
-        mainfest = self.mpack.create_manifest(inputs)
-        self.data['mainfest'] = [mainfest]
-            
-    def make_directory(self, directory):
-        if os.path.isdir(directory):
-            self.reomve_dirname(directory)            
-        os.makedirs(directory, 0755)
-        self.set_time_stamp(directory)
-        return directory
-        
-    def reomve_dirname(self, dirname):
-        if not os.path.isdir(dirname):
-            return
-        os.chmod(dirname, 0777)
-        try:
-            shutil.rmtree(dirname)
-        except Exception as OSError:
-            print OSError
-
-    def set_time_stamp(self, path):
-        if not os.path.exists(path):
-            return
-        os.utime(path, (self.time_stamp, self.time_stamp)) 
-              
-

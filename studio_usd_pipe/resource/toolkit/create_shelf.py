@@ -6,5 +6,6 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'Open the asset USD with usd viewer!...'
 SEPARATOR = True
 
+
 def execute():
     return True

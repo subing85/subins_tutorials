@@ -45,23 +45,25 @@ testList = []
 kFacevaryingScope = GeometryScope.kFacevaryingScope
 kWrapExisting = WrapExistingFlag.kWrapExisting
 
+
 def testOut():
     """write an oarchive with some data in it"""
     
-    meshyObj = OPolyMesh( OArchive( 'wrapTest1.abc' ).getTop() , 'meshy' )
+    meshyObj = OPolyMesh(OArchive('wrapTest1.abc').getTop() , 'meshy')
     mesh = meshyObj.getSchema()
     
-    uvsamp = OV2fGeomParamSample( uvs, kFacevaryingScope ) 
-    nsamp  = ON3fGeomParamSample( normals, kFacevaryingScope )
-    mesh_samp = OPolyMeshSchemaSample( verts, indices, counts, uvsamp, nsamp )
+    uvsamp = OV2fGeomParamSample(uvs, kFacevaryingScope) 
+    nsamp = ON3fGeomParamSample(normals, kFacevaryingScope)
+    mesh_samp = OPolyMeshSchemaSample(verts, indices, counts, uvsamp, nsamp)
     
     cbox = Box3d()
-    cbox.extendBy( V3d( 1.0, -1.0, 0.0 ) )
-    cbox.extendBy( V3d( -1.0, 1.0, 3.0 ) )
+    cbox.extendBy(V3d(1.0, -1.0, 0.0))
+    cbox.extendBy(V3d(-1.0, 1.0, 3.0))
     
-    mesh.getChildBoundsProperty().setValue( cbox )
-    mesh.set( mesh_samp )
-    mesh.set( mesh_samp )
+    mesh.getChildBoundsProperty().setValue(cbox)
+    mesh.set(mesh_samp)
+    mesh.set(mesh_samp)
+
 
 def testIn():
     """read in an archive and try wrapping it as various objects"""
@@ -92,12 +94,14 @@ def testIn():
         mesh = IPolyMesh(arch.getTop(), kWrapExisting)
     except RuntimeError, e:
         pass
+
     
 def testWrapBinding():
     testOut()
     testIn()
 
-testList.append( ( 'testWrapBinding', testWrapBinding ) )
+
+testList.append(('testWrapBinding', testWrapBinding))
 
 # -------------------------------------------------------------------------
 # Main loop

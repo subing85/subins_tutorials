@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,13 +34,13 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # filmMoveManip.py
-#	Scripted plug-in that displays a manipulator that 
+# 	Scripted plug-in that displays a manipulator that 
 # 	modifies the film translate horizontal and vertical
-#	values. 
+# 	values. 
 #
 # To use this plug-in:
 # 1. execute the following Python:
@@ -80,25 +80,31 @@ filmMoveManipId = OpenMaya.MTypeId(0x8104B)
 contextCmdName = "spFilmMoveManipCtxCmd"
 nodeName = "spFilmMoveManip"
 
+
 # class that holds geometry points
 class manipulatorGeometry:
 	scale = 3
+
 	def horizontalStart(self):
-	        p = OpenMaya.MPoint(0,0,0) * self.scale
+	        p = OpenMaya.MPoint(0, 0, 0) * self.scale
 	        # print "hstart: %g %g %g" % (p.x,p.y,p.z)
 	        return p
+
 	def horizontalEnd(self):
-	        p = OpenMaya.MPoint(1,0,0) * self.scale
+	        p = OpenMaya.MPoint(1, 0, 0) * self.scale
 	        # print "hend:%g %g %g" % (p.x,p.y,p.z)
 	        return p
+
 	def verticalStart(self):
-	        p = OpenMaya.MPoint(0,0,0) * self.scale
+	        p = OpenMaya.MPoint(0, 0, 0) * self.scale
 	        # print "vstart:%g %g %g" % (p.x,p.y,p.z)
 	        return p
+
 	def verticalEnd(self):
-	        p = OpenMaya.MPoint(0,1,0) * self.scale
+	        p = OpenMaya.MPoint(0, 1, 0) * self.scale
 	        # print "vend: %g %g %g" % (p.x,p.y,p.z)
 	        return p
+
 
 # manipulator class
 class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
@@ -126,7 +132,7 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 		try:
 			su = OpenMaya.MScriptUtil(0)
 			iptr = su.asIntPtr()
-			self.addDoubleValue( "horizontalValue", 0, iptr )
+			self.addDoubleValue("horizontalValue", 0, iptr)
 			self.horizontalIndex = su.getInt(iptr)
 		except:
 			sys.stderr.write("Failed to add horizontal double value\n")
@@ -135,13 +141,13 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 		try:
 			su = OpenMaya.MScriptUtil(0)
 			iptr = su.asIntPtr()
-			self.addDoubleValue( "verticalValue", 0, iptr )
+			self.addDoubleValue("verticalValue", 0, iptr)
 			self.verticalIndex = su.getInt(iptr)
 		except:
 			sys.stderr.write("Failed to add vertical double value\n")
 			raise
 
-	def draw(self,view,dagpath,displayStyle,displayStatus):
+	def draw(self, view, dagpath, displayStyle, displayStatus):
 
 		# get the 4 points of the manipulator
 		mo = manipulatorGeometry()
@@ -153,45 +159,45 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 		# pre
 		view.beginGL()
 		self.glFT.glPushMatrix()
-		self.glFT.glTranslated(self.translation.x,self.translation.y,self.translation.z)
+		self.glFT.glTranslated(self.translation.x, self.translation.y, self.translation.z)
 
 		# get the first handle
 		su = OpenMaya.MScriptUtil(0)
 		iptr = su.asUintPtr()
-		self.glFirstHandle( iptr )
+		self.glFirstHandle(iptr)
 		startIndex = su.getUint(iptr)
 
 		# draw the manip
 		self.glHorizontalName = startIndex
-		self.colorAndName( view, self.glHorizontalName, True, self.mainColor() )
-		self.glFT.glBegin( OpenMayaRender.MGL_LINES )
-		self.glFT.glVertex3d( hs.x, hs.y, hs.z )
-		self.glFT.glVertex3d( he.x, he.y, he.z )
+		self.colorAndName(view, self.glHorizontalName, True, self.mainColor())
+		self.glFT.glBegin(OpenMayaRender.MGL_LINES)
+		self.glFT.glVertex3d(hs.x, hs.y, hs.z)
+		self.glFT.glVertex3d(he.x, he.y, he.z)
 		self.glFT.glEnd()		
 
 		self.glVerticalName = self.glHorizontalName + 1
-		self.colorAndName( view, self.glVerticalName, True, self.mainColor() )
-		self.glFT.glBegin( OpenMayaRender.MGL_LINES )
-		self.glFT.glVertex3d( vs.x, vs.y, vs.z )
-		self.glFT.glVertex3d( ve.x, ve.y, ve.z )
+		self.colorAndName(view, self.glVerticalName, True, self.mainColor())
+		self.glFT.glBegin(OpenMayaRender.MGL_LINES)
+		self.glFT.glVertex3d(vs.x, vs.y, vs.z)
+		self.glFT.glVertex3d(ve.x, ve.y, ve.z)
 		self.glFT.glEnd()		
 
 		# post
 		self.glFT.glPopMatrix()
 		view.endGL()
 
-	def doPress(self,view):
+	def doPress(self, view):
 		self.translation = OpenMaya.MPoint()
 		self.updateDragInformation(view)
 
-	def doDrag(self,view):
+	def doDrag(self, view):
 		self.updateDragInformation(view)
 
-	def doRelease(self,view):
+	def doRelease(self, view):
 		# Only update the attribute on release
-		self.updateDragInformation(view,True)
+		self.updateDragInformation(view, True)
 
-	def getPlaneForView(self,view):
+	def getPlaneForView(self, view):
 		mo = manipulatorGeometry()
 		vs = mo.verticalStart()
 		ve = mo.verticalEnd()
@@ -203,22 +209,22 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 		normal.normalize()
 
 		plane = manipulatorMath.planeMath()
-		plane.setPlane( vs, normal )
+		plane.setPlane(vs, normal)
 
 		return plane
 
-	def updateDragInformation(self,view,updateAttribute = False):
+	def updateDragInformation(self, view, updateAttribute=False):
 		# mouse point and direction
 		localMousePoint = OpenMaya.MPoint()
 		localMouseDirection = OpenMaya.MVector()
-		self.mouseRay( localMousePoint, localMouseDirection )
+		self.mouseRay(localMousePoint, localMouseDirection)
 
 		# plane that mouse will move in
-		plane = self.getPlaneForView( view )
+		plane = self.getPlaneForView(view)
 
 		# intersect mouse into plane
 		mouseIntersect = OpenMaya.MPoint()
-		(worked,mouseIntersect) = plane.intersect( localMousePoint, localMouseDirection )
+		(worked, mouseIntersect) = plane.intersect(localMousePoint, localMouseDirection)
 		if not worked:
 			print "Failed to intersect plane"
 			return
@@ -226,7 +232,7 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 		# restrict the point movement
 		su = OpenMaya.MScriptUtil(0)
 		uintptr = su.asUintPtr()
-		self.glActiveName( uintptr )
+		self.glActiveName(uintptr)
 		active = su.getUint(uintptr)
 
 		mo = manipulatorGeometry()
@@ -244,10 +250,10 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 
 		vstart_end = start - end
 		line = manipulatorMath.lineMath()
-		line.setLine( start, vstart_end )
+		line.setLine(start, vstart_end)
 		
 		closestPoint = OpenMaya.MPoint()
-		(worked,closestPoint) = line.closestPoint( mouseIntersect )
+		(worked, closestPoint) = line.closestPoint(mouseIntersect)
 		if not worked:
 			print "Failed to find closest point to line"
 			return
@@ -256,12 +262,12 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 		# print "mi: %g %g %g" % (mouseIntersect.x,mouseIntersect.y,mouseIntersect.z)
 
 		if updateAttribute:
-			m = manipulatorMath.maxOfAbsThree(closestPoint.x,closestPoint.y,closestPoint.z)
-			m = m / 10.0 # slow down operation
+			m = manipulatorMath.maxOfAbsThree(closestPoint.x, closestPoint.y, closestPoint.z)
+			m = m / 10.0  # slow down operation
 			if active == self.glHorizontalName:
-				self.setDoubleValue(self.horizontalIndex,m)
+				self.setDoubleValue(self.horizontalIndex, m)
 			elif active == self.glVerticalName:
-				self.setDoubleValue(self.verticalIndex,m)
+				self.setDoubleValue(self.verticalIndex, m)
 
 	def connectToDependNode(self, node):
 		nodeFn = OpenMaya.MFnDependencyNode(node)
@@ -272,37 +278,41 @@ class filmMoveManip(OpenMayaMPx.MPxManipulatorNode):
 
 			su = OpenMaya.MScriptUtil(0)
 			iptr = su.asIntPtr()
-			self.connectPlugToValue( hPlug, self.horizontalIndex, iptr )
-			self.connectPlugToValue( vPlug, self.verticalIndex, iptr )			
+			self.connectPlugToValue(hPlug, self.horizontalIndex, iptr)
+			self.connectPlugToValue(vPlug, self.verticalIndex, iptr)			
 
 			# Mark the plugs keyable.
 			self.addDependentPlug(hPlug)
 			self.addDependentPlug(vPlug)
 		except:
-			sys.stderr.write( "Error finding and connecting plugs\n" )
+			sys.stderr.write("Error finding and connecting plugs\n")
 			raise
 
 		try:
 			OpenMayaMPx.MPxManipulatorNode.finishAddingManips(self)
-			OpenMayaMPx.MPxManipulatorNode.connectToDependNode(self,node)
+			OpenMayaMPx.MPxManipulatorNode.connectToDependNode(self, node)
 		except:
-			sys.stderr.write( "Error when finishing node connection\n" )
+			sys.stderr.write("Error when finishing node connection\n")
 			raise
 
 
 def filmMoveManipCreator():
-	return OpenMayaMPx.asMPxPtr( filmMoveManip() )
+	return OpenMayaMPx.asMPxPtr(filmMoveManip())
+
 
 def filmMoveManipInitialize():
 	print "Initializing film move manipulator"
 
+
 class filmMoveManipContext(OpenMayaMPx.MPxSelectionContext):
+
 	def __init__(self):
 		OpenMayaMPx.MPxSelectionContext.__init__(self)
 
-	def toolOnSetup(self,event):
+	def toolOnSetup(self, event):
 		updateManipulators(self)
 		OpenMaya.MModelMessage.addCallback(OpenMaya.MModelMessage.kActiveListModified, updateManipulators, self)
+
 
 def updateManipulators(clientData):
 	clientData.deleteManipulators()
@@ -340,15 +350,16 @@ def updateManipulators(clientData):
 
 
 class filmMoveManipCtxCmd(OpenMayaMPx.MPxContextCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxContextCommand.__init__(self)
 
 	def makeObj(self):
-		return OpenMayaMPx.asMPxPtr( filmMoveManipContext() )
+		return OpenMayaMPx.asMPxPtr(filmMoveManipContext())
 
 
 def contextCmdCreator():
-	return OpenMayaMPx.asMPxPtr( filmMoveManipCtxCmd() )
+	return OpenMayaMPx.asMPxPtr(filmMoveManipCtxCmd())
 
 
 # initialize the script plug-in
@@ -356,7 +367,7 @@ def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 
 	try:
-		mplugin.registerContextCommand( contextCmdName, contextCmdCreator )
+		mplugin.registerContextCommand(contextCmdName, contextCmdCreator)
 	except:
 		print "Failed to register context command: %s" % contextCmdName
 		raise
@@ -366,6 +377,7 @@ def initializePlugin(mobject):
 	except:
 		print "Failed to register node: %s" % nodeName
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):

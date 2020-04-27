@@ -1,0 +1,23 @@
+{
+	"created_by": "subin gopi",
+	"author": "Subin. Gopi (subing85@gmail.com)",
+	"#copyright": "(c) 2019, Subin Gopi All rights reserved.",
+	"date": "April:22:2020 - 09:00:01:PM",
+	"last_modified": "April:22:2020 - 09:00:01:PM",
+	"comment": "Pipeline Configure",
+	"description": "inputs of Pipeline configure",
+	"warning": "# WARNING! All changes made in this file will be lost!",
+	"enable": true,
+	"type": "configure",
+	"data": {
+		"PACKAGE_PATH":[
+			"/venture/source_code/subins_tutorials"
+			],	
+		"PYSIDE": "/usr/lib64/python2.7/site-packages",
+		"PYQT": "/usr/lib64/python2.7/site-packages",
+		"PATH": [],
+		"PYTHONPATH": [],		
+		"USD": true	
+		}
+	}
+	

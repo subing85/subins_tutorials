@@ -29,7 +29,7 @@ mfn_mesh = OpenMaya.MFnMesh(mdag_path)
 # Remove exists uv set from shape node
 exists_set_names = mfn_mesh.getUVSetNames()
 for index, set_name in enumerate(exists_set_names):
-    if index>0:
+    if index > 0:
         mfn_mesh.deleteUVSet(set_name)
         print 'removed set\t', '<', set_name, '>'
         
@@ -47,7 +47,7 @@ for index in sorted_index:
     uv_numbers = content['uv_numbers']
     uv_ids = content['uv_ids']
     
-    if int(index)==0:
+    if int(index) == 0:
         # get default set name
         new_set_name = set_name      
         # print 'default set', set_name, index

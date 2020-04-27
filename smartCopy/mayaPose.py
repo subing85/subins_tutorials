@@ -18,6 +18,7 @@ from pymel import core as pymel
 import warnings
 import pprint
 
+
 class MayaPose():
     
     '''
@@ -49,7 +50,6 @@ class MayaPose():
                 pass
             
         self._mObjects = pymelObjects
-        
     
     def copy(self):
         
@@ -101,7 +101,6 @@ class MayaPose():
         pprint.pprint(dataList)  
 
         return dataList
-        
     
     def paste(self, dataContent):       
         

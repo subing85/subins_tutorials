@@ -11,6 +11,7 @@ from maya_abc_exporter.utils import  setToIMathArray
 
 
 class MeshWriter(object):
+
     def __init__(self, dag_path=None, filename=None, archive_info=None):
         super(MeshWriter, self).__init__()
         self.dag_path = dag_path

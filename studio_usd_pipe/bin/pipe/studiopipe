@@ -1,0 +1,109 @@
+#!/bin/bash
+#
+#  Studio Bash 1.0.0
+#  Date : April 22, 2020
+#  modified: 2020 27 April Monday, 11:44:41 PM
+#  Author# Subin. Gopi (subing85@gmail.com)
+#  Copyright (c) 2018, Subin Gopi
+#  All rights reserved.
+#
+#   WARNING! All changes made in this file will be lost!
+#
+#  Description
+#      This bash module for configure studio usd pipe package and bundles.  
+
+# clear
+
+
+function studiopipe()
+	{		
+		info_color="\e[34m" #darkBlue
+		message_color="\e[91m" #light red	
+		error_color="\e[31m" #red	    
+		warning_color="\e[35m" #magenta	    
+		header_color="\e[32m" #green
+		normal_color="\e[0m"	   
+	
+		PACKAGE_PATH="/venture/source_code/subins_tutorials"
+		PACKAGE_NAME="studio_usd_pipe"
+		
+		if [ $PACKAGE_PATH = "temp" ]; then
+			echo -e $error_color"#warnings please run the setup.py file and try!.."
+			echo -e $normal_color
+			return
+		fi
+		
+		if [ ! -d "$PACKAGE_PATH" ]; then
+			echo -e $error_color"#warnings invalid PACKAGE_PATH!..."
+			echo -e $normal_color
+			return
+		fi
+			
+		export PACKAGE_PATH=$PACKAGE_PATH
+		export PACKAGE_NAME=$PACKAGE_NAME		
+		export PYTHONPATH=$PACKAGE_PATH					
+		
+		bin_path=$PACKAGE_PATH"/"$PACKAGE_NAME"/bin"
+		
+		if [ $1 = "--example" ] || [ $1 = "-ex" ]; then
+			echo -e $header_color"#header: example of studiopipe arguments"
+			echo -e $info_color"           launch studio launcher: "$message_color"studiopipe launcher"
+			echo -e $info_color"             query available show: "$message_color"studiopipe -s -q"		
+			echo -e $info_color"query available show applications: "$message_color"studiopipe -s btm -a -q"			
+			echo -e $info_color"          launch show application: "$message_color"studiopipe -s btm -a maya2018"
+			echo -e $normal_color
+			return
+		fi
+		
+		if [ $1 = "launcher" ]; then
+			launcher_path=$PACKAGE_PATH"/"$PACKAGE_NAME"/bin/launcher/main.sh"
+			$launcher_path
+			return
+		fi
+
+		if [ $1 = "-h" ] || [ $1 = "--help" ]; then
+			echo -e $header_color"usage: studiopipe arguments: [launcher] [-s] [-a] [-q] [-ex]"
+			echo -e $info_color"	launcher: to launch the studio launcher"
+			echo -e $info_color"	      -s: show name or long name"
+			echo -e $info_color"	      -a: application (tool) name"
+			echo -e $info_color"	      -q: query"
+			echo -e $info_color"	     -ex: example of arguments"
+			return
+		fi
+		
+		if [ $1 = "-s" ] ; then
+			if [ $2 = "-q" ] ; then
+				echo -e $info_color
+				python -c "from studio_usd_pipe.utils import shows_patch;\
+					print shows_patch.get_shows()"
+				echo -e $normal_color
+				return
+			fi
+		fi
+		
+		if [ $1 = "-s" ] ; then
+			if [ $3 = "-a" ] ; then
+				if [ $4 = "-q" ] ; then
+					echo -e $info_color
+					python -c "from studio_usd_pipe.utils import shows_patch;\
+						print shows_patch.show_applications(\"$2\")"
+					echo -e $normal_color
+					return
+				fi
+			fi
+		fi
+		
+		if [ $1 = "-s" ] ; then
+			if [ $3 = "-a" ] ; then
+				if [ $4 != "-q" ] ; then
+					echo -e $info_color
+					python -c "from studio_usd_pipe.utils import shows_patch;\
+						shows_patch.launch_application(\"$2\", \"$4\")"
+					echo -e $normal_color
+					return
+				fi
+			fi
+		fi
+	}
+
+studiopipe $1 $2 $3 $4

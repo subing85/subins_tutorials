@@ -44,6 +44,7 @@ testList = []
 
 kFaceSetExclusive = FaceSetExclusivity.kFaceSetExclusive
 
+
 def subDFaceSetOut():
     """Tests OSubD and OFaceSet"""
 
@@ -54,7 +55,7 @@ def subDFaceSetOut():
 
     mesh.setUVSourceName("Chewbacca")
 
-    mesh_samp = OSubDSchemaSample( verts, indices, counts )
+    mesh_samp = OSubDSchemaSample(verts, indices, counts)
 
     creases = IntArray(24)
     corners = IntArray(24)
@@ -92,7 +93,7 @@ def subDFaceSetOut():
 
     if True:
         # scoped so it gets added before we check it
-        uv2 = OV2fGeomParam( arb, "uv2", True, GeometryScope.kFacevaryingScope, 1, meta )
+        uv2 = OV2fGeomParam(arb, "uv2", True, GeometryScope.kFacevaryingScope, 1, meta)
 
     assert uv2
     header = arb.getPropertyHeader("uv2")
@@ -115,7 +116,7 @@ def subDFaceSetOut():
     faceSetNames = mesh.getFaceSetNames()
     assert len(faceSetNames) == 1
     my_face_set = my_face_set_obj.getSchema()
-    #print "created faceset called", my_face_set_obj.getName()
+    # print "created faceset called", my_face_set_obj.getName()
 
     # our FaceSet is composed of faces 1-3
     face_nums = IntArray(3)
@@ -134,6 +135,7 @@ def subDFaceSetOut():
     parentOfFaceSet = my_face_set_obj.getParent()
     grandParent = parentOfFaceSet.getParent()
 
+
 def subDFaceSetIn():
     """tests ISubD and IFaceSet"""
 
@@ -149,7 +151,7 @@ def subDFaceSetIn():
     faceSetNames = mesh.getFaceSetNames()
     assert len(faceSetNames) == 1
 
-    #for name in faceSetNames:
+    # for name in faceSetNames:
     #    print "meshyObj has faceSet", name
     assert faceSetNames[0] == "testing_faceset"
     faceSetObj = mesh.getFaceSet("testing_faceset")
@@ -181,7 +183,7 @@ def subDFaceSetIn():
 
     samp1 = mesh.getValue(ISampleSelector(1))
     assert samp1.getSelfBounds().min() == V3d(-1.0, -1.0, -1.0)
-    assert samp1.getSelfBounds().max() == V3d(1.0, 1.0, 1.0 )
+    assert samp1.getSelfBounds().max() == V3d(1.0, 1.0, 1.0)
     assert samp1.getInterpolateBoundary() == 1
 
     samp2 = mesh.getValue(ISampleSelector(2))
@@ -189,9 +191,11 @@ def subDFaceSetIn():
     assert samp2.getSelfBounds().max() == V3d(1.0, 1.0, 1.0)
     assert samp2.getInterpolateBoundary() == 0
 
+
 def testSubDFaceSetBinding():
     subDFaceSetOut()
     subDFaceSetIn()
+
 
 testList.append(('testSubDFaceSetBinding', testSubDFaceSetBinding))
 

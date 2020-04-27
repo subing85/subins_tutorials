@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 #
 # Creation Date:   4 October 2006
@@ -51,9 +51,9 @@
 # To use the solver, create a single bone (joint tool).
 # Then type the following in the command window:
 #
-#	import maya.cmds as cmds
+# 	import maya.cmds as cmds
 #
-#	cmds.createNode("spSimpleSolverNode", name="spSimpleSolverNode1")
+# 	cmds.createNode("spSimpleSolverNode", name="spSimpleSolverNode1")
 #   cmds.ikHandle(sol="spSimpleSolverNode1", sj="joint1", ee="joint2")
 #
 # This creates a handle that can be dragged around in the x-y
@@ -73,17 +73,15 @@ kSolverNodeId = OpenMaya.MTypeId(0x8700a)
 
 
 class simpleSolverNode(OpenMayaMPx.MPxIkSolverNode):
+
 	def __init__(self):
 		OpenMayaMPx.MPxIkSolverNode.__init__(self)
 
-
 	def solverTypeName(self):
 		return kSolverNodeName
-
 	
 	def doSolve(self):
 		self.doSimpleSolver()
-
 
 	def doSimpleSolver(self):
 		"""
@@ -135,7 +133,7 @@ class simpleSolverNode(OpenMayaMPx.MPxIkSolverNode):
 		#            (S)
 		#
 
-		rot = 0.0	# Rotation about Z-axis
+		rot = 0.0  # Rotation about Z-axis
 
 		# U and N define a half-plane to clip the handle against
 		U = effector_position - start_position
@@ -143,18 +141,18 @@ class simpleSolverNode(OpenMayaMPx.MPxIkSolverNode):
 
 		# Get a normal to U
 		zAxis = OpenMaya.MVector(0.0, 0.0, 1.0)
-		N = U ^ zAxis # Cross product
+		N = U ^ zAxis  # Cross product
 		N.normalize()
 
 		# P is the handle position vector
 		P = handle_position - effector_position
 
 		# Determine the rotation direction
-		PdotN = P[0]*N[0] + P[1]*N[1]
+		PdotN = P[0] * N[0] + P[1] * N[1]
 		if PdotN < 0:
-			rot = angle # counter-clockwise
+			rot = angle  # counter-clockwise
 		else:
-			rot = -1.0 * angle	# clockwise
+			rot = -1.0 * angle  # clockwise
 
 		# get and set the Joint Angles 
 		jointAngles = OpenMaya.MDoubleArray()
@@ -166,7 +164,6 @@ class simpleSolverNode(OpenMayaMPx.MPxIkSolverNode):
 		else:
 			jointAngles.set(jointAngles[0] + rot, 0)
 			self._setJointAngles(jointAngles)
-
 
 ##############################################################################
 

@@ -14,7 +14,6 @@ Description
     The purpose of the readWrite to create, getting and setting the model data.  
 '''
 
-
 import os
 import json
 import time
@@ -139,7 +138,7 @@ class ReadWrite(object):
         paths = []
         x = 0
         while x < len(path_data) + 1:
-            for index,  path, in path_data.items():
+            for index, path, in path_data.items():
                 if int(index) != x:
                     continue
                 paths.append(path.encode())

@@ -45,7 +45,6 @@ class Main(QtGui.QWidget):
         self.brows_directory = '/mnt/bkp/Icons gallery/icons_04'
         self.studio_pipe_path = '/home/shreya/Documents/studio_pipe'
         self.module, self.lable, self.version = platforms.get_tool_kit()
-        
                 
         self.icon_format = 'png'
         self.width, self.height = 256, 144
@@ -58,13 +57,12 @@ class Main(QtGui.QWidget):
         self.current_discipline = None
         self.current_description = None
 
-        studio_header = studioHeader.Connect()
-        self.input_data, self.input_sort_data, self.input_key_data = studio_header.getInputData()
+        # studio_header = studioHeader.Connect()
+        # self.input_data, self.input_sort_data, self.input_key_data = studio_header.getInputData()
         self.setup_ui()
         self.load_tool_bar()
         self.set_icons()
-        self.load_shows_to_layout(self.listWidget_shows)
-        
+        # self.load_shows_to_layout(self.listWidget_shows)
 
     def setup_ui(self):
         self.setObjectName('asset')
@@ -140,9 +138,8 @@ class Main(QtGui.QWidget):
         self.treewidget_discipline = QtGui.QTreeWidget(self.splitter)
         self.treewidget_discipline.setObjectName('treewidget_discipline') 
         # self.treewidget_discipline.setStyleSheet('font: 14pt \"Sans Serif\";')        
-        self.treewidget_discipline.headerItem().setText(0,'Deciplines')
+        self.treewidget_discipline.headerItem().setText(0, 'Deciplines')
         self.treewidget_discipline.setAlternatingRowColors(True)
-
                
         self.splitter.addWidget(self.treewidget_discipline)
         
@@ -161,7 +158,6 @@ class Main(QtGui.QWidget):
         
         self.treewidget_discipline.itemClicked.connect(
             partial(self.set_my_discipline, self.treewidget_discipline, self.treewidget))
-               
     
     def load_tool_bar(self):    
         self.toolBar = QtGui.QToolBar()        
@@ -204,7 +200,6 @@ class Main(QtGui.QWidget):
         self.action_add_item.triggered.connect(partial(self.add_item, self.treewidget))
         self.action_submit.triggered.connect(partial(self.submit, self.treewidget))
         
-        
     def set_icons(self):
         actions = self.findChildren(QtGui.QAction)
         for each_action in actions:
@@ -217,7 +212,6 @@ class Main(QtGui.QWidget):
             icon.addPixmap(
                 QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             each_action.setIcon(icon)
-            
     
     # 689x195    
     def load_shows_to_layout(self, listwidget):
@@ -243,8 +237,7 @@ class Main(QtGui.QWidget):
 
             item.setIcon(icon)
             item.setTextAlignment(
-                QtCore.Qt.AlignHCenter|QtCore.Qt.AlignBottom)
-            
+                QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
 
     def set_my_show(self, listwidget, *args):        
         current_items = listwidget.selectedItems()
@@ -252,7 +245,7 @@ class Main(QtGui.QWidget):
             return        
         self.current_show = current_items[-1].statusTip()        
         if self.current_show not in self.show_data:
-            print 'Value error, not found your show %s'%current_show
+            print 'Value error, not found your show %s' % current_show
             return
         
         self.verticalLayout_shows_a.addWidget(self.listWidget_shows)
@@ -267,21 +260,20 @@ class Main(QtGui.QWidget):
         self.load_discipline(self.treewidget_discipline, self.current_show)   
         self.load_discipline_header(self.treewidget)
         
-        
     def load_discipline(self, treewidget, current_show):
         treewidget.clear()
         studio_discipline = studioDiscipline.Connect()
         disciplines, discipline_content = studio_discipline.getDisciplines(current_show)
 
         for each_discipline in disciplines:
-            content =  discipline_content[each_discipline]
+            content = discipline_content[each_discipline]
             display_name = content['display_name']
             tooltip = content['tooltip']
             icon_path = content['discipline_icon']
             
             item = QtGui.QTreeWidgetItem(treewidget)
             item.setText(0, display_name)
-            item.setToolTip(0, '%s/%s'%(self.description_type[content['type']], tooltip))
+            item.setToolTip(0, '%s/%s' % (self.description_type[content['type']], tooltip))
             item.setStatusTip(0, str(content['type']))
             item.setWhatsThis(0, each_discipline)
             icon = QtGui.QIcon()
@@ -295,7 +287,6 @@ class Main(QtGui.QWidget):
         discipline_window = discipline.Connect(parent=None, type='discipline', value=None,
                          title='Disciplines Inputs', label='Create your Show Disciplines', width=500, height=407)
         discipline_window.show()
-        
     
     def load_discipline_header(self, treewidget, *args):
         treewidget.header().setDefaultSectionSize(100)       
@@ -304,7 +295,7 @@ class Main(QtGui.QWidget):
             header = self.input_data[each]
             treewidget.headerItem().setText(index, header['display_name'])
             treewidget.header ().resizeSection (index, header['size'])
-            index+=1 
+            index += 1 
         treewidget.header ().resizeSection (0, 50)
         
     def set_my_discipline(self, source, target, *args):
@@ -335,7 +326,7 @@ class Main(QtGui.QWidget):
             
             input_instance = copy.deepcopy(self.input_data)
             for header, data_content in self.input_data.items():
-                input_instance[header]['value']=discipline_output_data[header]['value']
+                input_instance[header]['value'] = discipline_output_data[header]['value']
             
             item = QtGui.QTreeWidgetItem(target)
             for each in self.input_sort_data:
@@ -348,7 +339,7 @@ class Main(QtGui.QWidget):
                 self, 'Warning', 'Please select any discipline and try!..', QtGui.QMessageBox.Ok)
             return
         widget_item = treewidget.invisibleRootItem()
-        index = widget_item.childCount()+1      
+        index = widget_item.childCount() + 1      
         item = QtGui.QTreeWidgetItem(treewidget)  
               
         default_data = copy.deepcopy(self.input_data)
@@ -370,10 +361,10 @@ class Main(QtGui.QWidget):
         
         if type == 'str':
             item.setText(order, value)
-            item.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled)
-        if type=='enum':
+            item.setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+        if type == 'enum':
             combobox = QtGui.QComboBox(treewidget)
-            combobox.setObjectName('comboBox_%s'%each)
+            combobox.setObjectName('comboBox_%s' % each)
             combobox.setToolTip(tooltip)
             combobox.setEditable(True)
             comb_values = None
@@ -397,22 +388,21 @@ class Main(QtGui.QWidget):
             treewidget.setItemWidget(item, order, combobox)
 
     def add_values(self, type, description):        
-        if type=='tier': 
+        if type == 'tier': 
             studio_tier = studioTier.Connect()
             descriptions = studio_tier.getSpecificTypes(self.current_show, description)
             if description not in descriptions:
-                print 'not found any tier under descriptions called\"%s\"!...'%description
+                print 'not found any tier under descriptions called\"%s\"!...' % description
                 return 
             return descriptions[description]
         
-        if type=='user':
+        if type == 'user':
             studio_userpool = studioUserpool.Connect()
             descriptions = studio_userpool.getSpecificTypes(self.current_show, description)   
             if description not in descriptions:
-                print 'not found any user under descriptions called\"%s\"!...'%description
+                print 'not found any user under descriptions called\"%s\"!...' % description
                 return 
             return descriptions[description]
-
                     
     def submit(self, treewidget):       
         widget_data = self.get_widget_data(treewidget)
@@ -423,7 +413,6 @@ class Main(QtGui.QWidget):
         studio_header = studioHeader.Connect(name=self.current_description)
         studio_header.create(
             self.current_show, self.current_description_type, self.current_discipline, input_data)
-        
     
     def get_widget_data(self, treewidget):
         '''
@@ -445,7 +434,7 @@ class Main(QtGui.QWidget):
                 
                 if header['type'] == 'str':
                     current_value = current_item.text(header['order']).encode() 
-                if header['type']=='enum':
+                if header['type'] == 'enum':
                     combobox = treewidget.itemWidget(current_item, header['order'])
                     current_value = combobox.currentText().encode()
                                         
@@ -453,11 +442,6 @@ class Main(QtGui.QWidget):
             input_data.setdefault(keys.encode(), each_data)
                
         return input_data
-            
-            
-
-
-
  
     def image_to_button(self, button=None, path=None, width=None, height=None):
         if not button:
@@ -475,7 +459,6 @@ class Main(QtGui.QWidget):
         button.setIconSize(QtCore.QSize(self.width - 5, self.height - 5))
         # button.setMinimumSize(QtCore.QSize(self.width, self.height))
         # button.setMaximumSize(QtCore.QSize(self.width, self.height))
-        
 
                 
 if __name__ == '__main__':

@@ -28,7 +28,7 @@ def get_mayapy(version, progress=None):
     mayapy_path = None
     progress.setValue(0)
     index = 0    
-    current_tag = '%s%s'%(tag, version)
+    current_tag = '%s%s' % (tag, version)
     for dirname, folder, files in os.walk(root_path):
         progress.setValue(index)
         progress.setMaximum(100 + index)
@@ -219,13 +219,13 @@ def decode_message(messages, *args):
     next = '\n'
     if operating_system == 'Windows':
         next = '\r\n'
-    if '#&&#status&##&%s'%next in messages:
-        status = messages.index('#&&#status&##&%s'%next)
+    if '#&&#status&##&%s' % next in messages:
+        status = messages.index('#&&#status&##&%s' % next)
         status_message = messages[status + 1].replace('\n', '')
     code_messages = 'Not able to read'
-    if '#&&#code&##&%s'%next in messages and '#&&#code_end&##&%s'%next in messages:
-        code_start = messages.index('#&&#code&##&%s'%next)
-        code_end = messages.index('#&&#code_end&##&%s'%next)
+    if '#&&#code&##&%s' % next in messages and '#&&#code_end&##&%s' % next in messages:
+        code_start = messages.index('#&&#code&##&%s' % next)
+        code_end = messages.index('#&&#code_end&##&%s' % next)
         code_messages = messages[code_start + 1: code_end]
         code_messages = [
             each.replace('\n', '').replace('\r', '') for each in code_messages]

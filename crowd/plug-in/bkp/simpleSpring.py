@@ -1,5 +1,5 @@
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -35,7 +35,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
@@ -44,34 +44,33 @@ import maya.OpenMayaMPx as OpenMayaMPx
 # To test out this plugin example:
 # Run from a Python tab of the script editor.
 #
-#import maya.cmds as cmds
+# import maya.cmds as cmds
 #
-#cmds.file(force=True, new=True)
-#cmds.currentUnit(linear="centimeter", angle="degree", time="film")   
+# cmds.file(force=True, new=True)
+# cmds.currentUnit(linear="centimeter", angle="degree", time="film")   
 #
-## Load the plug-in.
-##
-#cmds.loadPlugin("simpleSpring.py")
+# # Load the plug-in.
+# #
+# cmds.loadPlugin("simpleSpring.py")
 #
-## Create the spring node.
-#cmds.createNode("spSimpleSpring", name="simpleSpring")
+# # Create the spring node.
+# cmds.createNode("spSimpleSpring", name="simpleSpring")
 #
-#cmds.curve(d=3, p=[(-9, 6, 0), (-4, 6, 0), (4, 6, 0), (9, 6, 0)], k=[(0), (0), (0), (1), (1), (1)])
+# cmds.curve(d=3, p=[(-9, 6, 0), (-4, 6, 0), (4, 6, 0), (9, 6, 0)], k=[(0), (0), (0), (1), (1), (1)])
 #
-#cmds.particle(n="fourParticles", p=[(11, -2, 0), (4, -2, 0), (-3, -2, 0), (-7, 4, 0)], c=1)
+# cmds.particle(n="fourParticles", p=[(11, -2, 0), (4, -2, 0), (-3, -2, 0), (-7, 4, 0)], c=1)
 #
-#cmds.gravity(pos=(0, 0, 0), m=9.8, dx=0, dy=-1, dz=0)
-#cmds.connectDynamic("fourParticles", f="gravityField1")
+# cmds.gravity(pos=(0, 0, 0), m=9.8, dx=0, dy=-1, dz=0)
+# cmds.connectDynamic("fourParticles", f="gravityField1")
 #
-#cmds.select("fourParticles", "curve1", "simpleSpring", r=True)
+# cmds.select("fourParticles", "curve1", "simpleSpring", r=True)
 #
-#cmds.spring(add=True, noDuplicate=False, minMax=True, mnd=0, mxd=0, useRestLengthPS=True, s=1, d=0.2, sfw=1, efw=1)
+# cmds.spring(add=True, noDuplicate=False, minMax=True, mnd=0, mxd=0, useRestLengthPS=True, s=1, d=0.2, sfw=1, efw=1)
 #
-#cmds.playbackOptions(e=True, min=0.00, max=600.0)
-#cmds.currentTime(0, e=True)
-#cmds.play(wait=True, forward=True)
+# cmds.playbackOptions(e=True, min=0.00, max=600.0)
+# cmds.currentTime(0, e=True)
+# cmds.play(wait=True, forward=True)
 #
-
 
 import sys
 
@@ -85,7 +84,6 @@ class simpleSpring(OpenMayaMPx.MPxSpringNode):
 	def __init__(self):
 		OpenMayaMPx.MPxSpringNode.__init__(self)
 		self.__myFactor = 0.0
-
 
 	def compute(self, plug, block):
 		"""
@@ -104,7 +102,6 @@ class simpleSpring(OpenMayaMPx.MPxSpringNode):
 		# Note: return "kUnknownParameter" so that Maya spring node can
 		# compute spring force for this plug-in simple spring node.
 		return OpenMaya.kUnknownParameter
-
 
 	def applySpringLaw(self, stiffness, damping, restLength, endMass1, endMass2,
 						endP1, endP2, endV1, endV2, forceV1, forceV2):
@@ -130,24 +127,20 @@ class simpleSpring(OpenMayaMPx.MPxSpringNode):
 		forceV2.y = v2.y
 		forceV2.z = v2.z
 
-
 	def springFactor(self, block):
 		hValue = block.inputValue(simpleSpring.aSpringFactor)
 		value = hValue.asDouble()
 		return value
-
 
 	def end1WeightValue(self, block):
 		hValue = block.inputValue(simpleSpring.mEnd1Weight)
 		value = hValue.asDouble()
 		return value
 
-
 	def end2WeightValue(self, block):
 		hValue = block.inputValue(simpleSpring.mEnd2Weight)
 		value = hValue.asDouble()
 		return value
-
 
 #####################################################################
 
@@ -171,7 +164,7 @@ def initializePlugin(mobject):
 		mplugin.registerNode(kPluginNodeTypeName, spSimpleSpringNodeId,
 								creator, initializer, OpenMayaMPx.MPxNode.kSpringNode)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeTypeName)
 		raise
 
 
@@ -179,7 +172,7 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( spSimpleSpringNodeId )
+		mplugin.deregisterNode(spSimpleSpringNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % kPluginNodeTypeName )
+		sys.stderr.write("Failed to deregister node: %s" % kPluginNodeTypeName)
 		raise

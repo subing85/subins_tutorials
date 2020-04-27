@@ -1,4 +1,4 @@
-#-
+# -
 # ===========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -6,12 +6,13 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 # ===========================================================================
-#+
+# +
 
 import sys
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
 import maya.api.OpenMayaRender as omr
+
 
 def maya_useNewAPI():
 	"""
@@ -54,22 +55,23 @@ class geometryReplicator(om.MPxSurfaceShape):
 		return True
 
 	def boundingBox(self):
-		corner1 = om.MPoint( -0.5, 0.0, -0.5 )
-		corner2 = om.MPoint( 0.5, 0.0, 0.5 )
+		corner1 = om.MPoint(-0.5, 0.0, -0.5)
+		corner2 = om.MPoint(0.5, 0.0, 0.5)
 
-		return om.MBoundingBox( corner1, corner2 )
+		return om.MBoundingBox(corner1, corner2)
 
 
 ###############################################################################
-##
-## geometryReplicatorShapeUI
-##
-## There's no need to draw and select this node in vp1.0, so this class
-## doesn't override draw(), select(), etc. But the creator() is needed for
-## plugin registration and avoid crash in cases (e.g., RB pop up menu of this node).
-##
+# #
+# # geometryReplicatorShapeUI
+# #
+# # There's no need to draw and select this node in vp1.0, so this class
+# # doesn't override draw(), select(), etc. But the creator() is needed for
+# # plugin registration and avoid crash in cases (e.g., RB pop up menu of this node).
+# #
 ###############################################################################
 class geometryReplicatorShapeUI(omui.MPxSurfaceShapeUI):
+
 	def __init__(self):
 		omui.MPxSurfaceShapeUI.__init__(self)
 
@@ -79,19 +81,20 @@ class geometryReplicatorShapeUI(omui.MPxSurfaceShapeUI):
 
 
 ###############################################################################
-##
-## geometryReplicatorGeometryOverride
-##
-## Handles vertex data preparation for drawing the user defined shape in
-## Viewport 2.0.
-##
+# #
+# # geometryReplicatorGeometryOverride
+# #
+# # Handles vertex data preparation for drawing the user defined shape in
+# # Viewport 2.0.
+# #
 ###############################################################################
 class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
+
 	def __init__(self, obj):
 		omr.MPxGeometryOverride.__init__(self, obj)
 		self.fThisNode = om.MObject(obj)
-		self.fType = om.MFn.kInvalid	# the type of the associated object.
-		self.fPath = om.MDagPath()		# the associated object path.
+		self.fType = om.MFn.kInvalid  # the type of the associated object.
+		self.fPath = om.MDagPath()  # the associated object path.
 
 	@staticmethod
 	def creator(obj):
@@ -139,7 +142,7 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 			return
 
 		if self.fType == om.MFn.kNurbsCurve or self.fType == om.MFn.kBezierCurve:
-			## add render items for drawing curve
+			# # add render items for drawing curve
 			curveItem = None
 			index = list.indexOf("geometryReplicatorCurve")
 			if index < 0:
@@ -162,7 +165,7 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 				curveItem.enable(True)
 
 		elif self.fType == om.MFn.kMesh:
-			## add render item for drawing wireframe on the mesh
+			# # add render item for drawing wireframe on the mesh
 			wireframeItem = None
 			index = list.indexOf("geometryReplicatorWireframe")
 			if index < 0:
@@ -185,7 +188,7 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 			if wireframeItem is not None:
 				wireframeItem.enable(True)
 
-			## disable StandardShadedItem if CPV is shown.
+			# # disable StandardShadedItem if CPV is shown.
 			showCPV = self.isCPVShown()
 			index = list.indexOf("StandardShadedItem", omr.MGeometry.kTriangles, omr.MGeometry.kShaded)
 			if index >= 0:
@@ -199,7 +202,7 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 				if shadedItem is not None:
 					shadedItem.enable(not showCPV)
 
-			## add item for CPV.
+			# # add item for CPV.
 			index = list.indexOf("geometryReplicatorCPV")
 			if index >= 0:
 				cpvItem = list[index]
@@ -207,7 +210,7 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 					cpvItem.enable(showCPV)
 
 			else:
-				## if no cpv item and showCPV is true, created the cpv item.
+				# # if no cpv item and showCPV is true, created the cpv item.
 				if showCPV:
 					cpvItem = omr.MRenderItem.create("geometryReplicatorCPV", omr.MRenderItem.MaterialSceneItem, omr.MGeometry.kTriangles)
 					cpvItem.setDrawMode(omr.MGeometry.kShaded | omr.MGeometry.kTextured)
@@ -223,10 +226,10 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 		if not self.fPath.isValid():
 			return
 
-		## here, fPath is the path of the linked object instead of the plugin node; it
-		## is used to determine the right type of the geometry shape, e.g., polygon
-		## or NURBS surface.
-		## The sharing flag (true here) is just for the polygon shape.
+		# # here, fPath is the path of the linked object instead of the plugin node; it
+		# # is used to determine the right type of the geometry shape, e.g., polygon
+		# # or NURBS surface.
+		# # The sharing flag (true here) is just for the polygon shape.
 		options = omr.MGeometryExtractor.kPolyGeom_Normal
 		if self.isBaseMesh():
 		   options = options | omr.MGeometryExtractor.kPolyGeom_BaseMesh
@@ -235,38 +238,38 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 		if extractor is None:
 			return
 
-		## fill vertex buffer
+		# # fill vertex buffer
 		descList = requirements.vertexRequirements()
 		for desc in descList:
 
 			if desc.semantic == omr.MGeometry.kPosition or desc.semantic == omr.MGeometry.kPosition or desc.semantic == omr.MGeometry.kNormal or desc.semantic == omr.MGeometry.kTexture or desc.semantic == omr.MGeometry.kTangent or desc.semantic == omr.MGeometry.kBitangent or desc.semantic == omr.MGeometry.kColor:
 				vertexBuffer = data.createVertexBuffer(desc)
 				if vertexBuffer is not None:
-					## MGeometryExtractor.vertexCount and MGeometryExtractor.populateVertexBuffer.
-					## since the plugin node has the same vertex data as its linked scene object,
-					## call vertexCount to allocate vertex buffer of the same size, and then call
-					## populateVertexBuffer to copy the data.
+					# # MGeometryExtractor.vertexCount and MGeometryExtractor.populateVertexBuffer.
+					# # since the plugin node has the same vertex data as its linked scene object,
+					# # call vertexCount to allocate vertex buffer of the same size, and then call
+					# # populateVertexBuffer to copy the data.
 					vertexCount = extractor.vertexCount()
-					vertices = vertexBuffer.acquire(vertexCount, True) ## writeOnly - we don't need the current buffer values
+					vertices = vertexBuffer.acquire(vertexCount, True)  # # writeOnly - we don't need the current buffer values
 					if vertices is not None:
 						extractor.populateVertexBuffer(vertices, vertexCount, desc)
 						vertexBuffer.commit(vertices)
 
-		## fill index buffer
+		# # fill index buffer
 		for item in renderItems:
 			indexBuffer = data.createIndexBuffer(omr.MGeometry.kUnsignedInt32)
 			if indexBuffer is None:
 				continue
 
-			## MGeometryExtractor.primitiveCount and MGeometryExtractor.populateIndexBuffer.
-			## since the plugin node has the same index data as its linked scene object,
-			## call primitiveCount to allocate index buffer of the same size, and then call
-			## populateIndexBuffer to copy the data.
+			# # MGeometryExtractor.primitiveCount and MGeometryExtractor.populateIndexBuffer.
+			# # since the plugin node has the same index data as its linked scene object,
+			# # call primitiveCount to allocate index buffer of the same size, and then call
+			# # populateIndexBuffer to copy the data.
 			if item.primitive() == omr.MGeometry.kTriangles:
 				triangleDesc = omr.MIndexBufferDescriptor(omr.MIndexBufferDescriptor.kTriangle, "", omr.MGeometry.kTriangles, 3)
 				numTriangles = extractor.primitiveCount(triangleDesc)
 
-				indices = indexBuffer.acquire(3 * numTriangles, True) ## writeOnly - we don't need the current buffer values
+				indices = indexBuffer.acquire(3 * numTriangles, True)  # # writeOnly - we don't need the current buffer values
 				extractor.populateIndexBuffer(indices, numTriangles, triangleDesc)
 				indexBuffer.commit(indices)
 
@@ -274,7 +277,7 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 				edgeDesc = omr.MIndexBufferDescriptor(omr.MIndexBufferDescriptor.kEdgeLine, "", omr.MGeometry.kLines, 2)
 				numEdges = extractor.primitiveCount(edgeDesc)
 
-				indices = indexBuffer.acquire(2 * numEdges, True) ## writeOnly - we don't need the current buffer values
+				indices = indexBuffer.acquire(2 * numEdges, True)  # # writeOnly - we don't need the current buffer values
 				extractor.populateIndexBuffer(indices, numEdges, edgeDesc)
 				indexBuffer.commit(indices)
 
@@ -284,12 +287,12 @@ class geometryReplicatorGeometryOverride(omr.MPxGeometryOverride):
 		# no-op
 		pass
 
+##---------------------------------------------------------------------------
+##---------------------------------------------------------------------------
+# # Plugin Registration
+##---------------------------------------------------------------------------
+##---------------------------------------------------------------------------
 
-##---------------------------------------------------------------------------
-##---------------------------------------------------------------------------
-## Plugin Registration
-##---------------------------------------------------------------------------
-##---------------------------------------------------------------------------
 
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "3.0", "Any")
@@ -304,6 +307,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register override\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

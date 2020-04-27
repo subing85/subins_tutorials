@@ -38,10 +38,13 @@ from alembic.AbcCoreAbstract import *
 from alembic.Abc import *
 from alembic.Util import *
 
+
 def equalWithAbsError (a0, a1, error):
     return abs (a0 - a1) <= error
 
+
 testList = []
+
 
 def testPODEnumWrapper():
     print POD.kBooleanPOD
@@ -64,7 +67,9 @@ def testPODEnumWrapper():
     # If a new POD type is added, this will throw an exception
     assert POD.kNumPlainOldDataTypes == 14
 
-testList.append( ( 'testPODEnumWrapper', testPODEnumWrapper ) )
+
+testList.append(('testPODEnumWrapper', testPODEnumWrapper))
+
 
 def testDataTypeWrapper():
     # Default Constructor
@@ -92,11 +97,13 @@ def testDataTypeWrapper():
     assert dt3.getExtent() == 1
 
     # Stringification
-    assert ( '%s' % dt1 ) == 'bool_t[2]'
-    assert ( '%s' % dt2 ) == 'string[3]'
-    assert ( '%s' % dt3 ) == 'float64_t'
+    assert ('%s' % dt1) == 'bool_t[2]'
+    assert ('%s' % dt2) == 'string[3]'
+    assert ('%s' % dt3) == 'float64_t'
 
-testList.append( ('testDataTypeWrapper', testDataTypeWrapper ) )
+
+testList.append(('testDataTypeWrapper', testDataTypeWrapper))
+
 
 def testTimeSampling():
     # Partial copy of TestTimingSampling.cpp
@@ -109,8 +116,8 @@ def testTimeSampling():
     numSamplesPerCycle = 3;
     numSamps = 97
 
-    tSampTyp = TimeSamplingType( numSamplesPerCycle, timePerCycle )
-    tSamp = TimeSampling( tSampTyp, tvec )
+    tSampTyp = TimeSamplingType(numSamplesPerCycle, timePerCycle)
+    tSamp = TimeSampling(tSampTyp, tvec)
 
     # Test TimeSamplingType
     assert tSampTyp.isCyclic()
@@ -122,33 +129,35 @@ def testTimeSampling():
     assert tSamp.getTimeSamplingType() == tSampTyp
 
     for i in range(0, numSamps):
-        timeI = tSamp.getSampleTime( i )
-        floorIndex = tSamp.getFloorIndex( timeI, numSamps )
-        ceilIndex = tSamp.getCeilIndex( timeI, numSamps )
-        nearIndex = tSamp.getNearIndex( timeI, numSamps )
+        timeI = tSamp.getSampleTime(i)
+        floorIndex = tSamp.getFloorIndex(timeI, numSamps)
+        ceilIndex = tSamp.getCeilIndex(timeI, numSamps)
+        nearIndex = tSamp.getNearIndex(timeI, numSamps)
 
         assert floorIndex == i and ceilIndex == i and nearIndex == i
 
         if i > 0:
-            timeIm1 = tSamp.getSampleTime( i - 1 )
+            timeIm1 = tSamp.getSampleTime(i - 1)
             assert timeIm1 < timeI
 
             if i > numSamplesPerCycle:
-                cur = tSamp.getSampleTime( i )
-                prev = tSamp.getSampleTime( i - numSamplesPerCycle )
-                assert equalWithAbsError( cur - prev, timePerCycle, 0.00001 )
+                cur = tSamp.getSampleTime(i)
+                prev = tSamp.getSampleTime(i - numSamplesPerCycle)
+                assert equalWithAbsError(cur - prev, timePerCycle, 0.00001)
 
-testList.append( ( 'testTimeSampling', testTimeSampling ) )
+
+testList.append(('testTimeSampling', testTimeSampling))
+
 
 def testDimensions():
     # rank 1
-    rank1 = Dimensions( 1 )
+    rank1 = Dimensions(1)
     assert rank1.rank() == 1
     assert rank1[0] == 1
 
     # rank 2
     rank2 = Dimensions()
-    rank2.setRank( 2 )
+    rank2.setRank(2)
     assert rank2.rank() == 2
 
     rank2[0] = 11
@@ -157,14 +166,14 @@ def testDimensions():
     assert rank2[1] == 12
     assert rank2.numPoints() == 11 * 12
 
-    rank2Copy = Dimensions( rank2 )
+    rank2Copy = Dimensions(rank2)
     assert rank2Copy[0] == 11
     assert rank2Copy[1] == 12
     assert rank2Copy == rank2
 
     # rank 3
     rank3 = Dimensions()
-    rank3.setRank( 3 ) 
+    rank3.setRank(3) 
     rank3[:] = 20
     assert rank3[0] == 20
     assert rank3[1] == 20
@@ -172,8 +181,9 @@ def testDimensions():
 
     rank2Copy = rank3
     assert rank2Copy == rank3
+
     
-testList.append( ( 'testDimensions', testDimensions ) )
+testList.append(('testDimensions', testDimensions))
 
 # -------------------------------------------------------------------------
 # Main loop

@@ -1,4 +1,4 @@
-#-
+# -
 # ===========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -6,7 +6,7 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 # ===========================================================================
-#+
+# +
 
 import sys
 try:
@@ -16,6 +16,7 @@ except:
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
 import maya.api.OpenMayaRender as omr
+
 
 def maya_useNewAPI():
 	"""
@@ -31,34 +32,36 @@ def matrixAsArray(matrix):
 		array.append(matrix[i])
 	return array
 
+
 def drawBoundingBox(box, color):
-	min = om.MFloatPoint( box.min )
-	max = om.MFloatPoint( box.max )
+	min = om.MFloatPoint(box.min)
+	max = om.MFloatPoint(box.max)
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-	glDisable( GL_LIGHTING )
-	glColor3f( color.r, color.g, color.b)
-	glBegin( GL_LINE_STRIP )
-	glVertex3f( min.x, min.y, min.z )
-	glVertex3f( max.x, min.y, min.z )
-	glVertex3f( max.x, max.y, min.z )
-	glVertex3f( min.x, max.y, min.z )
-	glVertex3f( min.x, min.y, min.z )
-	glVertex3f( min.x, min.y, max.z )
-	glVertex3f( min.x, max.y, max.z )
-	glVertex3f( min.x, max.y, min.z )
-	glVertex3f( max.x, max.y, min.z )
-	glVertex3f( max.x, max.y, max.z )
-	glVertex3f( max.x, min.y, max.z )
-	glVertex3f( max.x, min.y, min.z )
-	glVertex3f( max.x, min.y, max.z )
-	glVertex3f( min.x, min.y, max.z )
-	glVertex3f( min.x, max.y, max.z )
-	glVertex3f( max.x, max.y, max.z )
+	glDisable(GL_LIGHTING)
+	glColor3f(color.r, color.g, color.b)
+	glBegin(GL_LINE_STRIP)
+	glVertex3f(min.x, min.y, min.z)
+	glVertex3f(max.x, min.y, min.z)
+	glVertex3f(max.x, max.y, min.z)
+	glVertex3f(min.x, max.y, min.z)
+	glVertex3f(min.x, min.y, min.z)
+	glVertex3f(min.x, min.y, max.z)
+	glVertex3f(min.x, max.y, max.z)
+	glVertex3f(min.x, max.y, min.z)
+	glVertex3f(max.x, max.y, min.z)
+	glVertex3f(max.x, max.y, max.z)
+	glVertex3f(max.x, min.y, max.z)
+	glVertex3f(max.x, min.y, min.z)
+	glVertex3f(max.x, min.y, max.z)
+	glVertex3f(min.x, min.y, max.z)
+	glVertex3f(min.x, max.y, max.z)
+	glVertex3f(max.x, max.y, max.z)
 	glEnd()
 
 	glPopAttrib()
+
 
 class hwColorPerVertexShader(omui.MPxHwShaderNode):
 	id = om.MTypeId(0x00105450)
@@ -105,28 +108,28 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 				shaderMgr.releaseShader(self.mSwatchShader)
 			self.mSwatchShader = None
 
-	## The creator method creates an instance of the
-	## hwColorPerVertexShader class and is the first method called by Maya
-	## when a hwColorPerVertexShader needs to be created.
-	##
+	# # The creator method creates an instance of the
+	# # hwColorPerVertexShader class and is the first method called by Maya
+	# # when a hwColorPerVertexShader needs to be created.
+	# #
 	@staticmethod
 	def creator():
 		return hwColorPerVertexShader()
 
-	## The initialize routine is called after the node has been created.
-	## It sets up the input and output attributes and adds them to the node.
-	## Finally the dependencies are arranged so that when the inputs
-	## change Maya knowns to call compute to recalculate the output values.
-	##
+	# # The initialize routine is called after the node has been created.
+	# # It sets up the input and output attributes and adds them to the node.
+	# # Finally the dependencies are arranged so that when the inputs
+	# # change Maya knowns to call compute to recalculate the output values.
+	# #
 	@staticmethod
 	def initialize():
 		nAttr = om.MFnNumericAttribute()
 		tAttr = om.MFnTypedAttribute()
 
-		## Create input attributes.
-		## All attributes are cached internal
-		##
-		hwColorPerVertexShader.aColorGain = nAttr.createColor( "colorGain", "cg")
+		# # Create input attributes.
+		# # All attributes are cached internal
+		# #
+		hwColorPerVertexShader.aColorGain = nAttr.createColor("colorGain", "cg")
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = (1.0, 1.0, 1.0)
@@ -144,7 +147,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		nAttr.internal = True
 		nAttr.affectsAppearance = True
 
-		hwColorPerVertexShader.aColorBias = nAttr.createColor( "colorBias", "cb")
+		hwColorPerVertexShader.aColorBias = nAttr.createColor("colorBias", "cb")
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = (0.0, 0.0, 0.0)
@@ -152,7 +155,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		nAttr.internal = True
 		nAttr.affectsAppearance = True
 
-		hwColorPerVertexShader.aTranspBias = nAttr.create( "transparencyBias", "tb", om.MFnNumericData.kFloat, 0.0)
+		hwColorPerVertexShader.aTranspBias = nAttr.create("transparencyBias", "tb", om.MFnNumericData.kFloat, 0.0)
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = 0.0
@@ -189,7 +192,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		tAttr.internal = True
 		tAttr.affectsAppearance = True
 
-		hwColorPerVertexShader.aTexRotateX = nAttr.create( "texRotateX", "tx", om.MFnNumericData.kFloat, 0.0)
+		hwColorPerVertexShader.aTexRotateX = nAttr.create("texRotateX", "tx", om.MFnNumericData.kFloat, 0.0)
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = 0.0
@@ -197,7 +200,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		nAttr.internal = True
 		nAttr.affectsAppearance = True
 
-		hwColorPerVertexShader.aTexRotateY = nAttr.create( "texRotateY", "ty", om.MFnNumericData.kFloat, 0.0)
+		hwColorPerVertexShader.aTexRotateY = nAttr.create("texRotateY", "ty", om.MFnNumericData.kFloat, 0.0)
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = 0.0
@@ -205,7 +208,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		nAttr.internal = True
 		nAttr.affectsAppearance = True
 
-		hwColorPerVertexShader.aTexRotateZ = nAttr.create( "texRotateZ", "tz", om.MFnNumericData.kFloat, 0.0)
+		hwColorPerVertexShader.aTexRotateZ = nAttr.create("texRotateZ", "tz", om.MFnNumericData.kFloat, 0.0)
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = 0.0
@@ -213,7 +216,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		nAttr.internal = True
 		nAttr.affectsAppearance = True
 
-		hwColorPerVertexShader.aDrawBoundingBox = nAttr.create( "drawBoundingBox", "dbb", om.MFnNumericData.kBoolean, False)
+		hwColorPerVertexShader.aDrawBoundingBox = nAttr.create("drawBoundingBox", "dbb", om.MFnNumericData.kBoolean, False)
 		nAttr.storable = True
 		nAttr.keyable = True
 		nAttr.default = False
@@ -221,12 +224,12 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		nAttr.internal = True
 		nAttr.affectsAppearance = True
 
-		## create output attributes here
-		## outColor is the only output attribute and it is inherited
-		## so we do not need to create or add it.
-		##
+		# # create output attributes here
+		# # outColor is the only output attribute and it is inherited
+		# # so we do not need to create or add it.
+		# #
 
-		## Add the attributes here
+		# # Add the attributes here
 
 		om.MPxNode.addAttribute(hwColorPerVertexShader.aColorGain)
 		om.MPxNode.addAttribute(hwColorPerVertexShader.aTranspGain)
@@ -240,9 +243,9 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		om.MPxNode.addAttribute(hwColorPerVertexShader.aTexRotateZ)
 		om.MPxNode.addAttribute(hwColorPerVertexShader.aDrawBoundingBox)
 
-		om.MPxNode.attributeAffects (hwColorPerVertexShader.aColorGain,  omui.MPxHwShaderNode.outColor)
+		om.MPxNode.attributeAffects (hwColorPerVertexShader.aColorGain, omui.MPxHwShaderNode.outColor)
 		om.MPxNode.attributeAffects (hwColorPerVertexShader.aTranspGain, omui.MPxHwShaderNode.outColor)
-		om.MPxNode.attributeAffects (hwColorPerVertexShader.aColorBias,  omui.MPxHwShaderNode.outColor)
+		om.MPxNode.attributeAffects (hwColorPerVertexShader.aColorBias, omui.MPxHwShaderNode.outColor)
 		om.MPxNode.attributeAffects (hwColorPerVertexShader.aTranspBias, omui.MPxHwShaderNode.outColor)
 		om.MPxNode.attributeAffects (hwColorPerVertexShader.aNormalsPerVertex, omui.MPxHwShaderNode.outColor)
 		om.MPxNode.attributeAffects (hwColorPerVertexShader.aColorsPerVertex, omui.MPxHwShaderNode.outColor)
@@ -252,14 +255,14 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		om.MPxNode.attributeAffects (hwColorPerVertexShader.aTexRotateZ, omui.MPxHwShaderNode.outColor)
 		om.MPxNode.attributeAffects (hwColorPerVertexShader.aDrawBoundingBox, omui.MPxHwShaderNode.outColor)
 
-	## The compute method is called by Maya when the input values
-	## change and the output values need to be recomputed.
-	##
-	## In this case this is only used for software shading, when the to
-	## compute the rendering swatches.
+	# # The compute method is called by Maya when the input values
+	# # change and the output values need to be recomputed.
+	# #
+	# # In this case this is only used for software shading, when the to
+	# # compute the rendering swatches.
 	def compute(self, plug, data):
-		## Check that the requested recompute is one of the output values
-		##
+		# # Check that the requested recompute is one of the output values
+		# #
 		if (plug != omui.MPxHwShaderNode.outColor) and (plug.parent() != omui.MPxHwShaderNode.outColor):
 			return None
 
@@ -274,53 +277,53 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 	def postConstructor(self):
 		self.setMPSafe(False)
 
-	## Internally cached attribute handling routines
+	# # Internally cached attribute handling routines
 	def getInternalValueInContext(self, plug, handle, ctx):
 		handledAttribute = False
 
 		if (plug == hwColorPerVertexShader.aColorGain):
 			handledAttribute = True
-			handle.set3Float( self.mColorGain[0], self.mColorGain[1], self.mColorGain[2] )
+			handle.set3Float(self.mColorGain[0], self.mColorGain[1], self.mColorGain[2])
 
 		elif (plug == hwColorPerVertexShader.aColorBias):
 			handledAttribute = True
-			handle.set3Float( self.mColorBias[0], self.mColorBias[1], self.mColorBias[2] )
+			handle.set3Float(self.mColorBias[0], self.mColorBias[1], self.mColorBias[2])
 
 		elif (plug == hwColorPerVertexShader.aTranspGain):
 			handledAttribute = True
-			handle.setFloat( self.mTranspGain )
+			handle.setFloat(self.mTranspGain)
 
 		elif (plug == hwColorPerVertexShader.aTranspBias):
 			handledAttribute = True
-			handle.setFloat( self.mTranspBias )
+			handle.setFloat(self.mTranspBias)
 
 		elif (plug == hwColorPerVertexShader.aNormalsPerVertex):
 			handledAttribute = True
-			handle.setInt( self.mNormalsPerVertex )
+			handle.setInt(self.mNormalsPerVertex)
 
 		elif (plug == hwColorPerVertexShader.aColorsPerVertex):
 			handledAttribute = True
-			handle.setInt( self.mColorsPerVertex )
+			handle.setInt(self.mColorsPerVertex)
 
 		elif (plug == hwColorPerVertexShader.aColorSetName):
 			handledAttribute = True
-			handle.setString( self.mColorSetName )
+			handle.setString(self.mColorSetName)
 
 		elif (plug == hwColorPerVertexShader.aTexRotateX):
 			handledAttribute = True
-			handle.setFloat( self.mTexRotateX )
+			handle.setFloat(self.mTexRotateX)
 
 		elif (plug == hwColorPerVertexShader.aTexRotateY):
 			handledAttribute = True
-			handle.setFloat( self.mTexRotateY )
+			handle.setFloat(self.mTexRotateY)
 
 		elif (plug == hwColorPerVertexShader.aTexRotateZ):
 			handledAttribute = True
-			handle.setFloat( self.mTexRotateZ )
+			handle.setFloat(self.mTexRotateZ)
 
 		elif (plug == hwColorPerVertexShader.aDrawBoundingBox):
 			handledAttribute = True
-			handle.setBool( self.mDrawBoundingBox )
+			handle.setBool(self.mDrawBoundingBox)
 
 		return handledAttribute
 
@@ -397,35 +400,35 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 	def geometry(self, request, view, prim, writable, indexCount, indexArray, vertexCount, vertexIDs, vertexArray, normalCount, normalArrays, colorCount, colorArrays, texCoordCount, texCoordArrays):
 
 		if self.mDrawBoundingBox:
-			points = ((ctypes.c_float * 3)*vertexCount).from_buffer(vertexArray)
+			points = ((ctypes.c_float * 3) * vertexCount).from_buffer(vertexArray)
 
 			# Compute the bounding box.
 			box = om.MBoundingBox()
 			for i in range(vertexCount):
 				point = points[i]
-				box.expand( om.MPoint(point[0], point[1], point[2]) )
+				box.expand(om.MPoint(point[0], point[1], point[2]))
 
 			# Draw the bounding box.
-			wireColor = om.MColor( (0.1, 0.15, 0.35) )
-			drawBoundingBox( box, wireColor )
+			wireColor = om.MColor((0.1, 0.15, 0.35))
+			drawBoundingBox(box, wireColor)
 
-		## If we've received a color, that takes priority
-		##
+		# # If we've received a color, that takes priority
+		# #
 		if colorCount > 0 and colorArrays[ colorCount - 1] is not None:
-			indexArray  = (ctypes.c_uint).from_buffer(indexArray)
+			indexArray = (ctypes.c_uint).from_buffer(indexArray)
 			vertexArray = (ctypes.c_float * 3).from_buffer(vertexArray)
-			colorArray  = (ctypes.c_float * 4).from_buffer(colorArrays[colorCount - 1])
+			colorArray = (ctypes.c_float * 4).from_buffer(colorArrays[colorCount - 1])
 
 			glPushAttrib(GL_ALL_ATTRIB_BITS)
 			glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT)
 			glDisable(GL_LIGHTING)
 
 			glEnableClientState(GL_COLOR_ARRAY)
-			glColorPointer( 4, GL_FLOAT, 0, colorArray )
+			glColorPointer(4, GL_FLOAT, 0, colorArray)
 
 			glEnableClientState(GL_VERTEX_ARRAY)
-			glVertexPointer ( 3, GL_FLOAT, 0, vertexArray )
-			glDrawElements ( prim, indexCount, GL_UNSIGNED_INT, indexArray )
+			glVertexPointer (3, GL_FLOAT, 0, vertexArray)
+			glDrawElements (prim, indexCount, GL_UNSIGNED_INT, indexArray)
 
 			glDisableClientState(GL_COLOR_ARRAY)
 
@@ -433,14 +436,14 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 			glPopAttrib()
 			return
 
-		## If this attribute is enabled, normals, tangents,
-		## and binormals can be visualized using false coloring.
-		## Negative values will clamp to black however.
+		# # If this attribute is enabled, normals, tangents,
+		# # and binormals can be visualized using false coloring.
+		# # Negative values will clamp to black however.
 		if normalCount > self.mNormalsPerVertex:
 			normalCount = self.mNormalsPerVertex
 
 		if normalCount > 0:
-			indexArray  = (ctypes.c_uint).from_buffer(indexArray)
+			indexArray = (ctypes.c_uint).from_buffer(indexArray)
 			vertexArray = (ctypes.c_float * 3).from_buffer(vertexArray)
 			normalArray = (ctypes.c_float * 3).from_buffer(normalArrays[normalCount - 1])
 
@@ -449,11 +452,11 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 			glDisable(GL_LIGHTING)
 
 			glEnableClientState(GL_COLOR_ARRAY)
-			glColorPointer(3, GL_FLOAT, 0, normalArray )
+			glColorPointer(3, GL_FLOAT, 0, normalArray)
 
 			glEnableClientState(GL_VERTEX_ARRAY)
-			glVertexPointer ( 3, GL_FLOAT, 0, vertexArray )
-			glDrawElements ( prim, indexCount, GL_UNSIGNED_INT, indexArray )
+			glVertexPointer (3, GL_FLOAT, 0, vertexArray)
+			glDrawElements (prim, indexCount, GL_UNSIGNED_INT, indexArray)
 
 			glDisableClientState(GL_COLOR_ARRAY)
 
@@ -461,9 +464,9 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 			glPopAttrib()
 			return
 
-		self.draw( prim, writable, indexCount, indexArray, vertexCount, vertexArray, colorCount, colorArrays )
+		self.draw(prim, writable, indexCount, indexArray, vertexCount, vertexArray, colorCount, colorArrays)
 
-	## Batch overrides
+	# # Batch overrides
 	def glBind(self, shapePath):
 		return
 
@@ -471,14 +474,14 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 		return
 
 	def glGeometry(self, path, prim, writable, indexCount, indexArray, vertexCount, vertexIDs, vertexArray, normalCount, normalArrays, colorCount, colorArrays, texCoordCount, texCoordArrays):
-		## If this attribute is enabled, normals, tangents,
-		## and binormals can be visualized using false coloring.
-		## Negative values will clamp to black however.
+		# # If this attribute is enabled, normals, tangents,
+		# # and binormals can be visualized using false coloring.
+		# # Negative values will clamp to black however.
 		if normalCount > self.mNormalsPerVertex:
 			normalCount = self.mNormalsPerVertex
 
 		if normalCount > 0:
-			indexArray  = (ctypes.c_uint).from_buffer(indexArray)
+			indexArray = (ctypes.c_uint).from_buffer(indexArray)
 			vertexArray = (ctypes.c_float * 3).from_buffer(vertexArray)
 			normalArray = (ctypes.c_float * 3).from_buffer(normalArrays[normalCount - 1])
 
@@ -488,11 +491,11 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 			glDisable(GL_BLEND)
 
 			glEnableClientState(GL_COLOR_ARRAY)
-			glColorPointer(3, GL_FLOAT, 0, normalArray )
+			glColorPointer(3, GL_FLOAT, 0, normalArray)
 
 			glEnableClientState(GL_VERTEX_ARRAY)
-			glVertexPointer ( 3, GL_FLOAT, 0, vertexArray )
-			glDrawElements ( prim, indexCount, GL_UNSIGNED_INT, indexArray )
+			glVertexPointer (3, GL_FLOAT, 0, vertexArray)
+			glDrawElements (prim, indexCount, GL_UNSIGNED_INT, indexArray)
 
 			glDisableClientState(GL_COLOR_ARRAY)
 
@@ -500,38 +503,38 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 			glPopAttrib()
 			return
 
-		self.draw( prim, writable, indexCount, indexArray, vertexCount, vertexArray, colorCount, colorArrays )
+		self.draw(prim, writable, indexCount, indexArray, vertexCount, vertexArray, colorCount, colorArrays)
 
-	## Overridden to draw an image for swatch rendering.
-	##
+	# # Overridden to draw an image for swatch rendering.
+	# #
 	def renderSwatchImage(self, outImage):
 		return omr.MRenderUtilities.renderMaterialViewerGeometry("meshSphere",
-																 self.thisMObject(), 
+																 self.thisMObject(),
 																 outImage,
-																 lightRig=omr.MRenderUtilities.kSwatchLight )
+																 lightRig=omr.MRenderUtilities.kSwatchLight)
 
 	def	draw(self, prim, writable, indexCount, indexArray, vertexCount, vertexArray, colorCount, colorArrays):
-		## Should check this value to allow caching
-		## of color values.
+		# # Should check this value to allow caching
+		# # of color values.
 		self.mAttributesChanged = False
 
-		## We assume triangles here.
-		##
+		# # We assume triangles here.
+		# #
 		if (vertexCount == 0) or not ((prim == GL_TRIANGLES) or (prim == GL_TRIANGLE_STRIP)):
 			raise ValueError("kFailure")
 
-		indexArray  = (ctypes.c_uint).from_buffer(indexArray)
+		indexArray = (ctypes.c_uint).from_buffer(indexArray)
 		vertexArray = (ctypes.c_float * 3).from_buffer(vertexArray)
 
-		glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT )
+		glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT)
 		glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT)
 		glDisable(GL_LIGHTING)
 
 		glEnableClientState(GL_VERTEX_ARRAY)
-		glVertexPointer ( 3, GL_FLOAT, 0, vertexArray )
+		glVertexPointer (3, GL_FLOAT, 0, vertexArray)
 
-		## Do "cheesy" multi-pass here for more than one color set
-		##
+		# # Do "cheesy" multi-pass here for more than one color set
+		# #
 		if colorCount <= 1:
 			glDisable(GL_BLEND)
 			if colorCount > 0 and colorArrays[0] is not None:
@@ -540,44 +543,44 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 				glColorPointer(4, GL_FLOAT, 0, colorArray)
 			else:
 				glColor4f(1.0, 0.5, 1.0, 1.0)
-			glDrawElements( prim, indexCount, GL_UNSIGNED_INT, indexArray )
+			glDrawElements(prim, indexCount, GL_UNSIGNED_INT, indexArray)
 
 		else:
-			## Do a 1:1 Blend if we have more than on color set available.
+			# # Do a 1:1 Blend if we have more than on color set available.
 			glEnable(GL_BLEND)
 			glBlendFunc(GL_ONE, GL_ONE)
 			glEnableClientState(GL_COLOR_ARRAY)
 
 			for i in range(colorCount):
 				if colorArrays[i] is not None:
-					## Apply gain and bias
-					##
+					# # Apply gain and bias
+					# #
 					colorArray = (ctypes.c_float * 4).from_buffer(colorArrays[i])
 
 					if self.mColorGain != [1.0, 1.0, 1.0] or self.mColorBias != [0.0, 0.0, 0.0] or self.mTranspGain != 1.0 or self.mTranspBias != 0.0:
-						## This sample code is a CPU bottlneck. It could be
-						## replaced with a vertex program or color matrix
-						## operator.
-						##
+						# # This sample code is a CPU bottlneck. It could be
+						# # replaced with a vertex program or color matrix
+						# # operator.
+						# #
 
-						## We really want to scale 1-transp.
-						## T = 1 - ((1-T)*gain + bias) =
-						##   = T * gain + 1 - gain - bias
+						# # We really want to scale 1-transp.
+						# # T = 1 - ((1-T)*gain + bias) =
+						# #   = T * gain + 1 - gain - bias
 						biasT = 1 - self.mTranspGain - self.mTranspBias
 
-						## Either make a copy or read directly colors.
-						##
+						# # Either make a copy or read directly colors.
+						# #
 						if not (writable & omui.MPxHwShaderNode.kWriteColorArrays):
 							colorArray = []
-							origColors = ((ctypes.c_float * 4)*vertexCount).from_buffer(colorArrays[i])
+							origColors = ((ctypes.c_float * 4) * vertexCount).from_buffer(colorArrays[i])
 							for ii in range(vertexCount):
 								origColor = origColors[ii]
-								colorArray.append( (origColor[0] * self.mColorGain[0]) + self.mColorBias[0] )
-								colorArray.append( (origColor[1] * self.mColorGain[1]) + self.mColorBias[1] )
-								colorArray.append( (origColor[2] * self.mColorGain[2]) + self.mColorBias[2] )
-								colorArray.append( (origColor[3] * self.mTranspGain) + biasT )
+								colorArray.append((origColor[0] * self.mColorGain[0]) + self.mColorBias[0])
+								colorArray.append((origColor[1] * self.mColorGain[1]) + self.mColorBias[1])
+								colorArray.append((origColor[2] * self.mColorGain[2]) + self.mColorBias[2])
+								colorArray.append((origColor[3] * self.mTranspGain) + biasT)
 						else:
-							origColors = ((ctypes.c_float * 4)*vertexCount).from_buffer(colorArrays[i])
+							origColors = ((ctypes.c_float * 4) * vertexCount).from_buffer(colorArrays[i])
 							for ii in range(vertexCount):
 								origColor = origColors[ii]
 								origColor[0] = (origColor[0] * self.mColorGain[0]) + self.mColorBias[0]
@@ -594,25 +597,24 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 					glDisableClientState(GL_COLOR_ARRAY)
 					glColor4f(1.0, 1.0, 1.0, 1.0)
 
-				glDrawElements ( prim, indexCount, GL_UNSIGNED_INT, indexArray )
+				glDrawElements (prim, indexCount, GL_UNSIGNED_INT, indexArray)
 
 		glDisable(GL_BLEND)
 		glPopClientAttrib()
 		glPopAttrib()
 
-
-	## Tells maya that color per vertex will be needed.
+	# # Tells maya that color per vertex will be needed.
 	def colorsPerVertex(self):
-		## Going to be displaying false coloring,
-		## so skip getting internal colors.
+		# # Going to be displaying false coloring,
+		# # so skip getting internal colors.
 		if self.mNormalsPerVertex:
 			return 0
 
 		numColors = 0
 
 		path = self.currentPath()
-		if path.hasFn( om.MFn.kMesh ):
-			fnMesh = om.MFnMesh( path.node() )
+		if path.hasFn(om.MFn.kMesh):
+			fnMesh = om.MFnMesh(path.node())
 			numColorSets = fnMesh.numColorSets
 			if numColorSets < 2:
 				numColors = numColorSets
@@ -621,25 +623,25 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 
 		return numColors
 
-	## Tells maya that color per vertex will be needed.
+	# # Tells maya that color per vertex will be needed.
 	def hasTransparency(self):
 		return True
 
-	## Tells maya that color per vertex will be needed.
+	# # Tells maya that color per vertex will be needed.
 	def normalsPerVertex(self):
 		numNormals = self.mNormalsPerVertex
 
 		path = self.currentPath()
-		if path.hasFn( om.MFn.kMesh ):
-			fnMesh = om.MFnMesh( path.node() )
-			## Check the # of uvsets. If no uvsets
-			## then can't return tangent or binormals
-			##
+		if path.hasFn(om.MFn.kMesh):
+			fnMesh = om.MFnMesh(path.node())
+			# # Check the # of uvsets. If no uvsets
+			# # then can't return tangent or binormals
+			# #
 			if fnMesh.numUVSets == 0:
-				## Put out a warnnig if we're asking for too many uvsets.
-				dispWarn  = "Asking for more uvsets then available for shape: "
+				# # Put out a warnnig if we're asking for too many uvsets.
+				dispWarn = "Asking for more uvsets then available for shape: "
 				dispWarn += path.fullPathName()
-				om.MGlobal.displayWarning( dispWarn )
+				om.MGlobal.displayWarning(dispWarn)
 
 				if self.mNormalsPerVertex:
 					numNormals = 1
@@ -648,7 +650,7 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 
 		return numNormals
 
-	## Tells maya that texCoords per vertex will be needed.
+	# # Tells maya that texCoords per vertex will be needed.
 	def texCoordsPerVertex(self):
 		return 0
 
@@ -660,11 +662,11 @@ class hwColorPerVertexShader(omui.MPxHwShaderNode):
 
 
 class hwCPVShaderOverride(omr.MPxShaderOverride):
-	## Current hwColorPerVertexShader node associated with the shader override.
-	## Updated during doDG() time.
+	# # Current hwColorPerVertexShader node associated with the shader override.
+	# # Updated during doDG() time.
 	fShaderNode = None
 
-	## Blend state will be used in the draw
+	# # Blend state will be used in the draw
 	fBlendState = None
 
 	def __init__(self, obj):
@@ -686,12 +688,12 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 
 		# Set position requirement
 		reqName = ""
-		self.addGeometryRequirement( omr.MVertexBufferDescriptor(reqName, omr.MGeometry.kPosition, omr.MGeometry.kFloat, 3) )
+		self.addGeometryRequirement(omr.MVertexBufferDescriptor(reqName, omr.MGeometry.kPosition, omr.MGeometry.kFloat, 3))
 
 		# Set correct color requirement
 		if self.fShaderNode is not None:
 			reqName = self.fShaderNode.colorSetName()
-		self.addGeometryRequirement( omr.MVertexBufferDescriptor(reqName, omr.MGeometry.kColor, omr.MGeometry.kFloat, 4) )
+		self.addGeometryRequirement(omr.MVertexBufferDescriptor(reqName, omr.MGeometry.kColor, omr.MGeometry.kFloat, 4))
 
 		return "Autodesk Maya hwColorPerVertexShader"
 
@@ -702,36 +704,36 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 	# 3) Draw phase
 	def draw(self, context, renderItemList):
 		##--------------------------
-		## Matrix set up
+		# # Matrix set up
 		##--------------------------
-		## Set world view matrix
+		# # Set world view matrix
 		glMatrixMode(GL_MODELVIEW)
 		glPushMatrix()
 		transform = context.getMatrix(omr.MFrameContext.kWorldViewMtx)
-		glLoadMatrixd( matrixAsArray(transform) )
+		glLoadMatrixd(matrixAsArray(transform))
 
-		## Set projection matrix
+		# # Set projection matrix
 		glMatrixMode(GL_PROJECTION)
 		glPushMatrix()
 		projection = context.getMatrix(omr.MFrameContext.kProjectionMtx)
-		glLoadMatrixd( matrixAsArray(projection) )
+		glLoadMatrixd(matrixAsArray(projection))
 
 		##--------------------------
-		## State set up
+		# # State set up
 		##--------------------------
 		stateMgr = context.getStateManager()
 
-		## Blending
-		## Save current blend status
+		# # Blending
+		# # Save current blend status
 		curBlendState = stateMgr.getBlendState()
 		if curBlendState is None:
 			return False
 
 		if self.fBlendState is None:
-			## If we haven't got a blending state, then acquire a new one.
-			## Since it would be expensive to acquire the state, we would
-			## store it.
-			## Create a new blend status and acquire blend state from the context
+			# # If we haven't got a blending state, then acquire a new one.
+			# # Since it would be expensive to acquire the state, we would
+			# # store it.
+			# # Create a new blend status and acquire blend state from the context
 			blendDesc = omr.MBlendStateDesc()
 			for i in range(omr.MBlendState.kMaxTargets):
 				blendDesc.targetBlends[i].blendEnable = True
@@ -748,57 +750,55 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 			if self.fBlendState is None:
 				return False
 
-		## Activate the blend on the device
+		# # Activate the blend on the device
 		stateMgr.setBlendState(self.fBlendState)
 
-		## Bounding box draw
+		# # Bounding box draw
 		if self.fShaderNode.wantDrawBoundingBox():
 			for renderItem in renderItemList:
 				if renderItem is None:
 					continue
 
-				## Modelview matrix is already set so just use the object
-				## space bbox.
+				# # Modelview matrix is already set so just use the object
+				# # space bbox.
 				box = renderItem.boundingBox(om.MSpace.kObject)
 
-				## Draw the bounding box.
-				wireColor = om.MColor( (0.1, 0.15, 0.35) )
-				drawBoundingBox( box, wireColor )
+				# # Draw the bounding box.
+				wireColor = om.MColor((0.1, 0.15, 0.35))
+				drawBoundingBox(box, wireColor)
 
 		##--------------------------
-		## geometry draw
+		# # geometry draw
 		##--------------------------
 		useCustomDraw = False
 		if useCustomDraw:
-			## Custom draw
-			## Does not set state, matrix or material
+			# # Custom draw
+			# # Does not set state, matrix or material
 			self.customDraw(context, renderItemList)
 
 		else:
-			## Internal standard draw
-			## Does not set state, matrix or material
+			# # Internal standard draw
+			# # Does not set state, matrix or material
 			self.drawGeometry(context)
 
-
 		##--------------------------
-		## Matrix restore
+		# # Matrix restore
 		##--------------------------
 		glPopMatrix()
 		glMatrixMode(GL_MODELVIEW)
 		glPopMatrix()
 
-
 		##--------------------------
-		## State restore
+		# # State restore
 		##--------------------------
-		## Restore blending
+		# # Restore blending
 		stateMgr.setBlendState(curBlendState)
 
 		return True
 
 	# draw helper method
 	def customDraw(self, context, renderItemList):
-		glPushClientAttrib ( GL_CLIENT_ALL_ATTRIB_BITS )
+		glPushClientAttrib (GL_CLIENT_ALL_ATTRIB_BITS)
 
 		for renderItem in renderItemList:
 			if renderItem is None:
@@ -816,8 +816,8 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 	# draw helper method
 	@staticmethod
 	def customDrawGeometry(context, geometry, indexPrimType):
-		## Dump out vertex field information for each field
-		##
+		# # Dump out vertex field information for each field
+		# #
 		bufferCount = geometry.vertexBufferCount()
 
 		boundData = True
@@ -837,23 +837,23 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 			fieldOffset = ctypes.c_void_p(desc.offset)
 			fieldStride = desc.stride
 
-			## Bind each data buffer
+			# # Bind each data buffer
 			glBindBuffer(GL_ARRAY_BUFFER, dataBufferId)
 			currentError = glGetError()
 			if currentError != GL_NO_ERROR:
 				boundData = False
 
 			if boundData:
-				## Set the data pointers
+				# # Set the data pointers
 				if desc.semantic == omr.MGeometry.kPosition:
 					glEnableClientState(GL_VERTEX_ARRAY)
-					glVertexPointer(3, GL_FLOAT, fieldStride*4, fieldOffset)
+					glVertexPointer(3, GL_FLOAT, fieldStride * 4, fieldOffset)
 					currentError = glGetError()
 					if currentError != GL_NO_ERROR:
 						boundData = False
 				elif desc.semantic == omr.MGeometry.kColor:
 					glEnableClientState(GL_COLOR_ARRAY)
-					glColorPointer(4, GL_FLOAT, fieldStride*4, fieldOffset)
+					glColorPointer(4, GL_FLOAT, fieldStride * 4, fieldOffset)
 					currentError = glGetError()
 					if currentError != GL_NO_ERROR:
 						boundData = False
@@ -862,8 +862,8 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 				break
 
 		if boundData and geometry.indexBufferCount() > 0:
-			## Dump out indexing information
-			##
+			# # Dump out indexing information
+			# #
 			buffer = geometry.indexBuffer(0)
 			indexHandle = buffer.resourceHandle()
 			indexBufferCount = 0
@@ -872,7 +872,7 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 				indexBufferId = (ctypes.c_uint).from_address(indexHandle)
 				indexBufferCount = ctypes.c_int(buffer.size())
 
-			## Bind the index buffer
+			# # Bind the index buffer
 			if indexBufferId and indexBufferId > 0:
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId)
 				currentError = glGetError()
@@ -892,12 +892,11 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 						boundData = false
 
 					if boundData:
-						## Draw the geometry
+						# # Draw the geometry
 						indexType = GL_UNSIGNED_SHORT
 						if buffer.dataType() == omr.MGeometry.kUnsignedInt32:
 							indexType = GL_UNSIGNED_INT
 						glDrawElements(indexPrimTypeGL, indexBufferCount, indexType, ctypes.c_void_p(0))
-
 
 	def rebuildAlways(self):
 		# Since color set name changing needs to add a new
@@ -912,12 +911,13 @@ class hwCPVShaderOverride(omr.MPxShaderOverride):
 		return True
 
 
-## The initializePlugin method is called by Maya when the
-## plugin is loaded. It registers the hwColorPerVertexShader node
-## which provides Maya with the creator and initialize methods to be
-## called when a hwColorPerVertexShader is created.
-##
+# # The initializePlugin method is called by Maya when the
+# # plugin is loaded. It registers the hwColorPerVertexShader node
+# # which provides Maya with the creator and initialize methods to be
+# # called when a hwColorPerVertexShader is created.
+# #
 sHWCPVShaderRegistrantId = "HWCPVShaderRegistrantId"
+
 
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "4.5", "Any")
@@ -937,10 +937,10 @@ def initializePlugin(obj):
 		raise
 
 
-## The unitializePlugin is called when Maya needs to unload the plugin.
-## It basically does the opposite of initialize by calling
-## the deregisterNode to remove it.
-##
+# # The unitializePlugin is called when Maya needs to unload the plugin.
+# # It basically does the opposite of initialize by calling
+# # the deregisterNode to remove it.
+# #
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)
 	try:

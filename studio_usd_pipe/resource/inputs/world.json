@@ -10,6 +10,21 @@
 	"enable": true,
 	"type": "world",
 	"data": {
+		"translate": [
+			0,
+			0,
+			0
+		],
+		"rotate":[
+			0,
+			0,
+			0
+		],
+		"scale":[
+			1,
+			1,
+			1
+		],
 	    "knots": [
 	        -2.0, 
 	        -1.0, 

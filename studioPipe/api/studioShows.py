@@ -98,7 +98,7 @@ class Connect(object):
             return
 
         if not os.path.isfile(input_data['show_icon']):
-            warnings.warn('not found file %s' %
+            warnings.warn('not found file %s' % 
                           input_data['show_icon'], Warning)
             return
 

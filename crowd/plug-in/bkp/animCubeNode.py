@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 # import maya.cmds as cmds
 # cmds.createNode("transform", name="animCube1")
@@ -50,6 +50,7 @@ import maya.OpenMayaMPx as OpenMayaMPx
 
 kPluginNodeName = "spAnimCube"
 kPluginNodeId = OpenMaya.MTypeId(0x8700B)
+
 
 class animCube(OpenMayaMPx.MPxNode):
 	time = OpenMaya.MObject()
@@ -70,13 +71,13 @@ class animCube(OpenMayaMPx.MPxNode):
 		numFaceConnects = 24
 
 		vtx_1 = OpenMaya.MFloatPoint(-cubeSize, -cubeSize, -cubeSize)
-		vtx_2 = OpenMaya.MFloatPoint( cubeSize, -cubeSize, -cubeSize)
-		vtx_3 = OpenMaya.MFloatPoint( cubeSize, -cubeSize,  cubeSize)
-		vtx_4 = OpenMaya.MFloatPoint(-cubeSize, -cubeSize,  cubeSize)
-		vtx_5 = OpenMaya.MFloatPoint(-cubeSize,  cubeSize, -cubeSize)
-		vtx_6 = OpenMaya.MFloatPoint(-cubeSize,  cubeSize,  cubeSize)
-		vtx_7 = OpenMaya.MFloatPoint( cubeSize,  cubeSize,  cubeSize)
-		vtx_8 = OpenMaya.MFloatPoint( cubeSize,  cubeSize, -cubeSize)
+		vtx_2 = OpenMaya.MFloatPoint(cubeSize, -cubeSize, -cubeSize)
+		vtx_3 = OpenMaya.MFloatPoint(cubeSize, -cubeSize, cubeSize)
+		vtx_4 = OpenMaya.MFloatPoint(-cubeSize, -cubeSize, cubeSize)
+		vtx_5 = OpenMaya.MFloatPoint(-cubeSize, cubeSize, -cubeSize)
+		vtx_6 = OpenMaya.MFloatPoint(-cubeSize, cubeSize, cubeSize)
+		vtx_7 = OpenMaya.MFloatPoint(cubeSize, cubeSize, cubeSize)
+		vtx_8 = OpenMaya.MFloatPoint(cubeSize, cubeSize, -cubeSize)
 
 		points = OpenMaya.MFloatPointArray()
 		points.setLength(8)
@@ -147,8 +148,10 @@ class animCube(OpenMayaMPx.MPxNode):
 		else:
 			return OpenMaya.kUnknownParameter
 
+
 def nodeCreator():
-	return OpenMayaMPx.asMPxPtr( animCube() )
+	return OpenMayaMPx.asMPxPtr(animCube())
+
 
 def nodeInitializer():
 	unitAttr = OpenMaya.MFnUnitAttribute()
@@ -167,17 +170,18 @@ def nodeInitializer():
 def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.registerNode( kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
+		mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
 	except:
-		sys.stderr.write( "Failed to register node: %s" % kPluginNodeName )
+		sys.stderr.write("Failed to register node: %s" % kPluginNodeName)
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 	try:
-		mplugin.deregisterNode( kPluginNodeId )
+		mplugin.deregisterNode(kPluginNodeId)
 	except:
-		sys.stderr.write( "Failed to deregister node: %s" % kPluginNodeName )
+		sys.stderr.write("Failed to deregister node: %s" % kPluginNodeName)
 		raise
 	

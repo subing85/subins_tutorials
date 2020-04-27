@@ -11,6 +11,7 @@ import sys
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
 
+
 # command
 class HelloWorldCmd(OpenMayaMPx.MPxCommand):
 	kPluginCmdName = "spHelloWorld"
@@ -20,9 +21,9 @@ class HelloWorldCmd(OpenMayaMPx.MPxCommand):
 
 	@staticmethod
 	def cmdCreator():
-		return OpenMayaMPx.asMPxPtr( HelloWorldCmd() )
+		return OpenMayaMPx.asMPxPtr(HelloWorldCmd())
 
-	def doIt(self,argList):
+	def doIt(self, argList):
 		print "Hello World!"
 
 
@@ -39,6 +40,7 @@ def initializePlugin(plugin):
 		)
 		raise
 
+
 # Uninitialize the script plug-in
 def uninitializePlugin(plugin):
 	pluginFn = OpenMayaMPx.MFnPlugin(plugin)
@@ -50,7 +52,7 @@ def uninitializePlugin(plugin):
 		)
 		raise
 
-#-
+# -
 # ==========================================================================
 # Copyright (C) 2011 Autodesk, Inc. and/or its licensors.  All
 # rights reserved.
@@ -86,4 +88,4 @@ def uninitializePlugin(plugin):
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +

@@ -53,7 +53,7 @@ for currentJoint in jointList :
         for index in range(len(vertexIndexList)) :    
             currentVertex = vertexIndexList[index]
             currentWeight = vertexWightArray[index]
-            cmds.setAttr('%s.weightList[0].w[%s]' %(myCluster[0], currentVertex), currentWeight)    
+            cmds.setAttr('%s.weightList[0].w[%s]' % (myCluster[0], currentVertex), currentWeight)    
             
         # Change the cluster position
         xyz = cmds.xform(currentJoint, q=1, ws=1, t=1)

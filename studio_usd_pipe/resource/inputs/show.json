@@ -1,0 +1,229 @@
+{
+	"created_by": "subin gopi",
+	"author": "Subin. Gopi (subing85@gmail.com)",
+	"#copyright": "(c) 2019, Subin Gopi All rights reserved.",
+	"modified": "April:22:2020 - 09:00:01:PM",
+	"description": "inputs of shows configure example",
+	"warning": "# WARNING! All changes made in this file will be lost!",
+	"enable": true,
+	"type": "show_config",
+	"data": {
+		"show": {
+			"show_name": {
+				"order": 0,				
+				"type": "str", 
+				"value": "btm",					
+				"label": "Show name"
+				},
+			"long_name": {
+				"order": 1,				
+				"type": "str", 
+				"value": "batman",					
+				"label": "Full show name"
+				},					
+				
+			"show_path": {
+				"order": 2,				
+				"type": "dirname",
+				"value": "/venture/shows/batman",					
+				"label": "Show path",
+				"description": "Browse your show directory"
+				},	
+			"icon": { 
+				"order": 3,				
+				"type": "path",
+				"value": "/venture/shows/icons/batman.png",
+				"label": "Show icon",
+				"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
+				"description": "Browse your show icon/image file"
+				},					
+			"order": {
+				"order": 5,				
+				"type": "int",
+				"value": 0,					
+				"label": "Show order"
+				},
+			"path": {
+				"order": 6,				
+				"type": "dirname",
+				"value": "/usr/bin",						
+				"label": "OS Path",
+				"description": "Browse your os bin path"	
+				},
+			"USD": {
+				"order": 6,				
+				"type": "bool",
+				"value": true,
+				"label": "USD"
+				},
+			"PYTHONPATH": {
+				"order": 7,			
+				"type": "list",
+				"value": [
+					"/venture/source_code/package/", 
+					"/venture/source_code/subins-toolkits/"
+					],						
+				"label": "Aditional python path",
+				"description": "Browse your aditional python directory"	
+				}				
+			},				
+		"applications": {
+			"maya": {
+				"version": { 
+					"order": 0,				
+					"type": "str",
+					"value": "maya2018",
+					"label": "Maya version"
+					},				
+				"path": { 
+					"order": 1,				
+					"type": "dirname",
+					"value": "/usr/autodesk/maya2018",
+					"label": "Maya path",
+					"description": "Browse your maya directory"							
+					},					
+			
+				"exe": { 
+					"order": 2,				
+					"type": "path",
+					"value": "/usr/autodesk/maya2018/bin/maya2018",
+					"label": "Maya exe",
+					"format": "(*.sh *.exe)",
+					"description": "Browse your maya exe path"	
+					},			
+			
+				"icon": { 
+					"order": 3,				
+					"type": "path",
+					"value": "/venture/icons/maya2018.png",
+					"label": "Maya icon",
+					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
+					"description": "Browse your maya icon directory"	
+					},
+				"MAYA_PLUG_IN_PATH": {
+					"order": 4,			
+					"type": "list",
+					 "value": [
+						"/venture/source_code/package/", 
+						"/venture/source_code/subins-toolkits/"
+						],
+					"label": "Aditional plugin path",
+					"description": "Browse your aditional plugin directory"						
+					},
+				"MAYA_SCRIPT_PATH": {
+					"order": 5,				
+					"type": "list",
+					"value": [
+						"/venture/source_code/package/", 
+						"/venture/source_code/subins-toolkits/"
+						],
+					"label": "Aditional script path",
+					"description": "Browse your aditional script directory"	
+					},				
+				"order": 0	
+				},
+
+			"katana": {
+				"version": { 
+					"order": 0,				
+					"type": "str",
+					"value": "katana3.2.3",
+					"label": "Katana version"
+					},				
+				"path": { 
+					"order": 1,				
+					"type": "dirname",
+					"value": "/opt/katana/katana3.2.3",
+					"label": "Katana path",
+					"description": "Browse your katana directory"							
+					},					
+			
+				"exe": { 
+					"order": 2,				
+					"type": "path",
+					"value": "/opt/katana/katana3.2.3/katana",
+					"label": "Katana exe",
+					"format": "(*.sh *.exe)",
+					"description": "Browse your katana exe path"	
+					},					
+				"icon": { 
+					"order": 3,				
+					"type": "path",
+					"value": "/venture/icons/katana3.2.3.png",
+					"label": "Katana icon",
+					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
+					"description": "Browse your katana icon directory"	
+					},				
+				"order": 1
+				},
+			"nuke": {
+				"version": { 
+					"order": 0,				
+					"type": "str",
+					"value": "Nuke4.2.3",
+					"label": "Nuke version"
+					},				
+				"path": { 
+					"order": 1,				
+					"type": "dirname",
+					"value": "/opt/nuke/nuke4.2.3",
+					"label": "Nuke path",
+					"description": "Browse your nuke directory"							
+					},					
+			
+				"exe": { 
+					"order": 2,				
+					"type": "path",
+					"value": "/opt/nuke/nuke4.2.3/nuke",
+					"label": "Nuke exe",
+					"format": "(*.sh *.exe)",
+					"description": "Browse your nuke exe path"	
+					},			
+				"icon": { 
+					"order": 3,				
+					"type": "path",
+					"value": "/venture/icons/nuke.png",
+					"label": "Nuke icon",
+					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
+					"description": "Browse your nuke icon directory"	
+					},		
+
+				"order": 2
+				},
+			"natron": {
+				"version": { 
+					"order": 0,				
+					"type": "str",
+					"value": "Natron-2.3.13",
+					"label": "Natron version"
+					},				
+				"path": { 
+					"order": 1,				
+					"type": "dirname",
+					"value": "/venture/software/Natron-2.3.13",
+					"label": "Nuke path",
+					"description": "Browse your natron directory"							
+					},					
+			
+				"exe": { 
+					"order": 2,				
+					"type": "path",
+					"value": "/venture/software/Natron-2.3.13/Natron",
+					"label": "Nuke exe",
+					"format": "(*.sh *.exe)",
+					"description": "Browse your natron exe path"	
+					},	
+				"icon": { 
+					"order": 3,				
+					"type": "path",
+					"value": "/venture/icons/natron.png",
+					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
+					"label": "Natron icon",
+					"description": "Browse your natron icon directory"	
+					},		
+				"order":3
+				}		 
+			}
+		}
+	}
+	

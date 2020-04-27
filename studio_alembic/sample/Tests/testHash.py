@@ -43,12 +43,13 @@ testList = []
 kTranslateOperation = XformOperationType.kTranslateOperation
 kTranslateHint = 0
 
+
 def writeHierarchy(filename):
     """write an oarchive with some matching hierarchies"""
 
     #
     # These hashes are only supported in ogawa caches.
-    oarch = OArchive(filename, asOgawa = True)
+    oarch = OArchive(filename, asOgawa=True)
 
     #
     #           a
@@ -78,7 +79,7 @@ def writeHierarchy(filename):
     asamp.addOp(transop, V3d(-1.0, -1.0, 0.0))
 
     bsamp = XformSample()
-    bsamp.addOp(transop, V3d( 1.0, -1.0, 0.0))
+    bsamp.addOp(transop, V3d(1.0, -1.0, 0.0))
 
     a.getSchema().set(asamp)
     b.getSchema().set(asamp)
@@ -87,6 +88,7 @@ def writeHierarchy(filename):
     e.getSchema().set(bsamp)
     f.getSchema().set(asamp)
     g.getSchema().set(bsamp)
+
 
 def testHash():
     filename = 'hash.abc'
@@ -111,22 +113,23 @@ def testHash():
     assert g.valid()
 
     assert a.getPropertiesHash() != ""
-    assert a.getChildrenHash()   != ""
+    assert a.getChildrenHash() != ""
     assert b.getPropertiesHash() != ""
-    assert b.getChildrenHash()   != ""
+    assert b.getChildrenHash() != ""
     assert c.getPropertiesHash() != ""
-    assert c.getChildrenHash()   != ""
+    assert c.getChildrenHash() != ""
     assert d.getPropertiesHash() != ""
-    assert d.getChildrenHash()   != ""
+    assert d.getChildrenHash() != ""
     assert e.getPropertiesHash() != ""
-    assert e.getChildrenHash()   != ""
+    assert e.getChildrenHash() != ""
     assert f.getPropertiesHash() != ""
-    assert f.getChildrenHash()   != ""
+    assert f.getChildrenHash() != ""
     assert g.getPropertiesHash() != ""
-    assert g.getChildrenHash()   != ""
+    assert g.getChildrenHash() != ""
 
     assert b.getPropertiesHash() != d.getPropertiesHash()
     assert e.getPropertiesHash() == g.getPropertiesHash()
+
 
 testList.append(('testHash', testHash))
 

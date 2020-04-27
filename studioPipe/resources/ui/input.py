@@ -27,14 +27,12 @@ from PySide import QtGui
 from functools import partial
 from datetime import datetime
 
-
 from studioPipe import resources
 from studioPipe.api import studioConnect
 
 from studioPipe.core import studioImage
 
 from studioPipe.utils import platforms
-
 
 
 class Window(QtGui.QWidget):
@@ -59,7 +57,7 @@ class Window(QtGui.QWidget):
         self.q_image, self.q_image_path = None, None
         
         # current input file
-        self.file_path = os.path.join(resources.getInputPath(), '%s.json'%self.type)
+        self.file_path = os.path.join(resources.getInputPath(), '%s.json' % self.type)
         
         print 'db path', self.file_path
         
@@ -67,7 +65,6 @@ class Window(QtGui.QWidget):
         self.data, self.sort_data, self.all_input_data = self.connect.getInputData()
         
         self.module, self.lable, self.version = platforms.get_tool_kit()
-        
 
         self.setup_ui()
         self.load_widgets()
@@ -139,7 +136,6 @@ class Window(QtGui.QWidget):
         self.button_create.setText('Create')
         self.horizontallayout.addWidget(self.button_create)
         self.button_cancel.clicked.connect(self.close)
-
         
     def load_widgets(self):
         for index in range (len(self.sort_data)):
@@ -149,26 +145,26 @@ class Window(QtGui.QWidget):
             label.setObjectName('label_%s' % self.sort_data[index])
             label.setText(current_item['display_name'])
             label.setStatusTip(current_item['tooltip'])
-            label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+            label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             self.gridlayout.addWidget(label, index, 0, 1, 1)
             
             widget = None
-            if current_item['type']=='str' or current_item['type']=='path' or current_item['type']=='directory':
+            if current_item['type'] == 'str' or current_item['type'] == 'path' or current_item['type'] == 'directory':
                 widget = QtGui.QLineEdit(self.groupbox)
                 widget.setObjectName('lineedit_%s' % self.sort_data[index])
                 widget.setText(current_item['value'])
                 widget.setEnabled(current_item['enable'])
 
-            elif current_item['type']=='enum':
+            elif current_item['type'] == 'enum':
                 widget = QtGui.QComboBox(self.groupbox)
                 widget.setObjectName('combobox_%s' % self.sort_data[index])
                 if current_item['values']:
                     widget.addItems(current_item['values'])
                     widget.setCurrentIndex(current_item['value'])
                     
-            elif current_item['type']=='add':     
+            elif current_item['type'] == 'add':     
                 widget = QtGui.QPushButton(self.groupbox)
-                widget.setObjectName('button_add_%s'%self.sort_data[index])
+                widget.setObjectName('button_add_%s' % self.sort_data[index])
                 widget.setText(u'\u002B')
                 widget.setStyleSheet('color: #0000FF;')
                 widget.setMinimumSize(QtCore.QSize(20, 20))
@@ -180,9 +176,9 @@ class Window(QtGui.QWidget):
                 # self.gridLayout.addWidget(self.lineEdit_add, 2, 2, 1, 1)
                 #===============================================================
                 
-            if current_item['type']=='path' or current_item['type']=='directory':
+            if current_item['type'] == 'path' or current_item['type'] == 'directory':
                 button_find = QtGui.QPushButton(self.groupbox)
-                button_find.setObjectName('button_find_%s'%self.sort_data[index])
+                button_find.setObjectName('button_find_%s' % self.sort_data[index])
                 button_find.setText('...')
                 button_find.setStyleSheet('color: #0000FF;')
                 button_find.setMinimumSize(QtCore.QSize(35, 25))
@@ -206,11 +202,11 @@ class Window(QtGui.QWidget):
             self.gridlayout.addWidget(widget, index, 1, 1, 2)            
 
     def find_paths(self, widget, types, resolution=None, title=None):
-        if types=='path':
+        if types == 'path':
             current_format = 'image {}'.format(resources.getImageFormats())
             current_link = QtGui.QFileDialog.getOpenFileName(
                 self, title, self.brows_directory, current_format)
-        if types=='directory':
+        if types == 'directory':
             current_link = [QtGui.QFileDialog.getExistingDirectory(
                 self, 'Browser', self.brows_directory)]
             self.brows_directory = current_link[0]
@@ -220,11 +216,10 @@ class Window(QtGui.QWidget):
         
         print types
         print resolution
-        if types=='path' and resolution:        
+        if types == 'path' and resolution:        
             self.snapshot(self.button_show, current_link[0], resolution)
         
         print self.size()
-
 
     def snapshot(self, button, image_file, resolution):
         print 'resolution\t', resolution
@@ -251,7 +246,7 @@ class Window(QtGui.QWidget):
         icon.addPixmap(QtGui.QPixmap(path),
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         button.setIcon(icon)
-        button.setIconSize(QtCore.QSize(width - 5, height- 5))
+        button.setIconSize(QtCore.QSize(width - 5, height - 5))
 
     def _get_widget_data(self, layout):
         data = {}
@@ -321,9 +316,9 @@ class Window(QtGui.QWidget):
     
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    #window = Window(parent=None, show='tom', type='discipline', value='discipline_child_inputs', 
+    # window = Window(parent=None, show='tom', type='discipline', value='discipline_child_inputs', 
     #                title=None, label=None, width=500, height=100)
-    #window = Window(parent=None, type='preferences', value=None, title=None, label=None, width=800, height=300)
+    # window = Window(parent=None, type='preferences', value=None, title=None, label=None, width=800, height=300)
     window = Window(parent=None, type='shows', value=None, title='Show Inputs', label='Create your Show', width=500, height=300)
      
     window.show()

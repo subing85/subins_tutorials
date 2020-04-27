@@ -13,7 +13,6 @@ Description
     to replace the source image from the scenes.
 '''
 
-
 import os
 
 from pymel import core
@@ -21,7 +20,7 @@ from pymel import core
 
 def do_replace(source, target):
     files = core.ls(type='file')
-    print "\nhttp://www.subins-toolkits.com", '\n', '-'*41
+    print "\nhttp://www.subins-toolkits.com", '\n', '-' * 41
     for each_file in files:
         attribute = each_file.attr('fileTextureName')
         exists_path = attribute.get()

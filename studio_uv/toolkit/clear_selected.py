@@ -22,6 +22,7 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'Clear selected polygon uvs!...'
 SEPARATOR = False
 
+
 def execute():
     from pymel import core
     core.studioUV(cl=True, s='selected')

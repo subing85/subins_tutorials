@@ -8,7 +8,6 @@ import sys
 from PyQt4.QtGui import QPixmap, QApplication
 from datetime import datetime
 
-
 import sys
 from PyQt4.QtGui import QPixmap, QApplication
 from datetime import datetime
@@ -17,7 +16,6 @@ date = datetime.now()
 filename = date.strftime('%Y-%m-%d_%H-%M-%S.jpg')
 app = QApplication(sys.argv)
 QPixmap.grabWindow(QApplication.desktop().winId()).save(filename, 'jpg')
-
 
 #===============================================================================
 # filename = '/home/shreya/Downloads/abcd.jpg'
@@ -28,7 +26,6 @@ QPixmap.grabWindow(QApplication.desktop().winId()).save(filename, 'jpg')
 # frame.setFrameStyle(QtGui.QFrame.StyledPanel)
 # frame.setLineWidth(2)
 #===============================================================================
-
 
 '''
     def shootScreen(self):
@@ -48,15 +45,12 @@ QPixmap.grabWindow(QApplication.desktop().winId()).save(filename, 'jpg')
 '''
 # rubberband = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle, None)
 
-        
-
-
-
 
 class MyWidget(QtGui.QWidget):
+
     def __init__(self):
         super().__init__()
-        self.setGeometry(30,30,600,400)
+        self.setGeometry(30, 30, 600, 400)
         self.begin = QtCore.QPoint()
         self.end = QtCore.QPoint()
         self.show()
@@ -82,18 +76,11 @@ class MyWidget(QtGui.QWidget):
         self.update()
 
 
-
-
-
-
-
-
-
-
-
 from PyQt4 import QtGui, QtCore
 
+
 class Window(QtGui.QWidget):
+
     def __init__(self):
         QtGui.QWidget.__init__(self)
         layout = QtGui.QVBoxLayout(self)
@@ -143,8 +130,6 @@ class Window(QtGui.QWidget):
 #     window.show()
 #     sys.exit(app.exec_())
 #===============================================================================
-    
-    
 
 '''
 
@@ -188,10 +173,9 @@ class MyWidget(QtWidgets.QWidget):
         self.update()
 '''
         
-        
-        
 import sys
 from PyQt4 import QtGui, QtCore
+
 
 class Example(QtGui.QWidget):
     
@@ -230,13 +214,10 @@ def main():
     ex = Example()
     sys.exit(app.exec_())
 
-
 #===============================================================================
 # if __name__ == '__main__':
 #     main()        
 #===============================================================================
-
-
 
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
@@ -254,6 +235,7 @@ last edited: September 2011
 
 import sys
 from PyQt4 import QtGui, QtCore
+
 
 class Example(QtGui.QWidget):
     

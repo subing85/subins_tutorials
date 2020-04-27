@@ -73,17 +73,14 @@ class Connect(OpenMayaMPx.MPxNode):
     def crowd_setup(self, **kwargs):
         setup = crowdSetup.Connect(
             self,
-            type = kwargs['type'],
-            count = kwargs['count'],
-            row = kwargs['row'],
-            column = kwargs['column'],
-            offset = kwargs['offset'],
-            random = kwargs['random']              
+            type=kwargs['type'],
+            count=kwargs['count'],
+            row=kwargs['row'],
+            column=kwargs['column'],
+            offset=kwargs['offset'],
+            random=kwargs['random']              
             )    
         setup.create()
-        
-        
-
 
 
 def nodeCreator():
@@ -186,6 +183,7 @@ def createFloatAttribute(attribute, name, short_name, min=0.00, max=100.00):
     attribute.setMax(max)
     return current_attribute
 
+
 def createOutputAttribute(attribute, name, short_name):
     current_attribute = attribute.create(
         name, short_name, OpenMaya.MFnNumericData.kInt, 1)
@@ -194,6 +192,7 @@ def createOutputAttribute(attribute, name, short_name):
     attribute.setReadable(True)
     attribute.setHidden(False)        
     return current_attribute   
+
 
 def getSkeletonTypes():
     crowd_skeleton = skeleton.Connect()

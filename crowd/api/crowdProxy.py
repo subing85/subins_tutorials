@@ -15,15 +15,15 @@ class Connect(OpenMayaMPx.MPxCommand):
         OpenMayaMPx.MPxCommand.__init__(self)
         self.attr = crowdAttributes.Connect()
         self.k_create = ['-c', '-create']
-        self.k_type = ['-%s'%self.attr.k_type[0], '-%s'%self.attr.k_type[1]]
-        self.k_count = ['-%s'%self.attr.k_count[0], '-%s'%self.attr.k_count[1]]
-        self.k_distance = ['-%s'%self.attr.k_distance[0], '-%s'%self.attr.k_distance[1]]
-        self.k_row = ['-%s'%self.attr.k_row[0], '-%s'%self.attr.k_row[1]]
-        self.k_column = ['-%s'%self.attr.k_column[0], '-%s'%self.attr.k_column[1]]
-        self.k_row_offset = ['-%s'%self.attr.k_row_offset[0], '-%s'%self.attr.k_row_offset[1]]
-        self.k_column_offset = ['-%s'%self.attr.k_column_offset[0], '-%s'%self.attr.k_column_offset[1]]
+        self.k_type = ['-%s' % self.attr.k_type[0], '-%s' % self.attr.k_type[1]]
+        self.k_count = ['-%s' % self.attr.k_count[0], '-%s' % self.attr.k_count[1]]
+        self.k_distance = ['-%s' % self.attr.k_distance[0], '-%s' % self.attr.k_distance[1]]
+        self.k_row = ['-%s' % self.attr.k_row[0], '-%s' % self.attr.k_row[1]]
+        self.k_column = ['-%s' % self.attr.k_column[0], '-%s' % self.attr.k_column[1]]
+        self.k_row_offset = ['-%s' % self.attr.k_row_offset[0], '-%s' % self.attr.k_row_offset[1]]
+        self.k_column_offset = ['-%s' % self.attr.k_column_offset[0], '-%s' % self.attr.k_column_offset[1]]
         
-        self.k_random = ['-%s'%self.attr.k_random[0], '-%s'%self.attr.k_random[1]]
+        self.k_random = ['-%s' % self.attr.k_random[0], '-%s' % self.attr.k_random[1]]
 
     @staticmethod
     def cmdCreator():
@@ -69,7 +69,6 @@ class Connect(OpenMayaMPx.MPxCommand):
 
         print 'row', row
         print 'column', column
-
          
         if args_data.isFlagSet(self.k_create[0]):
             create = args_data.flagArgumentBool(self.k_create[0], 0)
@@ -77,7 +76,7 @@ class Connect(OpenMayaMPx.MPxCommand):
             crowd_setup = crowdSetup.Connect(
                 type=type,
                 count=count,
-                distance = distance,
+                distance=distance,
                 row=row,
                 column=column,
                 rowOffset=row_offset,
@@ -95,6 +94,5 @@ class Connect(OpenMayaMPx.MPxCommand):
         syntax.addFlag(self.k_row_offset[0], self.k_row_offset[1], OpenMaya.MSyntax.kDouble)
         syntax.addFlag(self.k_column_offset[0], self.k_column_offset[1], OpenMaya.MSyntax.kDouble)
         syntax.addFlag(self.k_random[0], self.k_random[1], OpenMaya.MSyntax.kDouble)
-        
         
         return syntax

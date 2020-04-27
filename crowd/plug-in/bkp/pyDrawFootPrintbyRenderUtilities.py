@@ -1,4 +1,4 @@
-#-
+# -
 # ===========================================================================
 # Copyright 2015 Autodesk, Inc.  All rights reserved.
 #
@@ -6,7 +6,7 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 # ===========================================================================
-#+
+# +
 
 import sys
 import ctypes
@@ -15,6 +15,7 @@ import maya.api.OpenMayaUI as omui
 import maya.api.OpenMayaAnim as oma
 import maya.api.OpenMayaRender as omr
 
+
 def maya_useNewAPI():
 	"""
 	The presence of this function tells Maya that the plugin produces, and
@@ -22,14 +23,16 @@ def maya_useNewAPI():
 	"""
 	pass
 
+
 def matrixAsArray(matrix):
 	array = []
 	for i in range(16):
 		array.append(matrix[i])
 	return array
 
-## Foot Data
-##
+
+# # Foot Data
+# #
 sole = [ [  0.00, 0.0, -0.70 ],
 				 [  0.04, 0.0, -0.69 ],
 				 [  0.09, 0.0, -0.65 ],
@@ -39,9 +42,9 @@ sole = [ [  0.00, 0.0, -0.70 ],
 				 [  0.17, 0.0, -0.35 ],
 				 [  0.16, 0.0, -0.25 ],
 				 [  0.15, 0.0, -0.14 ],
-				 [  0.13, 0.0,  0.00 ],
-				 [  0.00, 0.0,  0.00 ],
-				 [ -0.13, 0.0,  0.00 ],
+				 [  0.13, 0.0, 0.00 ],
+				 [  0.00, 0.0, 0.00 ],
+				 [ -0.13, 0.0, 0.00 ],
 				 [ -0.15, 0.0, -0.14 ],
 				 [ -0.16, 0.0, -0.25 ],
 				 [ -0.17, 0.0, -0.35 ],
@@ -51,38 +54,38 @@ sole = [ [  0.00, 0.0, -0.70 ],
 				 [ -0.09, 0.0, -0.65 ],
 				 [ -0.04, 0.0, -0.69 ],
 				 [ -0.00, 0.0, -0.70 ] ]
-heel = [ [  0.00, 0.0,  0.06 ],
-				 [  0.13, 0.0,  0.06 ],
-				 [  0.14, 0.0,  0.15 ],
-				 [  0.14, 0.0,  0.21 ],
-				 [  0.13, 0.0,  0.25 ],
-				 [  0.11, 0.0,  0.28 ],
-				 [  0.09, 0.0,  0.29 ],
-				 [  0.04, 0.0,  0.30 ],
-				 [  0.00, 0.0,  0.30 ],
-				 [ -0.04, 0.0,  0.30 ],
-				 [ -0.09, 0.0,  0.29 ],
-				 [ -0.11, 0.0,  0.28 ],
-				 [ -0.13, 0.0,  0.25 ],
-				 [ -0.14, 0.0,  0.21 ],
-				 [ -0.14, 0.0,  0.15 ],
-				 [ -0.13, 0.0,  0.06 ],
-				 [ -0.00, 0.0,  0.06 ] ]
+heel = [ [  0.00, 0.0, 0.06 ],
+				 [  0.13, 0.0, 0.06 ],
+				 [  0.14, 0.0, 0.15 ],
+				 [  0.14, 0.0, 0.21 ],
+				 [  0.13, 0.0, 0.25 ],
+				 [  0.11, 0.0, 0.28 ],
+				 [  0.09, 0.0, 0.29 ],
+				 [  0.04, 0.0, 0.30 ],
+				 [  0.00, 0.0, 0.30 ],
+				 [ -0.04, 0.0, 0.30 ],
+				 [ -0.09, 0.0, 0.29 ],
+				 [ -0.11, 0.0, 0.28 ],
+				 [ -0.13, 0.0, 0.25 ],
+				 [ -0.14, 0.0, 0.21 ],
+				 [ -0.14, 0.0, 0.15 ],
+				 [ -0.13, 0.0, 0.06 ],
+				 [ -0.00, 0.0, 0.06 ] ]
 soleCount = 21
 heelCount = 17
 
 
 #############################################################################
-##
-## Node implementation with standard viewport draw
-##
+# #
+# # Node implementation with standard viewport draw
+# #
 #############################################################################
 class footPrint(omui.MPxLocatorNode):
-	id = om.MTypeId( 0x80007 )
+	id = om.MTypeId(0x80007)
 	drawDbClassification = "drawdb/geometry/footPrint"
 	drawRegistrantId = "FootprintNodePlugin"
 
-	size = None	## The size of the foot
+	size = None  # # The size of the foot
 
 	@staticmethod
 	def creator():
@@ -92,10 +95,10 @@ class footPrint(omui.MPxLocatorNode):
 	def initialize():
 		unitFn = om.MFnUnitAttribute()
 
-		footPrint.size = unitFn.create( "size", "sz", om.MFnUnitAttribute.kDistance )
+		footPrint.size = unitFn.create("size", "sz", om.MFnUnitAttribute.kDistance)
 		unitFn.default = om.MDistance(1.0)
 
-		om.MPxNode.addAttribute( footPrint.size )
+		om.MPxNode.addAttribute(footPrint.size)
 
 	def __init__(self):
 		omui.MPxLocatorNode.__init__(self)
@@ -104,10 +107,10 @@ class footPrint(omui.MPxLocatorNode):
 		return None
 
 	def draw(self, view, path, style, status):
-		## Get the size
-		##
+		# # Get the size
+		# #
 		thisNode = self.thisMObject()
-		plug = om.MPlug( thisNode, footPrint.size )
+		plug = om.MPlug(thisNode, footPrint.size)
 		sizeVal = plug.asMDistance()
 		multiplier = sizeVal.asCentimeters()
 
@@ -116,89 +119,93 @@ class footPrint(omui.MPxLocatorNode):
 
 		view.beginGL()
 
-		## drawing in VP1 views will be done using V1 Python APIs:
+		# # drawing in VP1 views will be done using V1 Python APIs:
 		import maya.OpenMayaRender as v1omr
 		glRenderer = v1omr.MHardwareRenderer.theRenderer()
 		glFT = glRenderer.glFunctionTable()
 
-		if ( style == omui.M3dView.kFlatShaded ) or ( style == omui.M3dView.kGouraudShaded ):
-			## Push the color settings
-			##
-			glFT.glPushAttrib( v1omr.MGL_CURRENT_BIT )
+		if (style == omui.M3dView.kFlatShaded) or (style == omui.M3dView.kGouraudShaded):
+			# # Push the color settings
+			# #
+			glFT.glPushAttrib(v1omr.MGL_CURRENT_BIT)
 			
 			# Show both faces
-			glFT.glDisable( v1omr.MGL_CULL_FACE )
+			glFT.glDisable(v1omr.MGL_CULL_FACE)
 
 			if status == omui.M3dView.kActive:
-				view.setDrawColor( 13, omui.M3dView.kActiveColors )
+				view.setDrawColor(13, omui.M3dView.kActiveColors)
 			else:
-				view.setDrawColor( 13, omui.M3dView.kDormantColors )
+				view.setDrawColor(13, omui.M3dView.kDormantColors)
 
-			glFT.glBegin( v1omr.MGL_TRIANGLE_FAN )
-			for i in range(soleCount-1):
-				glFT.glVertex3f( sole[i][0] * multiplier, sole[i][1] * multiplier, sole[i][2] * multiplier )
+			glFT.glBegin(v1omr.MGL_TRIANGLE_FAN)
+			for i in range(soleCount - 1):
+				glFT.glVertex3f(sole[i][0] * multiplier, sole[i][1] * multiplier, sole[i][2] * multiplier)
 			glFT.glEnd()
 
-			glFT.glBegin( v1omr.MGL_TRIANGLE_FAN )
-			for i in range(heelCount-1):
-				glFT.glVertex3f( heel[i][0] * multiplier, heel[i][1] * multiplier, heel[i][2] * multiplier )
+			glFT.glBegin(v1omr.MGL_TRIANGLE_FAN)
+			for i in range(heelCount - 1):
+				glFT.glVertex3f(heel[i][0] * multiplier, heel[i][1] * multiplier, heel[i][2] * multiplier)
 			glFT.glEnd()
 
 			glFT.glPopAttrib()
 
-		## Draw the outline of the foot
-		##
-		glFT.glBegin( v1omr.MGL_LINES )
-		for i in range(soleCount-1):
-			glFT.glVertex3f( sole[i][0] * multiplier, sole[i][1] * multiplier, sole[i][2] * multiplier )
-			glFT.glVertex3f( sole[i+1][0] * multiplier, sole[i+1][1] * multiplier, sole[i+1][2] * multiplier )
+		# # Draw the outline of the foot
+		# #
+		glFT.glBegin(v1omr.MGL_LINES)
+		for i in range(soleCount - 1):
+			glFT.glVertex3f(sole[i][0] * multiplier, sole[i][1] * multiplier, sole[i][2] * multiplier)
+			glFT.glVertex3f(sole[i + 1][0] * multiplier, sole[i + 1][1] * multiplier, sole[i + 1][2] * multiplier)
 
-		for i in range(heelCount-1):
-			glFT.glVertex3f( heel[i][0] * multiplier, heel[i][1] * multiplier, heel[i][2] * multiplier )
-			glFT.glVertex3f( heel[i+1][0] * multiplier, heel[i+1][1] * multiplier, heel[i+1][2] * multiplier )
+		for i in range(heelCount - 1):
+			glFT.glVertex3f(heel[i][0] * multiplier, heel[i][1] * multiplier, heel[i][2] * multiplier)
+			glFT.glVertex3f(heel[i + 1][0] * multiplier, heel[i + 1][1] * multiplier, heel[i + 1][2] * multiplier)
 		glFT.glEnd()
 
 		view.endGL()
 
-		## Draw the name of the footPrint
-		view.setDrawColor( om.MColor( (0.1, 0.8, 0.8, 1.0) ) )
-		view.drawText( "Footprint", om.MPoint( 0.0, 0.0, 0.0 ), omui.M3dView.kCenter )
+		# # Draw the name of the footPrint
+		view.setDrawColor(om.MColor((0.1, 0.8, 0.8, 1.0)))
+		view.drawText("Footprint", om.MPoint(0.0, 0.0, 0.0), omui.M3dView.kCenter)
 
 	def isBounded(self):
 		return True
 
 	def boundingBox(self):
-		## Get the size
-		##
+		# # Get the size
+		# #
 		thisNode = self.thisMObject()
-		plug = om.MPlug( thisNode, footPrint.size )
+		plug = om.MPlug(thisNode, footPrint.size)
 		sizeVal = plug.asMDistance()
 		multiplier = sizeVal.asCentimeters()
 
-		corner1 = om.MPoint( -0.17, 0.0, -0.7 )
-		corner2 = om.MPoint( 0.17, 0.0, 0.3 )
+		corner1 = om.MPoint(-0.17, 0.0, -0.7)
+		corner2 = om.MPoint(0.17, 0.0, 0.3)
 
 		corner1 *= multiplier
 		corner2 *= multiplier
 
-		return om.MBoundingBox( corner1, corner2 )
+		return om.MBoundingBox(corner1, corner2)
+
 
 #############################################################################
-##
-## Viewport 2.0 override implementation
-##
+# #
+# # Viewport 2.0 override implementation
+# #
 #############################################################################
 class footPrintData(om.MUserData):
+
 	def __init__(self):
-		om.MUserData.__init__(self, False) ## don't delete after draw
+		om.MUserData.__init__(self, False)  # # don't delete after draw
 
 		self.fMultiplier = 0.0
 		self.fColor = [0.0, 0.0, 0.0]
 		self.fCustomBoxDraw = False
 		self.fDrawOV = om.MDAGDrawOverrideInfo()
 
-## Helper class declaration for the object drawing
+
+# # Helper class declaration for the object drawing
 class footPrintDrawAgent:
+
 	def __init__(self):
 		self.mShader = None
 
@@ -240,13 +247,13 @@ class footPrintDrawAgent:
 	def drawShaded(self, context):
 		global soleCount, heelCount
 
-		## Draw the sole
+		# # Draw the sole
 		if self.mSoleVertexBuffer is not None and self.mSoleShadedIndexBuffer is not None:
-			omr.MRenderUtilities.drawSimpleMesh(context, self.mSoleVertexBuffer, self.mSoleShadedIndexBuffer, omr.MGeometry.kTriangles, 0, 3 * (soleCount-2))
+			omr.MRenderUtilities.drawSimpleMesh(context, self.mSoleVertexBuffer, self.mSoleShadedIndexBuffer, omr.MGeometry.kTriangles, 0, 3 * (soleCount - 2))
 		
-		## Draw the heel
+		# # Draw the heel
 		if self.mHeelVertexBuffer is not None and self.mHeelShadedIndexBuffer is not None:
-			omr.MRenderUtilities.drawSimpleMesh(context, self.mHeelVertexBuffer, self.mHeelShadedIndexBuffer, omr.MGeometry.kTriangles, 0, 3 * (heelCount-2))
+			omr.MRenderUtilities.drawSimpleMesh(context, self.mHeelVertexBuffer, self.mHeelShadedIndexBuffer, omr.MGeometry.kTriangles, 0, 3 * (heelCount - 2))
 		
 	def drawBoundingBox(self, context):
 		if self.mBoundingboxVertexBuffer is not None and self.mBoundingboxIndexBuffer is not None:
@@ -255,13 +262,13 @@ class footPrintDrawAgent:
 	def drawWireframe(self, context):
 		global soleCount, heelCount
 
-		## Draw the sole
+		# # Draw the sole
 		if self.mSoleVertexBuffer is not None and self.mSoleWireIndexBuffer is not None:
-			omr.MRenderUtilities.drawSimpleMesh(context, self.mSoleVertexBuffer, self.mSoleWireIndexBuffer, omr.MGeometry.kLines, 0, 2 * (soleCount-1))
+			omr.MRenderUtilities.drawSimpleMesh(context, self.mSoleVertexBuffer, self.mSoleWireIndexBuffer, omr.MGeometry.kLines, 0, 2 * (soleCount - 1))
 		
-		## Draw the heel
+		# # Draw the heel
 		if self.mHeelVertexBuffer is not None and self.mHeelWireIndexBuffer is not None:
-			omr.MRenderUtilities.drawSimpleMesh(context, self.mHeelVertexBuffer, self.mHeelWireIndexBuffer, omr.MGeometry.kLines, 0, 2 * (heelCount-1))
+			omr.MRenderUtilities.drawSimpleMesh(context, self.mHeelVertexBuffer, self.mHeelWireIndexBuffer, omr.MGeometry.kLines, 0, 2 * (heelCount - 1))
 
 	def endDraw(self, context):
 		if self.mShader is not None:
@@ -287,18 +294,18 @@ class footPrintDrawAgent:
 			count = 8
 			rawData = [ [ -0.5, -0.5, -0.5 ],
 						[  0.5, -0.5, -0.5 ],
-						[  0.5, -0.5,  0.5 ],
-						[ -0.5, -0.5,  0.5 ],
-						[ -0.5,  0.5, -0.5 ],
-						[  0.5,  0.5, -0.5 ],
-						[  0.5,  0.5,  0.5 ],
-						[ -0.5,  0.5,  0.5 ] ]
+						[  0.5, -0.5, 0.5 ],
+						[ -0.5, -0.5, 0.5 ],
+						[ -0.5, 0.5, -0.5 ],
+						[  0.5, 0.5, -0.5 ],
+						[  0.5, 0.5, 0.5 ],
+						[ -0.5, 0.5, 0.5 ] ]
 									
 			desc = omr.MVertexBufferDescriptor("", omr.MGeometry.kPosition, omr.MGeometry.kFloat, 3)
 			self.mBoundingboxVertexBuffer = omr.MVertexBuffer(desc)
 			
 			dataAddress = self.mBoundingboxVertexBuffer.acquire(count, True)
-			data = ((ctypes.c_float * 3)*count).from_address(dataAddress)
+			data = ((ctypes.c_float * 3) * count).from_address(dataAddress)
 			
 			for i in range(count):
 				data[i][0] = rawData[i][0]
@@ -311,18 +318,18 @@ class footPrintDrawAgent:
 
 		if self.mBoundingboxIndexBuffer is None:
 			count = 24
-			rawData = [ 0,1,
-						1,2,
-						2,3,
-						3,0,
-						4,5,
-						5,6,
-						6,7,
-						7,4,
-						0,4,
-						1,5,
-						2,6,
-						3,7 ]
+			rawData = [ 0, 1,
+						1, 2,
+						2, 3,
+						3, 0,
+						4, 5,
+						5, 6,
+						6, 7,
+						7, 4,
+						0, 4,
+						1, 5,
+						2, 6,
+						3, 7 ]
 		
 			self.mBoundingboxIndexBuffer = omr.MIndexBuffer(omr.MGeometry.kUnsignedInt32)
 
@@ -341,7 +348,7 @@ class footPrintDrawAgent:
 			self.mSoleVertexBuffer = omr.MVertexBuffer(desc)
 
 			dataAddress = self.mSoleVertexBuffer.acquire(soleCount, True)
-			data = ((ctypes.c_float * 3)*soleCount).from_address(dataAddress)
+			data = ((ctypes.c_float * 3) * soleCount).from_address(dataAddress)
 
 			for i in range(soleCount):
 				data[i][0] = sole[i][0]
@@ -357,7 +364,7 @@ class footPrintDrawAgent:
 			self.mHeelVertexBuffer = omr.MVertexBuffer(desc)
 
 			dataAddress = self.mHeelVertexBuffer.acquire(heelCount, True)
-			data = ((ctypes.c_float * 3)*heelCount).from_address(dataAddress)
+			data = ((ctypes.c_float * 3) * heelCount).from_address(dataAddress)
 
 			for i in range(heelCount):
 				data[i][0] = heel[i][0]
@@ -369,7 +376,7 @@ class footPrintDrawAgent:
 			data = None
 
 		if self.mSoleWireIndexBuffer is None:
-			count = 2 * (soleCount-1)
+			count = 2 * (soleCount - 1)
 			rawData = [ 0, 1,
 						1, 2,
 						2, 3,
@@ -404,7 +411,7 @@ class footPrintDrawAgent:
 			data = None
 
 		if self.mHeelWireIndexBuffer is None:
-			count = 2 * (heelCount-1)
+			count = 2 * (heelCount - 1)
 			rawData = [ 0, 1,
 						1, 2,
 						2, 3,
@@ -435,7 +442,7 @@ class footPrintDrawAgent:
 			data = None
 
 		if self.mSoleShadedIndexBuffer is None:
-			count = 3 * (soleCount-2)
+			count = 3 * (soleCount - 2)
 			rawData = [ 0, 1, 2,
 						0, 2, 3,
 						0, 3, 4,
@@ -469,7 +476,7 @@ class footPrintDrawAgent:
 			data = None
 
 		if self.mHeelShadedIndexBuffer is None:
-			count = 3 * (heelCount-2)
+			count = 3 * (heelCount - 2)
 			rawData = [ 0, 1, 2,
 						0, 2, 3,
 						0, 3, 4,
@@ -500,8 +507,10 @@ class footPrintDrawAgent:
 
 		return True
 
-## GL draw agent declaration
+
+# # GL draw agent declaration
 class footPrintDrawAgentGL(footPrintDrawAgent):
+
 	def __init__(self):
 		footPrintDrawAgent.__init__(self)
 
@@ -549,8 +558,10 @@ technique Main
 """
 		return shaderCode
 
-## DX draw agent declaration
+
+# # DX draw agent declaration
 class footPrintDrawAgentDX(footPrintDrawAgent):
+
 	def __init__(self):
 		footPrintDrawAgent.__init__(self)
 
@@ -599,26 +610,29 @@ technique10 Main
 """
 		return shaderCode
 
+
 blendState = None
 rasterState = None
 drawAgent = None
 
+
 class footPrintDrawOverride(omr.MPxDrawOverride):
+
 	@staticmethod
 	def creator(obj):
 		return footPrintDrawOverride(obj)
 
 	@staticmethod
 	def draw(context, data):
-		## Get user draw data
+		# # Get user draw data
 		footData = data
 		if not isinstance(footData, footPrintData):
 			return
 
-		## Get DAG object draw override
+		# # Get DAG object draw override
 		objectOverrideInfo = footData.fDrawOV
 
-		## Sample code to determine the rendering destination
+		# # Sample code to determine the rendering destination
 		debugDestination = False
 		if debugDestination:
 			destination = context.renderingDestination()
@@ -630,39 +644,39 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 
 			print "footprint node render destination is " + destinationType + ". Destination name=" + str(destination[1])
 
-		## Just return and draw nothing, if it is overridden invisible
+		# # Just return and draw nothing, if it is overridden invisible
 		if objectOverrideInfo.overrideEnabled and not objectOverrideInfo.enableVisible:
 			return
 
-		## Get display status
+		# # Get display status
 		displayStyle = context.getDisplayStyle()
 		drawAsBoundingbox = (displayStyle & omr.MFrameContext.kBoundingBox) or (objectOverrideInfo.lod == om.MDAGDrawOverrideInfo.kLODBoundingBox)
-		## If we don't want to draw the bounds within this plugin
-		## manually, then skip drawing altogether in bounding box mode
-		## since the bounds draw is handled by the renderer and
-		## doesn't need to be drawn here.
-		##
+		# # If we don't want to draw the bounds within this plugin
+		# # manually, then skip drawing altogether in bounding box mode
+		# # since the bounds draw is handled by the renderer and
+		# # doesn't need to be drawn here.
+		# #
 		if drawAsBoundingbox and not footData.fCustomBoxDraw:
 			return
 
 		animPlay = oma.MAnimControl.isPlaying()
 		animScrub = oma.MAnimControl.isScrubbing()
-		## If in playback but hidden in playback, skip drawing
+		# # If in playback but hidden in playback, skip drawing
 		if (animPlay or animScrub) and not objectOverrideInfo.playbackVisible:
 			return
 
-		## For any viewport interactions switch to bounding box mode,
-		## except when we are in playback.
+		# # For any viewport interactions switch to bounding box mode,
+		# # except when we are in playback.
 		if context.inUserInteraction() or context.userChangingViewContext():
 			if not animPlay and not animScrub:
 				drawAsBoundingbox = True
 
-		## Now, something gonna draw...
+		# # Now, something gonna draw...
 
-		## Check to see if we are drawing in a shadow pass.
-		## If so then we keep the shading simple which in this
-		## example means to disable any extra blending state changes
-		##
+		# # Check to see if we are drawing in a shadow pass.
+		# # If so then we keep the shading simple which in this
+		# # example means to disable any extra blending state changes
+		# #
 		passCtx = context.getPassContext()
 		passSemantics = passCtx.passSemantics()
 		castingShadows = False
@@ -675,35 +689,35 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 			passId = passCtx.passIdentifier()
 			print "footprint node drawing in pass[" + str(passId) + "], semantic[" + str(passSemantics) + "]"
 
-		## get cached data
+		# # get cached data
 		multiplier = footData.fMultiplier
 		color = [ footData.fColor[0], footData.fColor[1], footData.fColor[2], 1.0 ]
 
 		requireBlending = False
 
-		## If we're not casting shadows then do extra work
-		## for display styles
+		# # If we're not casting shadows then do extra work
+		# # for display styles
 		if not castingShadows:
-			## Use some monotone version of color to show "default material mode"
-			##
+			# # Use some monotone version of color to show "default material mode"
+			# #
 			if displayStyle & omr.MFrameContext.kDefaultMaterial:
 				color[0] = color[1] = color[2] = (color[0] + color[1] + color[2]) / 3.0
 
-			## Do some alpha blending if in x-ray mode
-			##
+			# # Do some alpha blending if in x-ray mode
+			# #
 			elif displayStyle & omr.MFrameContext.kXray:
 				requireBlending = True
 				color[3] = 0.3
 
-		## Set blend and raster state
-		##
+		# # Set blend and raster state
+		# #
 		stateMgr = context.getStateManager()
 		oldBlendState = None
 		oldRasterState = None
 		rasterStateModified = False
 
 		if stateMgr is not None and (displayStyle & omr.MFrameContext.kGouraudShaded):
-			## draw filled, and with blending if required
+			# # draw filled, and with blending if required
 			if requireBlending:
 				global blendState
 				if blendState is None:
@@ -717,18 +731,18 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 					oldBlendState = stateMgr.getBlendState()
 					stateMgr.setBlendState(blendState)
 
-			## Override culling mode since we always want double-sided
-			##
+			# # Override culling mode since we always want double-sided
+			# #
 			oldRasterState = stateMgr.getRasterizerState()
 			if oldRasterState:
 				desc = oldRasterState.desc()
-				## It's also possible to change this to kCullFront or kCullBack if we
-				## wanted to set it to that.
+				# # It's also possible to change this to kCullFront or kCullBack if we
+				# # wanted to set it to that.
 				cullMode = omr.MRasterizerState.kCullNone
 				if desc.cullMode != cullMode:
 					global rasterState
 					if rasterState is None:
-						## Just override the cullmode
+						# # Just override the cullmode
 						desc.cullMode = cullMode
 						rasterState = stateMgr.acquireRasterizerState(desc)
 
@@ -737,10 +751,10 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 						stateMgr.setRasterizerState(rasterState)
 
 		##========================
-		## Start the draw work
+		# # Start the draw work
 		##========================
 
-		## Prepare draw agent, default using OpenGL
+		# # Prepare draw agent, default using OpenGL
 		global drawAgent
 		if drawAgent is None:
 			if omr.MRenderer.drawAPIIsOpenGL():
@@ -750,34 +764,34 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 
 		if not drawAgent is None:
 
-			drawAgent.beginDraw( context, color, multiplier )
+			drawAgent.beginDraw(context, color, multiplier)
 
 			if drawAsBoundingbox:
-				drawAgent.drawBoundingBox( context )
+				drawAgent.drawBoundingBox(context)
 
 			else:
-				## Templated, only draw wirefame and it is not selectale
+				# # Templated, only draw wirefame and it is not selectale
 				overideTemplated = objectOverrideInfo.overrideEnabled and objectOverrideInfo.displayType == om.MDAGDrawOverrideInfo.kDisplayTypeTemplate
-				## Override no shaded, only show wireframe
+				# # Override no shaded, only show wireframe
 				overrideNoShaded = objectOverrideInfo.overrideEnabled and not objectOverrideInfo.enableShading
 
 				if overideTemplated or overrideNoShaded:
-					drawAgent.drawWireframe( context )
+					drawAgent.drawWireframe(context)
 
 				else:
 					if (displayStyle & omr.MFrameContext.kGouraudShaded) or (displayStyle & omr.MFrameContext.kTextured):
-						drawAgent.drawShaded( context )
+						drawAgent.drawShaded(context)
 
 					if (displayStyle & omr.MFrameContext.kWireFrame):
-						drawAgent.drawWireframe( context )
+						drawAgent.drawWireframe(context)
 
-			drawAgent.endDraw( context )
+			drawAgent.endDraw(context)
 
 		##========================
-		## End the draw work
+		# # End the draw work
 		##========================
 
-		## Restore old blend state and old raster state
+		# # Restore old blend state and old raster state
 		if stateMgr is not None and (displayStyle & omr.MFrameContext.kGouraudShaded):
 			if oldBlendState is not None:
 				stateMgr.setBlendState(oldBlendState)
@@ -788,30 +802,30 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 	def __init__(self, obj):
 		omr.MPxDrawOverride.__init__(self, obj, footPrintDrawOverride.draw)
 
-		## We want to perform custom bounding box drawing
-		## so return True so that the internal rendering code
-		## will not draw it for us.
+		# # We want to perform custom bounding box drawing
+		# # so return True so that the internal rendering code
+		# # will not draw it for us.
 		self.mCustomBoxDraw = True
 		self.mCurrentBoundingBox = om.MBoundingBox()
 
 	def supportedDrawAPIs(self):
-		## this plugin supports both GL and DX
+		# # this plugin supports both GL and DX
 		return omr.MRenderer.kOpenGL | omr.MRenderer.kDirectX11
 
 	def isBounded(self, objPath, cameraPath):
 		return True
 
 	def boundingBox(self, objPath, cameraPath):
-		corner1 = om.MPoint( -0.17, 0.0, -0.7 )
-		corner2 = om.MPoint( 0.17, 0.0, 0.3 )
+		corner1 = om.MPoint(-0.17, 0.0, -0.7)
+		corner2 = om.MPoint(0.17, 0.0, 0.3)
 
 		multiplier = self.getMultiplier(objPath)
 		corner1 *= multiplier
 		corner2 *= multiplier
 
 		self.mCurrentBoundingBox.clear()
-		self.mCurrentBoundingBox.expand( corner1 )
-		self.mCurrentBoundingBox.expand( corner2 )
+		self.mCurrentBoundingBox.expand(corner1)
+		self.mCurrentBoundingBox.expand(corner2)
 
 		return self.mCurrentBoundingBox
 
@@ -819,18 +833,18 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 		return self.mCustomBoxDraw
 
 	def prepareForDraw(self, objPath, cameraPath, frameContext, oldData):
-		## Retrieve data cache (create if does not exist)
+		# # Retrieve data cache (create if does not exist)
 		data = oldData
 		if not isinstance(data, footPrintData):
 			data = footPrintData()
 
-		## compute data and cache it
+		# # compute data and cache it
 		data.fMultiplier = self.getMultiplier(objPath)
 		color = omr.MGeometryUtilities.wireframeColor(objPath)
 		data.fColor = [ color.r, color.g, color.b ]
 		data.fCustomBoxDraw = self.mCustomBoxDraw
 
-		## Get the draw override information
+		# # Get the draw override information
 		data.fDrawOV = objPath.getDrawOverrideInfo()
 
 		return data
@@ -839,20 +853,20 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 		return True
 
 	def addUIDrawables(self, objPath, drawManager, frameContext, data):
-		## Draw a text "Foot"
-		pos = om.MPoint( 0.0, 0.0, 0.0 )  ## Position of the text
-		textColor = om.MColor( (0.1, 0.8, 0.8, 1.0) )  ## Text color
+		# # Draw a text "Foot"
+		pos = om.MPoint(0.0, 0.0, 0.0)  # # Position of the text
+		textColor = om.MColor((0.1, 0.8, 0.8, 1.0))  # # Text color
 
 		drawManager.beginDrawable()
 
-		drawManager.setColor( textColor )
-		drawManager.setFontSize( omr.MUIDrawManager.kSmallFontSize )
-		drawManager.text(pos, "Footprint", omr.MUIDrawManager.kCenter )
+		drawManager.setColor(textColor)
+		drawManager.setFontSize(omr.MUIDrawManager.kSmallFontSize)
+		drawManager.text(pos, "Footprint", omr.MUIDrawManager.kCenter)
 
 		drawManager.endDrawable()
 
 	def getMultiplier(self, objPath):
-		## Retrieve value of the size attribute from the node
+		# # Retrieve value of the size attribute from the node
 		footprintNode = objPath.node()
 		plug = om.MPlug(footprintNode, footPrint.size)
 		if not plug.isNull:
@@ -860,6 +874,7 @@ class footPrintDrawOverride(omr.MPxDrawOverride):
 			return sizeVal.asCentimeters()
 
 		return 1.0
+
 
 def initializePlugin(obj):
 	plugin = om.MFnPlugin(obj, "Autodesk", "3.0", "Any")
@@ -875,6 +890,7 @@ def initializePlugin(obj):
 	except:
 		sys.stderr.write("Failed to register override\n")
 		raise
+
 
 def uninitializePlugin(obj):
 	plugin = om.MFnPlugin(obj)

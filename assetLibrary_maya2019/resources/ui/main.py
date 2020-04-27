@@ -457,7 +457,7 @@ class MainWindow(QtWidgets.QMainWindow):
             icon.addPixmap(QtGui.QPixmap(icon_path),
                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item.setIcon(icon)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter |
+            item.setTextAlignment(QtCore.Qt.AlignHCenter | 
                                   QtCore.Qt.AlignBottom)
             thread.start_new_thread(
                 self.validte_asset_publish, (each_file, item,))
@@ -467,7 +467,7 @@ class MainWindow(QtWidgets.QMainWindow):
         valid = studio_asset.had_valid(file)
         if valid:
             return
-        item.setFlags(QtCore.Qt.ItemIsSelectable |
+        item.setFlags(QtCore.Qt.ItemIsSelectable | 
                       QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable)
 
     def collect_child_items(self, parent):
@@ -522,7 +522,7 @@ class MainWindow(QtWidgets.QMainWindow):
             path=self.source_file_path, image=self.q_image)
         if studio_asset.had_file(current_path, label):
             replay = QtWidgets.QMessageBox.warning(
-                self, 'Warning', 
+                self, 'Warning',
                 'Already a file with the same name in the publish\n\"%s\"\nIf you want to overwrite press Yes' % label,
                 QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
             self.studio_print.display_warning(
@@ -654,7 +654,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             pass
                     if platform.system() == 'Linux':
                         try:
-                            os.system('xdg-open \"%s\"' %
+                            os.system('xdg-open \"%s\"' % 
                                       os.path.dirname(result))
                         except:
                             pass

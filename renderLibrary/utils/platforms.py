@@ -13,7 +13,6 @@ Description
     None.
 '''
 
-
 import platform
 
 from renderLibrary.utils import config
@@ -28,11 +27,11 @@ def has_valid():
         result = {False: 'Only support \"%s\" operating system' % tool_os}
         return result
     if tool_app not in application:
-        result = {False: 'Only support \"%s %s\" operating system' %
+        result = {False: 'Only support \"%s %s\" operating system' % 
                   (tool_app, tool_ver)}
         return result
     if tool_ver not in version:
-        result = {False: 'Only support \"%s %s\" operating system' %
+        result = {False: 'Only support \"%s %s\" operating system' % 
                   (tool_app, tool_ver)}
         return result
     return result

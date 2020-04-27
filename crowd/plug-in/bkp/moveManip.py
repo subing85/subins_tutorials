@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 # import maya
 # maya.cmds.loadPlugin("moveManip.py")
@@ -50,6 +50,7 @@ import maya.OpenMayaMPx as OpenMayaMPx
 moveManipId = OpenMaya.MTypeId(0x87009)
 contextCmdName = "spMoveManipCtxCmd"
 nodeName = "spMoveManip"
+
 
 class moveManip(OpenMayaMPx.MPxManipContainer):
 	fDistanceManip = OpenMaya.MDagPath()
@@ -78,24 +79,29 @@ class moveManip(OpenMayaMPx.MPxManipContainer):
 			freePointManipFn = OpenMayaUI.MFnFreePointTriadManip(self.fFreePointManip)
 			freePointManipFn.connectToPointPlug(tPlug)
 			OpenMayaMPx.MPxManipContainer.finishAddingManips(self)
-			OpenMayaMPx.MPxManipContainer.connectToDependNode(self,node)
+			OpenMayaMPx.MPxManipContainer.connectToDependNode(self, node)
 		except:
-			sys.stderr.write( "Error finding and connecting plugs\n" )
+			sys.stderr.write("Error finding and connecting plugs\n")
 			raise
 
+
 def moveManipCreator():
-	return OpenMayaMPx.asMPxPtr( moveManip() )
+	return OpenMayaMPx.asMPxPtr(moveManip())
+
 
 def moveManipInitialize():
 	OpenMayaMPx.MPxManipContainer.initialize()
 
+
 class moveManipContext(OpenMayaMPx.MPxSelectionContext):
+
 	def __init__(self):
 		OpenMayaMPx.MPxSelectionContext.__init__(self)
 
-	def toolOnSetup(self,event):
+	def toolOnSetup(self, event):
 		updateManipulators(self)
 		OpenMaya.MModelMessage.addCallback(OpenMaya.MModelMessage.kActiveListModified, updateManipulators, self)
+
 
 def updateManipulators(clientData):
 	clientData.deleteManipulators()
@@ -125,16 +131,18 @@ def updateManipulators(clientData):
 			manipulator.connectToDependNode(dependNode)
 		selectionIter.next()
 
+
 class moveManipCtxCmd(OpenMayaMPx.MPxContextCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxContextCommand.__init__(self)
 
 	def makeObj(self):
-		return OpenMayaMPx.asMPxPtr( moveManipContext() )
+		return OpenMayaMPx.asMPxPtr(moveManipContext())
 
 
 def contextCmdCreator():
-	return OpenMayaMPx.asMPxPtr( moveManipCtxCmd() )
+	return OpenMayaMPx.asMPxPtr(moveManipCtxCmd())
 
 
 # initialize the script plug-in
@@ -142,7 +150,7 @@ def initializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)
 
 	try:
-		mplugin.registerContextCommand( contextCmdName, contextCmdCreator )
+		mplugin.registerContextCommand(contextCmdName, contextCmdCreator)
 	except:
 		print "Failed to register context command: %s" % contextCmdName
 		raise
@@ -152,6 +160,7 @@ def initializePlugin(mobject):
 	except:
 		print "Failed to register node: %s" % nodeName
 		raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):

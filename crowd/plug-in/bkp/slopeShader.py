@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright (C) 1995 - 2006 Autodesk, Inc. and/or its licensors.  All 
 # rights reserved.
@@ -34,7 +34,7 @@
 # OR PROBABILITY OF SUCH DAMAGES.
 #
 # ==========================================================================
-#+
+# +
 
 # import maya
 # maya.cmds.loadPlugin("slopeShader.py")
@@ -55,6 +55,7 @@ kSlopeNodeName = "spSlopeShader"
 kSlopeNodeClassify = "utility/color"
 kSlopeNodeId = OpenMaya.MTypeId(0x87001)
 
+
 # Node definition
 class slopeShader(OpenMayaMPx.MPxNode):
 	# class variables
@@ -69,45 +70,44 @@ class slopeShader(OpenMayaMPx.MPxNode):
 	def __init__(self):
 		OpenMayaMPx.MPxNode.__init__(self)
 
-
 	def compute(self, plug, dataBlock):
 		if plug == slopeShader.aOutColor or plug.parent() == slopeShader.aOutColor:
 
-			resultColor = OpenMaya.MFloatVector(0.0,0.0,0.0)
+			resultColor = OpenMaya.MFloatVector(0.0, 0.0, 0.0)
 
 			try:
-				dataHandle = dataBlock.inputValue( slopeShader.aColor1 )
+				dataHandle = dataBlock.inputValue(slopeShader.aColor1)
 			except:
-				sys.stderr.write( "Failed to get inputValue aColor1" )
+				sys.stderr.write("Failed to get inputValue aColor1")
 				raise
 			walkable = dataHandle.asFloatVector()
 
 			try:
-				dataHandle = dataBlock.inputValue( slopeShader.aColor2 )
+				dataHandle = dataBlock.inputValue(slopeShader.aColor2)
 			except:
-				sys.stderr.write( "Failed to get inputValue aColor2" )
+				sys.stderr.write("Failed to get inputValue aColor2")
 				raise
 			nonWalkable = dataHandle.asFloatVector()
 
 			try:
-				dataHandle = dataBlock.inputValue( slopeShader.aTriangleNormalCamera )
+				dataHandle = dataBlock.inputValue(slopeShader.aTriangleNormalCamera)
 			except:
-				sys.stderr.write( "Failed to get inputValue aTriangleNormalCamera" )
+				sys.stderr.write("Failed to get inputValue aTriangleNormalCamera")
 				raise
 			surfaceNormal = dataHandle.asFloatVector()
 
 			try:
-				dataHandle = dataBlock.inputValue( slopeShader.aMatrixEyeToWorld )
+				dataHandle = dataBlock.inputValue(slopeShader.aMatrixEyeToWorld)
 			except:
-				sys.stderr.write( "Failed to get inputValue aMatrixEyeToWorld" )
+				sys.stderr.write("Failed to get inputValue aMatrixEyeToWorld")
 				raise
 			viewMatrix = dataHandle.asFloatMatrix()
 
 			# Get the angle
 			try:
-				dataHandle = dataBlock.inputValue( slopeShader.aAngle )
+				dataHandle = dataBlock.inputValue(slopeShader.aAngle)
 			except:
-				sys.stderr.write( "Failed to get inputValue aAngle" )
+				sys.stderr.write("Failed to get inputValue aAngle")
 				raise
 			angle = dataHandle.asFloat()
 
@@ -137,9 +137,9 @@ class slopeShader(OpenMayaMPx.MPxNode):
 			# set output color attribute
 			#
 			try:
-				outColorHandle = dataBlock.outputValue( slopeShader.aOutColor )
+				outColorHandle = dataBlock.outputValue(slopeShader.aOutColor)
 			except:
-				sys.stderr.write( "Failed to get outputValue aOutColor" )
+				sys.stderr.write("Failed to get outputValue aOutColor")
 				raise
 
 			outColorHandle.setMFloatVector(resultColor)
@@ -148,16 +148,15 @@ class slopeShader(OpenMayaMPx.MPxNode):
 		else:
 			return OpenMaya.kUnknownParameter
 
-
 	def postConstructor(self):
 		print "In slopeShader.postConstructor"
 		# OpenMayaMPx.MPxNode.setMPSafe(self, 1)
 
 
 class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
+
 	def __init__(self):
 		OpenMayaMPx.MPxDragAndDropBehavior.__init__(self)
-
 
 	def shouldBeUsedFor(self, sourceNode, destinationNode, sourcePlug, destinationPlug):
 		"""
@@ -168,9 +167,9 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 		result = False
 
 		if sourceNode.hasFn(OpenMaya.MFn.kLambert):
-			#if the source node was a lambert
-			#than we will check the downstream connections to see 
-			#if a slope shader is assigned to it.
+			# if the source node was a lambert
+			# than we will check the downstream connections to see 
+			# if a slope shader is assigned to it.
 			#
 			shaderNode = None
 			src = OpenMaya.MFnDependencyNode(sourceNode)
@@ -178,27 +177,27 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 			src.getConnections(connections)
 
 			for i in range(connections.length()):
-				#check the incoming connections to this plug
+				# check the incoming connections to this plug
 				#
 				connectedPlugs = OpenMaya.MPlugArray()
 				connections[i].connectedTo(connectedPlugs, True, False)
 				for j in range(connectedPlugs.length()):
-					#if the incoming node is a slope shader than 
-					#set shaderNode equal to it and break out of the inner 
-					#loop
+					# if the incoming node is a slope shader than 
+					# set shaderNode equal to it and break out of the inner 
+					# loop
 					#
 					testNode = OpenMaya.MFnDependencyNode(connectedPlugs[j].node())
 					if testNode.typeName() == kSlopeNodeName:
 						shaderNode = connectedPlugs[j].node()
 						break
 
-				#if the shaderNode is not None
-				#than we have found a slopeShader
+				# if the shaderNode is not None
+				# than we have found a slopeShader
 				#
 				if shaderNode is not None:
-					#if the destination node is a mesh than we will take
-					#care of this connection so set the result to True
-					#and break out of the outer loop
+					# if the destination node is a mesh than we will take
+					# care of this connection so set the result to True
+					# and break out of the outer loop
 					#
 					if destinationNode.hasFn(OpenMaya.MFn.kMesh):
 						result = True
@@ -206,8 +205,8 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 
 		node = OpenMaya.MFnDependencyNode(sourceNode)
 		if node.typeName() == kSlopeNodeName:
-			#if the sourceNode is a slope shader than check what we
-			#are dropping on to
+			# if the sourceNode is a slope shader than check what we
+			# are dropping on to
 			#
 			if destinationNode.hasFn(OpenMaya.MFn.kLambert):
 				result = True
@@ -215,7 +214,6 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 				result = True
 
 		return result
-
 
 	def connectNodeToNode(self, sourceNode, destinationNode, force):
 		"""
@@ -225,44 +223,44 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 		"""
 		src = OpenMaya.MFnDependencyNode(sourceNode)
 
-		#if we are dragging from a lambert
-		#we want to check what we are dragging
-		#onto.
+		# if we are dragging from a lambert
+		# we want to check what we are dragging
+		# onto.
 		if sourceNode.hasFn(OpenMaya.MFn.kLambert):
 			shaderNode = OpenMaya.MObject()
 			connections = OpenMaya.MPlugArray()
 			shaderNodes = OpenMaya.MObjectArray()
 			shaderNodes.clear()
 
-			#if the source node was a lambert
-			#than we will check the downstream connections to see 
-			#if a slope shader is assigned to it.
+			# if the source node was a lambert
+			# than we will check the downstream connections to see 
+			# if a slope shader is assigned to it.
 			#
 			src.getConnections(connections)
 			for i in range(connections.length()):
-				#check the incoming connections to this plug
+				# check the incoming connections to this plug
 				#
 				connectedPlugs = OpenMaya.MPlugArray()
 				connections[i].connectedTo(connectedPlugs, True, False)
 				for j in range(connectedPlugs.length()):
-					#if the incoming node is a slope shader than 
-					#append the node to the shaderNodes array
+					# if the incoming node is a slope shader than 
+					# append the node to the shaderNodes array
 					#
 					currentnode = connectedPlugs[j].node()
 					if OpenMaya.MFnDependencyNode(currentnode).typeName() == kSlopeNodeName:
 						shaderNodes.append(currentnode)
 
-			#if we found a shading node
-			#than check the destination node 
-			#type to see if it is a mesh
+			# if we found a shading node
+			# than check the destination node 
+			# type to see if it is a mesh
 			#
 			if shaderNodes.length() > 0:
 				dest = OpenMaya.MFnDependencyNode(destinationNode)
 				if destinationNode.hasFn(OpenMaya.MFn.kMesh):
-					#if the node is a mesh than for each slopeShader
-					#connect the worldMesh attribute to the dirtyShaderPlug
-					#attribute to force an evaluation of the node when the mesh
-					#changes
+					# if the node is a mesh than for each slopeShader
+					# connect the worldMesh attribute to the dirtyShaderPlug
+					# attribute to force an evaluation of the node when the mesh
+					# changes
 					#
 					for i in range(shaderNodes.length()):
 						srcPlug = dest.findPlug("worldMesh")
@@ -272,13 +270,13 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 							cmd = "connectAttr -na %s %s" % (srcPlug.name(), destPlug.name())
 							OpenMaya.MGlobal.executeCommand(cmd)
 
-					#get the shading engine so we can assign the shader
-					#to the mesh after doing the connection
+					# get the shading engine so we can assign the shader
+					# to the mesh after doing the connection
 					#
 					shadingEngine = self._findShadingEngine(sourceNode)
 
-					#if there is a valid shading engine than make
-					#the connection
+					# if there is a valid shading engine than make
+					# the connection
 					#
 					if not shadingEngine.isNull():
 						cmd = "sets -edit -forceElement %s %s" % (
@@ -288,13 +286,13 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 						OpenMaya.MGlobal.executeCommand(cmd)
 
 		elif src.typeName() == kSlopeNodeName:
-			#if we are dragging from a slope shader
-			#than we want to see what we are dragging onto
+			# if we are dragging from a slope shader
+			# than we want to see what we are dragging onto
 			#
 			if destinationNode.hasFn(OpenMaya.MFn.kMesh):
-				#if the user is dragging onto a mesh
-				#than make the connection from the worldMesh
-				#to the dirtyShader plug on the slopeShader
+				# if the user is dragging onto a mesh
+				# than make the connection from the worldMesh
+				# to the dirtyShader plug on the slopeShader
 				#
 				dest = OpenMaya.MFnDependencyNode(destinationNode)
 				srcPlug = dest.findPlug("worldMesh")
@@ -314,7 +312,6 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 						cmd = "connectAttr %s %s" % (srcPlug.name(), destPlug.name())
 					OpenMaya.MGlobal.executeCommand(cmd)
 
-
 	def connectNodeToAttr(self, sourceNode, destinationPlug, force):
 		"""
 		Overloaded function from MPxDragAndDropBehavior
@@ -323,9 +320,9 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 		"""
 		src = OpenMaya.MFnDependencyNode(sourceNode)
 
-		#if we are dragging from a slopeShader
-		#to a shader than connect the outColor
-		#plug to the plug being passed in
+		# if we are dragging from a slopeShader
+		# to a shader than connect the outColor
+		# plug to the plug being passed in
 		#
 		if destinationPlug.node().hasFn(OpenMaya.MFn.kLambert):
 			if src.typeName() == kSlopeNodeName:
@@ -334,12 +331,11 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 					cmd = "connectAttr %s %s" % (srcPlug.name(), destinationPlug.name())
 					OpenMaya.MGlobal.executeCommand(cmd)
 		else:
-			#in all of the other cases we do not need the plug just the node
-			#that it is on
+			# in all of the other cases we do not need the plug just the node
+			# that it is on
 			#
 			destinationNode = destinationPlug.node()
 			self.connectNodeToNode(sourceNode, destinationNode, force)
-
 
 	def _findShadingEngine(self, node):
 		"""
@@ -352,20 +348,19 @@ class slopeShaderBehavior(OpenMayaMPx.MPxDragAndDropBehavior):
 		srcPlug = nodeFn.findPlug("outColor")
 		nodeConnections = OpenMaya.MPlugArray()
 		srcPlug.connectedTo(nodeConnections, False, True)
-		#loop through the connections
-		#and find the shading engine node that
-		#it is connected to
+		# loop through the connections
+		# and find the shading engine node that
+		# it is connected to
 		#
 		for i in range(nodeConnections.length()):
 			theNode = nodeConnections[i].node()
 			if theNode.hasFn(OpenMaya.MFn.kShadingEngine):
 				return theNode
 
-		#no shading engine associated so return a
-		#null MObject
+		# no shading engine associated so return a
+		# null MObject
 		#
 		return OpenMaya.MObject()
-
 
 ##################################################################
 
@@ -384,7 +379,7 @@ def nodeInitializer():
 	nTAttr = OpenMaya.MFnTypedAttribute()
 	nGAttr = OpenMaya.MFnGenericAttribute()
 	# input
-	slopeShader.aAngle = nAttr.create( "angle", "ang", OpenMaya.MFnNumericData.kFloat )
+	slopeShader.aAngle = nAttr.create("angle", "ang", OpenMaya.MFnNumericData.kFloat)
 	nAttr.setDefault(30.0)
 	nAttr.setMin(0.0)
 	nAttr.setMax(100.0)
@@ -401,7 +396,7 @@ def nodeInitializer():
 	nAttr.setReadable(1)
 	nAttr.setWritable(1)
 
-	slopeShader.aColor2 = nAttr.createColor( "nonWalkableColor", "nw" )
+	slopeShader.aColor2 = nAttr.createColor("nonWalkableColor", "nw")
 	nAttr.setDefault(1.0, 0.0, 0.0)
 	nAttr.setKeyable(1)
 	nAttr.setStorable(1)
@@ -411,7 +406,7 @@ def nodeInitializer():
 
 	# Surface Normal supplied by the render sampler
 	#
-	slopeShader.aTriangleNormalCamera = nAttr.createPoint( "triangleNormalCamera", "n" )
+	slopeShader.aTriangleNormalCamera = nAttr.createPoint("triangleNormalCamera", "n")
 	nAttr.setStorable(0)
 	nAttr.setHidden(1)
 	nAttr.setReadable(1)
@@ -419,13 +414,13 @@ def nodeInitializer():
 
 	# View matrix from the camera into world space
 	#
-	slopeShader.aMatrixEyeToWorld = nMAttr.create( "matrixEyeToWorld", "mew", OpenMaya.MFnMatrixAttribute.kFloat )
+	slopeShader.aMatrixEyeToWorld = nMAttr.create("matrixEyeToWorld", "mew", OpenMaya.MFnMatrixAttribute.kFloat)
 	nAttr.setHidden(1)
 	nMAttr.setWritable(1)
 
 	# Output Attributes
 	#
-	slopeShader.aOutColor  = nAttr.createColor( "outColor", "oc" )
+	slopeShader.aOutColor = nAttr.createColor("outColor", "oc")
 	nAttr.setStorable(0)
 	nAttr.setHidden(0)
 	nAttr.setReadable(1)
@@ -435,7 +430,7 @@ def nodeInitializer():
 
 	# dummy plug for forcing evaluation
 	#
-	slopeShader.aDirtyShaderAttr = nGAttr.create( "dirtyShaderPlug", "dsp")
+	slopeShader.aDirtyShaderAttr = nGAttr.create("dirtyShaderPlug", "dsp")
 	nGAttr.setArray(1)
 	nGAttr.setHidden(0)
 	nGAttr.setUsesArrayDataBuilder(1)
@@ -454,10 +449,10 @@ def nodeInitializer():
 	slopeShader.addAttribute(slopeShader.aMatrixEyeToWorld)
 	slopeShader.addAttribute(slopeShader.aDirtyShaderAttr)
 
-	slopeShader.attributeAffects (slopeShader.aAngle,  slopeShader.aOutColor)
+	slopeShader.attributeAffects (slopeShader.aAngle, slopeShader.aOutColor)
 	slopeShader.attributeAffects (slopeShader.aColor1, slopeShader.aOutColor)
 	slopeShader.attributeAffects (slopeShader.aColor2, slopeShader.aOutColor)
-	slopeShader.attributeAffects (slopeShader.aTriangleNormalCamera,  slopeShader.aOutColor)
+	slopeShader.attributeAffects (slopeShader.aTriangleNormalCamera, slopeShader.aOutColor)
 	slopeShader.attributeAffects (slopeShader.aDirtyShaderAttr, slopeShader.aOutColor)
 
 
@@ -469,7 +464,7 @@ def initializePlugin(mobject):
 	try:
 		mplugin.registerNode(kSlopeNodeName, kSlopeNodeId, nodeCreator, nodeInitializer, OpenMayaMPx.MPxNode.kDependNode, kSlopeNodeClassify)
 	except:
-		sys.stderr.write("Failed to register node: %s" % kSlopeNodeName )
+		sys.stderr.write("Failed to register node: %s" % kSlopeNodeName)
 		raise
 
 	# register behaviors
@@ -488,7 +483,7 @@ def uninitializePlugin(mobject):
 	try:
 		mplugin.deregisterNode(kSlopeNodeId)
 	except:
-		sys.stderr.write( "Failed to unregister node: %s" % kSlopeNodeName )
+		sys.stderr.write("Failed to unregister node: %s" % kSlopeNodeName)
 		raise
 
 	try:

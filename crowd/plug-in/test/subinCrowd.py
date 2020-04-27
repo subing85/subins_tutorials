@@ -18,8 +18,7 @@ PLUGIN_NAME = proxyNode.node_name
 NODE_ID = proxyNode.node_Id
 
 
-
-def initializePlugin(mobject): # initialize the script plug-in
+def initializePlugin(mobject):  # initialize the script plug-in
     '''
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
@@ -34,23 +33,20 @@ def initializePlugin(mobject): # initialize the script plug-in
         plugin.registerNode(
             PLUGIN_NAME, NODE_ID,
             proxyNode.nodeCreator,
-            proxyNode.nodeInitializer, 
+            proxyNode.nodeInitializer,
             OpenMayaMPx.MPxNode.kLocatorNode)
     except:
         sys.stderr.write("Failed to register node: %s" % PLUGIN_NAME)
         raise    
 
 
-def uninitializePlugin(mobject): # uninitialize the script plug-in
+def uninitializePlugin(mobject):  # uninitialize the script plug-in
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
         mplugin.deregisterNode(PLUGIN_NAME, NODE_ID)
     except:
         sys.stderr.write("Failed to deregister node: %s" % PLUGIN_NAME)
         raise
-
-
-
 
 #===============================================================================
 # class _CrowdNode(OpenMayaMPx.MPxNode):

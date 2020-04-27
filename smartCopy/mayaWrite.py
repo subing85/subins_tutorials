@@ -51,7 +51,6 @@ class MayaWrite():
         self._fileType = os.path.splitext(dataFile)[1]
         self._types = types       
     
-    
     def mWrite(self, dataContent=None):
         
         '''
@@ -73,7 +72,6 @@ class MayaWrite():
             return None
                  
         writeData(path=self._fileDirname, data=dataContent, dataType=self._fileType, types=self._types)
-
 
     def mRead(self):
         
@@ -181,7 +179,7 @@ def readData(fullPath):
         return None           
        
     openData = open (fullPath, 'r')
-    jsonData  = json.load (openData)
+    jsonData = json.load (openData)
     openData.close () 
     
     if '2' in jsonData: 

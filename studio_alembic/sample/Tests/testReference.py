@@ -40,6 +40,7 @@ from alembic.AbcGeom import *
 
 testList = []
 
+
 def testReferenceOut():
 
     a = OArchive('testReference.abc')
@@ -57,7 +58,9 @@ def testReferenceOut():
     assert pr.valid()
     assert p0.valid()
 
+
 testList.append(('testReferenceOut', testReferenceOut))
+
 
 def testReferenceIn():
 
@@ -77,6 +80,7 @@ def testReferenceIn():
 
     p0h = p0.getHeader()
     assert not p0h.isReference()
+
 
 testList.append(('testReferenceIn', testReferenceIn))
 

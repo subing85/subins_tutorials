@@ -42,6 +42,7 @@ class Connect(object):
         from pprint import pprint
         pprint (data)  
     '''
+
     def __init__(self, path):        
         self.stuio_path = path
         self.name = os.path.basename(os.path.splitext(path)[0])    
@@ -107,7 +108,7 @@ class Connect(object):
         maim_control = OpenMayaAnim.MAnimControl()        
         min_time = maim_control.minTime()
         max_time = maim_control.maxTime()
-        values =  (
+        values = (
             min_time.value(),
             max_time.value(),
         )
@@ -193,7 +194,6 @@ class Connect(object):
             manifest_data.write(json.dumps(build_in_data, indent=4))
             return abspath
         return False
-    
 
     def export(self, mdag_paths):       
         engines = self.exportShaderNetwork(mdag_paths)
@@ -204,21 +204,18 @@ class Connect(object):
             'basename': '',
             'shader': '',
             'metadata': '',
-            'alembic': '',            
+            'alembic': '',
             'objects': '',
             'shader_engines': '',
             }        
         
         manifest = self.exportManifest(data)        
-
     
     def getRoot(self, mdag_paths):
         objects = []
         for index in range(mdag_paths.length()):            
-            objects.append('-root %s'% mdag_paths[index].fullPathName())
+            objects.append('-root %s' % mdag_paths[index].fullPathName())
         return ' '.join(objects)
-    
-
             
     def getDagPaths(self, nodes):
         mdag_paths = OpenMaya.MDagPathArray()
@@ -293,12 +290,6 @@ class Connect(object):
             mselection.getDagPath(index, mdagpath)
             mdag_paths.append(mdagpath)
         return mdag_paths
-
-
-
-
-    
-
     
     def getShaderNodes(self, shading_engine_mobjects):
         dependency_nodes = set()
@@ -378,7 +369,7 @@ class Connect(object):
             if current_connection_data:                    
                 connection_data.setdefault(
                     py_node.name(), current_connection_data)               
-            if py_node.type()=='shadingEngine':
+            if py_node.type() == 'shadingEngine':
                 # get shader assign geometries
                 set_name, component_data = self.getAssignComponents(py_node.name())
                 geometry_data.setdefault(set_name, component_data)
@@ -389,8 +380,6 @@ class Connect(object):
             'geometries': geometry_data,
         }
         return shader_data
-    
-    
     
     def create_shader_net(self, shader_data, assign_components):
         node_data = shader_data['nodes']
@@ -466,15 +455,10 @@ class Connect(object):
     def assignToMaterial(self, objects, shading_group):
         mcommand_result = OpenMaya.MCommandResult()
         OpenMaya.MGlobal.executeCommand('sets -e -forceElement %s %s;' % (
-            shading_group, ' '.join(objects)), mcommand_result,  True, True)
+            shading_group, ' '.join(objects)), mcommand_result, True, True)
         results = []
         mcommand_result.getResult(results)
         return results    
-
-
-
-
-
 
     def decodeData(self, data):
         json_data = json.dumps(data)        
@@ -519,7 +503,6 @@ class Connect(object):
             if current_file.endswith('/untitled'):            
                 return 'mayaAscii'   
             return OpenMaya.MFileIO.fileType()
-    
 
     def getManifest(self):
         manifset_path = '{}{}'.format(
@@ -532,8 +515,5 @@ class Connect(object):
             data = json.load(manifset_data)
             return data
         return False  
-
-
-
 
 # end ####################################################################

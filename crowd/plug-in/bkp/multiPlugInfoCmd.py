@@ -1,4 +1,4 @@
-#-
+# -
 # ==========================================================================
 # Copyright 2010 Autodesk, Inc. All rights reserved.
 #
@@ -7,7 +7,7 @@
 # or which otherwise accompanies this software in either electronic
 # or hard copy form.
 # ==========================================================================
-#+
+# +
 
 #
 # This plugin prints out the child plug information for a multiPlug.
@@ -22,9 +22,10 @@
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
 import sys
-kPluginCmdName  = "multiPlugInfo"
-kIndexFlag		= "-i"
-kIndexFlagLong	= "-index"
+kPluginCmdName = "multiPlugInfo"
+kIndexFlag		 = "-i"
+kIndexFlagLong	 = "-index"
+
 
 # Wrapper to handle exception when MArrayDataHandle hits the end of the array.
 def advance(arrayHdl):
@@ -38,6 +39,7 @@ def advance(arrayHdl):
 
 # command
 class multiPlugInfo(OpenMayaMPx.MPxCommand):
+
 	def __init__(self):
 		OpenMayaMPx.MPxCommand.__init__(self)
 		# setup private data members
@@ -107,6 +109,7 @@ class multiPlugInfo(OpenMayaMPx.MPxCommand):
 
 		plug.destructHandle(dh)
 
+
 # Creator
 def cmdCreator():
 	return OpenMayaMPx.asMPxPtr(multiPlugInfo())
@@ -125,8 +128,9 @@ def initializePlugin(mobject):
 	try:
 		mplugin.registerCommand(kPluginCmdName, cmdCreator, syntaxCreator)
 	except:
-		sys.stderr.write( "Failed to register command: %s\n" % kPluginCmdName)
+		sys.stderr.write("Failed to register command: %s\n" % kPluginCmdName)
 		raise
+
 
 def uninitializePlugin(mobject):
 	mplugin = OpenMayaMPx.MFnPlugin(mobject)

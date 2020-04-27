@@ -1,0 +1,1 @@
+/usr/autodesk/maya2018/bin/mayapy -c "from studio_usd_pipe.api import studioPublish;from studio_usd_pipe.api import studioPublish; pub = studioPublish.Publish(pipe='assets', subfield='model'); pub.python_pack()" 

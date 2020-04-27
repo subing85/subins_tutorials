@@ -17,7 +17,6 @@ Description
     Influence objects can be joints or any transform.
 '''
 
-
 import copy
 
 from maya import OpenMaya
@@ -140,7 +139,7 @@ class Skincluster(studioMaya.Maya):
         return m_dag_path, weight_list, membership_list
 
     def write_weight(self, joint_dag_path, geometry_data):
-        for each_geometry,  geometrys in geometry_data.items():
+        for each_geometry, geometrys in geometry_data.items():
             weights = geometrys['weights']
             mfloat_array = OpenMaya.MFloatArray()
             mscript_util = OpenMaya.MScriptUtil()
@@ -153,7 +152,7 @@ class Skincluster(studioMaya.Maya):
             position = self.getJointPosition(joint_dag_paths[index])
             weight_data = self.get_weight(joint_dag_paths[index])
             mirror_position = position[0] * \
-                axis[0], position[1] * axis[1],  position[2] * axis[2]
+                axis[0], position[1] * axis[1], position[2] * axis[2]
             symmetry_weights = self.get_flip_weights(weight_data, axis)
             joint_dag_path, joint_name = self.create(
                 '%s_joint' % tag, clear=True)

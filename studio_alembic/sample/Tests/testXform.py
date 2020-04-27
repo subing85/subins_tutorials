@@ -52,6 +52,7 @@ kRotateHint = 0
 kScaleHint = 0
 kTranslateHint = 0
 
+
 def xformOut():
     """write an oarchive with an xform in it"""
 
@@ -74,7 +75,7 @@ def xformOut():
 
     asamp = XformSample()
     for i in range(20):
-        asamp.addOp(transop, V3d(12.0, i+42.0, 20.0))
+        asamp.addOp(transop, V3d(12.0, i + 42.0, 20.0))
         if i == 18:
             a.getSchema().getChildBoundsProperty().setValue(
                 Box3d(V3d(-1.0, -1.0, -1.0), V3d(1.0, 1.0, 1.0)))
@@ -114,6 +115,7 @@ def xformOut():
         gsamp.addOp(matrixop, gmatrix)
     g.getSchema().set(gsamp)
 
+
 def xformIn():
     """read in an iarchive with an xform and check vals"""
 
@@ -134,9 +136,9 @@ def xformIn():
         assert xs[0].isYAnimated()
         assert xs[0].isXAnimated() == False
         assert xs[0].isZAnimated() == False
-        assert xs.getTranslation() == V3d(12.0, i+42.0, 20.0)
+        assert xs.getTranslation() == V3d(12.0, i + 42.0, 20.0)
         assert xs.getMatrix() == M44d().setTranslation(
-                V3d(12.0, i+42.0, 20.0))
+                V3d(12.0, i + 42.0, 20.0))
 
     b = IXform(a, 'b')
     xs = b.getSchema().getValue()
@@ -188,9 +190,11 @@ def xformIn():
     for i in range(20):
         assert gsamp[i].getChannelValue(1) == float(i) 
 
+
 def testXformBinding():
     xformOut()
     xformIn()
+
 
 testList.append(('testXformBinding', testXformBinding))
 

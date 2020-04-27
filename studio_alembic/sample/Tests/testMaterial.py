@@ -44,55 +44,57 @@ testList = []
 
 kFacevaryingScope = GeometryScope.kFacevaryingScope
 
+
 def materialOut():
     """write an oarchive with a material in it"""
 
-    materials = OObject( OArchive( 'material.abc' ).getTop() , 'materials' )
-    matObj = OMaterial( materials, "material1" )
+    materials = OObject(OArchive('material.abc').getTop() , 'materials')
+    matObj = OMaterial(materials, "material1")
     mat = matObj.getSchema()
 
-    mat.setShader( 'prman', 'surface', 'paintedplastic' )
-    mat.setShader( 'prman', 'displacement', 'knobby' )
+    mat.setShader('prman', 'surface', 'paintedplastic')
+    mat.setShader('prman', 'displacement', 'knobby')
 
-    mat.setShader( 'arnold', 'surface', 'paintedplastic' )
+    mat.setShader('arnold', 'surface', 'paintedplastic')
 
     prop = OFloatProperty(
-            mat.getShaderParameters( 'prman', 'surface' ), 'Kd' )
-    prop.setValue( 0.5 )
+            mat.getShaderParameters('prman', 'surface'), 'Kd')
+    prop.setValue(0.5)
 
     prop = OStringProperty(
-            mat.getShaderParameters( 'prman', 'surface' ), 'texname' )
-    prop.setValue( 'taco' )
+            mat.getShaderParameters('prman', 'surface'), 'texname')
+    prop.setValue('taco')
+
 
 def materialIn():
     """read an iarchive with a material in it"""
 
-    materials = IObject( IArchive( 'material.abc' ).getTop() , 'materials' )
-    matObj = IMaterial( materials, "material1" )
+    materials = IObject(IArchive('material.abc').getTop() , 'materials')
+    matObj = IMaterial(materials, "material1")
     mat = matObj.getSchema()
 
     targetNames = mat.getTargetNames()
 
-    assert len( targetNames ) == 2
-    assert ( ( targetNames[0] == 'arnold' and targetNames[1] == 'prman' ) or
-             ( targetNames[1] == 'arnold' and targetNames[0] == 'prman' ) )
+    assert len(targetNames) == 2
+    assert ((targetNames[0] == 'arnold' and targetNames[1] == 'prman') or
+             (targetNames[1] == 'arnold' and targetNames[0] == 'prman'))
 
     for targetName in targetNames:
-        shaderTypeNames = mat.getShaderTypesForTarget( targetName )
+        shaderTypeNames = mat.getShaderTypesForTarget(targetName)
 
         if targetName == 'prman' :
-            assert len( shaderTypeNames ) == 2
-            assert ( ( shaderTypeNames[0] == 'surface' and
-                       shaderTypeNames[1] == 'displacement' ) or
-                     ( shaderTypeNames[1] == 'surface' and
-                       shaderTypeNames[0] == 'displacement' ) )
+            assert len(shaderTypeNames) == 2
+            assert ((shaderTypeNames[0] == 'surface' and
+                       shaderTypeNames[1] == 'displacement') or
+                     (shaderTypeNames[1] == 'surface' and
+                       shaderTypeNames[0] == 'displacement'))
         else :
             assert targetName == 'arnold'
-            assert len( shaderTypeNames ) == 1 and shaderTypeNames[0]
+            assert len(shaderTypeNames) == 1 and shaderTypeNames[0]
 
         for shaderTypeName in shaderTypeNames:
 
-            shaderName = mat.getShader( targetName, shaderTypeName )
+            shaderName = mat.getShader(targetName, shaderTypeName)
 
             if targetName == 'prman' and shaderTypeName == 'surface':
                 assert shaderName == 'paintedplastic'
@@ -101,32 +103,33 @@ def materialIn():
             elif targetName == 'arnold' and shaderTypeName == 'surface':
                 assert shaderName == 'paintedplastic'
 
-            params = mat.getShaderParameters( targetName, shaderTypeName )
+            params = mat.getShaderParameters(targetName, shaderTypeName)
 
             if params.valid():
                 assert targetName == 'prman' and shaderTypeName == 'surface'
 
                 for i in range(0, params.getNumProperties()):
-                    propHeader = params.getPropertyHeader( i )
+                    propHeader = params.getPropertyHeader(i)
 
                     if propHeader.isScalar():
-                        if IStringProperty.matches( propHeader ):
-                            prop = IStringProperty( params,
-                                                    propHeader.getName() )
-                            assert ( propHeader.getName() == 'texname' and 
-                                     prop.getValue() == 'taco' )
-                        elif IFloatProperty.matches( propHeader ):
-                            prop = IFloatProperty( params,
-                                                   propHeader.getName() )
-                            assert ( propHeader.getName() == 'Kd' and
-                                     prop.getValue() == 0.5 )
+                        if IStringProperty.matches(propHeader):
+                            prop = IStringProperty(params,
+                                                    propHeader.getName())
+                            assert (propHeader.getName() == 'texname' and 
+                                     prop.getValue() == 'taco')
+                        elif IFloatProperty.matches(propHeader):
+                            prop = IFloatProperty(params,
+                                                   propHeader.getName())
+                            assert (propHeader.getName() == 'Kd' and
+                                     prop.getValue() == 0.5)
 
 
 def testMaterialBinding():
     materialOut()
     materialIn()
 
-testList.append( ( 'testMaterialBinding', testMaterialBinding ) )
+
+testList.append(('testMaterialBinding', testMaterialBinding))
 
 # -------------------------------------------------------------------------
 # Main loop
@@ -137,7 +140,6 @@ for test in testList:
     print "Running %s" % funcName
     test[1]()
     print "passed"
-     
 
 print ""
 

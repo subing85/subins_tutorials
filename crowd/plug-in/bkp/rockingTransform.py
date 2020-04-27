@@ -1,11 +1,11 @@
-#-
+# -
 # Copyright 2015 Autodesk, Inc. All rights reserved.
 # 
 # Use of this software is subject to the terms of the Autodesk
 # license agreement provided at the time of installation or download,
 # or which otherwise accompanies this software in either electronic
 # or hard copy form.
-#+
+# +
 
 # This plug-in implements an example custom transform that
 # can be used to perform a rocking motion around the X axix.
@@ -56,13 +56,13 @@ class rockingTransformMatrix(OpenMayaMPx.MPxTransformationMatrix):
     def __del__(self):
         del kTrackingDictionary[OpenMayaMPx.asHashable(self)]
 
-    def setRockInX(self,rockingValue):
+    def setRockInX(self, rockingValue):
         self.rockXValue = rockingValue
 
     def getRockInX(self):
         return self.rockXValue
 
-    def asMatrix(self,percent=None):
+    def asMatrix(self, percent=None):
         """
         Find the new matrix and return it
         """
@@ -71,9 +71,9 @@ class rockingTransformMatrix(OpenMayaMPx.MPxTransformationMatrix):
             tm = OpenMaya.MTransformationMatrix(matrix)
             quat = self.rotation()
             rockingValue = self.getRockInX()
-            newTheta = math.radians( rockingValue )
-            quat.setToXAxis( newTheta )
-            tm.addRotationQuaternion( quat.x, quat.y, quat.z, quat.w, OpenMaya.MSpace.kTransform )
+            newTheta = math.radians(rockingValue)
+            quat.setToXAxis(newTheta)
+            tm.addRotationQuaternion(quat.x, quat.y, quat.z, quat.w, OpenMaya.MSpace.kTransform)
             return tm.asMatrix()
         else:
             m = OpenMayaMPx.MPxTransformationMatrix(self)
@@ -85,23 +85,23 @@ class rockingTransformMatrix(OpenMayaMPx.MPxTransformationMatrix):
             rotatePivotTrans = rotatePivotTrans * percent
             scalePivotTrans = scalePivotTrans * percent
             m.translateTo(trans)
-            m.setRotatePivot( rotatePivotTrans )
-            m.setScalePivotTranslation( scalePivotTrans )
+            m.setRotatePivot(rotatePivotTrans)
+            m.setScalePivotTranslation(scalePivotTrans)
             #
             quat = self.rotation()
             rockingValue = self.getRockInX()
-            newTheta = math.radians( rockingValue )
+            newTheta = math.radians(rockingValue)
 
-            quat.setToXAxis( newTheta )
-            m.rotateBy( quat )
+            quat.setToXAxis(newTheta)
+            m.rotateBy(quat)
             eulerRotate = m.eulerRotation()
-            m.rotateTo( eulerRotate * percent, OpenMaya.MSpace.kTransform )
+            m.rotateTo(eulerRotate * percent, OpenMaya.MSpace.kTransform)
             #
-            s = self.scale( OpenMaya.MSpace.kTransform )
-            s.x = 1.0 + ( s.x - 1.0 ) * percent
-            s.y = 1.0 + ( s.y - 1.0 ) * percent
-            s.z = 1.0 + ( s.z - 1.0 ) * percent
-            m.scaleTo( s, OpenMaya.MSpace.kTransform )
+            s = self.scale(OpenMaya.MSpace.kTransform)
+            s.x = 1.0 + (s.x - 1.0) * percent
+            s.y = 1.0 + (s.y - 1.0) * percent
+            s.z = 1.0 + (s.z - 1.0) * percent
+            m.scaleTo(s, OpenMaya.MSpace.kTransform)
             #
             return m.asMatrix()
 
@@ -117,7 +117,7 @@ class rockingTransformNode(OpenMayaMPx.MPxTransform):
         self.rockXValue = 0.0
 
     def createTransformationMatrix(self):
-        return OpenMayaMPx.asMPxPtr( rockingTransformMatrix() )
+        return OpenMayaMPx.asMPxPtr(rockingTransformMatrix())
 
     def className(self):
         return kRockingTransformNodeName
@@ -127,15 +127,15 @@ class rockingTransformNode(OpenMayaMPx.MPxTransform):
         if plug.isNull():
             return OpenMayaMPx.MPxTransform.compute(plug, data)
 
-        if ( (plug == self.matrix)
+        if ((plug == self.matrix)
         or   (plug == self.inverseMatrix)
         or   (plug == self.worldMatrix)
         or   (plug == self.worldInverseMatrix)
         or   (plug == self.parentMatrix)
-        or   (plug == self.parentInverseMatrix) ):
+        or   (plug == self.parentInverseMatrix)):
 
             try:
-                rockInXData = data.inputValue( self.aRockInX )
+                rockInXData = data.inputValue(self.aRockInX)
 
                 # Update our new internal "rock in x" value
                 rockInX = rockInXData.asDouble()
@@ -175,7 +175,6 @@ class rockingTransformNode(OpenMayaMPx.MPxTransform):
 
         OpenMayaMPx.MPxTransform.validateAndSetValue(self, plug, handle, context)
 
-
     def getRockingTransformationMatrix(self):
         baseXform = self.transformationMatrixPtr()
         return kTrackingDictionary[OpenMayaMPx.asHashable(baseXform)]
@@ -183,10 +182,12 @@ class rockingTransformNode(OpenMayaMPx.MPxTransform):
 
 # create/initialize node and matrix
 def matrixCreator():
-    return OpenMayaMPx.asMPxPtr( rockingTransformMatrix() )
+    return OpenMayaMPx.asMPxPtr(rockingTransformMatrix())
+
 
 def nodeCreator():
-    return OpenMayaMPx.asMPxPtr( rockingTransformNode() )
+    return OpenMayaMPx.asMPxPtr(rockingTransformNode())
+
 
 def nodeInitializer():
     numFn = OpenMaya.MFnNumericAttribute()
@@ -200,23 +201,25 @@ def nodeInitializer():
     rockingTransformNode.mustCallValidateAndSet(rockingTransformNode.aRockInX)
     return
 
+
 # initialize the script plug-in
 def initializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
 
     try:
-        mplugin.registerTransform( kRockingTransformPluginName, kRockingTransformNodeID, \
-                                nodeCreator, nodeInitializer, matrixCreator, kRockingTransformMatrixID )
+        mplugin.registerTransform(kRockingTransformPluginName, kRockingTransformNodeID, \
+                                nodeCreator, nodeInitializer, matrixCreator, kRockingTransformMatrixID)
     except:
-        sys.stderr.write( "Failed to register transform: %s\n" % kRockingTransformPluginName )
+        sys.stderr.write("Failed to register transform: %s\n" % kRockingTransformPluginName)
         raise
+
 
 # uninitialize the script plug-in
 def uninitializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
 
     try:
-        mplugin.deregisterNode( kRockingTransformNodeID )
+        mplugin.deregisterNode(kRockingTransformNodeID)
     except:
-        sys.stderr.write( "Failed to unregister node: %s\n" % kRockingTransformPluginName )
+        sys.stderr.write("Failed to unregister node: %s\n" % kRockingTransformPluginName)
         raise

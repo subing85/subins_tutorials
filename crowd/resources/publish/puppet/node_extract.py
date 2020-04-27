@@ -9,7 +9,6 @@ OWNER = 'Subin Gopi'
 COMMENTS = 'To collect puppet configure data!...'
 VERSION = '0.0.1'
 
-
 from crowd.core import puppet
 reload(puppet)
 

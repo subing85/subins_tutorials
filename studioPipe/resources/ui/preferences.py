@@ -21,7 +21,7 @@ from PySide import QtGui
 
 from studioPipe import resources
 from studioPipe.api import studioPreferences
-#from studioPipe.core import input
+# from studioPipe.core import input
 import input
 
 

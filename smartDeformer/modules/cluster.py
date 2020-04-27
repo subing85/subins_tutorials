@@ -17,7 +17,6 @@ Description
     Influence objects can be cluster.
 '''
 
-
 import copy
 
 from maya import OpenMaya
@@ -141,7 +140,7 @@ class Cluster(studioMaya.Maya):
             position = self.getClusterPosition(cluster_dag_paths[index])
             weight_data = self.get_weight(cluster_dag_paths[index])
             mirror_position = [position[0] * axis[0],
-                               position[1] * axis[1],  position[2] * axis[2]]
+                               position[1] * axis[1], position[2] * axis[2]]
             symmetry_weights = self.get_flip_weights(weight_data, axis)
             cluster, clusterHandle = self.create(
                 '%s_cluster' % tag, clear=True)

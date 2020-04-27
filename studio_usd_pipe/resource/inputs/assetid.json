@@ -10,15 +10,14 @@
 	"enable": true,
 	"type": "assetid",
 	"data": {
-	    "sentity": {
+	    "spipe": {
 	            "order": 1,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
 	            "locked": true,
 	            "short": "slv"
-	        },
-	
+	        },	
 	    "scaption": {
 	            "order": 2,
 	            "type": "string",
@@ -26,31 +25,44 @@
 	            "show": true,
 	            "locked": true,
 	            "short": "scp"
-	            
 	        },
-	    "stype":
-	        {
+	    "ssubfield": {
 	            "order": 3,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
 	            "locked": true,
-	            "short": "stp"
-	            
-	        },
-	    "stag":
+	            "short": "sud"
+	        },	        
+	    "stype":
 	        {
 	            "order": 4,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
 	            "locked": true,
-	            "short": "stg"
-	            
+	            "short": "stp"
 	        },
-	    "sversion":
+	    "stag":
 	        {
 	            "order": 5,
+	            "type": "string",
+	            "value": null,
+	            "show": true,
+	            "locked": true,
+	            "short": "stg"
+	        },
+	    "sdependency": {
+	            "order": 6,
+	            "type": "string",
+	            "value": null,
+	            "show": true,
+	            "locked": true,
+	            "short": "sdep"	    
+	    	},
+	    "sversion":
+	        {
+	            "order": 7,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
@@ -59,7 +71,7 @@
 	        },
 	    "smodified": 
 	        {
-	           "order": 6,
+	           "order": 8,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
@@ -68,7 +80,7 @@
 	        },	    
 	    "slocation":
 	        {
-	            "order": 7,
+	            "order": 9,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
@@ -77,12 +89,21 @@
 	        } ,
 	    "sdescription": 
 	        {
-	            "order": 8,
+	            "order": 10,
 	            "type": "string",
 	            "value": null,
 	            "show": true,
 	            "locked": true,
 	            "short": "sde"
-	        }                               
+	        },
+	    "suser": 
+	        {
+	            "order": 11,
+	            "type": "string",
+	            "value": null,
+	            "show": true,
+	            "locked": true,
+	            "short": "usr"
+	        }  	                                    
 	    }
 	}
