@@ -67,7 +67,7 @@
 				"description": "Browse your aditional python directory"	
 				}				
 			},				
-		"applications": {
+		"show_applications": {
 			"maya": {
 				"version": { 
 					"order": 0,				

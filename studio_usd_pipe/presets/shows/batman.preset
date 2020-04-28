@@ -5,10 +5,10 @@
     "type": "show_config", 
     "enable": true, 
     "#copyright": "(c) 2019, Subin Gopi All rights reserved.", 
-    "modified": "2020 27 April Monday, 22:53:29 PM", 
+    "modified": "2020 28 April Tuesday, 12:23:46 PM", 
     "created_by": "subin gopi", 
     "data": {
-        "applications": {
+        "show_applications": {
             "natron": {
                 "path": "/venture/software/Natron-2.3.13", 
                 "version": "Natron-2.3.13", 
@@ -57,7 +57,7 @@
                 "long_name": "batman", 
                 "show_path": "/venture/shows/batman", 
                 "path": "/usr/bin", 
-                "order": 1, 
+                "order": 0, 
                 "icon": "/venture/shows/icons/batman.png"
             }
         }

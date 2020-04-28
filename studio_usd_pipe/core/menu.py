@@ -4,14 +4,17 @@ import pkgutil
 from pymel import core
 from functools import partial
 from studio_usd_pipe import resource
+from studio_usd_pipe.core import common
 
 MENU_NAME = 'studio_toolkit_menu'
 MENU_LABEL = 'Subin\'s USD ToolKit'
 
 
 def create_menu():
-    tool_kit_path = resource.getToolKitPath()    
+    tool_kit_path = resource.getMayaToolKitPath()    
     icon_path = resource.getIconPath()
+    
+    common.get_modules(tool_kit_path, module_types=['maya_tool'])
 
     modules = get_packages(tool_kit_path)
     studio_uv_menu = make_menu(

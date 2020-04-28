@@ -9,5 +9,5 @@ ICON = 'set_show.png'
 
 
 def execute():
-    from studio_usd_pipe.utils.smaya import show
+    from studio_usd_pipe.patch.utils.smaya import show
     show.set()

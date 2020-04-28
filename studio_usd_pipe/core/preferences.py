@@ -96,7 +96,7 @@ class Preferences(object):
         '''        
         if not os.path.isfile(self.preference_path):
             return None
-        data = resource.get_input_data(self.preference_path)
+        data = resource.getInputData(self.preference_path)
         return data
     
     def get_inputs(self):

@@ -1,13 +1,14 @@
 import os
 import json
 import shutil
+import pkgutil
 import tempfile
 import warnings
 
 from datetime import datetime
 
     
-def sort_dictionary(input_dict):
+def sort_dictionary(input_dict): #**
     data = {}
     stack = input_dict.items()    
     while stack:
@@ -21,7 +22,7 @@ def sort_dictionary(input_dict):
     return result
 
 
-def sorted_show_order(input_dict):
+def sorted_show_order(input_dict): #**
     data = {}
     stack = input_dict.items()
     
@@ -34,7 +35,7 @@ def sorted_show_order(input_dict):
     return order  
 
 
-def get_template_header():
+def get_template_header(): #**
     headers = {
         'created_by': 'subin gopi',
         'author': 'Subin. Gopi (subing85@gmail.com)',
@@ -48,6 +49,28 @@ def get_template_header():
     return headers
 
 
+def get_modules(dirname, module_types=None): #**
+    module_data = {}
+    for module_loader, name, ispkg in pkgutil.iter_modules([dirname]):
+        loader = module_loader.find_module(name)
+        module = loader.load_module(name)
+        if not hasattr(module, 'TYPE'):
+            continue            
+        if not module.VALID:
+            continue
+        if not hasattr(module, 'VALID'):
+            continue
+        if not hasattr(module, 'ORDER'):
+            continue
+        if module_types:        
+            if module.TYPE not in module_types:
+                continue
+        if module.TYPE not in module_data:
+            module_data.setdefault(module.TYPE, {})
+        module_data[module.TYPE].setdefault(module.ORDER, module)
+    return module_data
+
+
 def get_modified_date():
     modified = datetime.now().strftime("%Y %d %B %A, %I:%M:%S %p")
     return modified
@@ -59,7 +82,7 @@ def get_time_date(time):
     return modified
 
 
-def read_json(path):
+def read_json(path): 
     data = None
     with open(path, 'r') as file:
         data = json.load(file)
@@ -137,4 +160,5 @@ def remove_directory(path):
         shutil.rmtree(path)   
     except Exception as error:
         print '# warnings', error
+
 

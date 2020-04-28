@@ -24,15 +24,23 @@ class Show(object):
         presets = glob.glob('%s/*%s' % (self.preset_path, self.format))
         return presets
         
-    def get_preset_data(self):  # include all show presets
+    def get_preset_data(self):  
+        # include all show presets with common application data
         preset_data = {}        
         presets = self.get_presets()
         if not presets:
-            return preset_data        
+            return preset_data
+        common_applications_data = self.get_common_applications()            
         for preset in presets:
             data = resource.getInputData(preset)
-            preset_data.setdefault(
-                data['current_show']['show']['long_name'], data)
+            current_show = data['current_show']['show']['long_name']
+            preset_data.setdefault(current_show, data)
+            # add new bash key to each show applications            
+            for each_application in data['show_applications']:
+                version = data['show_applications'][each_application]['version']
+                bash_path = resource.getBinApplicationPath(current_show, version)
+                data['show_applications'][each_application]['bash'] = bash_path
+            data['common_applications'] = common_applications_data
         return preset_data
     
     def get_show_preset_data(self, current_show):
@@ -52,23 +60,75 @@ class Show(object):
         data = self.get_show_preset_data(current_show)
         if not data:
             return versions
-        for each in data['applications']:
-            versions.setdefault(
-                each,
-                data['applications'][each]['version']
-                )
+        for application in ['show_applications', 'common_applications']:
+            for each in data[application]:
+                contents = {
+                    'long_name': data[application][each]['version'],
+                    'application_type': application
+                    }
+                versions.setdefault(each, contents)
         return versions
     
     def get_current_application(self, current_show, application):
         versions = self.get_application_versions(current_show)
+        if application in versions:
+            return application, versions[application]['application_type']    
+        for name, contents in versions.items():
+            if contents['long_name'] != application:
+                continue
+            return name, contents['application_type']  
+        return None, None
+    
+    def get_applications_data(self):
+        applications_data = resource.getApplicationsData() 
+        return applications_data['applications']
+    
+    def get_applications_versions(self):
+        versions = {} 
+        data = self.get_applications_data() 
+        if not data:
+            return versions
+        for each in data:
+            versions.setdefault(
+                each,
+                data[each]['version']
+                )
+        return versions
+    
+    def get_application(self, application):
+        versions = self.get_applications_versions()
         if application in versions:
             return application        
         for k, v in versions.items():
             if v != application:
                 continue
             return k
-        return None         
-    
+        return None
+
+    def get_common_applications(self):
+        common_applications_path = resource.getCommonApplicationsPath()
+        module_data = common.get_modules(
+            common_applications_path, module_types=['common_application'])
+        if not module_data:
+            return None
+        if 'common_application' not in module_data:
+            return None
+        application_data = {}                
+        for order, module in module_data['common_application'].items():
+            module_path = os.path.join(module.__path__[-1], 'main.sh')
+            if not os.path.isfile(module_path):
+                continue
+            contents = {
+                "exe": module_path,
+                'bash': module_path,
+                "path": os.path.dirname(module_path),
+                "version": '%s%s' % (module.KEY, module.VERSION),
+                "order": order,
+                "icon": os.path.join(resource.getIconPath(), module.ICON)              
+                }
+            application_data.setdefault(module.KEY, contents)
+        return application_data
+        
     def get_shows(self, preset_data=None, verbose=True):
         if not preset_data:
             preset_data = self.get_preset_data()
@@ -101,7 +161,7 @@ class Show(object):
             return 0
         return len(current_shows)
         
-    def create_bin_application(self, current_show, application, application_path, force=False): 
+    def create_bin_show_application(self, current_show, application, application_path, force=False): 
         application_template = resource.getApplicationTemplatePath()
         if not os.path.isfile(application_template):
             print '#warnings: not found application template <%s>' % application_template
@@ -163,9 +223,9 @@ class Show(object):
             preset.write(json.dumps(template_header, indent=4))
         # create bin application batch
         valids = []    
-        for application in input_data['applications']:
-            version = input_data['applications'][application]['version']
-            exe_path = input_data['applications'][application]['exe']
+        for application in input_data['show_applications']:
+            version = input_data['show_applications'][application]['version']
+            exe_path = input_data['show_applications'][application]['exe']
             valid = self.create_bin_application(show_contents['long_name'], version, exe_path, force=True)
             valids.append(valid)
         if False in valids:
@@ -183,27 +243,27 @@ class Show(object):
                 value = os.environ[k.upper()] + ':' + str(value)                
             os.environ[k.upper()] = value
     
-    def launch(self, current_show, current_application, contents=None, bin=True, thread=True):
+    def launch(self, current_show, application_type, current_application, contents=None, thread=True):
         if not contents:
-            contents = self.get_show_preset_data(current_show)        
+            contents = self.get_show_preset_data(current_show)
+        current_application_contents = contents[application_type][current_application]
         self.set_environ(contents['current_show']['show'])  # set show environments        
-        self.set_environ(contents['applications'][current_application])  # set current_application environments               
-        show_name = contents['current_show']['show']['long_name']
-        application_name = contents['applications'][current_application]['version']        
-        batch_path = resource.getBinApplicationPath(show_name, application_name)
-        if not bin or not os.path.isfile(batch_path):
-            batch_path = contents['applications'][current_application]['exe']
+        self.set_environ(current_application_contents)  # set current show_application environments     
+        bash_path = current_application_contents['bash']
+        if not os.path.isfile(bash_path):
+            print "#error: not found", bash_path
+            return
         if not thread:        
-            self.execute_application(batch_path)
+            self.execute_command(bash_path)
             return
         self.thread_state = threading.Condition()
-        self.palyThread = threading.Thread(target=self.execute_application, args=([batch_path]))
+        self.palyThread = threading.Thread(target=self.execute_command, args=([bash_path]))
         self.palyThread.daemon = True
         self.palyThread.start()
         
-    def execute_application(self, path):
+    def execute_command(self, command):
         popen = subprocess.Popen(
-            [path], shell=False, stdout=subprocess.PIPE)
+            [command], shell=False, stdout=subprocess.PIPE)
         popen_result = popen.stdout.readlines()        
-        communicate = popen.communicate()       
-    
+        communicate = popen.communicate()   
+

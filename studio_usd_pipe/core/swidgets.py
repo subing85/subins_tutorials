@@ -50,9 +50,12 @@ def add_listwidget_item(parent, label, key=None, icon_path=None):
     if key:
         item.setStatusTip(key)            
     icon = QtGui.QIcon()
-    if not os.path.isfile(icon_path):
-        icon_path = os.path.join(
-            resource.getIconPath(), 'unknown.png')
+    
+    if not icon_path:
+        icon_path = os.path.join(resource.getIconPath(), 'unknown.png')
+    if not os.path.isfile(icon_path) and os.path.isabs(icon_path):
+        icon_path = os.path.join(resource.getIconPath(), 'unknown.png')
+    
     icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
     item.setIcon(icon)
     item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)       

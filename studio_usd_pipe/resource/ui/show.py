@@ -15,9 +15,10 @@ from studio_usd_pipe.api import studioShow
 
 class Window(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, launcher=None):
         super(Window, self).__init__(parent)
         # self.setParent(parent)
+        self.launcher = launcher
         self.title = 'Show configure'
         self.width = 729
         self.height = 663
@@ -83,15 +84,15 @@ class Window(QtWidgets.QWidget):
         order = self.shows.get_next_order()
         inputs['show']['order']['value'] = order
         self.set_widgets('current_show', 'show', inputs['show'], order)        
-        sorted_application = common.sort_dictionary(inputs['applications'])
+        sorted_application = common.sort_dictionary(inputs['show_applications'])
         
         for index, application in enumerate(sorted_application):
             self.set_widgets(
-                'applications', application, inputs['applications'][application], index)        
+                'show_applications', application, inputs['show_applications'][application], index)        
         
     def set_widgets(self, header, key, inputs, index):
         '''
-            :param header <str> 'current_show', 'applications'
+            :param header <str> 'current_show', 'show_applications'
             :param key <str>  'show', maya, katana, nuke, natron
         '''
         page = QtWidgets.QWidget()
@@ -229,7 +230,9 @@ class Window(QtWidgets.QWidget):
             return         
         QtWidgets.QMessageBox.information(
             self, 'information', '%s\ncreated %s show' % (message, label), QtWidgets.QMessageBox.Ok)
-        self.close()            
+        self.close()
+        if self.launcher:
+            self.launcher.setup_default()       
         print '#info: successfully registered show preset!...'
         return
 

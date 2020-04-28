@@ -117,21 +117,7 @@ class Publish(object):
     def get_bundles(self):
         if not self.is_valid():
             return None
-        module_data = {}
-        for module_loader, name, ispkg in pkgutil.iter_modules([self.bundle_path]):
-            loader = module_loader.find_module(name)
-            module = loader.load_module(name)
-            if not hasattr(module, 'TYPE'):
-                continue            
-            if not module.VALID:
-                continue
-            if not hasattr(module, 'VALID'):
-                continue
-            if not hasattr(module, 'ORDER'):
-                continue
-            if module.TYPE not in module_data:
-                module_data.setdefault(module.TYPE, {})
-            module_data[module.TYPE].setdefault(module.ORDER, module)
+        module_data = common.get_modules(self.bundle_pathdirname)
         return module_data
     
     def find_bundles(self):

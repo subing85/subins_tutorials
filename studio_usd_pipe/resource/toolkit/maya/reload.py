@@ -55,7 +55,7 @@ def execute():
     from studio_usd_pipe import resource
     reload(resource)
         
-    from studio_usd_pipe.utils import smaya
+    from studio_usd_pipe.patch.utils import smaya
     reload(smaya)
     
     from studio_usd_pipe.resource.ui import preferences

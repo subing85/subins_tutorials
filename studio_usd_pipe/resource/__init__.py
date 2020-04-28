@@ -6,7 +6,11 @@ import platform
 CURRENT_PATH = os.path.dirname(__file__)
 
 
-def getInputData(path):
+def getInputPath(): #**
+    return os.path.join(CURRENT_PATH, 'inputs')
+
+
+def getInputData(path): #**
     if not path:
         raise IOError('not found path <{}>'.format(path))
     with (open(path, 'r')) as open_data:
@@ -15,8 +19,8 @@ def getInputData(path):
             return None
         return data['data']
 
-    
-def getData(path):
+
+def getData(path): #**
     if not path:
         raise IOError('not found path <{}>'.format(path))
     with open(path, 'r') as file:
@@ -24,32 +28,59 @@ def getData(path):
         return data
 
     
-def getPresetFormat():
+def getPresetFormat(): #**
     return '.preset'
-        
-    
-def getShowConfigureData():
-    path = os.path.join(getInputPath(), 'show.json')
-    data = getInputData(path)
-    return data
 
 
-def getIconPath():
+def getIconPath(): #**
     return os.path.join(CURRENT_PATH, 'icons')
 
 
-def getPackagePath():    
+def getPackagePath(): #**   
     if 'PACKAGE_PATH' in os.environ:
         return os.environ['PACKAGE_PATH']
     path = os.path.dirname(os.path.dirname(CURRENT_PATH))
     return path
 
 
-def getPackageName():
+def getPackageName(): #**
     if 'PACKAGE_NAME' in os.environ:
         return os.environ['PACKAGE_NAME']
     name = os.path.basename(os.path.dirname(CURRENT_PATH))
     return name
+
+
+def getShowConfigureData(): #**
+    path = os.path.join(getInputPath(), 'show.json')
+    data = getInputData(path)
+    return data
+
+
+def getApplicationsData(): #**
+    # get the build-in application data
+    path = os.path.join(getInputPath(), 'applications.json')
+    data = getInputData(path)
+    return data
+
+
+def getCommonApplicationsPath(): #**
+    path = os.path.join(getPackagePath(), getPackageName(), 'bin/common')
+    return path
+    
+
+def getIdentityKey(): #**
+    return '##..##'
+
+
+def getMayaToolKitPath(): #**
+    return os.path.join(CURRENT_PATH, 'toolkit/maya')
+
+
+
+
+
+
+
 
 
 def getTemplatePath():    
@@ -111,20 +142,20 @@ def getBinApplicationPath(show, application):
     return path
 
 
-def getIdentityKey():
-    return '##..##'
 
 
-def getInputPath():
-    return os.path.join(CURRENT_PATH, 'inputs')
+
+
+
+
+
+
 
 
 def getScriptPath():
     return os.path.join(CURRENT_PATH, 'scripts')
 
 
-def getToolKitPath():
-    return os.path.join(CURRENT_PATH, 'toolkit')
 
 
 def getHeaderData():

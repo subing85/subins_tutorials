@@ -2,7 +2,7 @@
 import sys
 from PySide2 import QtWidgets
 
-from studio_usd_pipe.utils import smaya
+from studio_usd_pipe.patch.utils import smaya
 from studio_usd_pipe.resource.ui import push
 reload(push)
 
