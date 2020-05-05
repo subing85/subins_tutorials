@@ -1,0 +1,50 @@
+{
+	"created_by": "subin gopi",
+	"author": "Subin. Gopi (subing85@gmail.com)",
+	"#copyright": "(c) 2019, Subin Gopi All rights reserved.",
+	"modified": "April:27:2020 - 12:00:01:AM",
+	"description": "inputs of build-in applications for show",
+	"warning": "# WARNING! All changes made in this file will be lost!",
+	"enable": true,
+	"type": "applications",
+	"data": {
+		"applications": {
+			"konsole": {
+				"version": "Konsole 2.10.5",
+				"label": "Konsole",
+				"path": "/usr/bin",	
+				"exe": "/usr/bin/konsole", 		
+				"icon": "konsole.png",
+				"enable": true,
+				"order": 0
+				},
+			"ipython": {
+				"version": "Ipython 3.2.1",
+				"label": "IPython",
+				"path": "/usr/bin",	
+				"exe": "/usr/bin/ipython", 		
+				"icon": "ipython.png",
+				"enable": true,
+				"order": 1
+				},			
+			"python": {
+				"version": "Python 2.7.5",
+				"label": "Python",
+				"path": "/usr/bin",	
+				"exe": "/usr/bin/konsole `python`", 		
+				"icon": "python.png",
+				"enable": true,
+				"order": 2
+				},			
+			"idle": {
+				"version": "Idle Python 2.7.5",
+				"label": "Python IDLE",
+				"path": "/usr/bin",	
+				"exe": "/usr/bin/idle", 		
+				"icon": "idle.png",
+				"enable": true,
+				"order": 3
+				}										
+			}
+		}
+	}

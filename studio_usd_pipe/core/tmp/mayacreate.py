@@ -78,7 +78,7 @@ class Create(object):
         sshader = studioShader.Shader()
         surface_data = self.studio_data['surface']
         for node, contenst in surface_data.items():
-            mfn_mesh = sshader.create_shadernet(node, contenst, replace=replace)        
+            shading_engine = sshader.create_shadernet(node, contenst, replace=replace)        
     
     def puppet(self, replace=False):
         pass

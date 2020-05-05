@@ -2,12 +2,20 @@
 ENABLE=True
 
 if [ $ENABLE = "True" ]; then
-	echo -e "\e[1m\e[34m#header: studio launcher"
-	echo -e "\e[0m\e[36m	     NAME: \e[31mStudio Launcher"	
-	echo -e "\e[0m\e[36m	  VERSION: \e[31m0.0.0"
-	echo -e "\e[0m\e[36m	   AUTHOR: \e[31msubin gopi"
-	echo -e "\e[0m\e[36m	 MODIFIED: \e[31mOctober:24:2019 - 09:00:01:PM"	
-	echo -e "\e[0m\e[36m	COPYRIGHT: \e[31m(c) 2019, Subin Gopi All rights reserved (Opensource and free tool)"
+	info_color="\e[34m" #darkBlue
+	message_color="\e[91m" #light red	
+	error_color="\e[31m" #red	    
+	warning_color="\e[35m" #magenta	    
+	header_color="\e[32m" #green
+	normal_color="\e[0m"	
+		
+	echo -e $header_color"#header: studio launcher"
+	echo -e $info_color"	     NAME: "$message_color"Studio Launcher"	
+	echo -e $info_color"	  VERSION: "$message_color"0.0.0"
+	echo -e $info_color"	   AUTHOR: "$message_color"subin gopi"
+	echo -e $info_color"	 MODIFIED: "$message_color"October:24:2019 - 09:00:01:PM"	
+	echo -e $info_color"	COPYRIGHT: "$message_color"(c) 2019, Subin Gopi All rights reserved (Opensource and free tool)"
+	echo -e $normal_color
 	init="$(dirname -- "$0")/__init__.py"
 	python $init
 else

@@ -9,13 +9,8 @@ from maya import OpenMaya
 from maya import OpenMayaUI
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import image
 from studio_usd_pipe.core import common
-from __builtin__ import False
-
-reload(resource)
-reload(image)
-reload(common)
+from studio_usd_pipe.core import swidgets
 
 
 class Maya(object):
@@ -354,7 +349,7 @@ class Maya(object):
         return mfn_dag_node   
         
     def create_maya_ids(self, mobject, id_data):
-        attributes = common.sorted_order(id_data)
+        attributes = common.sort_dictionary(id_data)
         self.remove_maya_id(mobject, id_data)
         data = {}
         hidden = {True: False, False: True} 
@@ -492,33 +487,41 @@ class Maya(object):
             dg_modifier.doIt() 
             
     def set_parent(self, child, parent):
-        if isinstance(child, unicode):
-            child = child.encode()
-        if isinstance(parent, unicode):
-            parent = parent.encode()            
-        if not isinstance(child, str):
-            mfn_dagpath = OpenMaya.MFnDagNode(child)
-            child = mfn_dagpath.fullPathName()            
-        if not isinstance(parent, str):
-            mfn_dagpath = OpenMaya.MFnDagNode(parent)
-            parent = mfn_dagpath.fullPathName() 
-        
+        if isinstance(child, OpenMaya.MObject):
+            child = OpenMaya.MFnDagNode(child)
+        if isinstance(parent, OpenMaya.MObject):
+            parent = OpenMaya.MFnDagNode(parent)
+        self.unparent(child)
         mcommand_result = OpenMaya.MCommandResult()
-        mel_command = 'parent \"%s\" \"%s\" ' % (child, parent)
-        OpenMaya.MGlobal.executeCommand(
-            mel_command, mcommand_result, False, True)
+        mel_command = 'parent \"%s\" \"%s\" ' % (child.fullPathName(), parent.fullPathName())
+        OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
         mobject = self.get_mobject(results[0])   
         return mobject
     
-    def unparent(self, mobject):        
-        if not isinstance(mobject, str):
-            mfn_dagpath = OpenMaya.MFnDagNode(mobject)
-            mobject = mfn_dagpath.fullPathName()            
-        mel_command = 'parent -w \"%s\"' % mobject                       
-        OpenMaya.MGlobal.executeCommand(mel_command, False, True)   
-                     
+    def unparent(self, mobject):
+        if isinstance(mobject, str) or isinstance(mobject, unicode):
+            mobject = self.get_mobject(mobject)
+            mobject = OpenMaya.MFnDagNode(mobject)
+        if isinstance(mobject, OpenMaya.MObject) or isinstance(mobject, OpenMaya.MDagPath):
+            mobject = OpenMaya.MFnDagNode(mobject)
+        if not self.has_parent(mobject):
+            return
+        mel_command = 'parent -w \"%s\"' % mobject.fullPathName()
+        OpenMaya.MGlobal.executeCommand(mel_command, False, True)
+        
+    def has_parent(self, mobject):
+        if isinstance(mobject, str) or isinstance(mobject, unicode):
+            mobject = self.get_mobject(mobject)
+            mobject = OpenMaya.MFnDagNode(mobject)
+        if isinstance(mobject, OpenMaya.MObject) or isinstance(mobject, OpenMaya.MDagPath):
+            mobject = OpenMaya.MFnDagNode(mobject)        
+        parent_mobject = mobject.parent(0)
+        if parent_mobject.hasFn(OpenMaya.MFn.kWorld):
+            return False
+        return True
+          
     def freeze_transformations(self, node):
         if not isinstance(node, str):
             node = self.get_name(node)
@@ -585,13 +588,13 @@ class Maya(object):
         if not output_path:
             output_path = os.path.join(
                 tempfile.gettempdir(),
-                'studio_pipe_temp.png'
-            )            
+                'studio_pipe_temp_%s.png' % resource.getCurrentDateKey()
+            ) 
         format = os.path.splitext(output_path)[-1].replace('.', '')        
         if not format:
             format = 'png'                    
         m_image.writeToFileWithDepth(output_path, format, False) 
-        image.image_resize(output_path, output_path, width=width, height=width)
+        swidgets.image_resize(output_path, output_path, width=width, height=width)
         return output_path, width, height
         
     def get_connections(self, node):        
@@ -929,9 +932,9 @@ class Maya(object):
         mfile = OpenMaya.MFileIO()
         mfile.importFile(maya_file, file_type, True, namespace, True)
 
-    def reference_maya(self, maya_file, locked=True, namespace=None):
+    def reference_maya(self, maya_file, deferred=True, locked=True, namespace=None):
         mfile = OpenMaya.MFileIO()        
-        mfile.reference(maya_file, True, locked, namespace)        
+        mfile.reference(maya_file, deferred, locked, namespace)        
         
     def has_plugin_loaded(self, plugin):
         mcommand_result = OpenMaya.MCommandResult()

@@ -3,10 +3,17 @@ import os
 import json
 import platform
 
+from datetime import datetime
+
+
 CURRENT_PATH = os.path.dirname(__file__)
 
 
-def getInputData(path):
+def getInputPath(): #**
+    return os.path.join(CURRENT_PATH, 'inputs')
+
+
+def getInputData(path): #**
     if not path:
         raise IOError('not found path <{}>'.format(path))
     with (open(path, 'r')) as open_data:
@@ -15,8 +22,8 @@ def getInputData(path):
             return None
         return data['data']
 
-    
-def getData(path):
+
+def getData(path): #**
     if not path:
         raise IOError('not found path <{}>'.format(path))
     with open(path, 'r') as file:
@@ -24,32 +31,99 @@ def getData(path):
         return data
 
     
-def getPresetFormat():
+def getPresetFormat(): #**
     return '.preset'
-        
-    
-def getShowConfigureData():
-    path = os.path.join(getInputPath(), 'show.json')
-    data = getInputData(path)
-    return data
 
 
-def getIconPath():
+def getIconPath(): #**
     return os.path.join(CURRENT_PATH, 'icons')
 
 
-def getPackagePath():    
+def getPackagePath(): #**   
     if 'PACKAGE_PATH' in os.environ:
         return os.environ['PACKAGE_PATH']
     path = os.path.dirname(os.path.dirname(CURRENT_PATH))
     return path
 
 
-def getPackageName():
+def getPackageName(): #**
     if 'PACKAGE_NAME' in os.environ:
         return os.environ['PACKAGE_NAME']
     name = os.path.basename(os.path.dirname(CURRENT_PATH))
     return name
+
+
+def getShowConfigureData(): #**
+    path = os.path.join(getInputPath(), 'show.json')
+    data = getInputData(path)
+    return data
+
+
+def getApplicationsPath(application_type): #**
+    path = os.path.join(getPackagePath(), getPackageName(), 'bin', application_type)
+    return path
+
+
+def getIdentityKey(): #**
+    return '##..##'
+
+
+def getMayaToolKitPath(): #**
+    return os.path.join(CURRENT_PATH, 'toolkit/maya')
+
+
+
+def getPipeData(): #**
+    path = os.path.join(getInputPath(), 'pipe.json')
+    data = getInputData(path)
+    return data
+
+
+def getMayaFileTypes(): #**
+    file_types = {
+        '.ma': 'mayaAscii',
+        '.mb': 'mayaBinary'
+        }
+    return file_types
+
+
+def getMayaFormats(): #**
+    return '(*.ma *.mb)'
+
+def getImageFormats(): #**
+    return '(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)'
+
+
+def getCurrentDateKey(): #**
+    date = datetime.now().strftime("%Y_%d_%B_%A_%I_%M_%S_%p")
+    return  date 
+
+def getCurrentDate(): #***************************************
+    date = datetime.now().strftime("%Y %d %B %A, %I:%M:%S %p")    
+    return  date 
+
+
+def getMayapy(maya_path): #**    
+    path = os.path.join(maya_path, 'bin/mayapy')
+    return path
+
+                
+def getBrowsPath(): #**
+    if 'BROWS_PATH' in os.environ:
+        return os.environ['BROWS_PATH']
+    if 'SHOW_PATH' in os.environ:
+        return os.environ['SHOW_PATH']
+    return getPackagePath()
+
+
+def getModulePath():
+    path = os.path.join(getPackagePath(), getPackageName(), 'module')
+    return path
+
+def getModuleApplicationsPath():
+    path = os.path.join(getModulePath(), 'applications')
+    return path
+    
 
 
 def getTemplatePath():    
@@ -77,10 +151,6 @@ def getOperatingSystemBinPath():
     return '/usr/bin'    
 
 
-def getBrowsPath():
-    if 'BROWS_PATH' in os.environ:
-        return os.environ['BROWS_PATH']        
-    return getPackagePath()
 
 
 def getPresetPath():
@@ -111,20 +181,20 @@ def getBinApplicationPath(show, application):
     return path
 
 
-def getIdentityKey():
-    return '##..##'
 
 
-def getInputPath():
-    return os.path.join(CURRENT_PATH, 'inputs')
 
 
-def getScriptPath():
+
+
+
+
+
+
+def getScriptPath(): #**
     return os.path.join(CURRENT_PATH, 'scripts')
 
 
-def getToolKitPath():
-    return os.path.join(CURRENT_PATH, 'toolkit')
 
 
 def getHeaderData():
@@ -150,10 +220,6 @@ def getPreferenceData(path=None):  # to remove
     return data
 
 
-def getPipeData():
-    path = os.path.join(getInputPath(), 'pipe.json')
-    data = getInputData(path)
-    return data
 
 
 def getPluginData():  
@@ -188,7 +254,7 @@ def getWorkspacePath():
         return os.path.join(os.getenv('HOME'), 'Documents')
     
 
-def getPublishBundlePath(mode):
-    path = os.path.join(CURRENT_PATH, 'publish', mode)
+def getBundlePath(application, types, subfiled):
+    path = os.path.join(CURRENT_PATH, types, application, subfiled)
     return path
 

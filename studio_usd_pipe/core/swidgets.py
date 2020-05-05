@@ -7,7 +7,7 @@ from PySide2 import QtWidgets
 from studio_usd_pipe import resource
 
 
-def get_color_code():
+def get_color_code(): #**
     info_color = QtGui.QColor('darkBlue')
     error_color = QtGui.QColor('red')
     warning_color = QtGui.QColor('magenta')
@@ -15,7 +15,7 @@ def get_color_code():
     return  header_color, info_color, warning_color, error_color
 
 
-def image_to_button(button, width, height, path=None):
+def image_to_button(button, width, height, path=None): #**
     if not path:
         path = os.path.join(resource.getIconPath(), 'unknown.png')
     icon = QtGui.QIcon()
@@ -27,11 +27,11 @@ def image_to_button(button, width, height, path=None):
     button.setIconSize(QtCore.QSize(width, height)) 
     
     
-def add_treewidget_item(parent, label, icon_path=None, foreground=None):
+def add_treewidget_item(parent, label, icon=None, foreground=None):
     item = QtWidgets.QTreeWidgetItem (parent)
     item.setText (0, label)
-    if icon_path:      
-        icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon_path))
+    if icon:      
+        icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon))
         icon = QtGui.QIcon ()
         icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)           
         item.setIcon (0, icon)
@@ -43,6 +43,20 @@ def add_treewidget_item(parent, label, icon_path=None, foreground=None):
     return item
 
 
+def update_treewidget_item_icon(item, icon_name):
+    icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon_name))
+    icon = QtGui.QIcon ()
+    icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)           
+    item.setIcon (0, icon)  
+      
+    
+def update_widget_icon(item, icon_name):
+    icon_path = os.path.join(resource.getIconPath(), icon_name)
+    icon = QtGui.QIcon ()
+    icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)           
+    item.setIcon (icon)  
+      
+
 def add_listwidget_item(parent, label, key=None, icon_path=None):
     item = QtWidgets.QListWidgetItem()
     parent.addItem(item)
@@ -50,9 +64,12 @@ def add_listwidget_item(parent, label, key=None, icon_path=None):
     if key:
         item.setStatusTip(key)            
     icon = QtGui.QIcon()
-    if not os.path.isfile(icon_path):
-        icon_path = os.path.join(
-            resource.getIconPath(), 'unknown.png')
+    
+    if not icon_path:
+        icon_path = os.path.join(resource.getIconPath(), 'unknown.png')
+    if not os.path.isfile(icon_path) and os.path.isabs(icon_path):
+        icon_path = os.path.join(resource.getIconPath(), 'unknown.png')
+    
     icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
     item.setIcon(icon)
     item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)       
@@ -72,7 +89,7 @@ def get_treeitem_hierarchy(items):
     return hierarchy
 
 
-def set_header(layout, show_icon=None):
+def set_header(layout, show_icon=None): #**
     button_logo = QtWidgets.QPushButton(None)
     button_logo.setFlat(True)
     button_logo.setObjectName('button_logo')
@@ -95,14 +112,12 @@ def set_header(layout, show_icon=None):
     return button_logo, button_show
 
 
-def set_icons(mainwindow=None, widgets=None):
-    
+def set_icons(mainwindow=None, widgets=None): #**
     if mainwindow:
         icon = QtGui.QIcon()
         name = mainwindow.objectName().split('_')[-1]
         icon.addPixmap(QtGui.QPixmap(os.path.join(resource.getIconPath(), '%s.png' % name)))
         mainwindow.setWindowIcon(icon)
-    
     if widgets:
         # qactions = self.findChildren(QtWidgets.QAction)
         for widget in widgets :
@@ -110,5 +125,57 @@ def set_icons(mainwindow=None, widgets=None):
             icon_name = widget.objectName().split('action_')[-1]
             icon_path = (os.path.join(resource.getIconPath(), '{}.png'.format(icon_name)))
             icon.addPixmap(QtGui.QPixmap (icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            widget.setIcon (icon)  
+            widget.setIcon(icon)  
 
+
+def image_resize(image_path, output_path, width=2048, height=2048): #**
+    # try:
+    from PySide2 import QtGui
+    from PySide2 import QtCore
+    #===========================================================================
+    # except:   
+    #     from PyQt4 import QtGui
+    #     from PyQt4 import QtCore    
+    #===========================================================================
+    
+    q_image = QtGui.QImage(image_path)
+    sq_scaled = q_image.scaled(width, height, QtCore.Qt.KeepAspectRatioByExpanding) 
+    if sq_scaled.width() <= sq_scaled.height():
+        x = 0
+        y = (sq_scaled.height() - height) / 2
+    elif sq_scaled.width() >= sq_scaled.height():
+        x = (sq_scaled.width() - width) / 2
+        y = 0
+    copy = sq_scaled.copy(x, y, width, height) 
+    if not os.path.isdir(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))        
+    copy.save(output_path)
+    return output_path
+
+
+def brows_file(label, formats): #**
+    current_file = QtWidgets.QFileDialog.getOpenFileName(
+        None,
+        label,
+        resource.getBrowsPath(),
+        formats
+        )
+    if not current_file[0]:
+        return
+    os.environ['BROWS_PATH'] = os.path.dirname(current_file[0]) 
+    return current_file[0]
+
+
+def remove_widgets(widgets):
+    for widget in widgets:
+        widget.deleteLater()
+    
+def remove_layout_widgets(layout):
+    for index in range(layout.count()):
+        widget = layout.itemAt(index).widget()
+        widget.deleteLater()            
+
+    
+    
+    
+    

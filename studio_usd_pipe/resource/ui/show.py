@@ -15,9 +15,10 @@ from studio_usd_pipe.api import studioShow
 
 class Window(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, launcher=None):
         super(Window, self).__init__(parent)
         # self.setParent(parent)
+        self.launcher = launcher
         self.title = 'Show configure'
         self.width = 729
         self.height = 663
@@ -83,15 +84,15 @@ class Window(QtWidgets.QWidget):
         order = self.shows.get_next_order()
         inputs['show']['order']['value'] = order
         self.set_widgets('current_show', 'show', inputs['show'], order)        
-        sorted_application = common.sort_dictionary(inputs['applications'])
+        sorted_application = common.sort_dictionary(inputs['show_applications'])
         
         for index, application in enumerate(sorted_application):
             self.set_widgets(
-                'applications', application, inputs['applications'][application], index)        
+                'show_applications', application, inputs['show_applications'][application], index)        
         
     def set_widgets(self, header, key, inputs, index):
         '''
-            :param header <str> 'current_show', 'applications'
+            :param header <str> 'current_show', 'show_applications'
             :param key <str>  'show', maya, katana, nuke, natron
         '''
         page = QtWidgets.QWidget()
@@ -125,7 +126,7 @@ class Window(QtWidgets.QWidget):
                     value = ', '.join(contents['value'])
                 lineedit.setText(value)
                 lineedit.setStatusTip(
-                    '%s,%s,%s' % (each, contents['type'], contents['order']))
+                    '%s,%s,%s,%s' % (each, contents['env'], contents['type'], contents['order']))
                 layout.addWidget(lineedit, index, 1, 1, 1)
             if contents['type'] in ['path', 'dirname']:                
                 button = QtWidgets.QPushButton(self)
@@ -146,7 +147,7 @@ class Window(QtWidgets.QWidget):
                 spinbox.setMaximum(value)
                 spinbox.setValue(contents['value'])
                 spinbox.setStatusTip(
-                    '%s,%s,%s' % (each, contents['type'], contents['order']))
+                    '%s,%s,%s,%s' % (each, contents['env'], contents['type'], contents['order']))
                 layout.addWidget(spinbox, index, 1, 1, 1)
             if contents['type'] in ['bool']:
                 combobox = QtWidgets.QComboBox(self)
@@ -154,7 +155,7 @@ class Window(QtWidgets.QWidget):
                 combobox.addItems(['False', 'True'])
                 combobox.setCurrentIndex(contents['value'])
                 combobox.setStatusTip(
-                    '%s,%s,%s' % (each, contents['type'], contents['order']))
+                    '%s,%s,%s,%s' % (each, contents['env'], contents['type'], contents['order']))
                 layout.addWidget(combobox, index, 1, 1, 1)                
 
     def find_directory(self, widget, contents):
@@ -195,10 +196,11 @@ class Window(QtWidgets.QWidget):
                 value = widget.value()
             elif isinstance(widget, QtWidgets.QComboBox):
                 value = bool(widget.currentIndex())
-            name, types, order = widget.statusTip().split(',')
+            name, env, types, order = widget.statusTip().split(',')
             if types == 'list':
                 value = value.replace(' ', '').split(',')
-            data.setdefault(str(name), value)
+            # data.setdefault(str(name), {str(env): value})
+            data.setdefault(str(name), [str(env), value])
         return data
     
     def get_widget(self, layout, row, column):    
@@ -229,7 +231,9 @@ class Window(QtWidgets.QWidget):
             return         
         QtWidgets.QMessageBox.information(
             self, 'information', '%s\ncreated %s show' % (message, label), QtWidgets.QMessageBox.Ok)
-        self.close()            
+        self.close()
+        if self.launcher:
+            self.launcher.setup_default()       
         print '#info: successfully registered show preset!...'
         return
 

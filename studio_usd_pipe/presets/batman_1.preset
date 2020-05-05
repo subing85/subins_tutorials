@@ -1,0 +1,142 @@
+{
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "description": "show configure preset", 
+    "author": "Subin. Gopi (subing85@gmail.com)", 
+    "type": "show_config", 
+    "enable": true, 
+    "#copyright": "(c) 2019, Subin Gopi All rights reserved.", 
+    "modified": "2020 01 May Friday, 10:27:37 PM", 
+    "created_by": "subin gopi", 
+    "data": {
+        "show_applications": {
+            "natron": {
+                "path": [
+                    "NATRON_PATH", 
+                    "/venture/software/Natron-2.3.13"
+                ], 
+                "version": [
+                    "NATRON_VERSION", 
+                    "Natron-2.3.13"
+                ], 
+                "order": "3", 
+                "icon": [
+                    "NATRON_ICON", 
+                    "/venture/icons/natron.png"
+                ], 
+                "exe": [
+                    "NATRON_EXE", 
+                    "/venture/software/Natron-2.3.13/Natron"
+                ]
+            }, 
+            "katana": {
+                "path": [
+                    "KATANA_PATH", 
+                    "/opt/katana/katana3.2.3"
+                ], 
+                "version": [
+                    "KATANA_VERSION", 
+                    "katana3.2.3"
+                ], 
+                "order": "1", 
+                "icon": [
+                    "KATANA_ICON", 
+                    "/venture/icons/katana3.2.3.png"
+                ], 
+                "exe": [
+                    "KATANA_EXE", 
+                    "/opt/katana/katana3.2.3/katana"
+                ]
+            }, 
+            "nuke": {
+                "path": [
+                    "NUKE_PATH", 
+                    "/opt/nuke/nuke4.2.3"
+                ], 
+                "version": [
+                    "NUKE_VERSION", 
+                    "Nuke4.2.3"
+                ], 
+                "order": "2", 
+                "icon": [
+                    "NUKE_ICON", 
+                    "/venture/icons/nuke.png"
+                ], 
+                "exe": [
+                    "NUKE_EXE", 
+                    "/opt/nuke/nuke4.2.3/nuke"
+                ]
+            }, 
+            "maya": {
+                "exe": [
+                    "MAYA_EXE", 
+                    "/usr/autodesk/maya2018/bin/maya2018"
+                ], 
+                "maya_plug_in_path": [
+                    "MAYA_PLUG_IN_PATH", 
+                    [
+                        "/venture/source_code/subins_tutorials/studio_usd_pipe/plug-in/maya/"
+                    ]
+                ], 
+                "maya_script_path": [
+                    "MAYA_SCRIPT_PATH", 
+                    [
+                        "/venture/source_code/package/", 
+                        "/venture/source_code/subins-toolkits/"
+                    ]
+                ], 
+                "version": [
+                    "MAYA_VERSION", 
+                    "maya2018"
+                ], 
+                "path": [
+                    "MAYA_PATH", 
+                    "/usr/autodesk/maya2018"
+                ], 
+                "order": "0", 
+                "icon": [
+                    "MAYA_ICON", 
+                    "/venture/icons/maya2018.png"
+                ]
+            }
+        }, 
+        "current_show": {
+            "show": {
+                "USD": [
+                    "USD", 
+                    true
+                ], 
+                "show_name": [
+                    "SHOW_SHORT_NAME", 
+                    "btm"
+                ], 
+                "python_path": [
+                    "PYTHONPATH", 
+                    [
+                        "/venture/source_code/package/", 
+                        "/venture/source_code/subins-toolkits/"
+                    ]
+                ], 
+                "long_name": [
+                    "SHOW_LONG_NAME", 
+                    "batman"
+                ], 
+                "show_path": [
+                    "SHOW_PATH", 
+                    "/venture/shows/batman"
+                ], 
+                "bin_path": [
+                    "PATH", 
+                    "/usr/bin"
+                ], 
+                "order": [
+                    "SHOW_ORDER", 
+                    0
+                ], 
+                "icon": [
+                    "SHOW_ICON", 
+                    "/venture/shows/icons/batman.png"
+                ]
+            }
+        }
+    }
+}

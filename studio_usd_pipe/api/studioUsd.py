@@ -4,7 +4,6 @@ import os
 
 import sys
 
-sys.path.append('/usr/local/usd/maya2018/pixar/19.05/lib/python')
 
 from pxr import Vt
 from pxr import Gf
@@ -15,6 +14,7 @@ from pxr import UsdGeom
 from pxr import UsdShade
 from maya import OpenMaya
 
+from studio_usd_pipe.core import common
 
 class Susd(object):
     
@@ -120,7 +120,7 @@ class Susd(object):
         
     def create_asset_ids(self, stage, root, data):
         define = UsdGeom.Xform.Define(stage, '/{}'.format(root))
-        ids = self.sort_dictionary(data)
+        ids = common.sort_dictionary(data)
         for id in ids:
             primvar = define.CreatePrimvar(id, Sdf.ValueTypeNames.String)
             primvar.Set(data[id]['value'])
@@ -131,7 +131,7 @@ class Susd(object):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
-        geometries = self.sort_dictionary(data)
+        geometries = common.sort_dictionary(data)
         for geometry in geometries:
             location = geometry.replace(':', '_')  
             sdf_path = Sdf.Path(location.replace('|', '/'))        
@@ -153,7 +153,7 @@ class Susd(object):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
-        geometries = self.sort_dictionary(data)
+        geometries = common.sort_dictionary(data)
         for geometry in geometries:
             location = geometry.replace(':', '_')  
             sdf_path = Sdf.Path(location.replace('|', '/'))
@@ -173,7 +173,7 @@ class Susd(object):
         if not stage:
             layer = Sdf.Layer.CreateNew(self.usd_path, args={'format': 'usda'})
             stage = Usd.Stage.Open(layer)
-        geometries = self.sort_dictionary(data)
+        geometries = common.sort_dictionary(data)
         for geometry in geometries:
             location = geometry.replace(':', '_')  
             sdf_path = Sdf.Path(location.replace('|', '/'))
@@ -181,7 +181,7 @@ class Susd(object):
             for path in sdf_path.GetPrefixes():
                 UsdGeom.Xform.Define(stage, path)
             mesh_define = UsdGeom.Mesh.Define(stage, sdf_path.GetPrefixes()[-1])
-            uv_sets = self.sort_dictionary(current_data)
+            uv_sets = common.sort_dictionary(current_data)
             for index, uv_set in enumerate(uv_sets):
                 uv_d = current_data[uv_set]
                 uv_points = []
@@ -212,7 +212,7 @@ class Susd(object):
                 
         look_path = Sdf.Path('/{}/Looks'.format(root))                     
         UsdGeom.Scope.Define(stage, look_path)
-        materials = self.sort_dictionary(data)        
+        materials = common.sort_dictionary(data)        
         for material in materials:  # make materials
             contents = data[material]
             material_path = look_path.AppendPath(material)    
@@ -236,7 +236,7 @@ class Susd(object):
                         print '\t', current_type, current_value
                         print '\t', type(current_type)                
                         raise Exception('function get_prameter_values need to update')
-                    print '\t\t>>>>>', current_type, parameter_contents['value']
+                    # print '\t\t>>>>>', current_type, parameter_contents['value']
                     shader_define.CreateInput(parameter, current_type).Set(current_value)
         # shader connections
         for material, contents in data.items():
@@ -292,40 +292,6 @@ class Susd(object):
         stage.Save()
         
     def create_surface_usd(self, root, data, show=False):
-        '''
-            from studio_usd_pipe.api import studioMaya
-            from studio_usd_pipe.api import studioShader
-            from studio_usd_pipe.core import mayapack
-            from studio_usd_pipe.api import studioUsd
-            
-            sm = studioMaya.Maya()
-            ss = studioShader.Shader()
-            mp = mayapack.Pack()
-            sud = studioUsd.Susd()
-            
-            asset_ids = [
-                'sentity',
-                'scaption',
-                'stype',
-                'stag',
-                'sversion',
-                'smodified',
-                'spath',
-                'sdescription'
-                ]
-            
-            mobject = sm.get_mobject('model')
-            surface_data = ss.get_surface_data(mobject)
-            asset_ids = mp.get_asset_id_data('model', asset_ids)
-            final_data = {
-                'surface': surface_data,
-                'asset_id': asset_ids            
-                }  
-                
-            output_path = '/venture/shows/my_hero/assets/batman/surface/0.0.0/hello.usd'         
-            susd = studioUsd.Susd(path=output_path)                
-            susd.create_surface_usd('model', final_data)        
-        '''
         stage = self.create_surface(root, data['surface'], stage=None)
         stage = self.create_asset_ids(stage, root, data['asset_id'])
         self.add_default_prim(root, stage, Kind.Tokens.subcomponent)
@@ -369,15 +335,17 @@ class Susd(object):
                 current_value = Gf.Vec3f(attribute_value)
         return current_type, current_value
 
-    def sort_dictionary(self, dictionary):
-        sorted_data = {}
-        for contents in dictionary:
-            if not isinstance(dictionary[contents], dict):
-                continue
-            sorted_data.setdefault(
-                dictionary[contents]['order'], []).append(contents)
-        order = sum(sorted_data.values(), [])
-        return order 
+    #===========================================================================
+    # def sort_dictionary(self, dictionary):
+    #     sorted_data = {}
+    #     for contents in dictionary:
+    #         if not isinstance(dictionary[contents], dict):
+    #             continue
+    #         sorted_data.setdefault(
+    #             dictionary[contents]['order'], []).append(contents)
+    #     order = sum(sorted_data.values(), [])
+    #     return order 
+    #===========================================================================
     
     def create_sublayer(self, components, stage=None):        
         if not stage:
@@ -409,7 +377,11 @@ class Susd(object):
             path = component
             abc = Sdf.Payload(path, '/box_model')
             prim.SetPayload(abc)
-        stage.GetRootLayer().Save()  
+        stage.GetRootLayer().Save()
+        
+    def create_variant(self, components, stage=None):
+        pass
+        
     
     def create_variant_reference(self, components, stage=None):
         if not stage:
@@ -453,34 +425,4 @@ class Susd(object):
     def create_inherits(self):
         pass
     
-    def create_spe(self):
-        pass    
-    
-    def example(self):
-    
-        {
-        "model": {
-            "2.0.1": {
-                "usd": [
-                    "/venture/shows/batman/assets/batman/model/2.0.1/batman.usd"
-                ],
-                "location": "/venture/shows/batman/assets/batman/model/2.0.1"
-            }
-        },
-        "uv": {
-            "0.0.0": {
-                "usd": [
-                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.usd"
-                ],
-                "location": "/venture/shows/batman/assets/batman/uv/0.0.0"
-            }
-        },
-        "surface": {
-            "2.0.1": {
-                "usd": [
-                    "/venture/shows/batman/assets/batman/surface/2.0.1/batman.usd"
-                ],
-                "location": "/venture/shows/batman/assets/batman/surface/2.0.1"
-            }
-        }
-        }           
+        

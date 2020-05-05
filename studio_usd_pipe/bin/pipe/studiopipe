@@ -74,7 +74,7 @@ function studiopipe()
 		if [ $1 = "-s" ] ; then
 			if [ $2 = "-q" ] ; then
 				echo -e $info_color
-				python -c "from studio_usd_pipe.utils import shows_patch;\
+				python -c "from studio_usd_pipe.patch import shows_patch;\
 					print shows_patch.get_shows()"
 				echo -e $normal_color
 				return
@@ -85,7 +85,7 @@ function studiopipe()
 			if [ $3 = "-a" ] ; then
 				if [ $4 = "-q" ] ; then
 					echo -e $info_color
-					python -c "from studio_usd_pipe.utils import shows_patch;\
+					python -c "from studio_usd_pipe.patch import shows_patch;\
 						print shows_patch.show_applications(\"$2\")"
 					echo -e $normal_color
 					return
@@ -97,7 +97,7 @@ function studiopipe()
 			if [ $3 = "-a" ] ; then
 				if [ $4 != "-q" ] ; then
 					echo -e $info_color
-					python -c "from studio_usd_pipe.utils import shows_patch;\
+					python -c "from studio_usd_pipe.patch import shows_patch;\
 						shows_patch.launch_application(\"$2\", \"$4\")"
 					echo -e $normal_color
 					return

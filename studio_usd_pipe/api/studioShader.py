@@ -1,15 +1,12 @@
 import os
-import shutil
+
 
 import warnings
 
 from maya import OpenMaya
 
-from studio_usd_pipe.core import image
+from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.api import studioMaya
-
-reload(image)
-reload(studioMaya)
 
 
 class Shader(studioMaya.Maya):
@@ -28,7 +25,9 @@ class Shader(studioMaya.Maya):
             'rendering': 'asRendering',
             'postProcess': 'asPostProcess',
             'shadingEngine': 'shadingEngine'         
-            }             
+            }
+        
+        self.lores = [512, 512]             
     
     def get_shading_engines(self, mobject):
         dependency_graph = OpenMaya.MItDependencyGraph(
@@ -167,19 +166,49 @@ class Shader(studioMaya.Maya):
         return shader, attribute
     
     def get_scene_shading_engines(self, mobject):
+        '''
+        from studio_usd_pipe.api import studioShader
+        reload(studioShader)
+        shader = studioShader.Shader()
+        mobject = shader.get_mobject('asset')
+        data = shader.get_scene_shading_engines(mobject)
+        
+        for k, shader_engines in data.items():
+            if not shader_engines:
+                continue
+            for index in range (shader_engines.length()):
+                mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_engines[x])
+                print shader_engines[index]
+        '''
         transform_mesh = self.extract_transform_primitive(
             OpenMaya.MFn.kMesh, shape=True, parent_mobject=mobject)
-        data = []
+        shader_data = {}
         for x in range(transform_mesh.length()):
             shader_engines = self.get_shading_engines(transform_mesh[x].node())
+            if not shader_engines.length():
+                shader_data.setdefault(transform_mesh[x], None)
+                continue
+            shader_data.setdefault(transform_mesh[x], shader_engines)
+        return shader_data    
+        
+        '''
+        transform_mesh = self.extract_transform_primitive(
+            OpenMaya.MFn.kMesh, shape=True, parent_mobject=mobject)
+        shader_data = {}
+        for x in range(transform_mesh.length()):
+            shader_engines = self.get_shading_engines(transform_mesh[x].node())
+            shader_data.setdefault(transform_mesh[x].fullPathName(), [])
             if not shader_engines.length():
                 continue
             for x in range(shader_engines.length()):         
                 mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_engines[x])
-                if mfn_dependency_node.name() in data:
+                if mfn_dependency_node.name() in shader_data:
                     continue
-                data.append(mfn_dependency_node.name())
-        return data                               
+                shader_data.setdefault(
+                    transform_mesh[x].fullPathName(), []).append(mfn_dependency_node.name())
+        return shader_data
+        
+        '''                          
     
     def get_surface_data(self, mobject):
         transform_mesh = self.extract_transform_primitive(
@@ -234,64 +263,43 @@ class Shader(studioMaya.Maya):
                 }                
         return attribute_data    
     
-    def set_source_images(self, input_data, temp_output_path, output_path):
-        data = {}
-
-        if not os.path.isdir(temp_output_path):
-            os.makedirs(temp_output_path)
-                            
+    def set_source_images(self, input_data, output_path):
+        remap_data = {}
         for node, node_contents in input_data.items():
             for attribute, attribute_contents in node_contents.items():
+                if attribute=='computedFileTextureNamePattern':
+                    continue
                 source_image = os.path.basename(attribute_contents['value'])
                 target_path = os.path.join(output_path, source_image)
-                temp_target_path = os.path.join(temp_output_path, source_image)
-                if os.path.isfile(attribute_contents['value']):
-                    shutil.copy2(attribute_contents['value'], temp_target_path)
                 mplug = self.get_mplug('{}.{}'.format(node, attribute))
-                
                 valid = False
                 try:
                     mplug.setString(target_path)
                     valid = True
                 except Exception as error:
                     valid = False
-                    print '#warnings', error
+                    print '#warnings', error   
                 if not valid:
                     continue
-                if node not in data:
-                    data.setdefault(node, {})
-                data[node][attribute] = {
-                    'value': target_path,
-                    'temp_value': temp_target_path,
-                    'type': attribute_contents['type']
-                    }
-        return data
-    
-    def create_lowres_source_images(self, input_data, output_path):
-        data = {}        
-        for node, node_contents in input_data.items():
-            for attribute, attribute_contents in node_contents.items():                
-                if not os.path.isfile(attribute_contents['value']):
-                    raise IOError('Cannot found, <%s>' % attribute_contents['value'])
-                source_image = '{}_lores.png'.format(
-                    os.path.splitext(os.path.basename(attribute_contents['value']))[0])
-                target_path = os.path.join(output_path, source_image)
-                target_path = image.image_resize(
-                    attribute_contents['value'],
-                    target_path,
-                    512,
-                    512,
-                    )          
-                if node not in data:
-                    data.setdefault(node, {})
-                data[node][attribute] = {
-                    'value': target_path,
-                    'type': attribute_contents['type']
-                    }
-        return data
-    
-    def create_shadernet(self, name, data, replace=False):
-        if replace:
+                if node not in remap_data:
+                    remap_data.setdefault(node, {})
+                remap_data[node][attribute] = target_path            
+        return remap_data
+
+    def create_lowres_source_images(self, source_image, output_path):
+        lowres_file = '{}_lores.png'.format(
+            os.path.splitext(os.path.basename(source_image))[0])  
+        lowres_source_image = os.path.join(output_path, lowres_file)      
+        target_path = swidgets.image_resize(
+            source_image,
+            lowres_source_image,
+            self.lores[0],
+            self.lores[1],
+            )           
+        return target_path
+
+    def create_shadernet(self, name, data, merge=False):
+        if merge:
             self.remove_node(name)
             for dependency_node in data['nodes']:
                 self.remove_node(dependency_node)
@@ -299,31 +307,28 @@ class Shader(studioMaya.Maya):
         return mobject
 
     def create_kshadernet(self, name, data):
-        '''
-        from studio_usd_pipe.api import studioShader
-        from studio_usd_pipe.core import mayacreate
-        reload(studioShader)
-        reload(mayacreate)
-        sshader = studioShader.Shader()
-        path = '/venture/shows/batman/assets/batman/surface/2.0.0/batman.shader'
-        mcreate = mayacreate.Create(path)
-        data = mcreate.studio_data['surface']['phong1SG']
-        sshader.create_kshadernet(data)        
-        '''
         # create node
         shader_mobject = None
+        shader_nodes = {}
+
         for node, contents in data['nodes'].items():
             mobject = self.create_knode(node, contents['type'])
+            shader_nodes.setdefault(node, mobject)
             if node == data['surface']['shader']:
                 shader_mobject = mobject
             if 'parameters' in contents:  # set attribute values        
                 self.set_attributes(mobject, contents['parameters'])
+
+        for node, contents in data['nodes'].items(): # connect nodes          
             if 'connections' in contents:  # connect nodes                 
-                self.set_connections(mobject, contents['connections'])
-        
+                self.set_connections(shader_nodes[node], contents['connections'])
+                
         # geometry assignments
         mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_mobject)
+        print 'ssssssss', mfn_dependency_node.name()
         shader_mplug = mfn_dependency_node.findPlug(data['surface']['attribute'])
+        print shader_mplug.name()
+        
         shading_engine_mobject = self.create_kshading_engine(
             name,
             shader_mplug,
@@ -384,13 +389,13 @@ class Shader(studioMaya.Maya):
         mfn_set.addMember(mobject)
 
     def assign_to_shading_engine(self, objects, shading_group):
-        mcommand_result = OpenMaya.MCommandResult()
-        mel_command = 'sets -e -forceElement %s %s;' % (shading_group, ' '.join(objects))
-        
-        mel_command = 'sets -e -forceElement %s %s;' % (shading_group, 'pCube1')
-        
-        print 'mel_command\t', mel_command
-        
+        mcommand_result = OpenMaya.MCommandResult()        
+        exists_objects = []        
+        for object in objects:
+            if not self.object_exists(object):
+                continue
+            exists_objects.append(object.encode())        
+        mel_command = 'sets -e -forceElement %s %s;' % (shading_group, ' '.join(exists_objects))
         OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
