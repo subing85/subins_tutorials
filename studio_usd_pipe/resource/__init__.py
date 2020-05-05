@@ -3,6 +3,9 @@ import os
 import json
 import platform
 
+from datetime import datetime
+
+
 CURRENT_PATH = os.path.dirname(__file__)
 
 
@@ -56,17 +59,10 @@ def getShowConfigureData(): #**
     return data
 
 
-def getApplicationsData(): #**
-    # get the build-in application data
-    path = os.path.join(getInputPath(), 'applications.json')
-    data = getInputData(path)
-    return data
-
-
-def getCommonApplicationsPath(): #**
-    path = os.path.join(getPackagePath(), getPackageName(), 'bin/common')
+def getApplicationsPath(application_type): #**
+    path = os.path.join(getPackagePath(), getPackageName(), 'bin', application_type)
     return path
-    
+
 
 def getIdentityKey(): #**
     return '##..##'
@@ -77,10 +73,57 @@ def getMayaToolKitPath(): #**
 
 
 
+def getPipeData(): #**
+    path = os.path.join(getInputPath(), 'pipe.json')
+    data = getInputData(path)
+    return data
 
 
+def getMayaFileTypes(): #**
+    file_types = {
+        '.ma': 'mayaAscii',
+        '.mb': 'mayaBinary'
+        }
+    return file_types
 
 
+def getMayaFormats(): #**
+    return '(*.ma *.mb)'
+
+def getImageFormats(): #**
+    return '(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)'
+
+
+def getCurrentDateKey(): #**
+    date = datetime.now().strftime("%Y_%d_%B_%A_%I_%M_%S_%p")
+    return  date 
+
+def getCurrentDate(): #***************************************
+    date = datetime.now().strftime("%Y %d %B %A, %I:%M:%S %p")    
+    return  date 
+
+
+def getMayapy(maya_path): #**    
+    path = os.path.join(maya_path, 'bin/mayapy')
+    return path
+
+                
+def getBrowsPath(): #**
+    if 'BROWS_PATH' in os.environ:
+        return os.environ['BROWS_PATH']
+    if 'SHOW_PATH' in os.environ:
+        return os.environ['SHOW_PATH']
+    return getPackagePath()
+
+
+def getModulePath():
+    path = os.path.join(getPackagePath(), getPackageName(), 'module')
+    return path
+
+def getModuleApplicationsPath():
+    path = os.path.join(getModulePath(), 'applications')
+    return path
+    
 
 
 def getTemplatePath():    
@@ -108,10 +151,6 @@ def getOperatingSystemBinPath():
     return '/usr/bin'    
 
 
-def getBrowsPath():
-    if 'BROWS_PATH' in os.environ:
-        return os.environ['BROWS_PATH']        
-    return getPackagePath()
 
 
 def getPresetPath():
@@ -152,7 +191,7 @@ def getBinApplicationPath(show, application):
 
 
 
-def getScriptPath():
+def getScriptPath(): #**
     return os.path.join(CURRENT_PATH, 'scripts')
 
 
@@ -181,10 +220,6 @@ def getPreferenceData(path=None):  # to remove
     return data
 
 
-def getPipeData():
-    path = os.path.join(getInputPath(), 'pipe.json')
-    data = getInputData(path)
-    return data
 
 
 def getPluginData():  
@@ -219,7 +254,7 @@ def getWorkspacePath():
         return os.path.join(os.getenv('HOME'), 'Documents')
     
 
-def getPublishBundlePath(mode):
-    path = os.path.join(CURRENT_PATH, 'publish', mode)
+def getBundlePath(application, types, subfiled):
+    path = os.path.join(CURRENT_PATH, types, application, subfiled)
     return path
 

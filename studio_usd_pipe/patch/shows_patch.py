@@ -27,8 +27,8 @@ def show_applications(current_show):
         applications = common.sort_dictionary(data[application])
         for each in applications:
             print each
-            name = [each, data[application][each]['version']]  
-            versions.append(name)        
+            name = [each, data[application][each]['version'][1]]  
+            versions.append(name)    
     return versions
 
 
@@ -38,6 +38,5 @@ def launch_application(current_show, current_application):
     if not application:
         print '#warnings: not found %s application under %s show' % (current_application, current_show)
         return
-    print 'application', application, application_type
     show.launch(current_show, application_type, application, contents=None, thread=False)
     

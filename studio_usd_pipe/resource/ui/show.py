@@ -126,7 +126,7 @@ class Window(QtWidgets.QWidget):
                     value = ', '.join(contents['value'])
                 lineedit.setText(value)
                 lineedit.setStatusTip(
-                    '%s,%s,%s' % (each, contents['type'], contents['order']))
+                    '%s,%s,%s,%s' % (each, contents['env'], contents['type'], contents['order']))
                 layout.addWidget(lineedit, index, 1, 1, 1)
             if contents['type'] in ['path', 'dirname']:                
                 button = QtWidgets.QPushButton(self)
@@ -147,7 +147,7 @@ class Window(QtWidgets.QWidget):
                 spinbox.setMaximum(value)
                 spinbox.setValue(contents['value'])
                 spinbox.setStatusTip(
-                    '%s,%s,%s' % (each, contents['type'], contents['order']))
+                    '%s,%s,%s,%s' % (each, contents['env'], contents['type'], contents['order']))
                 layout.addWidget(spinbox, index, 1, 1, 1)
             if contents['type'] in ['bool']:
                 combobox = QtWidgets.QComboBox(self)
@@ -155,7 +155,7 @@ class Window(QtWidgets.QWidget):
                 combobox.addItems(['False', 'True'])
                 combobox.setCurrentIndex(contents['value'])
                 combobox.setStatusTip(
-                    '%s,%s,%s' % (each, contents['type'], contents['order']))
+                    '%s,%s,%s,%s' % (each, contents['env'], contents['type'], contents['order']))
                 layout.addWidget(combobox, index, 1, 1, 1)                
 
     def find_directory(self, widget, contents):
@@ -196,10 +196,11 @@ class Window(QtWidgets.QWidget):
                 value = widget.value()
             elif isinstance(widget, QtWidgets.QComboBox):
                 value = bool(widget.currentIndex())
-            name, types, order = widget.statusTip().split(',')
+            name, env, types, order = widget.statusTip().split(',')
             if types == 'list':
                 value = value.replace(' ', '').split(',')
-            data.setdefault(str(name), value)
+            # data.setdefault(str(name), {str(env): value})
+            data.setdefault(str(name), [str(env), value])
         return data
     
     def get_widget(self, layout, row, column):    

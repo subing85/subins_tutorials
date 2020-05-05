@@ -2,15 +2,13 @@ import math
 
 from maya import OpenMaya
 
+from studio_usd_pipe.core import common
 from studio_usd_pipe.api import studioMaya
-
-reload(studioMaya)
 
 
 class Model(studioMaya.Maya):
     
     def __init__(self):
-        # studioMaya.Maya.__init__(self)
         super(Model, self).__init__()
         
     def get_kmodel(self, mobject):
@@ -72,8 +70,8 @@ class Model(studioMaya.Maya):
             return False
         return True
             
-    def create_model(self, name, data, replace=False):
-        if replace:
+    def create_model(self, name, data, merge=False):
+        if merge:
             mfn_mesh = self.update_kmodel(name, data)
             if not mfn_mesh:
                 if self.object_exists(name):
@@ -145,7 +143,7 @@ class Model(studioMaya.Maya):
             data.setdefault(set_name, uvset_data)
         return data        
 
-    def create_uv(self, name, data, replace=False):
+    def create_uv(self, name, data, merge=False):
         dagpath = self.get_dagpath(name)
         self.create_kuv(dagpath, data)
 
@@ -153,7 +151,7 @@ class Model(studioMaya.Maya):
         mfn_mesh = OpenMaya.MFnMesh(mobject)
         self.delete_uv_sets(mfn_mesh, set_names=None)
         default_set_name = self.get_default_uvset(mfn_mesh)     
-        sorted_data = self.sort_dictionary(data)        
+        sorted_data = common.sort_dictionary(data)        
         for index, set_name in enumerate(sorted_data):
             contents = data[set_name]
             u_array = self.create_float_array(contents['u_array'])
@@ -179,7 +177,7 @@ class Model(studioMaya.Maya):
             try:
                 mfn_mesh.deleteUVSet(set_name)
             except Exception as error:
-                print '\nDeleteError (ignore)', error
+                print 'uv set delete error (ignore)', error
         mfn_mesh.updateSurface()
                 
     def get_default_uvset(self, mfn_mesh):
@@ -215,8 +213,8 @@ class Model(studioMaya.Maya):
             data.setdefault(transforms[x].fullPathName(), transform_data)            
         return data   
         
-    def create_transform(self, name, data, replace=False):
-        if replace:
+    def create_transform(self, name, data, merge=False):
+        if merge:
             if self.object_exists(name):
                 children = self.get_children(name)
                 for x in range(children.length()):
@@ -268,5 +266,4 @@ class Model(studioMaya.Maya):
         set_names = []
         mfn_mesh.getUVSetNames(set_names)
         return set_names
-    
         

@@ -1,4 +1,5 @@
 import os
+import imp
 import json
 import shutil
 import pkgutil
@@ -6,9 +7,10 @@ import tempfile
 import warnings
 
 from datetime import datetime
+from distutils import version
 
     
-def sort_dictionary(input_dict): #**
+def sort_dictionary(input_dict):  # **
     data = {}
     stack = input_dict.items()    
     while stack:
@@ -22,20 +24,17 @@ def sort_dictionary(input_dict): #**
     return result
 
 
-def sorted_show_order(input_dict): #**
-    data = {}
-    stack = input_dict.items()
-    
+def sorted_show_order(input_dict):  # **
     sorted_data = {}
     for show in input_dict:
-        show_order = input_dict[show]['current_show']['show']['order']
+        show_order = input_dict[show]['current_show']['show']['order'][1]
         sorted_data.setdefault(
             int(show_order), []).append(show)  
     order = sum(sorted_data.values(), [])
     return order  
 
 
-def get_template_header(): #**
+def get_template_header():  # **
     headers = {
         'created_by': 'subin gopi',
         'author': 'Subin. Gopi (subing85@gmail.com)',
@@ -49,7 +48,7 @@ def get_template_header(): #**
     return headers
 
 
-def get_modules(dirname, module_types=None): #**
+def get_modules(dirname, module_types=None):  # **
     module_data = {}
     for module_loader, name, ispkg in pkgutil.iter_modules([dirname]):
         loader = module_loader.find_module(name)
@@ -71,14 +70,25 @@ def get_modules(dirname, module_types=None): #**
     return module_data
 
 
+def get_module(path):  # **
+    module = imp.load_source(os.path.basename(path), path)
+    if not hasattr(module, 'TYPE'):
+        return False
+    if not hasattr(module, 'VALID'):
+        return False    
+    if not module.VALID:
+        return False        
+    return module
+
+
 def get_modified_date():
-    modified = datetime.now().strftime("%Y %d %B %A, %I:%M:%S %p")
+    modified = datetime.now().strftime('%Y %d %B %A, %I:%M:%S %p')
     return modified
 
 
 def get_time_date(time):
     dt_object = datetime.fromtimestamp(time)
-    modified = dt_object.strftime("%Y %d %B %A, %I:%M:%S %p")
+    modified = dt_object.strftime('%Y %d %B %A, %I:%M:%S %p')
     return modified
 
 
@@ -149,7 +159,7 @@ def data_exists(path, force):
         return True
 
     
-def remove_directory(path):
+def remove_directory(path):  # **
     if not os.path.isdir(path):
         return True
     try:
@@ -162,3 +172,65 @@ def remove_directory(path):
         print '# warnings', error
 
 
+def get_next_version(caption, index, subfield, latest_version):  # **
+    '''
+        index 0, 1, 2 = MAJOR0, MINOR, PATCH
+    '''
+    major, minor, patch = latest_version.split('.')
+    if index == 0:
+        n_version = '{}.{}.{}'.format(int(major) + 1, 0, 0)
+    if index == 1:
+        n_version = '{}.{}.{}'.format(major, int(minor) + 1, 0)
+    if index == 2:
+        n_version = '{}.{}.{}'.format(major, minor, int(patch) + 1)
+    return n_version
+
+
+def create_manifest(output_path, **kwargs):
+    final_data = {
+        'created_by': kwargs['user'],
+        'author': 'Subin. Gopi (subing85@gmail.com)',
+        '#copyright': '(c) 2019, Subin Gopi All rights reserved.',
+        'modified': kwargs['modified'],
+        'description': 'publish asset manifest',
+        'warning': '# WARNING! All changes made in this file will be lost!',
+        'enable': True,
+        'type': 'manifest',
+        'key': '%s_manifest' % kwargs['pipe'],
+        'data': kwargs
+        }        
+    with (open(output_path, 'w')) as content:
+        content.write(json.dumps(final_data, indent=4))
+    return output_path
+
+
+def get_subprocess_code(module_path, application):  # **    
+    modules = get_modules(module_path)
+    if 'subprocess' not in modules:
+        print module_path, application
+        return None
+    for order, module in modules['subprocess'].items():
+        if  module.__name__ != application:
+            continue
+        return module
+    print module_path, application
+    return None
+
+
+def set_version_order(versions):  # **
+    sorted_versions = sorted(versions, key=version.StrictVersion)
+    sorted_versions.reverse()
+    return sorted_versions
+
+
+def flatten_to_dictionary(contents, key):  # **
+    dictionary = {}
+    for content in contents:
+        nodes = content.split(key)
+        splits = dictionary
+        for node in nodes:
+            if not node:
+                continue
+            splits = splits.setdefault(node, {})    
+    return dictionary
+    

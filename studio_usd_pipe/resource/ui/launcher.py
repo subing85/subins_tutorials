@@ -30,7 +30,7 @@ class Window(QtWidgets.QMainWindow):
         self.current_show = None
         self.shows = studioShow.Show()
         self.setup_ui()
-        self.setup_console()        
+        # self.setup_console()        
         self.setup_menu()
         self.setup_toolbar()
         self.setup_icons()
@@ -124,8 +124,7 @@ class Window(QtWidgets.QMainWindow):
         self.listwidget_show_applications.setMovement(QtWidgets.QListView.Static)
         self.listwidget_show_applications.setIconSize(QtCore.QSize(64, 64))  
         self.splitter_outputs.addWidget(self.listwidget_show_applications)             
-        self.listwidget_show_applications.itemDoubleClicked.connect(
-            self.set_current_show_application)
+        self.listwidget_show_applications.itemDoubleClicked.connect(self.set_current_show_application)
         self.listwidget_build_in_applications = QtWidgets.QListWidget(self)
         self.listwidget_build_in_applications.setObjectName('listwidget_applications')   
         self.listwidget_build_in_applications.setSortingEnabled(False)
@@ -139,13 +138,13 @@ class Window(QtWidgets.QMainWindow):
         self.listwidget_build_in_applications.setMovement(QtWidgets.QListView.Static)
         self.listwidget_build_in_applications.setIconSize(QtCore.QSize(64, 64))  
         self.splitter_outputs.addWidget(self.listwidget_build_in_applications)     
-        self.listwidget_build_in_applications.itemDoubleClicked.connect(self.set_current_build_in_application)        
+        self.listwidget_build_in_applications.itemDoubleClicked.connect(self.set_current_show_application)
         self.textedit_output = QtWidgets.QTextEdit(self)
         self.textedit_output.setObjectName('textedit_output')
         self.splitter_applications.addWidget(self.textedit_output)
         self.splitter_main.setSizes([235, 459])                  
         self.splitter_applications.setSizes([390, 120])                  
-        self.splitter_outputs.setSizes([350, 110])                   
+        self.splitter_outputs.setSizes([328, 131])                   
         
     def setup_menu(self):        
         self.menu = QtWidgets.QMenu(self)
@@ -180,6 +179,12 @@ class Window(QtWidgets.QMainWindow):
         return config.version, config.pretty
     
     def create_show(self):
+        print self.splitter_main.sizes()                  
+        print self.splitter_applications.sizes()                  
+        print self.splitter_outputs.sizes()   
+        
+        return    
+        
         show_window = show.Window(launcher=self)             
         show_window.show()
         
@@ -191,33 +196,35 @@ class Window(QtWidgets.QMainWindow):
         for each in sorted_shows:
             swidgets.add_listwidget_item(
                 self.listwidget_shows,
-                self.show_data [each]['current_show']['show']['long_name'],
+                self.show_data [each]['current_show']['show']['long_name'][1],
                 key=each,
-                icon_path=self.show_data[each]['current_show']['show']['icon']
+                icon_path=self.show_data[each]['current_show']['show']['icon'][1]
                 )
-            print 'show: '.rjust(15), self.show_data [each]['current_show']['show']['long_name']
-            print 'name: '.rjust(15), self.show_data [each]['current_show']['show']['show_name']
-            print 'usd: '.rjust(15), str(self.show_data [each]['current_show']['show']['USD'])
-            print 'show path: '.rjust(15), self.show_data [each]['current_show']['show']['show_path'], '\n'
+            print 'show: '.rjust(15), self.show_data [each]['current_show']['show']['long_name'][1]
+            print 'name: '.rjust(15), self.show_data [each]['current_show']['show']['show_name'][1]
+            print 'usd: '.rjust(15), str(self.show_data [each]['current_show']['show']['USD'][1])
+            print 'show path: '.rjust(15), self.show_data [each]['current_show']['show']['show_path'][1], '\n'
 
     def set_current_show(self):
         currentitem = self.listwidget_shows.currentItem()
         self.current_show = currentitem.statusTip()    
         show_contents = self.show_data[self.current_show]['current_show']['show']
         print '#header current show information'
-        print 'current show: '.rjust(15), show_contents['long_name']
-        print 'name: '.rjust(15), show_contents['show_name']
-        print 'usd: '.rjust(15), str(show_contents['USD'])
-        print 'show path: '.rjust(15), show_contents['show_path']
+        print 'current show: '.rjust(15), show_contents['long_name'][1]
+        print 'name: '.rjust(15), show_contents['show_name'][1]
+        print 'usd: '.rjust(15), str(show_contents['USD'][1])
+        print 'show path: '.rjust(15), show_contents['show_path'][1]
         print '\n#header available show applications information'
         self.listwidget_show_applications.clear()
         show_application_contents = self.show_data[self.current_show]['show_applications']
         common_application_contents = self.show_data[self.current_show]['common_applications']
-        self.setup_applications('show_applications', show_application_contents)
-        self.setup_applications('common_applications', common_application_contents)
-        self.setup_build_in_applications()
+        build_in_application_contents = self.show_data[self.current_show]['build-in_applications']
         
-    def setup_applications(self, application_type, application_contents):
+        self.setup_applications('show_applications', show_application_contents, self.listwidget_show_applications)
+        self.setup_applications('common_applications', common_application_contents, self.listwidget_show_applications)
+        self.setup_applications('build-in_applications', build_in_application_contents, self.listwidget_build_in_applications)
+        
+    def setup_applications(self, application_type, application_contents, listwidget):
         if not application_contents:
             return
         sorted_contents = common.sort_dictionary(application_contents)
@@ -225,54 +232,38 @@ class Window(QtWidgets.QMainWindow):
             if each == 'show':
                 continue
             contents = application_contents[each]
-            
             print '%s|%s' % (application_type, each)
             swidgets.add_listwidget_item(
-                self.listwidget_show_applications,
-                contents['version'],
+                listwidget,
+                contents['version'][1],
                 key='%s|%s' % (application_type, each),
-                icon_path=contents['icon']
+                icon_path=contents['icon'][1]
                 )
-            print 'version: '.rjust(15), contents['version']
-            print 'source: '.rjust(15), contents['exe']
-            print 'path: '.rjust(15), contents['path'], '\n'
-        
-    def setup_build_in_applications(self):
-        data = self.shows.get_applications_data()
-        sorted_contents = common.sort_dictionary(data)
-        for application in sorted_contents:
-            icon_path = os.path.join(resource.getIconPath(), data[application]['icon'])
-            swidgets.add_listwidget_item(
-                self.listwidget_build_in_applications,
-                data[application]['label'],
-                key=data[application]['exe'],
-                icon_path=icon_path
-                )                          
+            print 'version: '.rjust(15), contents['version'][1]
+            print 'source: '.rjust(15), contents['exe'][1]
+            print 'path: '.rjust(15), contents['path'][1], '\n'
+                      
             
-    def set_current_show_application(self, bin=True):
-        currentitem = self.listwidget_show_applications.currentItem()
+    def set_current_show_application(self, *args):
+        currentitem = args[0]
         application_type, current_application = currentitem.statusTip().split('|')
         show_contents = self.show_data[self.current_show]['current_show']['show']
         show_application_contents = self.show_data[self.current_show][application_type][current_application]
         print '#header current show and show applications information'
-        print 'current show: '.rjust(15), show_contents['long_name']
-        print 'name: '.rjust(15), show_contents['show_name']
-        print 'usd: '.rjust(15), str(show_contents['USD']), '\n'
-        print 'show path: '.rjust(15), show_contents['show_path']
-        print 'version: '.rjust(15), show_application_contents['version']
-        print 'source: '.rjust(15), show_application_contents['exe']
-        print 'path: '.rjust(15), show_application_contents['path']
+        print 'current show: '.rjust(15), show_contents['long_name'][1]
+        print 'name: '.rjust(15), show_contents['show_name'][1]
+        print 'usd: '.rjust(15), str(show_contents['USD'][1]), '\n'
+        print 'show path: '.rjust(15), show_contents['show_path'][1]
+        print 'version: '.rjust(15), show_application_contents['version'][1]
+        print 'source: '.rjust(15), show_application_contents['exe'][1]
+        print 'path: '.rjust(15), show_application_contents['path'][1]
         self.shows.launch(
             self.current_show,
             application_type,
             current_application,
-            contents=self.show_data[self.current_show]
+            contents=self.show_data[self.current_show],
+            thread=True
             )
-        
-    def set_current_build_in_application(self):
-        currentitem = self.listwidget_build_in_applications.currentItem()
-        current_application = currentitem.statusTip()
-        self.shows.execute_command(current_application)
 
 
 if __name__ == '__main__':

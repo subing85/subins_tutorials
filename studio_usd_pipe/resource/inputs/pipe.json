@@ -21,9 +21,10 @@
 					"values": [					
 						"model",
 						"uv",
-						"surface",
+						"shader",
 						"puppet",
-						"usd"
+						"usd",
+						"hair"
 						]
 					},
 				"type": {

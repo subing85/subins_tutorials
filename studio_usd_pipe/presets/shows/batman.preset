@@ -5,60 +5,150 @@
     "type": "show_config", 
     "enable": true, 
     "#copyright": "(c) 2019, Subin Gopi All rights reserved.", 
-    "modified": "2020 28 April Tuesday, 12:23:46 PM", 
+    "modified": "2020 05 May Tuesday, 09:33:13 PM", 
     "created_by": "subin gopi", 
     "data": {
         "show_applications": {
             "natron": {
-                "path": "/venture/software/Natron-2.3.13", 
-                "version": "Natron-2.3.13", 
+                "path": [
+                    "NATRON_PATH", 
+                    "/venture/software/Natron-2.3.13"
+                ], 
+                "version": [
+                    "NATRON_VERSION", 
+                    "Natron-2.3.13"
+                ], 
                 "order": "3", 
-                "icon": "/venture/icons/natron.png", 
-                "exe": "/venture/software/Natron-2.3.13/Natron"
+                "icon": [
+                    "NATRON_ICON", 
+                    "/venture/icons/natron.png"
+                ], 
+                "exe": [
+                    "NATRON_EXE", 
+                    "/venture/software/Natron-2.3.13/Natron"
+                ]
             }, 
             "katana": {
-                "path": "/opt/katana/katana3.2.3", 
-                "version": "katana3.2.3", 
+                "path": [
+                    "KATANA_PATH", 
+                    "/opt/katana/katana3.2.3"
+                ], 
+                "version": [
+                    "KATANA_VERSION", 
+                    "katana3.2.3"
+                ], 
                 "order": "1", 
-                "icon": "/venture/icons/katana3.2.3.png", 
-                "exe": "/opt/katana/katana3.2.3/katana"
+                "icon": [
+                    "KATANA_ICON", 
+                    "/venture/icons/katana3.2.3.png"
+                ], 
+                "exe": [
+                    "KATANA_EXE", 
+                    "/opt/katana/katana3.2.3/katana"
+                ]
             }, 
             "nuke": {
-                "path": "/opt/nuke/nuke4.2.3", 
-                "version": "Nuke4.2.3", 
+                "path": [
+                    "NUKE_PATH", 
+                    "/opt/nuke/nuke4.2.3"
+                ], 
+                "version": [
+                    "NUKE_VERSION", 
+                    "Nuke4.2.3"
+                ], 
                 "order": "2", 
-                "icon": "/venture/icons/nuke.png", 
-                "exe": "/opt/nuke/nuke4.2.3/nuke"
+                "icon": [
+                    "NUKE_ICON", 
+                    "/venture/icons/nuke.png"
+                ], 
+                "exe": [
+                    "NUKE_EXE", 
+                    "/opt/nuke/nuke4.2.3/nuke"
+                ]
             }, 
             "maya": {
-                "exe": "/usr/autodesk/maya2018/bin/maya2018", 
-                "MAYA_PLUG_IN_PATH": [
-                    "/venture/source_code/package/", 
-                    "/venture/source_code/subins-toolkits/"
+                "exe": [
+                    "MAYA_EXE", 
+                    "/usr/autodesk/maya2018/bin/maya2018"
                 ], 
-                "MAYA_SCRIPT_PATH": [
-                    "/venture/source_code/package/", 
-                    "/venture/source_code/subins-toolkits/"
+                "maya_plug_in_path": [
+                    "MAYA_PLUG_IN_PATH", 
+                    [
+                        "/venture/source_code/subins_tutorials/studio_usd_pipe/plug-in/maya/", 
+                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/plugin/"
+                    ]
                 ], 
-                "version": "maya2018", 
-                "path": "/usr/autodesk/maya2018", 
+                "xbmlang_path": [
+                    "XBMLANGPATH", 
+                    [
+                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/"
+                    ]
+                ], 
+                "maya_script_path": [
+                    "MAYA_SCRIPT_PATH", 
+                    [
+                        "/venture/source_code/subins-toolkits/", 
+                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/", 
+                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/plugin/pxrUsdPreviewSurface/resources/"
+                    ]
+                ], 
+                "version": [
+                    "MAYA_VERSION", 
+                    "maya2018"
+                ], 
+                "path": [
+                    "MAYA_PATH", 
+                    "/usr/autodesk/maya2018"
+                ], 
                 "order": "0", 
-                "icon": "/venture/icons/maya2018.png"
+                "icon": [
+                    "MAYA_ICON", 
+                    "/venture/icons/maya2018.png"
+                ]
             }
         }, 
         "current_show": {
             "show": {
-                "USD": true, 
-                "PYTHONPATH": [
-                    "/venture/source_code/package/", 
-                    "/venture/source_code/subins-toolkits/"
+                "USD": [
+                    "USD", 
+                    true
                 ], 
-                "show_name": "btm", 
-                "long_name": "batman", 
-                "show_path": "/venture/shows/batman", 
-                "path": "/usr/bin", 
-                "order": 0, 
-                "icon": "/venture/shows/icons/batman.png"
+                "show_name": [
+                    "SHOW_SHORT_NAME", 
+                    "btm"
+                ], 
+                "python_path": [
+                    "PYTHONPATH", 
+                    [
+                        "/venture/source_code/subins-toolkits/", 
+                        "/usr/local/usd/maya2018/pixar/19.05/lib/python/"
+                    ]
+                ], 
+                "long_name": [
+                    "SHOW_LONG_NAME", 
+                    "batman"
+                ], 
+                "show_path": [
+                    "SHOW_PATH", 
+                    "/venture/shows/batman"
+                ], 
+                "bin_path": [
+                    "PATH", 
+                    [
+                        "/usr/bin", 
+                        "/usr/local/usd/maya2018/pixar/19.05/lib", 
+                        "/usr/local/usd/maya2018/pixar/19.05/bin", 
+                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib"
+                    ]
+                ], 
+                "order": [
+                    "SHOW_ORDER", 
+                    1
+                ], 
+                "icon": [
+                    "SHOW_ICON", 
+                    "/venture/shows/icons/batman.png"
+                ]
             }
         }
     }

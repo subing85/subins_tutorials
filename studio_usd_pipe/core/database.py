@@ -7,23 +7,23 @@ import sqlite3
 from datetime import datetime
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import preferences
+from studio_usd_pipe.api import studioEnviron
 
 
 class DataBase(object):
     
-    def __init__(self, pipe):        
-        self.pipe = pipe
-        self.pref = preferences.Preferences()
-        pref_data = resource.getPreferenceData(path=self.pref.preference_path)
-        self.db = os.path.join(
-            pref_data['database_directory'], '{}.db'.format(self.pipe))
+    def __init__(self, current_show, current_pipe):
+        self.db = self.get_database_path(current_show, current_pipe)
         self.table_prefix = 'table'
         self.initialize(force=False)
         
+    def get_database_path(self, current_show, current_pipe):
+        environ = studioEnviron.Environ(current_show)
+        show_path, valid = environ.get_environ_value('SHOW_PATH')
+        db_path = os.path.join(show_path, 'database/%s.db' % current_pipe)
+        return db_path  
+        
     def initialize(self, force=False):
-        if not self.pipe:
-            return
         if force:
             self.remove_db()
         if not os.path.isdir(os.path.dirname(self.db)):

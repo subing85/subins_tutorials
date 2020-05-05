@@ -81,8 +81,8 @@ class Nurbscurve(studioMaya.Maya):
             return False
         return True
         
-    def create_curve(self, name, data, replace=False):
-        if replace:
+    def create_curve(self, name, data, merge=False):
+        if merge:
             mfn_curve = self.update_kcurve(name, data)
             if not mfn_curve:
                 if self.object_exists(name):

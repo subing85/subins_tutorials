@@ -1,5 +1,5 @@
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import mread
+from studio_usd_pipe.core import mayaread
 
 inputs = {
     "description": "aaaaaaaa",
@@ -17,7 +17,7 @@ inputs = {
  
 maya = '/venture/shows/batman/batman.ma'
 script = resource.getScriptPath() + '/maya_release.py'
-data = mread.read(maya, script, **inputs)
+data = mayaread.read(maya, script, **inputs)
 
 import json
 
