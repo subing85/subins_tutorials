@@ -1,6 +1,7 @@
 
 import os
 import copy
+import shutil
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
@@ -30,9 +31,18 @@ class Pipe(object): # pipe == asset or shot
                 db_data.setdefault(contents['caption'], {})
             if contents['subfield'] not in db_data[contents['caption']]:
                 db_data[contents['caption']].setdefault(contents['subfield'], {}) 
+            
+            updated_data = copy.deepcopy(contents)
+            updated_data['table'] = table
+            
             db_data[contents['caption']][contents['subfield']].setdefault(
-                contents['version'], contents)
+                contents['version'], updated_data)
         return db_data
+    
+    def get_table_data(self):
+        dbs = database.DataBase(self.current_show, self.current_pipe)   
+        data = dbs.get()
+        return data
     
     def get_pipes(self):
         db_data = self.get()        
@@ -142,5 +152,11 @@ class Pipe(object): # pipe == asset or shot
             if each not in extrude:
                 continue
             sorted_data.pop(each)
-        return sorted_data             
+        return sorted_data
+    
+    def remove(self, table, pipe_path):
+        dbs = database.DataBase(self.current_show, self.current_pipe)   
+        dbs.delete_table(table)
+        if os.path.isdir(pipe_path):
+            shutil.rmtree(pipe_path)                
         
