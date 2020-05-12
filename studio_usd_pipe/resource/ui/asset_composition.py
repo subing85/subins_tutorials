@@ -16,7 +16,6 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
 from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
-# from studio_usd_pipe.utils import maya_asset
 from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPush
 from studio_usd_pipe.api import studioPipe
