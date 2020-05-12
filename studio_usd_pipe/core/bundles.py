@@ -78,8 +78,7 @@ class Bundles(object):
         if True in self.container[0]:
             if not self.container[0][True]:
                 self.container[0].pop(True)
-        string_container = self.convert_key_container()
-        return self.container[0], string_container[0]
+        return self.container[0]
     
     def execute_bundle(self, module, mode, index, output_path, **kwargs):
         status, values, message = False, [], False
@@ -103,64 +102,10 @@ class Bundles(object):
             return
         for x, module in bundles[mode].items():
             self.execute_bundle(module, mode, index, output_path, **kwargs)
-        
-    def convert_key_container(self):        
-        string_container = {}
-        for index, valids in self.container.items():
-            string_container[index] = {}
-            for valid, modules in valids.items():
-                string_container[index][valid] = {}
-                for module, contents in modules.items():
-                    string_container[index][valid][module.KEY] = contents
-        return string_container
 
     def get_bundles(self, types=None):
         if not self.is_valid():
             return None
         module_data = common.get_modules(self.bundle_path, module_types=types)
         return module_data
-    
-    def find_bundles(self):  # to remove
-        '''
-            from studio_usd_pipe.core import publish
-            pub = Publish('model')
-            module_data = pub.find_bundles() 
-        '''
-        if not self.is_valid():
-            return None
-        module_data = {}
-        index = 1
-        for module_loader, name, ispkg in pkgutil.iter_modules([self.bundle_path]):
-            loader = module_loader.find_module(name)
-            module = loader.load_module(name)
-            type = 'not found'
-            if hasattr(module, 'TYPE'):
-                type = module.TYPE
-            valid = 'not found'                
-            if hasattr(module, 'VALID'):
-                valid = module.VALID                
-            key = 'not found'              
-            if hasattr(module, 'KEY'):
-                key = module.KEY
-            if type not in module_data:
-                module_data.setdefault(type, {})
-            contents = {
-                'valid': valid,
-                'name': module.__name__,
-                'path': module.__file__,
-                'key': key
-                }
-            if hasattr(module, 'ORDER'):
-                order = module.ORDER
-            else:
-                order = '%s%s' % ('*' * index, index)
-                module_data[type].setdefault(order, contents)
-            if order in module_data[type]:                
-                order = '%s%s' % (order, '*' * index)
-                module_data[type].setdefault(order, contents)
-                index += 1
-                continue
-            module_data[type].setdefault(order, contents)
-        print json.dumps(module_data, indent=4)            
-        return module_data 
 

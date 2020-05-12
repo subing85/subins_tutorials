@@ -4,7 +4,6 @@ import os
 
 import sys
 
-
 from pxr import Vt
 from pxr import Gf
 from pxr import Sdf
@@ -15,6 +14,7 @@ from pxr import UsdShade
 from maya import OpenMaya
 
 from studio_usd_pipe.core import common
+
 
 class Susd(object):
     
@@ -304,7 +304,7 @@ class Susd(object):
         default_prim = stage.DefinePrim(define_path)
         UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.y)
         Usd.ModelAPI(default_prim).SetKind(kind)
-    
+
     def get_prameter_values(self, attribute_type, attribute_value):
         current_type = None
         current_value = 'null'           
@@ -381,7 +381,6 @@ class Susd(object):
         
     def create_variant(self, components, stage=None):
         pass
-        
     
     def create_variant_reference(self, components, stage=None):
         if not stage:
@@ -420,9 +419,7 @@ class Susd(object):
         
         stage.GetRootLayer().Save()  
         
-        # print stage.GetRootLayer().ExportToString()
     
     def create_inherits(self):
         pass
-    
         

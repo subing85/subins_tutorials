@@ -5,7 +5,7 @@
     "type": "show_config", 
     "enable": true, 
     "#copyright": "(c) 2019, Subin Gopi All rights reserved.", 
-    "modified": "2020 05 May Tuesday, 09:33:13 PM", 
+    "modified": "2020 10 May Sunday, 11:17:54 AM", 
     "created_by": "subin gopi", 
     "data": {
         "show_applications": {
@@ -21,7 +21,7 @@
                 "order": "3", 
                 "icon": [
                     "NATRON_ICON", 
-                    "/venture/icons/natron.png"
+                    "/venture/source_code/icons/natron.png"
                 ], 
                 "exe": [
                     "NATRON_EXE", 
@@ -40,7 +40,7 @@
                 "order": "1", 
                 "icon": [
                     "KATANA_ICON", 
-                    "/venture/icons/katana3.2.3.png"
+                    "/venture/source_code/icons/katana3.2.3.png"
                 ], 
                 "exe": [
                     "KATANA_EXE", 
@@ -59,7 +59,7 @@
                 "order": "2", 
                 "icon": [
                     "NUKE_ICON", 
-                    "/venture/icons/nuke.png"
+                    "/venture/source_code/icons/nuke.png"
                 ], 
                 "exe": [
                     "NUKE_EXE", 
@@ -75,21 +75,22 @@
                     "MAYA_PLUG_IN_PATH", 
                     [
                         "/venture/source_code/subins_tutorials/studio_usd_pipe/plug-in/maya/", 
-                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/plugin/"
+                        "/usr/usd/maya2018/pixar/19.05/third_party/maya/plugin/", 
+                        "/opt/pixar/RenderManForMaya-23.2/plug-ins/"
                     ]
                 ], 
                 "xbmlang_path": [
                     "XBMLANGPATH", 
                     [
-                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/"
+                        "/usr/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/"
                     ]
                 ], 
                 "maya_script_path": [
                     "MAYA_SCRIPT_PATH", 
                     [
                         "/venture/source_code/subins-toolkits/", 
-                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/", 
-                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/plugin/pxrUsdPreviewSurface/resources/"
+                        "/usr/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/", 
+                        "/usr/usd/maya2018/pixar/19.05/third_party/maya/plugin/pxrUsdPreviewSurface/resources/"
                     ]
                 ], 
                 "version": [
@@ -103,7 +104,7 @@
                 "order": "0", 
                 "icon": [
                     "MAYA_ICON", 
-                    "/venture/icons/maya2018.png"
+                    "/venture/source_code/icons/maya2018.png"
                 ]
             }
         }, 
@@ -121,7 +122,7 @@
                     "PYTHONPATH", 
                     [
                         "/venture/source_code/subins-toolkits/", 
-                        "/usr/local/usd/maya2018/pixar/19.05/lib/python/"
+                        "/usr/usd/maya2018/pixar/19.05/lib/python/"
                     ]
                 ], 
                 "long_name": [
@@ -136,14 +137,14 @@
                     "PATH", 
                     [
                         "/usr/bin", 
-                        "/usr/local/usd/maya2018/pixar/19.05/lib", 
-                        "/usr/local/usd/maya2018/pixar/19.05/bin", 
-                        "/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib"
+                        "/usr/usd/maya2018/pixar/19.05/lib", 
+                        "/usr/usd/maya2018/pixar/19.05/bin", 
+                        "/usr/usd/maya2018/pixar/19.05/third_party/maya/lib"
                     ]
                 ], 
                 "order": [
                     "SHOW_ORDER", 
-                    1
+                    0
                 ], 
                 "icon": [
                     "SHOW_ICON", 

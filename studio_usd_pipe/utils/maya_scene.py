@@ -139,5 +139,7 @@ def create_studio_shader(studio_shader_path, merge):
     surface_data = studio_model['surface']
     sshader = studioShader.Shader()
     for node, contenst in surface_data.items():
-        shading_engine = sshader.create_shadernet(node, contenst, merge=merge)     
+        shading_engine = sshader.create_shadernet(node, contenst, merge=merge)
+        
+      
     

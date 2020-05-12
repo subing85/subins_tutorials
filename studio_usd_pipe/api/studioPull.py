@@ -1,11 +1,12 @@
 import json
 from studio_usd_pipe.core import bundles
 
+from studio_usd_pipe.api import studioPipe
+
 
 class Pull(object):
     
-    def __init__(self, current_application, current_subfiled):
-        self.current_subfiled = current_subfiled
+    def __init__(self, current_application):
         self.current_application = current_application
         self.mode = 'creator'
     
@@ -26,4 +27,7 @@ class Pull(object):
             print ': '.rjust(15), value
         print 'message: '.rjust(15), message
         return valid, message
+       
         
+  
+    

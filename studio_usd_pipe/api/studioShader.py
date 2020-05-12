@@ -325,9 +325,7 @@ class Shader(studioMaya.Maya):
                 
         # geometry assignments
         mfn_dependency_node = OpenMaya.MFnDependencyNode(shader_mobject)
-        print 'ssssssss', mfn_dependency_node.name()
         shader_mplug = mfn_dependency_node.findPlug(data['surface']['attribute'])
-        print shader_mplug.name()
         
         shading_engine_mobject = self.create_kshading_engine(
             name,

@@ -71,6 +71,8 @@ def get_modules(dirname, module_types=None):  # **
 
 
 def get_module(path):  # **
+    if not os.path.isfile(path):
+        return None
     module = imp.load_source(os.path.basename(path), path)
     if not hasattr(module, 'TYPE'):
         return False

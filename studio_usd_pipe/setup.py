@@ -5,17 +5,11 @@ import json
 
 from datetime import datetime
 
-# from studio_usd_pipe import resource
-# from studio_usd_pipe.core import common
-
 
 def main():    
-    # studio_template_path = resource.getStudioTemplatePath()
-    
     current_path = os.path.dirname(__file__)
     package_path = os.path.dirname(current_path)    
     package_name = os.path.basename(current_path)      
-
     write_bash(package_path, package_name)
 
     

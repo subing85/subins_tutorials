@@ -21,7 +21,6 @@ from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPush
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
-from PySide2.QtWidgets import QWidget
 
 
 class Window(QtWidgets.QMainWindow):
@@ -328,15 +327,13 @@ class Window(QtWidgets.QMainWindow):
         return config.version, config.pretty                        
            
     def on_context_menu(self, widget, point):
-        
         if isinstance(widget, QtWidgets.QPushButton):
             self.set_menu_options(widget)
             self.menu.exec_(widget.mapToGlobal(point))
-            
             return
         index = widget.indexAt(point)
         if not index.isValid():
-            return        
+            return      
         current_item = widget.selectedItems()[-1]       
         contents = current_item.statusTip(0)
         if not contents:
@@ -389,7 +386,7 @@ class Window(QtWidgets.QMainWindow):
             for each in versions:
                 cuttrent_tag = contents[subfield][each]['tag']
                 version_item = swidgets.add_treewidget_item(
-                    subfield_item, each, icon=cuttrent_tag, foreground=(0, 0, 0))
+                    subfield_item, each, icon=cuttrent_tag, foreground=(192, 0, 0))
                 more_contents = self.spipe.get_more_data(caption, each, subfield)
                 ver_contents = copy.deepcopy(contents[subfield][each])
                 ver_contents.update(more_contents)
@@ -437,7 +434,6 @@ class Window(QtWidgets.QMainWindow):
             self.input_items.setdefault(version_item, item)
             version_item.setStatusTip(0, str(contents))
             brush = QtGui.QBrush(QtGui.QColor(255, 0, 255))
-            brush.setStyle(QtCore.Qt.NoBrush)
             item.setForeground(0, brush)
             item.setDisabled(True)
             to_widget.setItemExpanded(subfield_item, 1)
@@ -445,14 +441,23 @@ class Window(QtWidgets.QMainWindow):
             
     def remove_from_composition(self, from_widget, to_widget):
         current_items = from_widget.selectedItems()
-        widget_item = from_widget.invisibleRootItem()
         for item in current_items: 
-            widget_item.removeChild(item)
-            brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+            item.parent().removeChild(item)
+            from_widget.removeItemWidget(item, 0)
+            brush = QtGui.QBrush(QtGui.QColor(192, 0, 0))
             brush.setStyle(QtCore.Qt.NoBrush)
             self.input_items[item].setForeground(0, brush)
             self.input_items[item].setDisabled(False)
             self.input_items.pop(item)
+        widget_item = from_widget.invisibleRootItem()
+        for parent in range (widget_item.childCount()):
+            parent_item = widget_item.child(parent)
+            if not parent_item:
+                continue
+            if parent_item.childCount() > 0:
+                continue
+            widget_item.removeChild(parent_item)
+            from_widget.removeItemWidget(parent_item, 0)            
  
     def load_image_file(self):
         current_file = swidgets.brows_file(
@@ -573,7 +578,9 @@ class Window(QtWidgets.QMainWindow):
         input_data.update(pipe_data)     
         input_data['composition'] = composition_data        
         self.show_primary_data(input_data)
-        # print json.dumps(input_data, indent=4)
+        
+        print '..........................'
+        print json.dumps(input_data, indent=4)
         push = studioPush.Push(self.current_show, self.pipe)        
         valid, message = push.do_publish(repair=True, **input_data)
         

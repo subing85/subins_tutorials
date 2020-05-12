@@ -41,39 +41,40 @@ def create_model():
             mpack.asset()      
         '''
         from maya import OpenMaya
-        from studio_usd_pipe.api import studioShader
         from studio_usd_pipe.api import studioNurbscurve  
-        smaya = studioShader.Shader()  
-        scurve = studioNurbscurve.Nurbscurve() 
+        from studio_usd_pipe.api import studioShader
+        
+        scurve = studioNurbscurve.Nurbscurve()
+        sshader = studioShader.Shader()
         root = get_root()
         world = get_world()             
         # remove depend nodes
-        depend_nodes = smaya.extract_depend_nodes(default=False)
+        depend_nodes = scurve.extract_depend_nodes(default=False)
         for x in range(depend_nodes.length()):
-            smaya.remove_node(depend_nodes[x]) 
-        smaya.remove_nodes(depend_nodes)                
+            scurve.remove_node(depend_nodes[x]) 
+        scurve.remove_nodes(depend_nodes)                
         # make model group             
-        mesh_mobjects = smaya.extract_transform_primitive(OpenMaya.MFn.kMesh, shape=False)
-        model_dag_node = smaya.create_group(root)        
+        mesh_mobjects = scurve.extract_transform_primitive(OpenMaya.MFn.kMesh, shape=False)
+        model_dag_node = scurve.create_group(root)        
         # make geometry hierarchy  
         for x in range (mesh_mobjects.length()):
-            smaya.set_locked(mesh_mobjects[x].node(), attributes=None, locked=False)
-            smaya.disconnect_chanelbox(mesh_mobjects[x].node())
-            smaya.set_parent(mesh_mobjects[x], model_dag_node.object())
+            scurve.set_locked(mesh_mobjects[x].node(), attributes=None, locked=False)
+            scurve.disconnect_chanelbox(mesh_mobjects[x].node())
+            scurve.set_parent(mesh_mobjects[x], model_dag_node.object())
             # assigin default shader
-            smaya.assign_shading_engine(mesh_mobjects[x], shading_group=None)  
+            sshader.assign_shading_engine(mesh_mobjects[x], shading_group=None)  
         # remove unwanted dag nodes    
-        trans_dagpath_array = smaya.extract_top_transforms(default=False)
+        trans_dagpath_array = scurve.extract_top_transforms(default=False)
         for x in range (trans_dagpath_array.length()):
             if trans_dagpath_array[x].node() == model_dag_node.object():
                 continue                       
-            smaya.remove_node(trans_dagpath_array[x].node())
-        # smaya.remove_nodes(transform_mobjects)        
+            scurve.remove_node(trans_dagpath_array[x].node())
+        # scurve.remove_nodes(transform_mobjects)        
         # reset transforms
         for x in range (mesh_mobjects.length()):
-            smaya.delete_history(mesh_mobjects[x])
-            smaya.freeze_transformations(mesh_mobjects[x])
-            smaya.set_default_position(mesh_mobjects[x].node())
+            scurve.delete_history(mesh_mobjects[x])
+            scurve.freeze_transformations(mesh_mobjects[x])
+            scurve.set_default_position(mesh_mobjects[x].node())
         # create world control   
         world_dependency_node = scurve.create_world(model_dag_node, parent=True) 
         # set the name
@@ -81,10 +82,10 @@ def create_model():
         world_dependency_node.setName(world)
         # create asset id
         id_data = resource.getAssetIDData()                   
-        smaya.create_maya_ids(model_dag_node.object(), id_data)        
+        scurve.create_maya_ids(model_dag_node.object(), id_data)        
         # OpenMaya.MGlobal.selectByName(model_dag_node.fullPathName())
         OpenMaya.MGlobal.clearSelectionList()
-        smaya.set_perspective_view()
+        scurve.set_perspective_view()
         return True, [root], 're-generate hierarchy'
 
    
@@ -427,7 +428,18 @@ def create_puppet_maya(output_path):
     smaya.export_selected(root, output_path, force=True)
     return output_path
 
+
+
+def find_asset_usd_inputs(**kwargs):
+    
+    subfileds = ['model']
+    pass
         
 
+def create_asset_usd_composition():
+    pass
 
+        
+
+# find_asset_usd_inputs()
 

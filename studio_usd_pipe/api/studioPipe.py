@@ -8,12 +8,12 @@ from studio_usd_pipe.core import database
 from studio_usd_pipe.api import studioEnviron
 
 
-class Pipe(object):
+class Pipe(object): # pipe == asset or shot
     
     def __init__(self, current_show, current_pipe):
         self.current_show = current_show
         self.current_pipe = current_pipe
-        self.show_path = self.get_show_path()        
+        self.show_path = self.get_show_path()
         self.pipe_inputs = resource.getPipeData()['pipe'][self.current_pipe]
 
     def get_show_path(self):

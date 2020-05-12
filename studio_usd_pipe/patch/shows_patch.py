@@ -26,7 +26,6 @@ def show_applications(current_show):
             continue
         applications = common.sort_dictionary(data[application])
         for each in applications:
-            print each
             name = [each, data[application][each]['version'][1]]  
             versions.append(name)    
     return versions
