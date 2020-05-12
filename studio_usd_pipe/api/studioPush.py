@@ -245,8 +245,8 @@ class Push(object):
             messages = []            
             print '#warnings'
             for module, contents in self.container[False].items():
-                print '%s: ' % module.rjust(15), contents[1]
-                messages.append('%s: %s' % (module, contents[1]))
+                print '%s: ' % (module.__name__).rjust(15), contents[1]
+                messages.append('%s: %s' % (module.__name__, contents[1]))
             return False, '\n'.join(messages)
         return True, 'success!..' 
     

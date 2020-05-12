@@ -20,11 +20,10 @@ import json
 
 class Window(QtWidgets.QMainWindow):
 
-    def __init__(self, parent=None, standalone=None, application=None):  
+    def __init__(self, parent=None, standalone=None):  
         super(Window, self).__init__(parent)        
         self.setWindowFlags(QtCore.Qt.Window) 
         self.standalone = standalone
-        self.application = application
         self.title = 'Studio Spread Sheet'
         self.width = 800
         self.height = 600
@@ -35,7 +34,7 @@ class Window(QtWidgets.QMainWindow):
         self.set_default()
 
     def setup_ui(self):
-        self.setObjectName('mainwindow_spread_sheet')
+        self.setObjectName('mainwindow_spreadsheet')
         self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
         self.resize(self.width, self.height)
         self.centralwidget = QtWidgets.QWidget(self)
@@ -143,19 +142,21 @@ class Window(QtWidgets.QMainWindow):
         subfileds = spipe.pipe_inputs['subfield']['values']
         publish_data = spipe.get()
         self.treewidget.setColumnCount(10)
+        index = 1
         for caption in publish_data:
             for subfiled in subfileds:
                 if subfiled not in publish_data[caption]:
                     continue
                 versions = publish_data[caption][subfiled].keys()
-                versions = common.set_version_order(versions)
-                
+                versions = common.set_version_order(versions)                
                 for version in versions:
                     column_items = [
+                        ['No', index],
                         ['caption', caption],
                         ['subfield', subfiled],
                         ['version', version]
-                        ]
+                        ]                    
+                    publish_data[caption][subfiled][version].pop('version')
                     version_contents = sorted(publish_data[caption][subfiled][version].keys())
                     for each in version_contents:
                         column_items.append([each, publish_data[caption][subfiled][version][each]])
@@ -164,11 +165,12 @@ class Window(QtWidgets.QMainWindow):
                     table_data = [
                         publish_data[caption][subfiled][version]['table'],
                         publish_data[caption][subfiled][version]['location'],
-                        publish_data[caption][subfiled][version]['version'],
+                        version,
                         publish_data[caption][subfiled][version]['subfield'],
                         publish_data[caption][subfiled][version]['caption'],
                         ]
                     version_item.setStatusTip(0, str(table_data))
+                    index+=1
    
     def remove_items(self, treewidget):
         selecteditems = treewidget.selectedItems()
@@ -190,11 +192,11 @@ class Window(QtWidgets.QMainWindow):
             print '%s: %s' % ('subfield'.rjust(15), subfiled)
             print '%s: %s' % ('caption'.rjust(15), caption)
         self.set_current_pipe()
-        print '# removed success'
+        print '# remove success!...'
     
     
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = Window(parent=None, standalone=True, application='maya')
+    window = Window(parent=None, standalone=True)
     window.show()
     sys.exit(app.exec_()) 

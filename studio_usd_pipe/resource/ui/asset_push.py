@@ -545,9 +545,7 @@ class Window(QtWidgets.QWidget):
         input_data['standalone'] = self.standalone
         input_data['application'] = self.application
         print json.dumps(input_data, indent=4)
-        
-        return
-        
+
         push = studioPush.Push(self.current_show, self.pipe)
         if self.standalone:
             valid, message = push.do_standalone_publish(repair=True, **input_data)

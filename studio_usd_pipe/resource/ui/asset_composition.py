@@ -32,7 +32,7 @@ class Window(QtWidgets.QMainWindow):
         self.application = application
         self.pipe = 'assets'
         self.title = 'Asset USD Publish/Push'
-        self.subfield = 'usd'
+        self.subfield = 'composition'
         self.width = 572
         self.height = 900
         self.input_items = {}
@@ -580,6 +580,7 @@ class Window(QtWidgets.QMainWindow):
         
         print '..........................'
         print json.dumps(input_data, indent=4)
+        
         push = studioPush.Push(self.current_show, self.pipe)        
         valid, message = push.do_publish(repair=True, **input_data)
         
@@ -595,6 +596,6 @@ class Window(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = Window(parent=None, standalone=True, application='maya')
+    window = Window(parent=None, standalone=True, application='pixar')
     window.show()
     sys.exit(app.exec_())       

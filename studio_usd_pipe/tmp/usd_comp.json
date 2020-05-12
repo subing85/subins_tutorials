@@ -1,74 +1,76 @@
 {
-    "description": "AAAAAAAAAAAAAAAA", 
+    "description": "test", 
     "caption": "batman", 
     "subfield": "usd", 
     "standalone": true, 
     "tag": "character", 
     "composition": {
         "model": {
-            "0.0.0": {
-                "dependency": "None", 
-                "studio_model": [
-                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.model"
-                ], 
+            "4.0.0": {
                 "model_thumbnail": [
-                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.png"
+                    "/venture/shows/batman/assets/batman/model/4.0.0/batman.png"
                 ], 
                 "show": "btm", 
-                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
-                "subfield": "model", 
-                "standalone": false, 
                 "tag": "character", 
-                "modified": "2020:11:May-09:34:24:AM", 
-                "pipe": "assets", 
+                "table": "table_4", 
                 "application": "maya", 
-                "show_path": "/venture/shows/batman", 
+                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
                 "model_usd": [
-                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.usd"
+                    "/venture/shows/batman/assets/batman/model/4.0.0/batman.usd"
                 ], 
+                "location": "/venture/shows/batman/assets/batman/model/4.0.0", 
+                "version": "4.0.0", 
+                "type": "non-interactive", 
+                "thumbnail": "/venture/shows/batman/assets/batman/model/4.0.0/batman.png", 
+                "studio_model": [
+                    "/venture/shows/batman/assets/batman/model/4.0.0/batman.model"
+                ], 
+                "description": "aaaaaaaaaaaaa", 
+                "subfield": "model", 
+                "show_path": "/venture/shows/batman", 
                 "user": "sid", 
-                "version": "0.0.0", 
-                "location": "/venture/shows/batman/assets/batman/model/0.0.0", 
                 "model_scene": [
-                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.ma"
+                    "/venture/shows/batman/assets/batman/model/4.0.0/batman.ma"
                 ], 
                 "caption": "batman", 
-                "type": "non-interactive", 
-                "thumbnail": "/venture/shows/batman/assets/batman/model/0.0.0/batman.png", 
-                "description": "test"
+                "standalone": false, 
+                "modified": "2020:12:May-12:18:05:PM", 
+                "pipe": "assets", 
+                "dependency": "None"
             }
         }, 
         "uv": {
-            "0.0.0": {
-                "dependency": "None", 
-                "uv_thumbnail": [
-                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.png"
-                ], 
-                "description": "uv test", 
-                "standalone": false, 
-                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
-                "type": "non-interactive", 
-                "subfield": "uv", 
+            "1.0.0": {
                 "show": "btm", 
-                "modified": "2020:11:May-09:40:52:AM", 
                 "uv_usd": [
-                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.usd"
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.usd"
                 ], 
-                "pipe": "assets", 
-                "application": "maya", 
-                "show_path": "/venture/shows/batman", 
                 "tag": "character", 
-                "uv_scene": [
-                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.ma"
-                ], 
-                "user": "sid", 
-                "version": "0.0.0", 
-                "caption": "batman", 
                 "studio_uv": [
-                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.uv"
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.uv"
                 ], 
-                "thumbnail": "/venture/shows/batman/assets/batman/uv/0.0.0/batman.png", 
-                "location": "/venture/shows/batman/assets/batman/uv/0.0.0"
+                "table": "table_3", 
+                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
+                "application": "maya", 
+                "version": "1.0.0", 
+                "location": "/venture/shows/batman/assets/batman/uv/1.0.0", 
+                "type": "interactive", 
+                "thumbnail": "/venture/shows/batman/assets/batman/uv/1.0.0/batman.png", 
+                "description": "test 02", 
+                "subfield": "uv", 
+                "show_path": "/venture/shows/batman", 
+                "user": "sid", 
+                "caption": "batman", 
+                "uv_thumbnail": [
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.png"
+                ], 
+                "standalone": false, 
+                "modified": "2020:12:May-12:17:59:PM", 
+                "pipe": "assets", 
+                "dependency": "1.0.0", 
+                "uv_scene": [
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.ma"
+                ]
             }
         }, 
         "shader": {
@@ -81,10 +83,11 @@
                 "shader_usd": [
                     "/venture/shows/batman/assets/batman/shader/1.0.0/batman.usd"
                 ], 
+                "table": "table_6", 
                 "shader_thumbnail": [
                     "/venture/shows/batman/assets/batman/shader/1.0.0/batman.png"
                 ], 
-                "caption": "batman", 
+                "dependency": "1.0.0", 
                 "application": "maya", 
                 "version": "1.0.0", 
                 "show_path": "/venture/shows/batman", 
@@ -107,63 +110,64 @@
                     "/venture/shows/batman/assets/batman/shader/1.0.0/source_images/tongue_lores.png", 
                     "/venture/shows/batman/assets/batman/shader/1.0.0/source_images/tongue.png"
                 ], 
-                "description": "aaaaaaaa", 
+                "description": "test shader 02", 
                 "subfield": "shader", 
                 "shader_scene": [
                     "/venture/shows/batman/assets/batman/shader/1.0.0/batman.ma"
                 ], 
                 "user": "sid", 
                 "standalone": false, 
-                "modified": "2020:11:May-09:43:19:AM", 
+                "modified": "2020:12:May-12:18:49:PM", 
                 "pipe": "assets", 
-                "dependency": "0.0.0", 
+                "caption": "batman", 
                 "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb"
             }, 
-            "0.0.0": {
+            "2.0.0": {
                 "show": "btm", 
                 "shader_preview_usd": [
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/batman_preview.usd"
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/batman_preview.usd"
                 ], 
                 "tag": "character", 
                 "shader_usd": [
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/batman.usd"
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/batman.usd"
                 ], 
+                "table": "table_7", 
                 "shader_thumbnail": [
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/batman.png"
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/batman.png"
                 ], 
-                "caption": "batman", 
+                "dependency": "1.0.0", 
                 "application": "maya", 
-                "version": "0.0.0", 
+                "version": "2.0.0", 
                 "show_path": "/venture/shows/batman", 
-                "location": "/venture/shows/batman/assets/batman/shader/0.0.0", 
+                "location": "/venture/shows/batman/assets/batman/shader/2.0.0", 
                 "type": "non-interactive", 
-                "thumbnail": "/venture/shows/batman/assets/batman/shader/0.0.0/batman.png", 
+                "thumbnail": "/venture/shows/batman/assets/batman/shader/2.0.0/batman.png", 
                 "studio_shader": [
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/batman.shader"
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/batman.shader"
                 ], 
                 "shader_source_images": [
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/batman.sourceimage", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/body_lores.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/body.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/eye_lores.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/eye.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/suite_lores.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/suite.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/tongue_lores.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/tongue.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/belt_lores.png", 
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/source_images/belt.png"
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/batman.sourceimage", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/tongue_lores.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/tongue.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/body_lores.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/body.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/suite_lores.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/suite.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/belt_lores.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/belt.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/eye_lores.png", 
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/source_images/eye.png"
                 ], 
-                "description": "shader test", 
+                "description": "test shader 03", 
                 "subfield": "shader", 
                 "shader_scene": [
-                    "/venture/shows/batman/assets/batman/shader/0.0.0/batman.ma"
+                    "/venture/shows/batman/assets/batman/shader/2.0.0/batman.ma"
                 ], 
                 "user": "sid", 
                 "standalone": false, 
-                "modified": "2020:11:May-09:42:55:AM", 
+                "modified": "2020:12:May-12:19:06:PM", 
                 "pipe": "assets", 
-                "dependency": "0.0.0", 
+                "caption": "batman", 
                 "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb"
             }
         }
@@ -173,5 +177,5 @@
     "source": null, 
     "dependency": null, 
     "type": "non-interactive", 
-    "thumbnail": "/tmp/thumbnail_2020_12_May_Tuesday_12_07_35_AM.png"
+    "thumbnail": "/tmp/thumbnail_2020_12_May_Tuesday_12_25_45_PM.png"
 }
