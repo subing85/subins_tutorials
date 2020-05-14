@@ -83,6 +83,10 @@ def get_module(path):  # **
     return module
 
 
+def get_dynamic_name():
+    dynamic_name = datetime.now().strftime('%Y_%d_%B_%A_%I_%M_%S_%p')
+    return dynamic_name
+
 def get_modified_date():
     modified = datetime.now().strftime('%Y %d %B %A, %I:%M:%S %p')
     return modified

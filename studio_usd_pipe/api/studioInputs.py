@@ -19,6 +19,7 @@ class Inputs(object):
             'name',
             'location'
             ]
+        
     
     def get_push_type(self):
         return 'extractor'
@@ -29,6 +30,17 @@ class Inputs(object):
     def find_subfileds(self):
         subfield = self.spipe.pipe_inputs['subfield']['values']        
         return subfield
+    
+    
+    def get_usd_extractor_keys(self):
+        usd_extractor_keys = {
+            'model': 'model_usd',
+            'uv': 'uv_usd',            
+            'shader': 'shader_usd'
+            }
+        return usd_extractor_keys 
+    
+        
     
     def find_extractor_order(self, verbose=True):
         types = self.get_push_type()                

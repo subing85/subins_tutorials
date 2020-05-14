@@ -1,0 +1,147 @@
+{
+    "description": "test", 
+    "caption": "batman", 
+    "subfield": "composition", 
+    "standalone": true, 
+    "tag": "character", 
+    "composition": {
+        "model": {
+            "1.0.0": {
+                "model_thumbnail": [
+                    "/venture/shows/batman/assets/batman/model/1.0.0/batman.png"
+                ], 
+                "show": "btm", 
+                "tag": "character", 
+                "table": "table_3", 
+                "application": "maya", 
+                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
+                "model_usd": [
+                    "/venture/shows/batman/assets/batman/model/1.0.0/batman.usd"
+                ], 
+                "location": "/venture/shows/batman/assets/batman/model/1.0.0", 
+                "version": "1.0.0", 
+                "type": "interactive", 
+                "thumbnail": "/venture/shows/batman/assets/batman/model/1.0.0/batman.png", 
+                "studio_model": [
+                    "/venture/shows/batman/assets/batman/model/1.0.0/batman.model"
+                ], 
+                "description": "test 01", 
+                "subfield": "model", 
+                "show_path": "/venture/shows/batman", 
+                "user": "sid", 
+                "model_scene": [
+                    "/venture/shows/batman/assets/batman/model/1.0.0/batman.ma"
+                ], 
+                "caption": "batman", 
+                "standalone": false, 
+                "modified": "2020:13:May-10:53:29:AM", 
+                "pipe": "assets", 
+                "dependency": "0.0.0"
+            }, 
+            "0.0.0": {
+                "model_thumbnail": [
+                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.png"
+                ], 
+                "show": "btm", 
+                "tag": "character", 
+                "table": "table_0", 
+                "application": "maya", 
+                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
+                "model_usd": [
+                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.usd"
+                ], 
+                "location": "/venture/shows/batman/assets/batman/model/0.0.0", 
+                "version": "0.0.0", 
+                "type": "interactive", 
+                "thumbnail": "/venture/shows/batman/assets/batman/model/0.0.0/batman.png", 
+                "studio_model": [
+                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.model"
+                ], 
+                "description": "test publish", 
+                "subfield": "model", 
+                "show_path": "/venture/shows/batman", 
+                "user": "sid", 
+                "model_scene": [
+                    "/venture/shows/batman/assets/batman/model/0.0.0/batman.ma"
+                ], 
+                "caption": "batman", 
+                "standalone": false, 
+                "modified": "2020:13:May-10:52:11:AM", 
+                "pipe": "assets", 
+                "dependency": "None"
+            }
+        }, 
+        "uv": {
+            "1.0.0": {
+                "show": "btm", 
+                "uv_usd": [
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.usd"
+                ], 
+                "tag": "character", 
+                "studio_uv": [
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.uv"
+                ], 
+                "table": "table_2", 
+                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
+                "application": "maya", 
+                "version": "1.0.0", 
+                "location": "/venture/shows/batman/assets/batman/uv/1.0.0", 
+                "type": "interactive", 
+                "thumbnail": "/venture/shows/batman/assets/batman/uv/1.0.0/batman.png", 
+                "description": "test uv 02", 
+                "subfield": "uv", 
+                "show_path": "/venture/shows/batman", 
+                "user": "sid", 
+                "caption": "batman", 
+                "uv_thumbnail": [
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.png"
+                ], 
+                "standalone": false, 
+                "modified": "2020:13:May-10:53:02:AM", 
+                "pipe": "assets", 
+                "dependency": "0.0.0", 
+                "uv_scene": [
+                    "/venture/shows/batman/assets/batman/uv/1.0.0/batman.ma"
+                ]
+            }, 
+            "0.0.0": {
+                "show": "btm", 
+                "uv_usd": [
+                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.usd"
+                ], 
+                "tag": "character", 
+                "studio_uv": [
+                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.uv"
+                ], 
+                "table": "table_1", 
+                "source": "/venture/shows/assets/Batman Rig 1.0.0 for Maya/batman_02.mb", 
+                "application": "maya", 
+                "version": "0.0.0", 
+                "location": "/venture/shows/batman/assets/batman/uv/0.0.0", 
+                "type": "interactive", 
+                "thumbnail": "/venture/shows/batman/assets/batman/uv/0.0.0/batman.png", 
+                "description": "test uv", 
+                "subfield": "uv", 
+                "show_path": "/venture/shows/batman", 
+                "user": "sid", 
+                "caption": "batman", 
+                "uv_thumbnail": [
+                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.png"
+                ], 
+                "standalone": false, 
+                "modified": "2020:13:May-10:52:45:AM", 
+                "pipe": "assets", 
+                "dependency": "0.0.0", 
+                "uv_scene": [
+                    "/venture/shows/batman/assets/batman/uv/0.0.0/batman.ma"
+                ]
+            }
+        }
+    }, 
+    "application": "pixar", 
+    "version": "0.0.0", 
+    "source": null, 
+    "dependency": null, 
+    "type": "interactive", 
+    "thumbnail": "/tmp/thumbnail_2020_13_May_Wednesday_10_58_04_AM.png"
+}

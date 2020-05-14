@@ -20,6 +20,7 @@ from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPush
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
+from studio_usd_pipe.api import studioInputs
 
 
 class Window(QtWidgets.QMainWindow):
@@ -432,6 +433,8 @@ class Window(QtWidgets.QMainWindow):
             version_item = swidgets.add_treewidget_item(subfield_item, item.text(0), icon='version')
             self.input_items.setdefault(version_item, item)
             version_item.setStatusTip(0, str(contents))
+            # print json.dumps(contents, indent=4)
+
             brush = QtGui.QBrush(QtGui.QColor(255, 0, 255))
             item.setForeground(0, brush)
             item.setDisabled(True)
@@ -534,8 +537,22 @@ class Window(QtWidgets.QMainWindow):
             for child in range(parent_item.childCount()):
                 child_item = parent_item.child(child)
                 contents = ast.literal_eval(child_item.statusTip(0))
-                composition_data[parent_item.text(0)].setdefault(child_item.text(0), contents)
+                current_usd = self.find_usd_inputs(contents)
+                composition_data[parent_item.text(0)].setdefault(child_item.text(0), current_usd)
         return composition_data
+    
+    def find_usd_inputs(self, input_data):       
+        inputs = studioInputs.Inputs(self.pipe, self.application)
+        usd_extractor_keys = inputs.get_usd_extractor_keys()
+        subfield = input_data['subfield']
+        if subfield not in usd_extractor_keys:
+            return None       
+        if usd_extractor_keys[subfield] not in input_data:
+            return None
+        current_usd = input_data[usd_extractor_keys[subfield]]
+        if not current_usd:
+            return None       
+        return current_usd[0]
     
     def get_pipe_data(self, caption):
         pipe_data = {}
@@ -546,21 +563,6 @@ class Window(QtWidgets.QMainWindow):
         pipe_data['source'] = None
         pipe_data['dependency'] = None   
         return pipe_data    
-    
-    def show_primary_data(self, data):
-        print '\n#header: inputs'
-        primary_data = {}
-        for k, v in data.items():            
-            if k == 'composition':
-                primary_data.setdefault(k, {})
-                for subfield, versions in v.items():
-                    primary_data[k].setdefault(subfield, {})
-                    for version, contents in versions.items():
-                        primary_data[k][subfield].setdefault(
-                            version, contents['location'])
-            else:
-                primary_data.setdefault(k, v)
-        print json.dumps(primary_data, indent=4)
 
     def publish(self):       
         widget_data = self.get_widget_data()
@@ -576,11 +578,7 @@ class Window(QtWidgets.QMainWindow):
         input_data['subfield'] = self.subfield
         input_data.update(pipe_data)     
         input_data['composition'] = composition_data        
-        self.show_primary_data(input_data)
-        
-        print '..........................'
-        print json.dumps(input_data, indent=4)
-        
+
         push = studioPush.Push(self.current_show, self.pipe)        
         valid, message = push.do_publish(repair=True, **input_data)
         

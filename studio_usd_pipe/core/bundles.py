@@ -12,7 +12,7 @@ class Bundles(object):
     
     def __init__(self, application, types, subfield):
         self.bundle_path = resource.getBundlePath(application, types, subfield)
-        print 'self.bundle_path', self.bundle_path
+        # print 'self.bundle_path', self.bundle_path
         self.container = {}  # execute = self.container[0] repair = self.container[1]
         
     def is_valid(self):

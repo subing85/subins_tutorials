@@ -1,0 +1,10 @@
+#usda 1.0
+(
+    subLayers = [
+        @/venture/shows/batman/assets/batman/model/4.0.0/batman.usd@,
+        @/venture/shows/batman/assets/batman/uv/1.0.0/batman.usd@,
+        @/venture/shows/batman/assets/batman/shader/2.0.0/batman.usd@,
+        @/venture/shows/batman/assets/batman/shader/1.0.0/batman.usd@
+    ]
+)
+

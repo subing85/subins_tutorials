@@ -14,6 +14,7 @@ from studio_usd_pipe.core import swidgets
 
 from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPipe
+from studio_usd_pipe.api import studioEnviron
 
 import json
 
@@ -129,6 +130,18 @@ class Window(QtWidgets.QMainWindow):
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.combobox_pipe.addItem(icon, pipe)
+        current_show = self.combobox_show.currentText().encode()
+        environ = studioEnviron.Environ(current_show)
+        show_icon, valid = environ.get_environ_value('SHOW_ICON')
+        if not show_icon:
+            show_icon = os.path.join(resource.getIconPath(), 'show.png')
+        size = self.button_show.minimumSize()
+        swidgets.image_to_button(
+            self.button_show,
+            size.width(),
+            size.height(),
+            path=show_icon
+            )              
             
     def set_current_pipe(self):
         self.treewidget.clear()       
@@ -157,6 +170,9 @@ class Window(QtWidgets.QMainWindow):
                         ['version', version]
                         ]                    
                     publish_data[caption][subfiled][version].pop('version')
+                    publish_data[caption][subfiled][version].pop('subfield')
+                    publish_data[caption][subfiled][version].pop('caption')
+                    
                     version_contents = sorted(publish_data[caption][subfiled][version].keys())
                     for each in version_contents:
                         column_items.append([each, publish_data[caption][subfiled][version][each]])
@@ -166,8 +182,8 @@ class Window(QtWidgets.QMainWindow):
                         publish_data[caption][subfiled][version]['table'],
                         publish_data[caption][subfiled][version]['location'],
                         version,
-                        publish_data[caption][subfiled][version]['subfield'],
-                        publish_data[caption][subfiled][version]['caption'],
+                        subfiled,
+                        caption,
                         ]
                     version_item.setStatusTip(0, str(table_data))
                     index+=1

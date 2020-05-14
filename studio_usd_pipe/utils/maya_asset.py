@@ -431,6 +431,7 @@ def create_puppet_maya(output_path):
 
 
 def find_asset_usd_inputs(**kwargs):
+
     
     subfileds = ['model']
     pass
@@ -441,5 +442,5 @@ def create_asset_usd_composition():
 
         
 
-# find_asset_usd_inputs()
+find_asset_usd_inputs()
 
