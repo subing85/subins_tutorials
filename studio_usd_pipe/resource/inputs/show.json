@@ -53,9 +53,9 @@
 				"type": "list",
 				"value": [
 					"/usr/bin",
-					"/usr/local/usd/maya2018/pixar/19.05/lib",
-					"/usr/local/usd/maya2018/pixar/19.05/bin",
-					"/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib"
+					"/usr/usd/maya2018/pixar/19.05/lib",
+					"/usr/usd/maya2018/pixar/19.05/bin",
+					"/usr/usd/maya2018/pixar/19.05/third_party/maya/lib"
 					],			
 				"label": "OS Path",
 				"description": "Browse your os bin path",
@@ -73,7 +73,7 @@
 				"type": "list",
 				"value": [
 					"/venture/source_code/subins-toolkits/",
-					"/usr/local/usd/maya2018/pixar/19.05/lib/python/"
+					"/usr/usd/maya2018/pixar/19.05/lib/python/"
 					],						
 				"label": "Aditional python path",
 				"description": "Browse your aditional python directory",
@@ -110,7 +110,7 @@
 				"icon": { 
 					"order": 3,				
 					"type": "path",
-					"value": "/venture/icons/maya2018.png",
+					"value": "/venture/source_code/icons/maya2018.png",
 					"label": "Maya icon",
 					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
 					"description": "Browse your maya icon directory",
@@ -121,7 +121,8 @@
 					"type": "list",
 					 "value": [
 						"/venture/source_code/subins_tutorials/studio_usd_pipe/plug-in/maya/",
-						"/usr/local/usd/maya2018/pixar/19.05/third_party/maya/plugin/"
+						"/usr/usd/maya2018/pixar/19.05/third_party/maya/plugin/",
+						"/opt/pixar/RenderManForMaya-23.2/plug-ins/"						
 						],
 					"label": "Aditional plugin path",
 					"description": "Browse your aditional plugin directory",
@@ -132,8 +133,8 @@
 					"type": "list",
 					"value": [
 						"/venture/source_code/subins-toolkits/",
-						"/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/",
-						"/usr/local/usd/maya2018/pixar/19.05/third_party/maya/plugin/pxrUsdPreviewSurface/resources/"						
+						"/usr/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/",
+						"/usr/usd/maya2018/pixar/19.05/third_party/maya/plugin/pxrUsdPreviewSurface/resources/"						
 						],
 					"label": "Aditional script path",
 					"description": "Browse your aditional script directory",
@@ -144,7 +145,7 @@
 					"order": 6,				
 					"type": "list",
 					"value": [
-						"/usr/local/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/"
+						"/usr/usd/maya2018/pixar/19.05/third_party/maya/lib/usd/usdMaya/resources/"
 						],
 					"label": "Aditional script path",
 					"description": "Browse your aditional xbmlang path",
@@ -182,7 +183,7 @@
 				"icon": { 
 					"order": 3,				
 					"type": "path",
-					"value": "/venture/icons/katana3.2.3.png",
+					"value": "/venture/source_code/icons/katana3.2.3.png",
 					"label": "Katana icon",
 					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
 					"description": "Browse your katana icon directory",
@@ -219,7 +220,7 @@
 				"icon": { 
 					"order": 3,				
 					"type": "path",
-					"value": "/venture/icons/nuke.png",
+					"value": "/venture/source_code/icons/nuke.png",
 					"label": "Nuke icon",
 					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
 					"description": "Browse your nuke icon directory",
@@ -257,7 +258,7 @@
 				"icon": { 
 					"order": 3,				
 					"type": "path",
-					"value": "/venture/icons/natron.png",
+					"value": "/venture/source_code/icons/natron.png",
 					"format": "(*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbn *.xpm)",
 					"label": "Natron icon",
 					"description": "Browse your natron icon directory",

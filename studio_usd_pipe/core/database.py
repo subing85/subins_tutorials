@@ -191,7 +191,6 @@ class DataBase(object):
             logging.warn('OperationalError: {}'.format(str(error)))
         finally:
             self.close(connect)
-        
         return tables
         
     def next_table(self):

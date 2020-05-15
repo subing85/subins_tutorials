@@ -3,6 +3,8 @@ from maya import OpenMaya
 from studio_usd_pipe import resource
 
 from studio_usd_pipe.api import studioMaya
+
+reload(studioMaya)
 reload(resource)
 
 
@@ -64,10 +66,12 @@ class Nurbscurve(studioMaya.Maya):
         if parent:
             children = OpenMaya.MObjectArray()
             for x in range (mfn_dag_node.childCount()): 
+                if not mfn_dag_node.child(x).hasFn(OpenMaya.MFn.kTransform):
+                    continue              
                 children.append(mfn_dag_node.child(x))                
             for x in range(children.length()):                
-                self.set_parent(children[x], world_node.object())   
-            self.set_parent(world_node.object(), mfn_dag_node.object())
+                self.set_parent(children[x], world_node.parent(0))   
+            self.set_parent(world_node.parent(0), mfn_dag_node.object())
         return world_node
     
     def validate_curve(self, mfn_curve, knots, num_cvs):
@@ -120,11 +124,6 @@ class Nurbscurve(studioMaya.Maya):
         mplug_y.setFloat(radius)
         mplug_z.setFloat(radius)
         self.freeze_transformations(mfn_dag_node)
-        
-        import json
-        
-        # print json.dumps(data, indent=4)
-        
         self.set_ktransform(mfn_dag_node.object(), data)  # set position
         return mfn_curve
 

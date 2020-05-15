@@ -43,6 +43,17 @@ def add_treewidget_item(parent, label, icon=None, foreground=None):
     return item
 
 
+def append_treewidget_item(parent, column_items):
+    item = QtWidgets.QTreeWidgetItem (parent)
+    if parent.columnCount()<len(column_items):   
+        parent.setColumnCount(len(column_items))
+    for index, column_item in enumerate(column_items):
+        parent.headerItem().setText(index, column_item[0])
+        item.setText (index, str(column_item[1]))
+    return item
+   
+
+
 def update_treewidget_item_icon(item, icon_name):
     icon_path = os.path.join(resource.getIconPath(), '{}.png'.format(icon_name))
     icon = QtGui.QIcon ()
@@ -115,7 +126,9 @@ def set_header(layout, show_icon=None): #**
 def set_icons(mainwindow=None, widgets=None): #**
     if mainwindow:
         icon = QtGui.QIcon()
-        name = mainwindow.objectName().split('_')[-1]
+        split = mainwindow.objectName().split('_')[1:]
+        name = '_'.join(split)
+        
         icon.addPixmap(QtGui.QPixmap(os.path.join(resource.getIconPath(), '%s.png' % name)))
         mainwindow.setWindowIcon(icon)
     if widgets:

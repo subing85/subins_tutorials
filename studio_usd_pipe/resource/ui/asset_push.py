@@ -84,7 +84,7 @@ class Window(QtWidgets.QWidget):
         self.label_source = QtWidgets.QLabel()
         self.label_source.setObjectName('label_source')
         self.label_source.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.label_source.setStyleSheet('font: 12pt;')
+        self.label_source.setStyleSheet('font: 8pt;')
         self.label_source.setText(source_file)
         self.label_source.setToolTip(None)
         self.label_source.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)        
@@ -545,6 +545,7 @@ class Window(QtWidgets.QWidget):
         input_data['standalone'] = self.standalone
         input_data['application'] = self.application
         print json.dumps(input_data, indent=4)
+
         push = studioPush.Push(self.current_show, self.pipe)
         if self.standalone:
             valid, message = push.do_standalone_publish(repair=True, **input_data)

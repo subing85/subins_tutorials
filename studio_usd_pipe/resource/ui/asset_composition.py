@@ -16,12 +16,11 @@ from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
 from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
-# from studio_usd_pipe.utils import maya_asset
 from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPush
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
-from PySide2.QtWidgets import QWidget
+from studio_usd_pipe.api import studioInputs
 
 
 class Window(QtWidgets.QMainWindow):
@@ -34,7 +33,7 @@ class Window(QtWidgets.QMainWindow):
         self.application = application
         self.pipe = 'assets'
         self.title = 'Asset USD Publish/Push'
-        self.subfield = 'usd'
+        self.subfield = 'composition'
         self.width = 572
         self.height = 900
         self.input_items = {}
@@ -213,30 +212,129 @@ class Window(QtWidgets.QMainWindow):
         # self.treewidget_input.itemClicked.connect (self.current_item_select)
         # self.treewidget_input.currentItemChanged.connect (self.current_item_select)        
                 
-        self.horizontallayout_main.addWidget(self.treewidget_input)         
+        self.horizontallayout_main.addWidget(self.treewidget_input)     
         
-        self.horizontallayout_button = QtWidgets.QHBoxLayout()
-        self.horizontallayout_button.setObjectName('horizontallayout_button')
-        self.horizontallayout_button.setSpacing(10)
-        self.horizontallayout_button.setContentsMargins(5, 5, 5, 5)        
-        self.verticallayout.addLayout(self.horizontallayout_button)  
-        spacer_item = QtWidgets.QSpacerItem(
+        
+        
+        
+        self.gridlayout_data = QtWidgets.QGridLayout(self.groupbox_data)
+        self.gridlayout_data.setObjectName('gridlayout_data')
+        self.gridlayout_data.setHorizontalSpacing(5)
+        self.gridlayout_data.setContentsMargins(5, 5, 5, 5)
+        right_align = QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        self.label_captions = QtWidgets.QLabel(self.groupbox_data)
+        self.label_captions.setObjectName('label_captions')
+        self.label_captions.setText('caption: ')
+        self.label_captions.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_captions, 0, 0, 1, 1)        
+        self.label_caption = QtWidgets.QLabel(self.groupbox_data)
+        self.label_caption.setObjectName('label_caption')
+        self.gridlayout_data.addWidget(self.label_caption, 0, 1, 1, 1)        
+        self.label_tags = QtWidgets.QLabel(self.groupbox_data)
+        self.label_tags.setObjectName('label_tags')
+        self.label_tags.setText('tag: ')
+        self.label_tags.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_tags, 1, 0, 1, 1)        
+        self.label_tag = QtWidgets.QLabel(self.groupbox_data)
+        self.label_tag.setObjectName('label_tag')
+        self.gridlayout_data.addWidget(self.label_tag, 1, 1, 1, 1)     
+        self.label_types = QtWidgets.QLabel(self.groupbox_data)
+        self.label_types.setObjectName('label_types')
+        self.label_types.setText('type: ')
+        self.label_types.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_types, 2, 0, 1, 1)        
+        self.label_type = QtWidgets.QLabel(self.groupbox_data)
+        self.label_type.setObjectName('label_type')
+        self.gridlayout_data.addWidget(self.label_type, 2, 1, 1, 1)  
+        self.label_users = QtWidgets.QLabel(self.groupbox_data)
+        self.label_users.setObjectName('label_users')
+        self.label_users.setText('owner: ')
+        self.label_users.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_users, 3, 0, 1, 1)        
+        self.label_user = QtWidgets.QLabel(self.groupbox_data)
+        self.label_user.setObjectName('label_user')           
+        self.gridlayout_data.addWidget(self.label_user, 3, 1, 1, 1) 
+        self.label_modifieds = QtWidgets.QLabel(self.groupbox_data)
+        self.label_modifieds.setObjectName('label_modifieds')
+        self.label_modifieds.setText('modified: ')
+        self.label_modifieds.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_modifieds, 4, 0, 1, 1)        
+        self.label_modified = QtWidgets.QLabel(self.groupbox_data)
+        self.label_modified.setObjectName('label_modified')
+        self.gridlayout_data.addWidget(self.label_modified, 4, 1, 1, 1)
+        self.label_showpaths = QtWidgets.QLabel(self.groupbox_data)
+        self.label_showpaths.setObjectName('label_dates')
+        self.label_showpaths.setText('show path: ')
+        self.label_showpaths.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_showpaths, 5, 0, 1, 1)        
+        self.label_showpath = QtWidgets.QLabel(self.groupbox_data)
+        self.label_showpath.setObjectName('label_showpath')
+        self.gridlayout_data.addWidget(self.label_showpath, 5, 1, 1, 1)        
+        self.label_locations = QtWidgets.QLabel(self.groupbox_data)
+        self.label_locations.setObjectName('label_locations')
+        self.label_locations.setText('location: ')
+        self.label_locations.setAlignment(right_align)
+        self.gridlayout_data.addWidget(self.label_locations, 6, 0, 1, 1)        
+        self.label_location = QtWidgets.QLabel(self.groupbox_data)
+        self.label_location.setObjectName('label_location')
+        self.gridlayout_data.addWidget(self.label_location, 6, 1, 1, 1)
+        self.label_description = QtWidgets.QLabel(self.groupbox_data)
+        self.label_description.setObjectName('label_description')
+        self.label_description.setText('Description')
+        self.gridlayout_data.addWidget(self.label_description, 7, 0, 1, 1)        
+        self.textedit_description = QtWidgets.QTextEdit(self.groupbox_data)
+        self.textedit_description.setObjectName('textedit_description')
+        self.textedit_description.setReadOnly(True)
+        self.textedit_description.setMinimumSize(QtCore.QSize(256, 0))
+        self.textedit_description.setMaximumSize(QtCore.QSize(256, 16777215))
+        self.gridlayout_data.addWidget(self.textedit_description, 8, 0, 1, 2)   
+        self.button_thumbnail = QtWidgets.QPushButton(self.groupbox_data)
+        self.button_thumbnail.setObjectName('button_thumbnail')
+        self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
+        self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
+        self.gridlayout_data.addWidget(self.button_thumbnail, 9, 0, 1, 2)  
+                
+        
+        self.horizontallayout_create = QtWidgets.QHBoxLayout(self)
+        self.horizontallayout_create.setObjectName('horizontallayout_toolbar')
+        self.verticallayout_item.addLayout(self.horizontallayout_create)    
+        
+        spaceritem = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontallayout_button.addItem(spacer_item)
-        self.button_cancel = QtWidgets.QPushButton(self)
-        self.button_cancel.setObjectName('button_cancel')
-        self.button_cancel.setText('Cancel')
-        self.horizontallayout_button.addWidget(self.button_cancel)
-        self.button_publish = QtWidgets.QPushButton(self)
-        self.button_publish.setObjectName('button_create')
-        self.button_publish.setText('Publish')
-        self.horizontallayout_button.addWidget(self.button_publish)
-        spacer_item = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
-        self.combobox_caption.editTextChanged.connect(self.set_current_caption)
-        self.combobox_version.currentIndexChanged.connect(self.set_current_version)
-        self.button_publish.clicked.connect(self.publish)        
-        self.button_cancel.clicked.connect(self.close)     
+        self.horizontallayout_create.addItem(spaceritem)
+                
+        self.button_create = QtWidgets.QPushButton(self)
+        self.button_create.setObjectName("button_create")
+        self.button_create.setText("Create")
+        
+        self.horizontallayout_create.addWidget(self.button_create)
+
+            
+        
+        #=======================================================================
+        # self.horizontallayout_button = QtWidgets.QHBoxLayout()
+        # self.horizontallayout_button.setObjectName('horizontallayout_button')
+        # self.horizontallayout_button.setSpacing(10)
+        # self.horizontallayout_button.setContentsMargins(5, 5, 5, 5)        
+        # self.verticallayout.addLayout(self.horizontallayout_button)  
+        # spacer_item = QtWidgets.QSpacerItem(
+        #     40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        # self.horizontallayout_button.addItem(spacer_item)
+        # self.button_cancel = QtWidgets.QPushButton(self)
+        # self.button_cancel.setObjectName('button_cancel')
+        # self.button_cancel.setText('Cancel')
+        # self.horizontallayout_button.addWidget(self.button_cancel)
+        # self.button_publish = QtWidgets.QPushButton(self)
+        # self.button_publish.setObjectName('button_create')
+        # self.button_publish.setText('Publish')
+        # self.horizontallayout_button.addWidget(self.button_publish)
+        # spacer_item = QtWidgets.QSpacerItem(
+        #     20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
+        # self.combobox_caption.editTextChanged.connect(self.set_current_caption)
+        # self.combobox_version.currentIndexChanged.connect(self.set_current_version)
+        # self.button_publish.clicked.connect(self.publish)        
+        # self.button_cancel.clicked.connect(self.close)     
+        #=======================================================================
                                 
     def setup_menu(self):        
         self.menu = QtWidgets.QMenu(self)
@@ -328,15 +426,13 @@ class Window(QtWidgets.QMainWindow):
         return config.version, config.pretty                        
            
     def on_context_menu(self, widget, point):
-        
         if isinstance(widget, QtWidgets.QPushButton):
             self.set_menu_options(widget)
             self.menu.exec_(widget.mapToGlobal(point))
-            
             return
         index = widget.indexAt(point)
         if not index.isValid():
-            return        
+            return      
         current_item = widget.selectedItems()[-1]       
         contents = current_item.statusTip(0)
         if not contents:
@@ -389,7 +485,7 @@ class Window(QtWidgets.QMainWindow):
             for each in versions:
                 cuttrent_tag = contents[subfield][each]['tag']
                 version_item = swidgets.add_treewidget_item(
-                    subfield_item, each, icon=cuttrent_tag, foreground=(0, 0, 0))
+                    subfield_item, each, icon=cuttrent_tag, foreground=(192, 0, 0))
                 more_contents = self.spipe.get_more_data(caption, each, subfield)
                 ver_contents = copy.deepcopy(contents[subfield][each])
                 ver_contents.update(more_contents)
@@ -436,8 +532,9 @@ class Window(QtWidgets.QMainWindow):
             version_item = swidgets.add_treewidget_item(subfield_item, item.text(0), icon='version')
             self.input_items.setdefault(version_item, item)
             version_item.setStatusTip(0, str(contents))
+            # print json.dumps(contents, indent=4)
+
             brush = QtGui.QBrush(QtGui.QColor(255, 0, 255))
-            brush.setStyle(QtCore.Qt.NoBrush)
             item.setForeground(0, brush)
             item.setDisabled(True)
             to_widget.setItemExpanded(subfield_item, 1)
@@ -445,14 +542,23 @@ class Window(QtWidgets.QMainWindow):
             
     def remove_from_composition(self, from_widget, to_widget):
         current_items = from_widget.selectedItems()
-        widget_item = from_widget.invisibleRootItem()
         for item in current_items: 
-            widget_item.removeChild(item)
-            brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+            item.parent().removeChild(item)
+            from_widget.removeItemWidget(item, 0)
+            brush = QtGui.QBrush(QtGui.QColor(192, 0, 0))
             brush.setStyle(QtCore.Qt.NoBrush)
             self.input_items[item].setForeground(0, brush)
             self.input_items[item].setDisabled(False)
             self.input_items.pop(item)
+        widget_item = from_widget.invisibleRootItem()
+        for parent in range (widget_item.childCount()):
+            parent_item = widget_item.child(parent)
+            if not parent_item:
+                continue
+            if parent_item.childCount() > 0:
+                continue
+            widget_item.removeChild(parent_item)
+            from_widget.removeItemWidget(parent_item, 0)            
  
     def load_image_file(self):
         current_file = swidgets.brows_file(
@@ -530,8 +636,22 @@ class Window(QtWidgets.QMainWindow):
             for child in range(parent_item.childCount()):
                 child_item = parent_item.child(child)
                 contents = ast.literal_eval(child_item.statusTip(0))
-                composition_data[parent_item.text(0)].setdefault(child_item.text(0), contents)
+                current_usd = self.find_usd_inputs(contents)
+                composition_data[parent_item.text(0)].setdefault(child_item.text(0), current_usd)
         return composition_data
+    
+    def find_usd_inputs(self, input_data):       
+        inputs = studioInputs.Inputs(self.pipe, self.application)
+        usd_extractor_keys = inputs.get_usd_extractor_keys()
+        subfield = input_data['subfield']
+        if subfield not in usd_extractor_keys:
+            return None       
+        if usd_extractor_keys[subfield] not in input_data:
+            return None
+        current_usd = input_data[usd_extractor_keys[subfield]]
+        if not current_usd:
+            return None       
+        return current_usd[0]
     
     def get_pipe_data(self, caption):
         pipe_data = {}
@@ -542,21 +662,6 @@ class Window(QtWidgets.QMainWindow):
         pipe_data['source'] = None
         pipe_data['dependency'] = None   
         return pipe_data    
-    
-    def show_primary_data(self, data):
-        print '\n#header: inputs'
-        primary_data = {}
-        for k, v in data.items():            
-            if k == 'composition':
-                primary_data.setdefault(k, {})
-                for subfield, versions in v.items():
-                    primary_data[k].setdefault(subfield, {})
-                    for version, contents in versions.items():
-                        primary_data[k][subfield].setdefault(
-                            version, contents['location'])
-            else:
-                primary_data.setdefault(k, v)
-        print json.dumps(primary_data, indent=4)
 
     def publish(self):       
         widget_data = self.get_widget_data()
@@ -572,8 +677,7 @@ class Window(QtWidgets.QMainWindow):
         input_data['subfield'] = self.subfield
         input_data.update(pipe_data)     
         input_data['composition'] = composition_data        
-        self.show_primary_data(input_data)
-        # print json.dumps(input_data, indent=4)
+
         push = studioPush.Push(self.current_show, self.pipe)        
         valid, message = push.do_publish(repair=True, **input_data)
         
@@ -589,6 +693,6 @@ class Window(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = Window(parent=None, standalone=True, application='maya')
+    window = Window(parent=None, standalone=True, application='pixar')
     window.show()
     sys.exit(app.exec_())       

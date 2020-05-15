@@ -100,8 +100,6 @@ class Show(object):
     def get_applications_data(self, application_type):        
         application_name = '%s_application'%application_type        
         applications_path = resource.getApplicationsPath(application_type)
-        
-        print applications_path
         module_data = common.get_modules(
             applications_path, module_types=[application_name])
         if not module_data:
@@ -288,8 +286,10 @@ class Show(object):
         # communicate = popen.communicate()
         #=======================================================================
 
-import json
-my = Show()
-d = my.get_build_in_applications()  
-print json.dumps(d, indent=4)
+#===============================================================================
+# import json
+# my = Show()
+# d = my.get_build_in_applications()  
+# print json.dumps(d, indent=4)
+#===============================================================================
       

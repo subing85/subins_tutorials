@@ -71,6 +71,8 @@ def get_modules(dirname, module_types=None):  # **
 
 
 def get_module(path):  # **
+    if not os.path.isfile(path):
+        return None
     module = imp.load_source(os.path.basename(path), path)
     if not hasattr(module, 'TYPE'):
         return False
@@ -80,6 +82,10 @@ def get_module(path):  # **
         return False        
     return module
 
+
+def get_dynamic_name():
+    dynamic_name = datetime.now().strftime('%Y_%d_%B_%A_%I_%M_%S_%p')
+    return dynamic_name
 
 def get_modified_date():
     modified = datetime.now().strftime('%Y %d %B %A, %I:%M:%S %p')

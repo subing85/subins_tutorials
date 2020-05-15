@@ -11,6 +11,7 @@ MODIFIED = 'April 14, 2020'
 
 def execute(**kwargs):
     from studio_usd_pipe.utils import maya_asset
+    reload(maya_asset)
     valid, values, message = maya_asset.check_model_hierarchy()
     return valid, values, message
 

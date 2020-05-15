@@ -245,7 +245,7 @@ class Window(QtWidgets.QMainWindow):
         self.menu.exec_(widget.mapToGlobal(point))
         
     def setup_toolbox(self, subfield):
-        pull = studioPull.Pull(self.application, subfield)
+        pull = studioPull.Pull(self.application)
         modules = pull.get_creators()
         if not modules:
             QtWidgets.QMessageBox.critical(
@@ -380,7 +380,7 @@ class Window(QtWidgets.QMainWindow):
             contents = ast.literal_eval(contents)
             print '\n#header: inputs'
             print json.dumps(contents, indent=4)            
-            pull = studioPull.Pull(self.application, contents['subfield'])
+            pull = studioPull.Pull(self.application)
             valid, message = pull.do_pull(module, **contents)
             valids.setdefault(valid, []).append(message)
         if False in valids:

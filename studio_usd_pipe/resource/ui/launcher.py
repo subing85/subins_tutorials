@@ -182,9 +182,6 @@ class Window(QtWidgets.QMainWindow):
         print self.splitter_main.sizes()                  
         print self.splitter_applications.sizes()                  
         print self.splitter_outputs.sizes()   
-        
-        return    
-        
         show_window = show.Window(launcher=self)             
         show_window.show()
         
