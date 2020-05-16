@@ -4,22 +4,25 @@ from studio_usd_pipe.core import common
 from studio_usd_pipe.api import studioShow 
 
 
-def get_shows():
+def get_shows(verbose=False):
     show = studioShow.Show()    
     data = show.get_shows(verbose=False)
     if not data:
         print '#warnings: not found any shows'
         return None
+    if verbose:        
+        for show in data.values():
+            print show
     return data.values()
     
  
-def show_applications(current_show):
+def show_applications(current_show, verbose=False):
     show = studioShow.Show()    
     data = show.get_show_preset_data(current_show)
     if not data:
         return None
-    versions = []
-    for application in ['show_applications', 'common_applications']:
+    versions = []   
+    for application in show.application_types:
         if application not in data:
             continue
         if not data[application]:
@@ -27,7 +30,9 @@ def show_applications(current_show):
         applications = common.sort_dictionary(data[application])
         for each in applications:
             name = [each, data[application][each]['version'][1]]  
-            versions.append(name)    
+            versions.append(name)
+            if verbose:
+                print application.rjust(25), name
     return versions
 
 

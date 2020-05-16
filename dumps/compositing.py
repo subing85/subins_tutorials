@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/publish_02.ui'
+# Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/compositing.ui'
 #
 # Created: Fri May 15 11:48:43 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
@@ -20,26 +20,29 @@ class Ui_MainWindow(object):
         self.splitter = QtGui.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
+        self.gridLayoutWidget = QtGui.QWidget(self.splitter)
+        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
+        self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
+        self.comboBox = QtGui.QComboBox(self.gridLayoutWidget)
+        self.comboBox.setObjectName("comboBox")
+        self.gridLayout.addWidget(self.comboBox, 0, 1, 1, 1)
+        self.label = QtGui.QLabel(self.gridLayoutWidget)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.label_2 = QtGui.QLabel(self.gridLayoutWidget)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
+        self.treeWidget_2 = QtGui.QTreeWidget(self.gridLayoutWidget)
+        self.treeWidget_2.setObjectName("treeWidget_2")
+        self.treeWidget_2.headerItem().setText(0, "1")
+        self.gridLayout.addWidget(self.treeWidget_2, 1, 1, 1, 1)
         self.treeWidget = QtGui.QTreeWidget(self.splitter)
         self.treeWidget.setObjectName("treeWidget")
         self.treeWidget.headerItem().setText(0, "1")
-        self.widget = QtGui.QWidget(self.splitter)
-        self.widget.setObjectName("widget")
-        self.verticalLayout_input = QtGui.QVBoxLayout(self.widget)
-        self.verticalLayout_input.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_input.setObjectName("verticalLayout_input")
-        self.groupBox = QtGui.QGroupBox(self.widget)
+        self.groupBox = QtGui.QGroupBox(self.splitter)
         self.groupBox.setObjectName("groupBox")
-        self.comboBox = QtGui.QComboBox(self.groupBox)
-        self.comboBox.setGeometry(QtCore.QRect(70, 70, 92, 26))
-        self.comboBox.setObjectName("comboBox")
-        self.verticalLayout_input.addWidget(self.groupBox)
-        self.groupBox_2 = QtGui.QGroupBox(self.widget)
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.comboBox_2 = QtGui.QComboBox(self.groupBox_2)
-        self.comboBox_2.setGeometry(QtCore.QRect(130, 110, 92, 26))
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.verticalLayout_input.addWidget(self.groupBox_2)
         self.verticalLayout.addWidget(self.splitter)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -55,6 +58,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "GroupBox", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("MainWindow", "GroupBox", None, QtGui.QApplication.UnicodeUTF8))
 

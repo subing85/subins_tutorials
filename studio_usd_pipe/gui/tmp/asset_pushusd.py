@@ -3,7 +3,7 @@
 import sys
 from PySide2 import QtWidgets
 
-from studio_usd_pipe.patch.utils import smaya
+from studio_usd_pipe.snippet.utils import smaya
 from studio_usd_pipe.resource.ui import asset_composition
 reload(asset_composition)
 

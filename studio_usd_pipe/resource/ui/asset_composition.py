@@ -21,21 +21,21 @@ from studio_usd_pipe.api import studioPush
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
 from studio_usd_pipe.api import studioInputs
+from studio_usd_pipe.resource.ui import catalogue
 
 
 class Window(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None, standalone=None, application=None):  
-        super(Window, self).__init__(parent)
-        
+        super(Window, self).__init__(parent)        
         self.setWindowFlags(QtCore.Qt.Window) 
         self.standalone = standalone
         self.application = application
-        self.pipe = 'assets'
         self.title = 'Asset USD Publish/Push'
         self.subfield = 'composition'
-        self.width = 572
-        self.height = 900
+        self.width = 1029
+        self.height = 883
+        self.pipe = 'assets'        
         self.input_items = {}
         self.d_rgb = (0, 0, 0)
         self.version, self.label = self.set_tool_context() 
@@ -44,297 +44,178 @@ class Window(QtWidgets.QMainWindow):
         self.current_show = 'btm'  # to remove
         self.environ = studioEnviron.Environ(self.current_show)
         self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
-        
-        self.source_maya = None
-        self.asset_ids = {}
-        
+        self.comp_catalogue = catalogue.Catalogue()
         self.setup_ui()
         self.setup_menu()
         self.setup_icons()
         self.set_default()
         
     def setup_ui(self):
-        self.setObjectName('mainwindow_pullusd')
+        self.setObjectName('mainwindow_asset_composition')
         self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
         self.resize(self.width, self.height)
-
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)
-        
         self.verticallayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(0)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)  
-        
         self.groupbox = QtWidgets.QGroupBox(self)
         self.groupbox.setObjectName('groupbox_asset')
         self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))          
         self.verticallayout.addWidget(self.groupbox)
-        
         self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
         self.verticallayout_item.setObjectName('verticallayout_item')
         self.verticallayout_item.setSpacing(10)
         self.verticallayout_item.setContentsMargins(5, 5, 5, 5)            
-        
         self.horizontallayout = QtWidgets.QHBoxLayout()
         self.horizontallayout.setSpacing(10)
         self.horizontallayout.setContentsMargins(5, 5, 5, 5)
         self.horizontallayout.setObjectName('horizontallayout_output')
         self.verticallayout_item.addLayout(self.horizontallayout)
-        
         self.button_logo, self.button_show = swidgets.set_header(
             self.horizontallayout, show_icon=None) 
-        
         self.line = QtWidgets.QFrame(self)
         self.line.setObjectName('line')        
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.verticallayout_item.addWidget(self.line)
-
-        self.horizontallayout_main = QtWidgets.QHBoxLayout()
-        self.horizontallayout_main.setObjectName('horizontallayout_main')
-        self.verticallayout_item.addLayout(self.horizontallayout_main)
-       
-        self.gridlayout = QtWidgets.QGridLayout()
+        self.splitter = QtWidgets.QSplitter(self)
+        self.splitter.setObjectName("splitter")        
+        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.verticallayout_item.addWidget(self.splitter)
+        self.layout_widget = QtWidgets.QWidget(self.splitter)
+        self.layout_widget.setObjectName("layout_widget")        
+        self.gridlayout = QtWidgets.QGridLayout(self.layout_widget)
         self.gridlayout.setObjectName('gridlayout')
-        self.horizontallayout_main.addLayout(self.gridlayout)               
-        
-        self.label_caption = QtWidgets.QLabel(self.groupbox)
+        self.label_caption = QtWidgets.QLabel(self)
         self.label_caption.setObjectName('label_caption')
         self.label_caption.setText('Caption')
         self.label_caption.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_caption, 0, 0, 1, 1)
-        self.combobox_caption = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_caption = QtWidgets.QComboBox(self)
         self.combobox_caption.setObjectName('combobox_caption')
         self.combobox_caption.setEditable(True)
         self.combobox_caption.setEnabled(True)
         self.combobox_caption.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
-        self.gridlayout.addWidget(self.combobox_caption, 0, 1, 1, 1)   
-        
-        self.label_composition = QtWidgets.QLabel(self.groupbox)
+        self.gridlayout.addWidget(self.combobox_caption, 0, 1, 1, 1) 
+        self.label_composition = QtWidgets.QLabel(self)
         self.label_composition.setObjectName('label_composition')
         self.label_composition.setText('Composition')
         self.label_composition.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_composition, 2, 0, 1, 1)
-        
         self.treewidget_composition = QtWidgets.QTreeWidget(self)
         self.treewidget_composition.setObjectName('treewidget_composition')
         self.treewidget_composition.header().setVisible(False)
         self.treewidget_composition.setStyleSheet('font: 9pt \'Sans Serif\';')
         self.treewidget_composition.setAlternatingRowColors(True)   
-        # self.treewidget_composition.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-                     
+        self.treewidget_composition.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.treewidget_composition.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)        
         self.treewidget_composition.customContextMenuRequested.connect(
             partial(self.on_context_menu, self.treewidget_composition))                 
-        
         self.gridlayout.addWidget(self.treewidget_composition, 2, 1, 1, 1)
-                
-        self.label_thumbnail = QtWidgets.QLabel(self.groupbox)
+        self.label_thumbnail = QtWidgets.QLabel(self)
         self.label_thumbnail.setObjectName('label_thumbnail')
         self.label_thumbnail.setText('Thumbnail')
         self.label_thumbnail.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_thumbnail, 3, 0, 1, 1)
-        self.button_thumbnail = QtWidgets.QPushButton(self.groupbox)
+        self.button_thumbnail = QtWidgets.QPushButton(self)
         self.button_thumbnail.setObjectName('button_thumbnail')
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.button_thumbnail.setSizePolicy(size_policy)
         self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
         self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
+        screenshot_icon = os.path.join(resource.getIconPath(), 'screenshot.png')
         swidgets.image_to_button(
-            self.button_thumbnail, 256, 180, path=os.path.join(resource.getIconPath(), 'screenshot.png'))
-        
+            self.button_thumbnail,
+            256,
+            180,
+            path=screenshot_icon
+            )
         self.button_thumbnail.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)        
-        self.button_thumbnail.customContextMenuRequested.connect(partial(self.on_context_menu, self.button_thumbnail))  
-                          
+        self.button_thumbnail.customContextMenuRequested.connect(
+            partial(self.on_context_menu, self.button_thumbnail))  
         self.button_thumbnail.clicked.connect(partial(self.take_thumbnail, self.button_thumbnail))
         self.gridlayout.addWidget(self.button_thumbnail, 3, 1, 1, 1)  
-        self.label_description = QtWidgets.QLabel(self.groupbox)
+        self.label_description = QtWidgets.QLabel(self)
         self.label_description.setObjectName('label_description')
         self.label_description.setText('Description')
         self.label_description.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_description, 4, 0, 1, 1)
-        self.textedit_description = QtWidgets.QTextEdit(self.groupbox)
+        self.textedit_description = QtWidgets.QTextEdit(self)
         self.textedit_description.setObjectName('textedit_description')
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.textedit_description.setSizePolicy(size_policy)
         self.textedit_description.setMinimumSize(QtCore.QSize(0, 90))
         self.textedit_description.setMaximumSize(QtCore.QSize(16777215, 90))          
         self.gridlayout.addWidget(self.textedit_description, 4, 1, 1, 1)  
-        self.label_version = QtWidgets.QLabel(self.groupbox)
+        self.label_version = QtWidgets.QLabel(self)
         self.label_version.setObjectName('label_version')
         self.label_version.setText('version')
         self.label_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_version, 5, 0, 1, 1)
-        self.combobox_version = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_version = QtWidgets.QComboBox(self)
         self.combobox_version.setObjectName('combobox_version')
         self.combobox_version.setEditable(True)
         self.combobox_version.setEnabled(True)
         self.combobox_version.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_version, 5, 1, 1, 1)                  
-        self.label_latest_version = QtWidgets.QLabel(self.groupbox)
+        self.label_latest_version = QtWidgets.QLabel(self)
         self.label_latest_version.setObjectName('label_latest_version')
         self.label_latest_version.setText('Latest Version')
         self.label_latest_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_latest_version, 6, 0, 1, 1)
-        self.combobox_latest_version = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_latest_version = QtWidgets.QComboBox(self)
         self.combobox_latest_version.setObjectName('combobox_latest_version')
         self.combobox_latest_version.setEditable(True)
         self.combobox_latest_version.setEnabled(False)
         self.combobox_latest_version.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_latest_version, 6, 1, 1, 1)
-        self.label_next_version = QtWidgets.QLabel(self.groupbox)
+        self.label_next_version = QtWidgets.QLabel(self)
         self.label_next_version.setObjectName('label_next_version')
         self.label_next_version.setText('Next Version')
         self.label_next_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_next_version, 7, 0, 1, 1)
-        self.combobox_next_version = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_next_version = QtWidgets.QComboBox(self)
         self.combobox_next_version.setObjectName('combobox_next_version')
         self.combobox_next_version.setEditable(True)
         self.combobox_next_version.setEnabled(False)
         self.combobox_next_version.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_next_version, 7, 1, 1, 1)  
-        
-        self.treewidget_input = QtWidgets.QTreeWidget(self)
+        self.treewidget_input = QtWidgets.QTreeWidget(self.splitter)
         self.treewidget_input.setObjectName('treewidget_input')
         self.treewidget_input.header().setVisible(False)
-        
-        # self.treewidget_input.headerItem().setText(0, 'Assets')
-        
-        self.treewidget_input.header().resizeSection (0, 250)
         self.treewidget_input.setStyleSheet('font: 12pt \'Sans Serif\';')
         self.treewidget_input.setAlternatingRowColors(True)
         self.treewidget_input.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        
         self.treewidget_input.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)        
         self.treewidget_input.customContextMenuRequested.connect(
             partial(self.on_context_menu, self.treewidget_input))        
-        # self.treewidget_input.itemClicked.connect (self.current_item_select)
-        # self.treewidget_input.currentItemChanged.connect (self.current_item_select)        
-                
-        self.horizontallayout_main.addWidget(self.treewidget_input)     
-        
-        
-        
-        
-        self.gridlayout_data = QtWidgets.QGridLayout(self.groupbox_data)
-        self.gridlayout_data.setObjectName('gridlayout_data')
-        self.gridlayout_data.setHorizontalSpacing(5)
-        self.gridlayout_data.setContentsMargins(5, 5, 5, 5)
-        right_align = QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
-        self.label_captions = QtWidgets.QLabel(self.groupbox_data)
-        self.label_captions.setObjectName('label_captions')
-        self.label_captions.setText('caption: ')
-        self.label_captions.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_captions, 0, 0, 1, 1)        
-        self.label_caption = QtWidgets.QLabel(self.groupbox_data)
-        self.label_caption.setObjectName('label_caption')
-        self.gridlayout_data.addWidget(self.label_caption, 0, 1, 1, 1)        
-        self.label_tags = QtWidgets.QLabel(self.groupbox_data)
-        self.label_tags.setObjectName('label_tags')
-        self.label_tags.setText('tag: ')
-        self.label_tags.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_tags, 1, 0, 1, 1)        
-        self.label_tag = QtWidgets.QLabel(self.groupbox_data)
-        self.label_tag.setObjectName('label_tag')
-        self.gridlayout_data.addWidget(self.label_tag, 1, 1, 1, 1)     
-        self.label_types = QtWidgets.QLabel(self.groupbox_data)
-        self.label_types.setObjectName('label_types')
-        self.label_types.setText('type: ')
-        self.label_types.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_types, 2, 0, 1, 1)        
-        self.label_type = QtWidgets.QLabel(self.groupbox_data)
-        self.label_type.setObjectName('label_type')
-        self.gridlayout_data.addWidget(self.label_type, 2, 1, 1, 1)  
-        self.label_users = QtWidgets.QLabel(self.groupbox_data)
-        self.label_users.setObjectName('label_users')
-        self.label_users.setText('owner: ')
-        self.label_users.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_users, 3, 0, 1, 1)        
-        self.label_user = QtWidgets.QLabel(self.groupbox_data)
-        self.label_user.setObjectName('label_user')           
-        self.gridlayout_data.addWidget(self.label_user, 3, 1, 1, 1) 
-        self.label_modifieds = QtWidgets.QLabel(self.groupbox_data)
-        self.label_modifieds.setObjectName('label_modifieds')
-        self.label_modifieds.setText('modified: ')
-        self.label_modifieds.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_modifieds, 4, 0, 1, 1)        
-        self.label_modified = QtWidgets.QLabel(self.groupbox_data)
-        self.label_modified.setObjectName('label_modified')
-        self.gridlayout_data.addWidget(self.label_modified, 4, 1, 1, 1)
-        self.label_showpaths = QtWidgets.QLabel(self.groupbox_data)
-        self.label_showpaths.setObjectName('label_dates')
-        self.label_showpaths.setText('show path: ')
-        self.label_showpaths.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_showpaths, 5, 0, 1, 1)        
-        self.label_showpath = QtWidgets.QLabel(self.groupbox_data)
-        self.label_showpath.setObjectName('label_showpath')
-        self.gridlayout_data.addWidget(self.label_showpath, 5, 1, 1, 1)        
-        self.label_locations = QtWidgets.QLabel(self.groupbox_data)
-        self.label_locations.setObjectName('label_locations')
-        self.label_locations.setText('location: ')
-        self.label_locations.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_locations, 6, 0, 1, 1)        
-        self.label_location = QtWidgets.QLabel(self.groupbox_data)
-        self.label_location.setObjectName('label_location')
-        self.gridlayout_data.addWidget(self.label_location, 6, 1, 1, 1)
-        self.label_description = QtWidgets.QLabel(self.groupbox_data)
-        self.label_description.setObjectName('label_description')
-        self.label_description.setText('Description')
-        self.gridlayout_data.addWidget(self.label_description, 7, 0, 1, 1)        
-        self.textedit_description = QtWidgets.QTextEdit(self.groupbox_data)
-        self.textedit_description.setObjectName('textedit_description')
-        self.textedit_description.setReadOnly(True)
-        self.textedit_description.setMinimumSize(QtCore.QSize(256, 0))
-        self.textedit_description.setMaximumSize(QtCore.QSize(256, 16777215))
-        self.gridlayout_data.addWidget(self.textedit_description, 8, 0, 1, 2)   
-        self.button_thumbnail = QtWidgets.QPushButton(self.groupbox_data)
-        self.button_thumbnail.setObjectName('button_thumbnail')
-        self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
-        self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
-        self.gridlayout_data.addWidget(self.button_thumbnail, 9, 0, 1, 2)  
-                
-        
-        self.horizontallayout_create = QtWidgets.QHBoxLayout(self)
-        self.horizontallayout_create.setObjectName('horizontallayout_toolbar')
-        self.verticallayout_item.addLayout(self.horizontallayout_create)    
-        
-        spaceritem = QtWidgets.QSpacerItem(
+        self.treewidget_input.currentItemChanged.connect(self.current_catalogue_select)        
+        self.splitter.addWidget(self.comp_catalogue)
+        self.horizontallayout_button = QtWidgets.QHBoxLayout()
+        self.horizontallayout_button.setObjectName('horizontallayout_button')
+        self.horizontallayout_button.setSpacing(10)
+        self.horizontallayout_button.setContentsMargins(5, 5, 5, 5)        
+        self.verticallayout.addLayout(self.horizontallayout_button)  
+        spacer_item = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontallayout_create.addItem(spaceritem)
-                
-        self.button_create = QtWidgets.QPushButton(self)
-        self.button_create.setObjectName("button_create")
-        self.button_create.setText("Create")
-        
-        self.horizontallayout_create.addWidget(self.button_create)
-
-            
-        
-        #=======================================================================
-        # self.horizontallayout_button = QtWidgets.QHBoxLayout()
-        # self.horizontallayout_button.setObjectName('horizontallayout_button')
-        # self.horizontallayout_button.setSpacing(10)
-        # self.horizontallayout_button.setContentsMargins(5, 5, 5, 5)        
-        # self.verticallayout.addLayout(self.horizontallayout_button)  
-        # spacer_item = QtWidgets.QSpacerItem(
-        #     40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        # self.horizontallayout_button.addItem(spacer_item)
-        # self.button_cancel = QtWidgets.QPushButton(self)
-        # self.button_cancel.setObjectName('button_cancel')
-        # self.button_cancel.setText('Cancel')
-        # self.horizontallayout_button.addWidget(self.button_cancel)
-        # self.button_publish = QtWidgets.QPushButton(self)
-        # self.button_publish.setObjectName('button_create')
-        # self.button_publish.setText('Publish')
-        # self.horizontallayout_button.addWidget(self.button_publish)
-        # spacer_item = QtWidgets.QSpacerItem(
-        #     20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
-        # self.combobox_caption.editTextChanged.connect(self.set_current_caption)
-        # self.combobox_version.currentIndexChanged.connect(self.set_current_version)
-        # self.button_publish.clicked.connect(self.publish)        
-        # self.button_cancel.clicked.connect(self.close)     
-        #=======================================================================
+        self.horizontallayout_button.addItem(spacer_item)
+        self.button_cancel = QtWidgets.QPushButton(self)
+        self.button_cancel.setObjectName('button_cancel')
+        self.button_cancel.setText('cancel')
+        self.horizontallayout_button.addWidget(self.button_cancel)
+        self.button_publish = QtWidgets.QPushButton(self)
+        self.button_publish.setObjectName('button_publish')
+        self.button_publish.setText('publish')
+        self.horizontallayout_button.addWidget(self.button_publish)
+        spacer_item = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
+        self.button_cancel.clicked.connect(self.close)     
+        self.button_publish.clicked.connect(self.publish)
+        self.combobox_caption.editTextChanged.connect(self.set_current_caption)
+        self.combobox_version.currentIndexChanged.connect(self.set_current_version)        
+        self.splitter.setSizes ([373, 350, 272])    
                                 
     def setup_menu(self):        
         self.menu = QtWidgets.QMenu(self)
@@ -358,7 +239,6 @@ class Window(QtWidgets.QMainWindow):
             partial(self.add_to_composition, self.treewidget_input, self.treewidget_composition))
         self.action_remove.triggered.connect(
             partial(self.remove_from_composition, self.treewidget_composition, self.treewidget_input))
-        
         self.action_image.triggered.connect(self.load_image_file)
     
     def setup_icons (self):
@@ -448,12 +328,21 @@ class Window(QtWidgets.QMainWindow):
         self.combobox_latest_version.clear()
         self.combobox_next_version.clear()
         self.treewidget_composition.clear()
-        self.treewidget_input.clear() 
-
+        self.treewidget_input.clear()        
+       
+    def current_catalogue_select(self, *args):        
+        if not args[0]:
+            return
+        contents = args[0].statusTip(0)
+        if not contents:
+            self.comp_catalogue.setup_default()
+            return
+        contents = ast.literal_eval(contents)
+        self.comp_catalogue.set_catalogue(**contents)
+        
     def set_current_caption(self):
         caption = self.combobox_caption.currentText()
         self.set_current_version(caption=caption)
-        # self.input_items = {}
         self.load_current_caption(caption)
         
     def set_current_version(self, caption=None):
@@ -473,21 +362,19 @@ class Window(QtWidgets.QMainWindow):
         self.treewidget_composition.clear()            
         self.treewidget_input.clear()            
         contents = self.spipe.get_subfields(caption)
-        valid_subfields = self.spipe.pipe_inputs['subfield']['values']
+        valid_subfields = self.spipe.get_composition_subfields()
         for subfield in valid_subfields:                
             if subfield not in contents:
                 continue
-            if subfield == 'puppet':
-                continue  
             subfield_item = swidgets.add_treewidget_item(self.treewidget_input, subfield, icon=subfield)
             self.treewidget_input.setItemExpanded(subfield_item, 1)            
             versions = common.set_version_order(contents[subfield].keys())
-            for each in versions:
-                cuttrent_tag = contents[subfield][each]['tag']
+            for version in versions:
+                cuttrent_tag = contents[subfield][version]['tag']
                 version_item = swidgets.add_treewidget_item(
-                    subfield_item, each, icon=cuttrent_tag, foreground=(192, 0, 0))
-                more_contents = self.spipe.get_more_data(caption, each, subfield)
-                ver_contents = copy.deepcopy(contents[subfield][each])
+                    subfield_item, version, icon=cuttrent_tag, foreground=(192, 0, 0))
+                more_contents = self.spipe.get_more_data(caption, version, subfield)
+                ver_contents = copy.deepcopy(contents[subfield][version])
                 ver_contents.update(more_contents)
                 version_item.setStatusTip(0, str(ver_contents))
                 # update root item icon with pipe tag(character, prop, etc)
@@ -518,7 +405,6 @@ class Window(QtWidgets.QMainWindow):
             contents = ast.literal_eval(contents)
             exists_subfields = self.get_parent_items(to_widget)
             subfield = contents['subfield']
-            
             if subfield in exists_subfields:
                 children = exists_subfields[subfield]['child']
                 if item.text(0) in children:
@@ -532,8 +418,6 @@ class Window(QtWidgets.QMainWindow):
             version_item = swidgets.add_treewidget_item(subfield_item, item.text(0), icon='version')
             self.input_items.setdefault(version_item, item)
             version_item.setStatusTip(0, str(contents))
-            # print json.dumps(contents, indent=4)
-
             brush = QtGui.QBrush(QtGui.QColor(255, 0, 255))
             item.setForeground(0, brush)
             item.setDisabled(True)
@@ -566,7 +450,6 @@ class Window(QtWidgets.QMainWindow):
         if not current_file:
             return
         os.environ['BROWS_PATH'] = os.path.dirname(current_file)
-        
         output_path = os.path.join(
             tempfile.gettempdir(),
             'thumbnail_%s.png' % resource.getCurrentDateKey())        
@@ -600,10 +483,7 @@ class Window(QtWidgets.QMainWindow):
         qsize = button.minimumSize()            
         swidgets.image_to_button(
             button, qsize.width(), qsize.height(), path=output_path)
-        self.button_thumbnail.setToolTip(output_path)
-        
-    def get_caption_tag(self, caption):
-        tag_data = self.spipe.get_tag_caption()
+        self.button_thumbnail.setToolTip(output_path)        
                 
     def get_widget_data(self):        
         caption = self.combobox_caption.currentText()
@@ -629,15 +509,20 @@ class Window(QtWidgets.QMainWindow):
     
     def get_composition_data(self):
         widget_item = self.treewidget_composition.invisibleRootItem()
-        composition_data = {}
+        composition_data = {}        
+        valid_subfields = self.spipe.pipe_inputs['subfield']['values']
         for parent in range (widget_item.childCount()):
             parent_item = widget_item.child(parent)
-            composition_data.setdefault(parent_item.text(0), {})
+            if parent_item.text(0) not in valid_subfields:
+                continue
+            index = valid_subfields.index(parent_item.text(0))
+            composition_data.setdefault(index, {parent_item.text(0): {}})
             for child in range(parent_item.childCount()):
                 child_item = parent_item.child(child)
                 contents = ast.literal_eval(child_item.statusTip(0))
                 current_usd = self.find_usd_inputs(contents)
-                composition_data[parent_item.text(0)].setdefault(child_item.text(0), current_usd)
+                composition_data[index][parent_item.text(0)].setdefault(
+                    child_item.text(0), current_usd)
         return composition_data
     
     def find_usd_inputs(self, input_data):       
@@ -663,7 +548,7 @@ class Window(QtWidgets.QMainWindow):
         pipe_data['dependency'] = None   
         return pipe_data    
 
-    def publish(self):       
+    def publish(self):  
         widget_data = self.get_widget_data()
         composition_data = self.get_composition_data()
         pipe_data = self.get_pipe_data(widget_data['caption'])
@@ -676,11 +561,10 @@ class Window(QtWidgets.QMainWindow):
         input_data['application'] = self.application
         input_data['subfield'] = self.subfield
         input_data.update(pipe_data)     
-        input_data['composition'] = composition_data        
+        input_data['composition'] = composition_data
 
         push = studioPush.Push(self.current_show, self.pipe)        
         valid, message = push.do_publish(repair=True, **input_data)
-        
         if not valid:
             QtWidgets.QMessageBox.critical(
                 self, 'critical', message, QtWidgets.QMessageBox.Ok)
@@ -689,6 +573,10 @@ class Window(QtWidgets.QMainWindow):
         self.set_current_version()       
         QtWidgets.QMessageBox.information(
             self, 'Success', 'Done!...', QtWidgets.QMessageBox.Ok)
+    
+    def find_size(self):
+        print self.size()
+        print self.splitter.sizes()        
 
 
 if __name__ == '__main__':

@@ -188,6 +188,7 @@ def create_model_usd(output_path):
     from studio_usd_pipe.api import studioUsd
     from studio_usd_pipe.api import studioModel
     from studio_usd_pipe.api import studioNurbscurve
+    reload(studioUsd)
     smodel = studioModel.Model()
     scurve = studioNurbscurve.Nurbscurve()
     root = get_root()    
@@ -199,7 +200,9 @@ def create_model_usd(output_path):
         'mesh': mesh_data,
         'curve': curve_data,
         'asset_id': asset_ids
-        }        
+        } 
+    
+    print '\nroot', root       
     susd = studioUsd.Susd(path=output_path)                
     susd.create_model_usd(root, final_data)
     return output_path    
@@ -430,17 +433,14 @@ def create_puppet_maya(output_path):
 
 
 
-def find_asset_usd_inputs(**kwargs):
+def create_asset_composition_usd(composition, output_usd_path):
+    from studio_usd_pipe.api import studioUsd
+    root = get_root()
+    define_prim_path = '/%s'%root
+    print 'output_usd_path', output_usd_path
+    susd = studioUsd.Susd(path=output_usd_path)   
+    susd.create_asset_composition(define_prim_path, composition, verbose=False)
+    return output_usd_path    
 
-    
-    subfileds = ['model']
-    pass
-        
 
-def create_asset_usd_composition():
-    pass
-
-        
-
-find_asset_usd_inputs()
 

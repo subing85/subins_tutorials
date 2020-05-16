@@ -51,7 +51,7 @@ class Bundles(object):
         self.container = {}  # execute = self.container[0] repair = self.container[1]
         self.execute_bundles(mode, 0, output_path, **kwargs)
         if not self.container:
-            print '#warnings found any %s bundle in' % mode, output_path
+            print '#warnings not found any %s bundle in' % mode, output_path
             return None, None
         if True in self.container[0]:
             self.show_result(mode, self.container[0], True)

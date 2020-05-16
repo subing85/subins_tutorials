@@ -21,6 +21,25 @@ class Pipe(object): # pipe == asset or shot
         environ = studioEnviron.Environ(self.current_show)
         show_path, valid = environ.get_environ_value('SHOW_PATH')
         return show_path
+    
+    def get_composition_subfields(self):
+        composition_subfields = []
+        valid_subfields = ['model', 'uv', 'shader']
+        for subfield in self.pipe_inputs['subfield']['values']:            
+            if subfield not in valid_subfields:
+                continue            
+            composition_subfields.append(subfield)
+        return composition_subfields
+    
+    def get_casting_subfields(self):
+        casting_subfields = []
+        valid_subfields = ['puppet', 'composition']
+        for subfield in self.pipe_inputs['subfield']['values']:            
+            if subfield not in valid_subfields:
+                continue            
+            casting_subfields.append(subfield)
+        return casting_subfields    
+    
         
     def get(self):
         dbs = database.DataBase(self.current_show, self.current_pipe)   

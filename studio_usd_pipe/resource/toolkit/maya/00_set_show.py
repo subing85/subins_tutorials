@@ -14,5 +14,5 @@ MODIFIED = 'April 29, 2020'
 
 
 def execute():
-    from studio_usd_pipe.patch.utils.smaya import show
+    from studio_usd_pipe.snippet.utils.smaya import show
     show.set()
