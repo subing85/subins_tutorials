@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/castingsheet.ui'
 #
-# Created: Fri May 15 11:48:43 2020
+# Created: Sun May 17 02:35:55 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!

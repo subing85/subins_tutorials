@@ -9,8 +9,11 @@ class Environ(object):
     def __init__(self, current_show, application=None):
         self.shows = studioShow.Show()
         self.current_show = current_show
-        self.current_application = application      
-          
+        self.current_application = application        
+    
+    def get_show_path(self):    
+        show_path, valid = self.get_environ_value('SHOW_PATH')
+        return show_path          
         
     def get_environ_value(self, environ):
         if environ in os.environ:

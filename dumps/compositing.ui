@@ -46,6 +46,14 @@
             <string notr="true">1</string>
            </property>
           </column>
+          <item>
+           <property name="text">
+            <string>New Item</string>
+           </property>
+           <property name="whatsThis">
+            <string>child</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>

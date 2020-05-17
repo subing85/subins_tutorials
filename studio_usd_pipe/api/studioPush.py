@@ -32,7 +32,7 @@ class Push(object):
     
     def get_show_path(self):
         environ = studioEnviron.Environ(self.current_show)
-        show_path, valid = environ.get_environ_value('SHOW_PATH')
+        show_path = environ.get_show_path()
         return show_path
                   
     def get_publish_path(self, caption, subfield, version, temp=True, create=True):

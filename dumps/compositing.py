@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/compositing.ui'
 #
-# Created: Fri May 15 11:48:43 2020
+# Created: Sun May 17 02:35:55 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,6 +37,7 @@ class Ui_MainWindow(object):
         self.treeWidget_2 = QtGui.QTreeWidget(self.gridLayoutWidget)
         self.treeWidget_2.setObjectName("treeWidget_2")
         self.treeWidget_2.headerItem().setText(0, "1")
+        item_0 = QtGui.QTreeWidgetItem(self.treeWidget_2)
         self.gridLayout.addWidget(self.treeWidget_2, 1, 1, 1, 1)
         self.treeWidget = QtGui.QTreeWidget(self.splitter)
         self.treeWidget.setObjectName("treeWidget")
@@ -60,5 +61,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        __sortingEnabled = self.treeWidget_2.isSortingEnabled()
+        self.treeWidget_2.setSortingEnabled(False)
+        self.treeWidget_2.topLevelItem(0).setText(0, QtGui.QApplication.translate("MainWindow", "New Item", None, QtGui.QApplication.UnicodeUTF8))
+        self.treeWidget_2.setSortingEnabled(__sortingEnabled)
         self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "GroupBox", None, QtGui.QApplication.UnicodeUTF8))
 
