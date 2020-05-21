@@ -14,7 +14,6 @@ from distutils import version
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPush
@@ -38,12 +37,12 @@ class Window(QtWidgets.QMainWindow):
         self.pipe = 'assets'        
         self.input_items = {}
         self.d_rgb = (0, 0, 0)
-        self.version, self.label = self.set_tool_context() 
         shows = studioShow.Show()
         self.current_show = shows.get_current_show()
         self.current_show = 'btm'  # to remove
         self.environ = studioEnviron.Environ(self.current_show)
         self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
+        self.show_icon = self.environ.get_show_icon()        
         self.comp_catalogue = catalogue.Catalogue()
         self.setup_ui()
         self.setup_menu()
@@ -52,7 +51,6 @@ class Window(QtWidgets.QMainWindow):
         
     def setup_ui(self):
         self.setObjectName('mainwindow_asset_composition')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
         self.resize(self.width, self.height)
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
@@ -61,25 +59,12 @@ class Window(QtWidgets.QMainWindow):
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(0)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)  
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))          
-        self.verticallayout.addWidget(self.groupbox)
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)            
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setSpacing(10)
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout_output')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None) 
-        self.line = QtWidgets.QFrame(self)
-        self.line.setObjectName('line')        
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.verticallayout_item.addWidget(self.line)
+        
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=self.show_icon)            
+        
+        
+        
         self.splitter = QtWidgets.QSplitter(self)
         self.splitter.setObjectName("splitter")        
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
@@ -209,8 +194,7 @@ class Window(QtWidgets.QMainWindow):
         self.button_publish.setObjectName('button_publish')
         self.button_publish.setText('publish')
         self.horizontallayout_button.addWidget(self.button_publish)
-        spacer_item = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
+    
         self.button_cancel.clicked.connect(self.close)     
         self.button_publish.clicked.connect(self.publish)
         self.combobox_caption.editTextChanged.connect(self.set_current_caption)
@@ -299,11 +283,6 @@ class Window(QtWidgets.QMainWindow):
             size.height(),
             path=os.path.join(resource.getIconPath(), 'screenshot.png')
             )
-        
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty                        
            
     def on_context_menu(self, widget, point):
         if isinstance(widget, QtWidgets.QPushButton):
@@ -373,7 +352,7 @@ class Window(QtWidgets.QMainWindow):
                 cuttrent_tag = contents[subfield][version]['tag']
                 version_item = swidgets.add_treewidget_item(
                     subfield_item, version, icon=cuttrent_tag, foreground=(192, 0, 0))
-                more_contents = self.spipe.get_more_data(caption, version, subfield)
+                more_contents = self.spipe.get_more_data(caption, subfield, version)
                 ver_contents = copy.deepcopy(contents[subfield][version])
                 ver_contents.update(more_contents)
                 version_item.setStatusTip(0, str(ver_contents))
@@ -526,7 +505,7 @@ class Window(QtWidgets.QMainWindow):
         return composition_data
     
     def find_usd_inputs(self, input_data):       
-        inputs = studioInputs.Inputs(self.pipe, self.application)
+        inputs = studioInputs.Inputs(self.pipe)
         usd_extractor_keys = inputs.get_usd_extractor_keys()
         subfield = input_data['subfield']
         if subfield not in usd_extractor_keys:

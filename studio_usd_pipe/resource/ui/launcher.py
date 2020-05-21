@@ -8,7 +8,6 @@ from PySide2 import QtWidgets
 from functools import partial
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import common
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.core import sconsole  
@@ -25,7 +24,6 @@ class Window(QtWidgets.QMainWindow):
         self.width = 720
         self.height = 750
         self.show_icon_size = [256, 128]
-        self.version, self.label = self.set_tool_context()        
         self.show_data = {}
         self.current_show = None
         self.shows = studioShow.Show()
@@ -38,7 +36,6 @@ class Window(QtWidgets.QMainWindow):
         
     def setup_ui(self):
         self.setObjectName('mainwindow_launcher')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
         self.resize(self.width, self.height)        
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')        
@@ -47,21 +44,8 @@ class Window(QtWidgets.QMainWindow):
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(0)
         self.verticallayout.setContentsMargins(5, 5, 5, 5) 
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_launcher')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))          
-        self.verticallayout.addWidget(self.groupbox)
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                  
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setSpacing(10)
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None) 
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=None)           
         self.groupbox_toolbar = QtWidgets.QGroupBox(self)
         self.groupbox_toolbar.setObjectName('groupbox_toolbar')
         self.groupbox_toolbar.setTitle('.')
@@ -172,11 +156,6 @@ class Window(QtWidgets.QMainWindow):
         console = sconsole.Console()    
         console.stdout(self.textedit_output).message_written.connect(
             self.textedit_output.insertPlainText)
-                
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty
     
     def create_show(self):
         print self.splitter_main.sizes()                  

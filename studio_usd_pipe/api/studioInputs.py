@@ -6,9 +6,9 @@ from studio_usd_pipe.api import studioPipe
 
 class Inputs(object):
     
-    def __init__(self, pipe, application):
+    def __init__(self, pipe, application=None):
         self.pipe = pipe
-        self.application = application   
+        self.application = application
         shows = studioShow.Show()
         self.current_show = shows.get_current_show()
         self.current_show = 'btm'  # to remove
@@ -31,14 +31,27 @@ class Inputs(object):
         subfield = self.spipe.pipe_inputs['subfield']['values']        
         return subfield
     
-    
     def get_usd_extractor_keys(self):
-        usd_extractor_keys = {
+        extractor_keys = {
             'model': 'model_usd',
             'uv': 'uv_usd',            
             'shader': 'shader_usd'
             }
-        return usd_extractor_keys 
+        return extractor_keys
+    
+    def get_puppet_extractor_keys(self):
+        extractor_keys = {
+            'puppet': 'puppet_scene'
+            }
+        return extractor_keys
+    
+    def get_composition_extractor_keys(self):
+        extractor_keys = {
+            'composition': 'composition'
+            }
+        return extractor_keys
+    
+            
     
         
     

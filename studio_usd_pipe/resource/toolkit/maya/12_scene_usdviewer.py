@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
-NAME = 'Scene Pull'
-ORDER = 8
+NAME = 'Show Scene USD (usd viewer)'
+ORDER = 12
 VALID = True
 TYPE = 'maya_tool'
-KEY = 'scene_pull'
+KEY = 'scene_usdviewer'
 SEPARATOR = False
-ICON = 'scene_pull.png'
+ICON = 'scene_usdviewer.png'
 OWNER = 'Subin Gopi'
-COMMENTS = 'Pull the scene!...'
+COMMENTS = 'Open the scenes USD with usd viewer!...'
 VERSION = '0.0.0'
 MODIFIED = 'April 29, 2020'
 

@@ -1,6 +1,7 @@
 import os
 import copy
 
+from studio_usd_pipe import resource
 from studio_usd_pipe.api import studioShow
 
  
@@ -13,7 +14,11 @@ class Environ(object):
     
     def get_show_path(self):    
         show_path, valid = self.get_environ_value('SHOW_PATH')
-        return show_path          
+        return show_path 
+    
+    def get_show_icon(self):
+        show_icon, valid = self.get_environ_value('SHOW_ICON')
+        return show_icon                 
         
     def get_environ_value(self, environ):
         if environ in os.environ:

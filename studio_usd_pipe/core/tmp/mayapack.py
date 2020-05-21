@@ -42,7 +42,7 @@ class Pack(studioMaya.Maya):
         return False        
         
     def make_packing_arguments(self, arguments):
-        input_data = resource.getAssetIDData()        
+        input_data = resource.getPipeIDData()        
         for k, v in input_data.items():            
             if k not in arguments:
                 continue            

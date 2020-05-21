@@ -14,7 +14,6 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.utils import maya_asset
 from studio_usd_pipe.api import studioShow
@@ -36,14 +35,14 @@ class Window(QtWidgets.QWidget):
         self.title = 'Asset Publish/Push'
         self.width = 572
         self.height = 716
-        self.version, self.label = self.set_tool_context() 
         shows = studioShow.Show()
         self.current_show = shows.get_current_show()
         self.current_show = 'btm'  # to remove
         self.environ = studioEnviron.Environ(self.current_show)
         self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
+        self.show_icon = self.environ.get_show_icon()
         self.source_maya = None
-        self.asset_ids = {}
+        self.pipe_ids = {}
         self.setup_ui()
         self.setup_menu()
         self.setup_icons()
@@ -51,30 +50,13 @@ class Window(QtWidgets.QWidget):
  
     def setup_ui(self):
         self.setObjectName('widget_asset_push')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))        
         self.resize(self.width, self.height)         
         self.verticallayout = QtWidgets.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)        
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
-        self.verticallayout.addWidget(self.groupbox)             
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None)    
-        self.line = QtWidgets.QFrame(self)
-        self.line.setObjectName('line')        
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.verticallayout_item.addWidget(self.line)
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=self.show_icon)    
         self.horizontallayout_output = QtWidgets.QHBoxLayout()
         self.horizontallayout_output.setObjectName('horizontallayout_output')
         self.horizontallayout_output.setSpacing(10)
@@ -103,67 +85,67 @@ class Window(QtWidgets.QWidget):
         spacer_item = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticallayout.addItem(spacer_item)
-        self.label_caption = QtWidgets.QLabel(self.groupbox)
+        self.label_caption = QtWidgets.QLabel(self)
         self.label_caption.setObjectName('label_caption')
         self.label_caption.setText('Caption')
         self.label_caption.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_caption, 0, 0, 1, 1)
-        self.combobox_caption = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_caption = QtWidgets.QComboBox(self)
         self.combobox_caption.setObjectName('combobox_caption')
         self.combobox_caption.setEditable(True)
         self.combobox_caption.setEnabled(True)
         self.combobox_caption.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_caption, 0, 1, 1, 1)  
-        self.label_subfield = QtWidgets.QLabel(self.groupbox)
+        self.label_subfield = QtWidgets.QLabel(self)
         self.label_subfield.setObjectName('label_subfield')
         self.label_subfield.setText('Subfield')
         self.label_subfield.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_subfield, 1, 0, 1, 1)
-        self.combobox_subfield = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_subfield = QtWidgets.QComboBox(self)
         self.combobox_subfield.setObjectName('combobox_subfield')
         self.combobox_subfield.setEditable(True)
         self.combobox_subfield.setEnabled(True)
         self.combobox_subfield.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_subfield, 1, 1, 1, 1)  
-        self.label_type = QtWidgets.QLabel(self.groupbox)
+        self.label_type = QtWidgets.QLabel(self)
         self.label_type.setObjectName('label_type')
         self.label_type.setText('Type')
         self.label_type.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_type, 2, 0, 1, 1)
-        self.combobox_type = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_type = QtWidgets.QComboBox(self)
         self.combobox_type.setObjectName('combobox_type')
         self.combobox_type.setEditable(True)
         self.combobox_type.setEnabled(True)
         self.combobox_type.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_type, 2, 1, 1, 1)  
-        self.label_tag = QtWidgets.QLabel(self.groupbox)
+        self.label_tag = QtWidgets.QLabel(self)
         self.label_tag.setObjectName('label_tag')
         self.label_tag.setText('Tag')
         self.label_tag.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_tag, 3, 0, 1, 1)
-        self.combobox_tag = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_tag = QtWidgets.QComboBox(self)
         self.combobox_tag.setObjectName('combobox_tag')
         self.combobox_tag.setEditable(True)
         self.combobox_tag.setEnabled(True)
         self.combobox_tag.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_tag, 3, 1, 1, 1)
-        self.label_dependency = QtWidgets.QLabel(self.groupbox)
+        self.label_dependency = QtWidgets.QLabel(self)
         self.label_dependency.setObjectName('label_dependency')
         self.label_dependency.setText('Available Model Dependencies')
         self.label_dependency.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_dependency, 4, 0, 1, 1)
-        self.combobox_dependency = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_dependency = QtWidgets.QComboBox(self)
         self.combobox_dependency.setObjectName('combobox_dependency')
         self.combobox_dependency.setEditable(True)
         self.combobox_dependency.setEnabled(True)
         self.combobox_dependency.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_dependency, 4, 1, 1, 1) 
-        self.label_thumbnail = QtWidgets.QLabel(self.groupbox)
+        self.label_thumbnail = QtWidgets.QLabel(self)
         self.label_thumbnail.setObjectName('label_thumbnail')
         self.label_thumbnail.setText('Thumbnail')
         self.label_thumbnail.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_thumbnail, 5, 0, 1, 1)
-        self.button_thumbnail = QtWidgets.QPushButton(self.groupbox)
+        self.button_thumbnail = QtWidgets.QPushButton(self)
         self.button_thumbnail.setObjectName('button_thumbnail')
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.button_thumbnail.setSizePolicy(size_policy)
@@ -176,46 +158,46 @@ class Window(QtWidgets.QWidget):
             self.button_thumbnail, 256, 180, path=os.path.join(resource.getIconPath(), 'screenshot.png'))     
         self.button_thumbnail.clicked.connect(partial(self.take_thumbnail, self.button_thumbnail))
         self.gridlayout.addWidget(self.button_thumbnail, 5, 1, 1, 1)  
-        self.label_description = QtWidgets.QLabel(self.groupbox)
+        self.label_description = QtWidgets.QLabel(self)
         self.label_description.setObjectName('label_description')
         self.label_description.setText('Description')
         self.label_description.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_description, 6, 0, 1, 1)
-        self.textedit_description = QtWidgets.QTextEdit(self.groupbox)
+        self.textedit_description = QtWidgets.QTextEdit(self)
         self.textedit_description.setObjectName('textedit_description')
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.textedit_description.setSizePolicy(size_policy)
         self.textedit_description.setMinimumSize(QtCore.QSize(0, 90))
         self.textedit_description.setMaximumSize(QtCore.QSize(16777215, 90))          
         self.gridlayout.addWidget(self.textedit_description, 6, 1, 1, 1)  
-        self.label_version = QtWidgets.QLabel(self.groupbox)
+        self.label_version = QtWidgets.QLabel(self)
         self.label_version.setObjectName('label_version')
         self.label_version.setText('version')
         self.label_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_version, 7, 0, 1, 1)
-        self.combobox_version = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_version = QtWidgets.QComboBox(self)
         self.combobox_version.setObjectName('combobox_version')
         self.combobox_version.setEditable(True)
         self.combobox_version.setEnabled(True)
         self.combobox_version.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_version, 7, 1, 1, 1)                  
-        self.label_latest_version = QtWidgets.QLabel(self.groupbox)
+        self.label_latest_version = QtWidgets.QLabel(self)
         self.label_latest_version.setObjectName('label_latest_version')
         self.label_latest_version.setText('Latest Version')
         self.label_latest_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_latest_version, 8, 0, 1, 1)
-        self.combobox_latest_version = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_latest_version = QtWidgets.QComboBox(self)
         self.combobox_latest_version.setObjectName('combobox_latest_version')
         self.combobox_latest_version.setEditable(True)
         self.combobox_latest_version.setEnabled(False)
         self.combobox_latest_version.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.gridlayout.addWidget(self.combobox_latest_version, 8, 1, 1, 1)
-        self.label_next_version = QtWidgets.QLabel(self.groupbox)
+        self.label_next_version = QtWidgets.QLabel(self)
         self.label_next_version.setObjectName('label_next_version')
         self.label_next_version.setText('Next Version')
         self.label_next_version.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.gridlayout.addWidget(self.label_next_version, 9, 0, 1, 1)
-        self.combobox_next_version = QtWidgets.QComboBox(self.groupbox)
+        self.combobox_next_version = QtWidgets.QComboBox(self)
         self.combobox_next_version.setObjectName('combobox_next_version')
         self.combobox_next_version.setEditable(True)
         self.combobox_next_version.setEnabled(False)
@@ -289,16 +271,6 @@ class Window(QtWidgets.QWidget):
     def set_default(self):
         self.clear_widget()
         self.setup_current_maya()
-        show_icon, valid = self.environ.get_environ_value('SHOW_ICON')
-        if not show_icon:
-            show_icon = os.path.join(resource.getIconPath(), 'show.png')
-        size = self.button_show.minimumSize()
-        swidgets.image_to_button(
-            self.button_show,
-            size.width(),
-            size.height(),
-            path=show_icon
-            )
         pub_data = self.spipe.get()
         captions = ['']
         if pub_data:  # add caption from database
@@ -315,12 +287,7 @@ class Window(QtWidgets.QWidget):
             size.height(),
             path=os.path.join(resource.getIconPath(), 'screenshot.png')
             )
- 
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty        
-         
+
     def on_context_menu(self, key, widget, point):
         self.set_menu_options(key)        
         self.menu.exec_(widget.mapToGlobal(point))
@@ -335,11 +302,6 @@ class Window(QtWidgets.QWidget):
         self.combobox_version.clear()
         self.combobox_latest_version.clear()
         self.combobox_next_version.clear()   
-     
-    def get_mayapy(self):    
-        maya_path, valid = self.environ.get_environ_value('MAYA_PATH')
-        mayapy = resource.getMayapy(maya_path)
-        return mayapy                 
                  
     def setup_current_maya(self):
         if self.standalone:
@@ -364,7 +326,7 @@ class Window(QtWidgets.QWidget):
     def set_current_maya(self, format):
         source_file = 'Current File: {}\nFile Type: {}'.format(self.source_maya, format)
         self.label_source.setText(source_file)
-        self.asset_ids = self.get_asset_ids()
+        self.pipe_ids = self.get_pipe_ids()
         self.combobox_caption.setCurrentIndex(0) 
          
     def read_current_maya(self):
@@ -394,11 +356,11 @@ class Window(QtWidgets.QWidget):
             self.button_thumbnail, size.width(), size.height(), path=output_path)
         self.button_thumbnail.setToolTip(output_path)        
  
-    def get_asset_ids(self):
+    def get_pipe_ids(self):
         if not self.standalone:
-            id_data = maya_asset.get_asset_ids()
+            id_data = maya_asset.get_pipe_ids()
             return id_data
-        script_path = os.path.join(resource.getScriptPath(), 'maya/find_assetids.py')
+        script_path = os.path.join(resource.getScriptPath(), 'maya/find_pipeids.py')
         maya_path, valid = self.environ.get_specific_environ_value(
             'show_applications', self.application, 'path')
         application_module_path = resource.getModuleApplicationsPath()    
@@ -480,7 +442,7 @@ class Window(QtWidgets.QWidget):
  
     def set_dependency(self, caption):
         self.combobox_dependency.clear()
-        dependency, dependencies = self.get_dependencies(caption, self.asset_ids)
+        dependency, dependencies = self.get_dependencies(caption, self.pipe_ids)
         icon_path = os.path.join(resource.getIconPath(), 'tick.png')
         for each in dependencies:
             if each == dependency:

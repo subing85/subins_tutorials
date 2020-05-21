@@ -13,15 +13,12 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 
 from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
 from studio_usd_pipe.resource.ui import catalogue
-from PyQt4.Qt import QWidget
-from __builtin__ import True
 
 
 class Window(QtWidgets.QMainWindow):
@@ -34,17 +31,15 @@ class Window(QtWidgets.QMainWindow):
         self.width = 1000
         self.height = 716
         self.pipe = 'assets'
-        self.version, self.label = self.set_tool_context() 
         shows = studioShow.Show()
         self.current_show = shows.get_current_show()
         self.current_show = 'btm'  # to remove
         
         self.environ = studioEnviron.Environ(self.current_show)
         self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
+        self.show_icon = self.environ.get_show_icon()
         self.comp_catalogue = catalogue.Catalogue()
         
-        self.source_maya = None
-        self.asset_ids = {}
         self.setup_ui()
         self.setup_menu()
         self.setup_icons()
@@ -52,35 +47,16 @@ class Window(QtWidgets.QMainWindow):
         
     def setup_ui(self):  
         self.setObjectName('mainwindow_castingsheet')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))        
         self.resize(self.width, self.height) 
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)        
-                        
         self.verticallayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)        
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
-        self.verticallayout.addWidget(self.groupbox)             
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None)    
-        self.line = QtWidgets.QFrame(self)
-        self.line.setObjectName('line')        
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.verticallayout_item.addWidget(self.line)
-
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=self.show_icon)  
         self.groupbox_toolbar = QtWidgets.QGroupBox(self)
         self.groupbox_toolbar.setObjectName('groupbox_toolbar')
         self.groupbox_toolbar.setTitle('.')
@@ -97,41 +73,33 @@ class Window(QtWidgets.QMainWindow):
         spaceritem = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontallayout_toolbar.addItem(spaceritem)
-        
         self.splitter = QtWidgets.QSplitter(self)
         self.splitter.setObjectName('splitter')        
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.verticallayout_item.addWidget(self.splitter)
-        
         self.treewidget_shots = QtWidgets.QTreeWidget(self.splitter)
         self.treewidget_shots.setObjectName('treewidget_shots')
         self.treewidget_shots.headerItem().setText(0, 'Shots')
         self.treewidget_shots.setAlternatingRowColors(True)
         self.treewidget_shots.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        
         self.treewidget_assets = QtWidgets.QTreeWidget(self.splitter)
         self.treewidget_assets.setObjectName('treewidget_assets')
         self.treewidget_assets.headerItem().setText(0, 'Assets')
         self.treewidget_assets.setAlternatingRowColors(True)
         self.treewidget_assets.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.treewidget_assets.currentItemChanged.connect(self.current_asset_select)        
-        
         self.splitter.addWidget(self.comp_catalogue) 
-        
-        self.horizontallayout_create = QtWidgets.QHBoxLayout(self)
+        self.horizontallayout_create = QtWidgets.QHBoxLayout()
         self.horizontallayout_create.setObjectName('horizontallayout_toolbar')
         self.verticallayout.addLayout(self.horizontallayout_create)    
-        
         spaceritem = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontallayout_create.addItem(spaceritem)
-                
         self.button_close = QtWidgets.QPushButton(self)
         self.button_close.setObjectName('button_close')
         self.button_close.setText('close')                
         self.horizontallayout_create.addWidget(self.button_close)
         self.button_close.clicked.connect(self.close)
-                
         self.button_create = QtWidgets.QPushButton(self)
         self.button_create.setObjectName('button_create')
         self.button_create.setText('create')
@@ -141,27 +109,12 @@ class Window(QtWidgets.QMainWindow):
     def setup_icons (self):
         widgets = self.findChildren(QtWidgets.QAction)
         swidgets.set_icons(mainwindow=self, widgets=widgets)
-
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty      
     
     def set_default(self):
-        show_icon, valid = self.environ.get_environ_value('SHOW_ICON')
-        if not show_icon:
-            show_icon = os.path.join(resource.getIconPath(), 'show.png')
-        size = self.button_show.minimumSize()
-        swidgets.image_to_button(
-            self.button_show,
-            size.width(),
-            size.height(),
-            path=show_icon
-            )
         self.setup_assets()
         self.setup_shots()
-        
-        if self.has_casting_preset():
+        castingsheet_path = self.get_castingsheet_path()
+        if os.path.isfile(self.get_castingsheet_path()):
             self.treewidget_assets.hide()
             self.comp_catalogue.hide()
 
@@ -180,7 +133,7 @@ class Window(QtWidgets.QMainWindow):
     
     def setup_shots(self):        
         castingsheet_path = self.get_castingsheet_path()
-        if not self.has_casting_preset():
+        if not os.path.isfile(self.get_castingsheet_path()):
             return
         casting_data = resource.getInputData(castingsheet_path)
         self.treewidget_shots.clear()
@@ -190,11 +143,10 @@ class Window(QtWidgets.QMainWindow):
                 self.treewidget_shots, toplevel, icon='toplevel')
             sublevels = sorted(casting_data[toplevel].keys())
             for sublevel in sublevels:
-                sublevel_item = swidgets.add_treewidget_item(
-                    toplevel_item, sublevel, icon='sublevel') 
+                sublevel_item = swidgets.add_treewidget_item(toplevel_item, sublevel, icon='sublevel') 
                 for asset in casting_data[toplevel][sublevel]:
-                    asset_item = swidgets.add_treewidget_item(
-                        sublevel_item, asset, icon='asset')                                          
+                    asset_item = swidgets.add_treewidget_item(sublevel_item, asset, icon='asset')
+                    asset_item.setStatusTip(0, asset)
             
     def setup_assets(self):
         self.treewidget_assets.clear()            
@@ -217,7 +169,7 @@ class Window(QtWidgets.QMainWindow):
                     cuttrent_tag = contents[caption][subfield][version]['tag']
                     version_item = swidgets.add_treewidget_item(
                         subfield_item, version, icon=cuttrent_tag, foreground=(192, 0, 0))                
-                    more_contents = self.spipe.get_more_data(caption, version, subfield)
+                    more_contents = self.spipe.get_more_data(caption, subfield, version)
                     ver_contents = copy.deepcopy(contents[caption][subfield][version])
                     ver_contents.update(more_contents)
                     version_item.setStatusTip(0, str(ver_contents))
@@ -236,15 +188,11 @@ class Window(QtWidgets.QMainWindow):
     
     def get_castingsheet_path(self):
         show_path = self.environ.get_show_path() 
-        output_path = os.path.join(show_path, 'presets', 'castingsheet.json')
-        return output_path
+        castingsheet_path = resource.getSpecificPreset(show_path, 'castingsheet')
+        #if not os.path.isfile(castingsheet_path):
+        #    return None
+        return castingsheet_path
     
-    def has_casting_preset(self):
-        castingsheet_path = self.get_castingsheet_path()        
-        if os.path.isfile(castingsheet_path):
-            return True
-        return False
-            
     def menu_actions(self, menu):        
         if menu == 'reload':
             self.reload()        
@@ -384,6 +332,8 @@ class Window(QtWidgets.QMainWindow):
                     )
                 current_item = swidgets.add_treewidget_item(
                     current_shot, location, icon='asset', foreground=None)
+                current_item.setStatusTip(0, location)
+
                 
     def edit_item(self):
         self.treewidget_shots.show()

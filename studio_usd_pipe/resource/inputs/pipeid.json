@@ -4,11 +4,11 @@
 	"#copyright": "(c) 2019, Subin Gopi All rights reserved.",
 	"date": "December:21:2019 - 09:00:01:PM",
 	"last_modified": "December:22:2019 - 09:00:01:PM",
-	"comment": "Show asset ID's configure",
+	"comment": "Show Pipe ID's configure",
 	"description": "inputs of configure",
 	"warning": "# WARNING! All changes made in this file will be lost!",
 	"enable": true,
-	"type": "assetid",
+	"type": "pipeid",
 	"data": {
 	    "spipe": {
 	            "order": 1,

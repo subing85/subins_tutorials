@@ -7,7 +7,7 @@ from studio_usd_pipe.resource.ui import castingsheet
 reload(castingsheet)
 
 
-def show_window(standalone=False):    
+def show_window(standalone=True):    
     if not standalone:        
         from studio_usd_pipe.core import smaya
         main_window = smaya.get_qwidget()

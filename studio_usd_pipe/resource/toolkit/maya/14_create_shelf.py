@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
-NAME = 'Create Scene USD'
-ORDER = 10
+NAME = 'Create Shelf'
+ORDER = 14
 VALID = True
 TYPE = 'maya_tool'
-KEY = 'create_scene_usd'
+KEY = 'maya_shelf'
 SEPARATOR = True
-ICON = 'scene_usd.png'
+ICON = 'maya_shelf.png'
 OWNER = 'Subin Gopi'
-COMMENTS = 'Create USD with complete shots!...'
+COMMENTS = 'Create studio pipe maya shelf!...'
 VERSION = '0.0.0'
 MODIFIED = 'April 29, 2020'
 

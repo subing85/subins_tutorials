@@ -9,7 +9,6 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 
 from studio_usd_pipe.api import studioShow
@@ -28,7 +27,6 @@ class Window(QtWidgets.QMainWindow):
         self.title = 'Studio Spread Sheet'
         self.width = 800
         self.height = 600
-        self.version, self.label = self.set_tool_context() 
         self.setup_ui()
         self.setup_menu()
         self.setup_icons()        
@@ -36,7 +34,6 @@ class Window(QtWidgets.QMainWindow):
 
     def setup_ui(self):
         self.setObjectName('mainwindow_spreadsheet')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
         self.resize(self.width, self.height)
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
@@ -45,21 +42,8 @@ class Window(QtWidgets.QMainWindow):
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(0)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)  
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))          
-        self.verticallayout.addWidget(self.groupbox)
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)            
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setSpacing(10)
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout_output')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None) 
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=None)    
         self.horizontallayout = QtWidgets.QHBoxLayout()
         self.horizontallayout.setObjectName('horizontallayout')
         self.verticallayout_item.addLayout(self.horizontallayout)
@@ -102,11 +86,6 @@ class Window(QtWidgets.QMainWindow):
     def setup_icons (self):
         widgets = self.findChildren(QtWidgets.QAction)
         swidgets.set_icons(mainwindow=self, widgets=widgets)
-        
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty
     
     def set_default(self):
         sshow = studioShow.Show()

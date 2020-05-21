@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>408</width>
+    <height>233</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label_top">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>34</y>
+     <width>65</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>top levels</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="combobox_top">
+   <property name="geometry">
+    <rect>
+     <x>75</x>
+     <y>34</y>
+     <width>92</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_sub">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>64</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>sub levels</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox_sub">
+   <property name="geometry">
+    <rect>
+     <x>75</x>
+     <y>64</y>
+     <width>92</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_assets">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>94</y>
+     <width>43</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>assets</string>
+   </property>
+  </widget>
+  <widget class="QTreeWidget" name="treewidget">
+   <property name="geometry">
+    <rect>
+     <x>75</x>
+     <y>94</y>
+     <width>222</width>
+     <height>135</height>
+    </rect>
+   </property>
+   <property name="headerHidden">
+    <bool>true</bool>
+   </property>
+   <column>
+    <property name="text">
+     <string notr="true">1</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>301</x>
+     <y>148</y>
+     <width>103</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>4</y>
+     <width>63</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>pipe type</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox">
+   <property name="geometry">
+    <rect>
+     <x>75</x>
+     <y>4</y>
+     <width>92</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>layout</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>animation</string>
+    </property>
+   </item>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

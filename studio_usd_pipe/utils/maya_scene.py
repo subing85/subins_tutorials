@@ -1,9 +1,18 @@
 import os
 import platform
 
+from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
 
 import json
+
+
+def get_root():
+    return 'shot'
+
+
+def get_world():
+    return 'world'
 
 
 def open_maya_scene(scene):
@@ -29,8 +38,20 @@ def reference_maya_scene(scene, namespace):
         return False, None, 'not found scene'
     from studio_usd_pipe.api import studioMaya
     smaya = studioMaya.Maya()
-    smaya.reference_maya(scene, deferred=False, locked=True, namespace=namespace)
+    smaya.reference_maya(scene, deferred=False, locked=False, namespace=namespace)
     return True, scene, 'success'
+
+
+def references_maya_scene(input_data, new_scene=False):
+    if new_scene:
+        from studio_usd_pipe.api import studioMaya
+        smaya = studioMaya.Maya()
+        smaya.new_maya_scene()
+    valids = {}
+    for namespace, path in input_data.items():
+        valid, value, message = reference_maya_scene(path, namespace)
+        valids.setdefault(valid, []).append(value)
+    return valids
 
 
 def open_location(dirname):
@@ -140,6 +161,131 @@ def create_studio_shader(studio_shader_path, merge):
     sshader = studioShader.Shader()
     for node, contenst in surface_data.items():
         shading_engine = sshader.create_shadernet(node, contenst, merge=merge)
+
+
+def check_shot_hierarchy(subfield):   
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()
+    id_data = resource.getPipeIDData()
+    transforms = smaya.extract_top_transforms()
+    nodes = [transforms[x].fullPathName() for x in range(transforms.length())]
+    if transforms.length() > 1:
+        return False, nodes, 'broken hierarchy'
+    pipe_ids = resource.getPipeIDData()
+    scene_subfield = {}
+    for index in range (transforms.length()):
+        pipe_id_data, valid = smaya.get_pipe_id_data(transforms[index].node(), pipe_ids)
+        if not valid:
+            continue
+        subfield = pipe_id_data['ssubfield']['value']        
+        scene_subfield.setdefault(subfield, []).append(transforms[index].fullPathName())
+    if subfield in scene_subfield:
+        return  True, scene_subfield[subfield], 'suitable hierarchy'
+    return False, [], 'not found %s' % get_root()
+
+
+def create_shot(**kwargs):
+    '''
+        from studio_usd_pipe.utils import maya_scene
+        reload(maya_scene)    
+        kwargs = {'pipe': 'shots',
+                'caption': 'seq_1001|shot_101',
+                'subfield': 'layout',
+                'type': 'seq_1001',
+                'tag': 'shot_101',
+                'dependency': None,
+                'version': '0.0.0',
+                'modified': '1111111111',
+                'location': 'dddddddddd',
+                'description': 'ddddddddddd',
+                'user': 'sid'
+                }              
+        valid, values, message = maya_scene.create_shot(kwargs)
+    '''
+    from studio_usd_pipe.api import studioMaya
+    reload(studioMaya)
+    smaya = studioMaya.Maya()    
+    root = get_root()
+    dag_node = smaya.create_group(root)
+    valid, values = create_pipe_ids(dag_node.object(), **kwargs)
+    if not valid:
+        return False, values, 'failed'
+    id_data = resource.getPipeIDData()      
+    transforms = smaya.extract_null_transform()
+    for index in range (transforms.length()):
+        pipe_id_data, valid = smaya.get_pipe_id_data(transforms[index].node(), id_data)
+        if not valid:
+            continue        
+        if pipe_id_data['spipe']['value'] != 'assets':
+            continue
+        smaya.set_parent(transforms[index], dag_node.object())
+    transforms = smaya.extract_top_transforms()
+    for index in range (transforms.length()):
+        if transforms[index].node() == dag_node.object():
+            continue                       
+        smaya.remove_node(transforms[index].node())
+    dag_node.setName(root)
+    return True, [root], 'success'
+
         
-      
+def create_pipe_ids(mobject, **kwargs): 
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya() 
+    id_data = resource.getPipeIDData()  
+    inputs = {    
+        'spipe': kwargs['pipe'],
+        'scaption': kwargs['caption'],
+        'ssubfield': kwargs['subfield'],
+        'stype': kwargs['type'],
+        'stag': kwargs['tag'],
+        'sdependency': kwargs['dependency'],
+        'sversion':kwargs['version'],
+        'smodified': kwargs['modified'],
+        'slocation':kwargs['location'],
+        'sdescription': kwargs['description'],
+        'suser': kwargs['user']
+        }    
+    for k, v in inputs.items():
+        id_data[k]['value'] = v  
+    created_data = smaya.create_pipe_ids(mobject, id_data)
+    result = []    
+    for k, v in created_data.items():
+        result.append([k.encode(), v.encode()])
+    return True, result
+
+
+def update_pipe_ids(**kwargs):
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()     
+    valid, mobject = find_shot_node(kwargs['subfield'])
+    if not valid:
+        return False, mobject, 'found more than one shot nodes'
+    valid, values = create_pipe_ids(mobject, **kwargs)
+    if not valid:
+        return False, values, 'failed'
+    return True, values, 'success'
+    
+    
+def find_shot_node(subfield):
+    from studio_usd_pipe.api import studioMaya
+    smaya = studioMaya.Maya()     
+    transforms = smaya.extract_top_transforms()
+    pipe_ids = resource.getPipeIDData()
+    shot_nodes = [] 
+    for index in range (transforms.length()):
+        pipe_id_data, valid = smaya.get_pipe_id_data(transforms[index].node(), pipe_ids)
+        if not valid:
+            continue        
+        if pipe_id_data['ssubfield']['value'] != subfield:
+            continue  
+        shot_nodes.append(transforms[index])
+    if not shot_nodes:
+        return False, shot_nodes
+    if len(shot_nodes) > 1:
+        return False, shot_nodes
+    return True, shot_nodes[0].node()
+
+
+def create_stuio_animation(output_path):
+    pass
     

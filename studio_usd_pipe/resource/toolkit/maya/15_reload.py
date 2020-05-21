@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 NAME = 'Reload'
-ORDER = 13
+ORDER = 15
 VALID = True
 TYPE = 'maya_tool'
 KEY = 'reload'

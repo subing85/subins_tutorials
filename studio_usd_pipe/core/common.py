@@ -226,6 +226,8 @@ def create_presets(output_path, description, key, inputs):
         'key': '%s_presets' % key,
         'data': inputs
         }
+    
+    print 'output_path', output_path
     if not os.path.isdir(os.path.dirname(output_path)):
         os.makedirs(os.path.dirname(output_path))           
     with (open(output_path, 'w')) as content:

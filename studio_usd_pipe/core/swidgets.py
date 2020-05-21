@@ -5,9 +5,10 @@ from PySide2 import QtCore
 from PySide2 import QtWidgets
 
 from studio_usd_pipe import resource
+from studio_usd_pipe.core import sheader
 
 
-def get_color_code(): #**
+def get_color_code():  # **
     info_color = QtGui.QColor('darkBlue')
     error_color = QtGui.QColor('red')
     warning_color = QtGui.QColor('magenta')
@@ -15,7 +16,7 @@ def get_color_code(): #**
     return  header_color, info_color, warning_color, error_color
 
 
-def image_to_button(button, width, height, path=None): #**
+def image_to_button(button, width, height, path=None):  # **
     if not path:
         path = os.path.join(resource.getIconPath(), 'unknown.png')
     icon = QtGui.QIcon()
@@ -45,13 +46,12 @@ def add_treewidget_item(parent, label, icon=None, foreground=None):
 
 def append_treewidget_item(parent, column_items):
     item = QtWidgets.QTreeWidgetItem (parent)
-    if parent.columnCount()<len(column_items):   
+    if parent.columnCount() < len(column_items):   
         parent.setColumnCount(len(column_items))
     for index, column_item in enumerate(column_items):
         parent.headerItem().setText(index, column_item[0])
         item.setText (index, str(column_item[1]))
     return item
-   
 
 
 def update_treewidget_item_icon(item, icon_name):
@@ -100,7 +100,7 @@ def get_treeitem_hierarchy(items):
     return hierarchy
 
 
-def set_header(layout, show_icon=None): #**
+def _set_header(layout, show_icon=None):  # **
     button_logo = QtWidgets.QPushButton(None)
     button_logo.setFlat(True)
     button_logo.setObjectName('button_logo')
@@ -123,7 +123,59 @@ def set_header(layout, show_icon=None): #**
     return button_logo, button_show
 
 
-def set_icons(mainwindow=None, widgets=None): #**
+def set_header(parent, title, layout, show_icon=None):  # **
+    config = sheader.Header()
+    config.tool()
+    # version, label = config.version, config.pretty        
+    parent.setWindowTitle('{} ({} {})'.format(title, config.pretty, config.version))        
+    groupbox = QtWidgets.QGroupBox(None)
+    groupbox.setObjectName('groupbox_asset')
+    groupbox.setTitle('{} <{}>'.format(config.pretty, title))  
+    layout.addWidget(groupbox)             
+    verticallayout = QtWidgets.QVBoxLayout(groupbox)
+    verticallayout.setObjectName('verticallayout_item')
+    verticallayout.setSpacing(10)
+    verticallayout.setContentsMargins(5, 5, 5, 5)                
+    horizontallayout = QtWidgets.QHBoxLayout()
+    horizontallayout.setContentsMargins(5, 5, 5, 5)
+    horizontallayout.setObjectName('horizontallayout')
+    verticallayout.addLayout(horizontallayout)
+    button_logo = QtWidgets.QPushButton(None)
+    button_logo.setFlat(True)
+    button_logo.setObjectName('button_logo')
+    button_logo.setMinimumSize(QtCore.QSize(350, 99))
+    button_logo.setMaximumSize(QtCore.QSize(350, 99))                
+    logo_path = os.path.join(resource.getIconPath(), 'logo.png')        
+    image_to_button(button_logo, 350, 99, path=logo_path)
+    horizontallayout.addWidget(button_logo)       
+    spaceritem = QtWidgets.QSpacerItem(
+        40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+    horizontallayout.addItem(spaceritem)    
+    button_show = QtWidgets.QPushButton(None)
+    button_show.setFlat(True)
+    button_show.setObjectName('button_show')
+    button_show.setMinimumSize(QtCore.QSize(176, 99))
+    button_show.setMaximumSize(QtCore.QSize(176, 99))
+    horizontallayout.addWidget(button_show)
+    if show_icon:
+        if not os.path.isfile(show_icon):
+            show_icon = os.path.join(resource.getIconPath(), 'show.png')
+        size = button_show.minimumSize()
+        image_to_button(
+            button_show,
+            size.width(),
+            size.height(),
+            path=show_icon
+            )
+    line = QtWidgets.QFrame(None)
+    line.setObjectName('line')        
+    line.setFrameShape(QtWidgets.QFrame.HLine)    
+    verticallayout.addWidget(line)
+    
+    return verticallayout, button_show
+
+
+def set_icons(mainwindow=None, widgets=None):  # **
     if mainwindow:
         icon = QtGui.QIcon()
         split = mainwindow.objectName().split('_')[1:]
@@ -141,7 +193,7 @@ def set_icons(mainwindow=None, widgets=None): #**
             widget.setIcon(icon)  
 
 
-def image_resize(image_path, output_path, width=2048, height=2048): #**
+def image_resize(image_path, output_path, width=2048, height=2048):  # **
     # try:
     from PySide2 import QtGui
     from PySide2 import QtCore
@@ -166,7 +218,7 @@ def image_resize(image_path, output_path, width=2048, height=2048): #**
     return output_path
 
 
-def brows_file(label, formats): #**
+def brows_file(label, formats):  # **
     current_file = QtWidgets.QFileDialog.getOpenFileName(
         None,
         label,
@@ -182,13 +234,10 @@ def brows_file(label, formats): #**
 def remove_widgets(widgets):
     for widget in widgets:
         widget.deleteLater()
+
     
 def remove_layout_widgets(layout):
     for index in range(layout.count()):
         widget = layout.itemAt(index).widget()
         widget.deleteLater()            
-
-    
-    
-    
     
