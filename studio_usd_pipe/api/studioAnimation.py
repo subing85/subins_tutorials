@@ -1,11 +1,6 @@
-import os
-
-import warnings
-
 from maya import OpenMaya
 from maya import OpenMayaAnim
 
-from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.api import studioMaya
 
 
@@ -13,275 +8,183 @@ class Animation(studioMaya.Maya):
     
     def __init__(self):
         super(Animation, self).__init__()  
-        
 
-    def get_kanimation(self, mobject) :    
-        mfnDependencyNode = OpenMaya.MFnDependencyNode(mobject)        
-        attributeCount = mfnDependencyNode.attributeCount()        
-        anmationData = {}
-        
-        for attrIndex in range (attributeCount) :
-            attribute = mfnDependencyNode.attribute(attrIndex)
-            plug = mfnDependencyNode.findPlug (attribute)        
-    
-            connections = OpenMaya.MPlugArray()
-            plug.connectedTo (connections, 1, 0)        
-            
-            for index in range (connections.length()) :  
-                connectedMPlug = connections[index]      
-                connectedmobject = connectedMPlug.node() 
-                
-                if not connectedmobject.hasFn(OpenMaya.MFn.kAnimCurve) :
-                    continue
-                
-                animCurveData = self.get_kanimCurve(connectedmobject)    
-                             
-                attributemobject = plug.attribute()
-                mfnAttribute = OpenMaya.MFnAttribute(attributemobject)            
-                currentAttribute = mfnAttribute.name()  
-                       
-                anmationData.setdefault(currentAttribute.encode(), animCurveData)            
-    
-        return anmationData           
-        
-          
-        
-    def get_kanimCurve(self, mobject) :    
-        
-        animCurveData = {}   
-        
-        mfnAnimCurve = OpenMaya.MFnDependencyNode(mobject)
-        currentAnimCurve = mfnAnimCurve.name()             
-    
-        mfnAnimCurve = OpenMayaAnim.MFnAnimCurve(mobject)
-         
-        # preInfinityType
-        preInfinityType = mfnAnimCurve.preInfinityType()
-         
-        # postInfinityType
-        postInfinityType = mfnAnimCurve.postInfinityType()
-        numKeys = mfnAnimCurve.numKeys()
-        weightedTangent = mfnAnimCurve.isWeighted()
-        
-        timeList = []
-        valueList = []      
-            
-        inTangentXValueList = []
-        inTangentYValueList = []
-            
-        outTangentXValueList = []
-        outTangentYValueList = []
-        
-        inTangentAngleValueList = []
-        inTangentWeightValueList = []
-        
-        outTangentAngleValueList = []
-        outTangentWeightValueList = []    
-        
-        inTangentTypeList = []
-        outTangentTypeList = []
-        breakdownList = []
-       
-        keyData = {}   
-         
-        for index in range (numKeys) :
-            time = mfnAnimCurve.time(index).value()
-            value = mfnAnimCurve.value(index)
-             
-            # In Tangent
-            inTangentX = OpenMaya.MScriptUtil().asFloatPtr()
-            inTangentY = OpenMaya.MScriptUtil().asFloatPtr()   
-            inTangent = mfnAnimCurve.getTangent(index, inTangentX, inTangentY, True)    
-            inTangentXValue = OpenMaya.MScriptUtil.getFloat(inTangentX)
-            inTangentYValue = OpenMaya.MScriptUtil.getFloat(inTangentY)  
-             
-            # Out Tangent
-            outTangentX = OpenMaya.MScriptUtil().asFloatPtr()
-            outTangentY = OpenMaya.MScriptUtil().asFloatPtr()   
-            outTangent = mfnAnimCurve.getTangent(index, outTangentX, outTangentY, False)
-            outTangentXValue = OpenMaya.MScriptUtil.getFloat(outTangentX)
-            outTangentYValue = OpenMaya.MScriptUtil.getFloat(outTangentY)    
-            
-            # In Tangent angle and weight
-            inTangentAngle = OpenMaya.MAngle()
-            inTangentweight = OpenMaya.MScriptUtil().asDoublePtr()           
-            inTangent = mfnAnimCurve.getTangent(index, inTangentAngle, inTangentweight, True)        
-            inTangentAngleValue = inTangentAngle.value()
-            inTangentWeightValue = OpenMaya.MScriptUtil.getDouble(inTangentweight) 
-            
-            # Out Tangent angle and weight
-            outTangentAngle = OpenMaya.MAngle()
-            outTangentweight = OpenMaya.MScriptUtil().asDoublePtr()         
-            outTangent = mfnAnimCurve.getTangent(index, outTangentAngle, outTangentweight, False)
-            outTangentAngleValue = outTangentAngle.value()
-            outTangentWeightValue = OpenMaya.MScriptUtil.getDouble(outTangentweight)                              
-             
-            # In Tangent Type    
-            inTangentType = mfnAnimCurve.inTangentType(index)
-             
-            # Out Tangent Type    
-            outTangentType = mfnAnimCurve.outTangentType(index)
-             
-            # isBreakdown
-            breakdown = mfnAnimCurve.isBreakdown(index)
-            
-            timeList.append (time)
-            valueList.append (value)
-            
-            inTangentXValueList.append (inTangentXValue)
-            inTangentYValueList.append (inTangentYValue)
-            
-            outTangentXValueList.append (outTangentXValue)
-            outTangentYValueList.append (outTangentYValue)
-            
-            inTangentAngleValueList.append (inTangentAngleValue)
-            inTangentWeightValueList.append (inTangentWeightValue)
-            
-            outTangentAngleValueList.append (outTangentAngleValue)
-            outTangentWeightValueList.append (outTangentWeightValue)        
-            
-            inTangentTypeList.append (inTangentType)
-            outTangentTypeList.append (outTangentType)
-            
-            breakdownList.append (breakdown) 
-            
-        print 'Animation curve\t', currentAnimCurve.encode()        
-        
-        animCurveData['animCurve'] = currentAnimCurve.encode() 
-              
-        animCurveData['time'] = timeList    
-        animCurveData['value'] = valueList    
-        
-        animCurveData['numKeys'] = numKeys    
-        animCurveData['preInfinityType'] = preInfinityType
-        animCurveData['postInfinityType'] = postInfinityType
-        animCurveData['weightedTangent'] = weightedTangent
-        
-        animCurveData['inTangentXValue'] = inTangentXValueList
-        animCurveData['inTangentYValue'] = inTangentYValueList    
-        
-        animCurveData['outTangentXValue'] = outTangentXValueList    
-        animCurveData['outTangentYValue'] = outTangentYValueList   
-        
-        animCurveData['inTangentAngleValue'] = inTangentAngleValueList    
-        animCurveData['inTangentWeightValue'] = inTangentWeightValueList   
-        
-        animCurveData['outTangentAngleValue'] = outTangentAngleValueList    
-        animCurveData['outTangentWeightValue'] = outTangentWeightValueList          
-         
-        animCurveData['inTangentType'] = inTangentTypeList    
-        animCurveData['outTangentType'] = outTangentTypeList  
-          
-        animCurveData['breakdown'] = breakdownList      
-            
-        return animCurveData         
-        
-   
-
-
-    def create_kanimation(self, name, data) :
-        
-        for eachAttribute, animCurveData in attributes.iteritems() :
-            if not cmds.objExists ('%s.%s' % (node, eachAttribute)) :
-                print '%s.%s' % (node, eachAttribute), ' no object found  '
+    def get_kanimation(self, mobject) :
+        '''
+            import json
+            from studio_usd_pipe.api import studioAnimation
+            reload(studioAnimation)
+            sanim = studioAnimation.Animation()
+            mobject = sanim.get_mobject('pSphere1')
+            data = sanim.get_kanimation(mobject)
+            print json.dumps(data, indent=4)
+        '''
+        mfn_dependency_node = OpenMaya.MFnDependencyNode(mobject)        
+        anmation_data = {}
+        for index in range (mfn_dependency_node.attributeCount()) :
+            attribute = mfn_dependency_node.attribute(index)
+            mplug = mfn_dependency_node.findPlug(attribute) 
+            anim_curve_mobject = self.get_anim_curve(mplug)
+            if not anim_curve_mobject:
                 continue
-            animCurve = animCurveData['animCurve']        
-            mfnAnimCurve = createAnimationCurve (node, eachAttribute, animCurve)        
-            setAnimattribute_values (mfnAnimCurve, animCurveData)        
-            if not mfnAnimCurve :
-                return False
-            
-        return animCurve
-
-
-    def setAnimattribute_values(self, mfnAnimCurve, attribute_value) :
-        
-        time = attribute_value['time']
-        value = attribute_value['value']
-             
-        numKeys = attribute_value['numKeys']
-        preInfinityType = attribute_value['preInfinityType']
-        postInfinityType = attribute_value['postInfinityType']
-        weightedTangent = attribute_value['weightedTangent']
-             
-        inTangentXValue = attribute_value['inTangentXValue']
-        inTangentYValue = attribute_value['inTangentYValue']
-             
-        outTangentXValue = attribute_value['outTangentXValue']
-        outTangentYValue = attribute_value['outTangentYValue']
-        
-        inTangentXValue = attribute_value['inTangentXValue']
-        inTangentYValue = attribute_value['inTangentYValue']  
-        
-        inTangentAngleValue = attribute_value['inTangentAngleValue']
-        inTangentWeightValue = attribute_value['inTangentWeightValue']    
-        outTangentAngleValue = attribute_value['outTangentAngleValue']
-        outTangentWeightValue = attribute_value['outTangentWeightValue']
-              
-        inTangentType = attribute_value['inTangentType']
-        outTangentType = attribute_value['outTangentType']
-               
-        breakdown = attribute_value['breakdown']        
-        
-        mfnAnimCurve.setPreInfinityType (preInfinityType)
-        mfnAnimCurve.setPostInfinityType (postInfinityType)
-        mfnAnimCurve.setIsWeighted (weightedTangent)   
-        
-        # for index in range (time`)
-        
-        mTimeArray = OpenMaya.MTimeArray ()
-        mDoubleArray = OpenMaya.MDoubleArray ()
+            curve_data = self.get_kanimCurve(anim_curve_mobject)
+            mfnAttribute = OpenMaya.MFnAttribute(mplug.attribute())            
+            anmation_data.setdefault(mfnAttribute.name(), curve_data) 
+        return anmation_data  
     
-        for index in range (len(time)) :    
-            mTimeArray.append (OpenMaya.MTime(time[index], OpenMaya.MTime.uiUnit()))
-            mDoubleArray.append (value[index]) 
-        
-        mfnAnimCurve.addKeys (mTimeArray, mDoubleArray, 0, 0, 1)     
-            
-        for index in range (len(time)) :
-            
-            mfnAnimCurve.setTangent (index, inTangentXValue[index], inTangentYValue[index], True)
-            mfnAnimCurve.setTangent (index, outTangentXValue[index], outTangentYValue[index], False)
-            
-            inTangentMAngle = OpenMaya.MAngle (inTangentAngleValue[index])        
-            
-            outTangentMAngle = OpenMaya.MAngle (outTangentAngleValue[index])               
-            
-            mfnAnimCurve.setTangent (index, inTangentMAngle, inTangentWeightValue[index], True)
-            mfnAnimCurve.setTangent (index, outTangentMAngle, outTangentWeightValue[index], False)  
-                
-            mfnAnimCurve.setIsBreakdown (index, breakdown[index])        
-            
-            mfnAnimCurve.setInTangentType (index, inTangentType[index])       
-            mfnAnimCurve.setOutTangentType (index, outTangentType[index])
-            
-    def createAnimationCurve(self, node, currentAttribute, animCurve) :
-        
-        mSelectionList = OpenMaya.MSelectionList ()
-        mSelectionList.add ('%s.%s' % (node, currentAttribute))
-        currentMPlug = OpenMaya.MPlug()
-        mSelectionList.getPlug (0, currentMPlug)  
-        
+    def get_anim_curve(self, mplug):
         connections = OpenMaya.MPlugArray()
-        currentMPlug.connectedTo (connections, 1, 0)
+        mplug.connectedTo (connections, 1, 0)        
+        for index in range (connections.length()) :  
+            connected_mplug = connections[index]
+            connected_mobject = connected_mplug.node() 
+            if not connected_mobject.hasFn(OpenMaya.MFn.kAnimCurve) :
+                continue
+            return connected_mobject
+        return None
+    
+    def get_tanget(self, mfn_anim_curve, index, tanget):
+        mscript_util_x = OpenMaya.MScriptUtil()
+        tangent_x = mscript_util_x.asFloatPtr()        
+        mscript_util_y = OpenMaya.MScriptUtil()
+        tangent_y = mscript_util_y.asFloatPtr()
+        mfn_anim_curve.getTangent(index, tangent_x, tangent_y, tanget)
+        x_value = mscript_util_x.getFloat(tangent_x)
+        y_value = mscript_util_y.getFloat(tangent_y)
+        return x_value, y_value
+    
+    def get_tanget_angle_weight(self, mfn_anim_curve, index, tanget):
+        mangle = OpenMaya.MAngle()
+        mscript_util = OpenMaya.MScriptUtil()
+        mweight = mscript_util.asDoublePtr()           
+        mfn_anim_curve.getTangent(index, mangle, mweight, tanget)        
+        angle = mangle.asDegrees()        
+        weight = mscript_util.getDouble(mweight)
+        return angle, weight     
         
-        newAnimCurve = True
+    def get_kanimCurve(self, mobject):               
+        mfn_anim_curve = OpenMayaAnim.MFnAnimCurve(mobject)        
+        pre_infinity_type = mfn_anim_curve.preInfinityType()  # preInfinityType        
+        post_infinity_type = mfn_anim_curve.postInfinityType()  # postInfinityType
+        static = mfn_anim_curve.isStatic()
+        weighted = mfn_anim_curve.isWeighted()  
+        num_keys = mfn_anim_curve.numKeys()
+        times = []
+        values = []     
+        in_tangents = []
+        out_tangents = []        
+        in_tangents_angle_weight = []
+        out_tangents_angle_weight = []
+        int_angents_type = []
+        out_tangents_type = []
+        breakdowns = []
+        weights_locked = []
+        tangents_locked = []   
+        for index in range (num_keys):
+            time = mfn_anim_curve.time(index).value()
+            value = mfn_anim_curve.value(index)              
+            intangent_x, intangent_y = self.get_tanget(mfn_anim_curve, index, True)  # In Tangent
+            outtangent_x, outtangent_y = self.get_tanget(mfn_anim_curve, index, False)  # Out Tangent
+            intangent_angle, intangent_weight = self.get_tanget_angle_weight(mfn_anim_curve, index, True)  # In Tangent angle and weight
+            outtangent_angle, outtangent_weight = self.get_tanget_angle_weight(mfn_anim_curve, index, False)  # out Tangent angle and weight
+            in_tangent_type = mfn_anim_curve.inTangentType(index)  # In Tangent Type   
+            out_tangent_type = mfn_anim_curve.outTangentType(index)  # Out Tangent Type    
+            breakdown = mfn_anim_curve.isBreakdown(index)  # isBreakdown
+            weight_locked = mfn_anim_curve.weightsLocked(index)
+            tangent_locked = mfn_anim_curve.tangentsLocked(index)
+            times.append(time)
+            values.append(value)
+            in_tangents.append([intangent_x, intangent_y])
+            out_tangents.append([outtangent_x, outtangent_y])
+            in_tangents_angle_weight.append([intangent_angle, intangent_weight])
+            out_tangents_angle_weight.append([outtangent_angle, outtangent_weight])
+            int_angents_type.append(in_tangent_type) 
+            out_tangents_type.append(out_tangent_type) 
+            breakdowns.append(breakdown) 
+            weights_locked.append(weight_locked)
+            tangents_locked.append(tangent_locked)
+        anim_curve_data = {
+            'anim_curve': mfn_anim_curve.name(),
+            'pre_infinity_type': pre_infinity_type,
+            'post_infinity_type': post_infinity_type,
+            'static': static,
+            'weighted': weighted,
+            'time': times,
+            'value': values,
+            'num_keys': num_keys,
+            'in_tangent': in_tangents,
+            'out_tangent': out_tangents,
+            'in_tangent_angle_weight': in_tangents_angle_weight,
+            'out_tangent_angle_weight': out_tangents_angle_weight,
+            'in_tangent_type': int_angents_type,
+            'out_tangent_type': out_tangents_type,
+            'breakdown': breakdowns,
+            'weightlocked': weights_locked,
+            'tangentlocked': tangents_locked,
+            }   
+        return anim_curve_data
+    
+    def create_animation(self, name, data):        
+        self.inset_kanimation(name, data)
+    
+    def inset_kanimation(self, name, data):
+        self.create_kanimation(name, data)
+    
+    def replace_kanimation(self, name, data):       
+        self.remove_kanimation(name, data)
+        self.create_kanimation(name, data)
         
-        if connections.length() :                
-            connectedNode = connections[0].node() 
-                           
-            if connectedNode.hasFn (OpenMaya.MFn.kAnimCurve) :
-                mfnAnimCurve = OpenMayaAnim.MFnAnimCurve (connectedNode)            
-                newAnimCurve = False
-                    
-        if newAnimCurve :        
-            try :
-                mfnAnimCurve = OpenMayaAnim.MFnAnimCurve ()        
-                animCurveType = mfnAnimCurve.timedAnimCurveTypeForPlug (currentMPlug)            
-                mfnAnimCurve.create (currentMPlug, animCurveType)
-            except Exception as result :            
-                print result
-                return False
-        
-        return mfnAnimCurve
+    def remove_kanimation(self, name, data):
+        for attribute, contents in data.items():            
+            mplug = self.get_mplug('%s.%s' % (name, attribute))        
+            mfn_anim_curve = self.create_animation_curve(mplug)
+            if not mfn_anim_curve:
+                continue
+            self.remove_node(mfn_anim_curve.name())
+         
+    def create_kanimation(self, name, data):
+        '''
+            import json
+            from studio_usd_pipe.api import studioAnimation
+            reload(studioAnimation)
+            sanim = studioAnimation.Animation()
+            mobject = sanim.get_mobject('pSphere1')
+            data = sanim.get_kanimation(mobject)
+            sanim.create_kanimation('pCube1', data)        
+        '''
+        for attribute, contents in data.items():            
+            mplug = self.get_mplug('%s.%s' % (name, attribute))
+            mfn_anim_curve = self.create_animation_curve(mplug)
+            self.set_animation_values(mfn_anim_curve, contents)
+
+    def create_animation_curve(self, mplug) :
+        anim_curve = self.get_anim_curve(mplug)
+        if anim_curve:
+            mfn_anim_curve = OpenMayaAnim.MFnAnimCurve(anim_curve)       
+        else:
+            mfn_anim_curve = OpenMayaAnim.MFnAnimCurve()    
+            anim_curve_type = mfn_anim_curve.timedAnimCurveTypeForPlug(mplug)            
+            mfn_anim_curve.create(mplug, anim_curve_type)            
+        return mfn_anim_curve
+    
+    def set_animation_values(self, mfn_anim_curve, values):
+        mfn_anim_curve.setIsWeighted(values['weighted'])   
+        mfn_anim_curve.setPreInfinityType(values['pre_infinity_type'])
+        mfn_anim_curve.setPostInfinityType(values['post_infinity_type'])
+        mtime_array = OpenMaya.MTimeArray()
+        mdouble_array = OpenMaya.MDoubleArray()    
+        for index in range (len(values['time'])) :    
+            mtime_array.append(OpenMaya.MTime(values['time'][index], OpenMaya.MTime.uiUnit()))
+            mdouble_array.append(values['value'][index])
+        mfn_anim_curve.addKeys(mtime_array, mdouble_array, 0, 0, 1)
+        for index in range(mtime_array.length()):
+            mfn_anim_curve.setTangent(index, values['in_tangent'][index][0], values['in_tangent'][index][1], True)
+            mfn_anim_curve.setTangent(index, values['out_tangent'][index][0], values['out_tangent'][index][1], False)
+            intangent_mangle = OpenMaya.MAngle(values['in_tangent_angle_weight'][index][0])        
+            outtangent_mangle = OpenMaya.MAngle(values['out_tangent_angle_weight'][index][0])   
+            mfn_anim_curve.setTangent(index, intangent_mangle, values['in_tangent_angle_weight'][index][1], True)
+            mfn_anim_curve.setTangent(index, outtangent_mangle, values['out_tangent_angle_weight'][index][1], False)
+            mfn_anim_curve.setInTangentType(index, values['in_tangent_type'][index])
+            mfn_anim_curve.setOutTangentType(index, values['out_tangent_type'][index])               
+            mfn_anim_curve.setIsBreakdown(index, values['breakdown'][index])
 
