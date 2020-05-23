@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 NAME = 'Surface publish'
-ORDER = 1
+ORDER = 2
 VALID = True
 TYPE = 'bundles'
 KEY = 'surface_bundles'

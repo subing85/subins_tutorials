@@ -13,6 +13,7 @@ def execute(output_path=None, **kwargs):
     import os
     from studio_usd_pipe.core import common
     from studio_usd_pipe.utils import maya_asset
+    reload(maya_asset)
     output_usd = os.path.join(
         output_path,
         '{}.usd'.format(kwargs['caption'])

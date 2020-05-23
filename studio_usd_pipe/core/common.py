@@ -3,6 +3,7 @@ import imp
 import json
 import shutil
 import pkgutil
+import getpass
 import tempfile
 import warnings
 
@@ -204,11 +205,34 @@ def create_manifest(output_path, **kwargs):
         'type': 'manifest',
         'key': '%s_manifest' % kwargs['pipe'],
         'data': kwargs
-        }        
+        }      
+    if not os.path.isdir(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))         
     with (open(output_path, 'w')) as content:
         content.write(json.dumps(final_data, indent=4))
     return output_path
 
+
+def create_presets(output_path, description, key, inputs):
+    final_data = {
+        'created_by': getpass.getuser(),
+        'author': 'Subin. Gopi (subing85@gmail.com)',
+        '#copyright': '(c) 2019, Subin Gopi All rights reserved.',
+        'modified': get_modified_date(),
+        'description': description,
+        'warning': '# WARNING! All changes made in this file will be lost!',
+        'enable': True,
+        'type': 'presets',
+        'key': '%s_presets' % key,
+        'data': inputs
+        }
+    
+    print 'output_path', output_path
+    if not os.path.isdir(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))           
+    with (open(output_path, 'w')) as content:
+        content.write(json.dumps(final_data, indent=4))
+    return output_path
 
 def get_subprocess_code(module_path, application):  # **    
     modules = get_modules(module_path)

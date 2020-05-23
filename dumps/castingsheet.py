@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/venture/source_code/subins_tutorials/dumps/castingsheet.ui'
 #
-# Created: Thu May 14 00:13:46 2020
+# Created: Mon May 18 01:08:53 2020
 #      by: pyside-uic 0.2.13 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,13 +12,21 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(285, 596)
+        MainWindow.resize(372, 504)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.textEdit = QtGui.QTextEdit(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.textEdit.sizePolicy().hasHeightForWidth())
+        self.textEdit.setSizePolicy(sizePolicy)
+        self.textEdit.setObjectName("textEdit")
+        self.horizontalLayout.addWidget(self.textEdit)
         self.pushButton = QtGui.QPushButton(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)

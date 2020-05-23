@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 NAME = 'Spread Sheet'
-ORDER = 1
+ORDER = 3
 VALID = True # upadte with True
 TYPE = 'common_application'
 KEY = 'spreadsheet'

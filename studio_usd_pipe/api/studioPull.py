@@ -6,12 +6,13 @@ from studio_usd_pipe.api import studioPipe
 
 class Pull(object):
     
-    def __init__(self, current_application):
-        self.current_application = current_application
+    def __init__(self, application=None, subfield=None):
+        self.current_application = application
+        self.current_subfield = subfield
         self.mode = 'creator'
     
     def get_creators(self):
-        bundle = bundles.Bundles(self.current_application, 'pull', self.current_subfiled)
+        bundle = bundles.Bundles(self.current_application, 'pull', self.current_subfield)
         modules = bundle.get_bundles(types=[self.mode])
         if not modules:
             return {}

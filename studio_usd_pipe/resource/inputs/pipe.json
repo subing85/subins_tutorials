@@ -23,7 +23,7 @@
 						"uv",
 						"shader",
 						"puppet",
-						"usd",
+						"composition",
 						"hair"
 						]
 					},
@@ -59,8 +59,7 @@
 				"subfield": {
 					"order": 0,
 					"values": [				
-						"primarylayout",
-						"secondarylayout",
+						"layout",
 						"animation",
 						"lighting",
 						"compositing"

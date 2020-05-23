@@ -9,7 +9,7 @@ reload(preferences)
 
 def show_window(standalone=True):    
     if not standalone:
-        from studio_usd_pipe.patch.utils import smaya        
+        from studio_usd_pipe.snippet.utils import smaya        
         main_window = smaya.get_qwidget()
         smaya.remove_exists_window('widget_preferences')        
         my_window = preferences.Window(parent=main_window)

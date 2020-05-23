@@ -1,6 +1,9 @@
 import os
+import re
 import sys
-
+import ast
+import json
+import copy
 
 from PySide2 import QtGui
 from PySide2 import QtCore
@@ -10,12 +13,12 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 
 from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
+from studio_usd_pipe.resource.ui import catalogue
 
 
 class Window(QtWidgets.QMainWindow):
@@ -25,55 +28,35 @@ class Window(QtWidgets.QMainWindow):
         self.setWindowFlags(QtCore.Qt.Window) 
         self.standalone = standalone
         self.title = 'Casting Sheet'
-        self.width = 572
+        self.width = 1000
         self.height = 716
-        self.version, self.label = self.set_tool_context() 
+        self.pipe = 'assets'
         shows = studioShow.Show()
         self.current_show = shows.get_current_show()
         self.current_show = 'btm'  # to remove
         
         self.environ = studioEnviron.Environ(self.current_show)
-        #self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
-        self.source_maya = None
-        self.asset_ids = {}
+        self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
+        self.show_icon = self.environ.get_show_icon()
+        self.comp_catalogue = catalogue.Catalogue()
+        
         self.setup_ui()
         self.setup_menu()
         self.setup_icons()
         self.set_default()
         
     def setup_ui(self):  
-    
-        
         self.setObjectName('mainwindow_castingsheet')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))        
         self.resize(self.width, self.height) 
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
         self.setCentralWidget(self.centralwidget)        
-                        
         self.verticallayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)        
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
-        self.verticallayout.addWidget(self.groupbox)             
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None)    
-        self.line = QtWidgets.QFrame(self)
-        self.line.setObjectName('line')        
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.verticallayout_item.addWidget(self.line)
-
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=self.show_icon)  
         self.groupbox_toolbar = QtWidgets.QGroupBox(self)
         self.groupbox_toolbar.setObjectName('groupbox_toolbar')
         self.groupbox_toolbar.setTitle('.')
@@ -90,182 +73,391 @@ class Window(QtWidgets.QMainWindow):
         spaceritem = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontallayout_toolbar.addItem(spaceritem)
-        
         self.splitter = QtWidgets.QSplitter(self)
-        self.splitter.setObjectName("splitter")        
+        self.splitter.setObjectName('splitter')        
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.verticallayout_item.addWidget(self.splitter)
-        
         self.treewidget_shots = QtWidgets.QTreeWidget(self.splitter)
-        self.treewidget_shots.setObjectName("treewidget_shots")
-        self.treewidget_shots.headerItem().setText(0, "Shots")
+        self.treewidget_shots.setObjectName('treewidget_shots')
+        self.treewidget_shots.headerItem().setText(0, 'Shots')
         self.treewidget_shots.setAlternatingRowColors(True)
-        
+        self.treewidget_shots.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.treewidget_assets = QtWidgets.QTreeWidget(self.splitter)
-        self.treewidget_assets.setObjectName("treewidget_assets")
-        self.treewidget_assets.headerItem().setText(0, "Assets")
+        self.treewidget_assets.setObjectName('treewidget_assets')
+        self.treewidget_assets.headerItem().setText(0, 'Assets')
         self.treewidget_assets.setAlternatingRowColors(True)
-        
-        self.groupbox_data = QtWidgets.QGroupBox(self.splitter)
-        self.groupbox_data.setObjectName('groupbox_data')
-                
-        self.gridlayout_data = QtWidgets.QGridLayout(self.groupbox_data)
-        self.gridlayout_data.setObjectName('gridlayout_data')
-        self.gridlayout_data.setHorizontalSpacing(5)
-        self.gridlayout_data.setContentsMargins(5, 5, 5, 5)
-        right_align = QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
-        self.label_captions = QtWidgets.QLabel(self.groupbox_data)
-        self.label_captions.setObjectName('label_captions')
-        self.label_captions.setText('caption: ')
-        self.label_captions.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_captions, 0, 0, 1, 1)        
-        self.label_caption = QtWidgets.QLabel(self.groupbox_data)
-        self.label_caption.setObjectName('label_caption')
-        self.gridlayout_data.addWidget(self.label_caption, 0, 1, 1, 1)        
-        self.label_tags = QtWidgets.QLabel(self.groupbox_data)
-        self.label_tags.setObjectName('label_tags')
-        self.label_tags.setText('tag: ')
-        self.label_tags.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_tags, 1, 0, 1, 1)        
-        self.label_tag = QtWidgets.QLabel(self.groupbox_data)
-        self.label_tag.setObjectName('label_tag')
-        self.gridlayout_data.addWidget(self.label_tag, 1, 1, 1, 1)     
-        self.label_types = QtWidgets.QLabel(self.groupbox_data)
-        self.label_types.setObjectName('label_types')
-        self.label_types.setText('type: ')
-        self.label_types.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_types, 2, 0, 1, 1)        
-        self.label_type = QtWidgets.QLabel(self.groupbox_data)
-        self.label_type.setObjectName('label_type')
-        self.gridlayout_data.addWidget(self.label_type, 2, 1, 1, 1)  
-        self.label_users = QtWidgets.QLabel(self.groupbox_data)
-        self.label_users.setObjectName('label_users')
-        self.label_users.setText('owner: ')
-        self.label_users.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_users, 3, 0, 1, 1)        
-        self.label_user = QtWidgets.QLabel(self.groupbox_data)
-        self.label_user.setObjectName('label_user')           
-        self.gridlayout_data.addWidget(self.label_user, 3, 1, 1, 1) 
-        self.label_modifieds = QtWidgets.QLabel(self.groupbox_data)
-        self.label_modifieds.setObjectName('label_modifieds')
-        self.label_modifieds.setText('modified: ')
-        self.label_modifieds.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_modifieds, 4, 0, 1, 1)        
-        self.label_modified = QtWidgets.QLabel(self.groupbox_data)
-        self.label_modified.setObjectName('label_modified')
-        self.gridlayout_data.addWidget(self.label_modified, 4, 1, 1, 1)
-        self.label_showpaths = QtWidgets.QLabel(self.groupbox_data)
-        self.label_showpaths.setObjectName('label_dates')
-        self.label_showpaths.setText('show path: ')
-        self.label_showpaths.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_showpaths, 5, 0, 1, 1)        
-        self.label_showpath = QtWidgets.QLabel(self.groupbox_data)
-        self.label_showpath.setObjectName('label_showpath')
-        self.gridlayout_data.addWidget(self.label_showpath, 5, 1, 1, 1)        
-        self.label_locations = QtWidgets.QLabel(self.groupbox_data)
-        self.label_locations.setObjectName('label_locations')
-        self.label_locations.setText('location: ')
-        self.label_locations.setAlignment(right_align)
-        self.gridlayout_data.addWidget(self.label_locations, 6, 0, 1, 1)        
-        self.label_location = QtWidgets.QLabel(self.groupbox_data)
-        self.label_location.setObjectName('label_location')
-        self.gridlayout_data.addWidget(self.label_location, 6, 1, 1, 1)
-        self.label_description = QtWidgets.QLabel(self.groupbox_data)
-        self.label_description.setObjectName('label_description')
-        self.label_description.setText('Description')
-        self.gridlayout_data.addWidget(self.label_description, 7, 0, 1, 1)        
-        self.textedit_description = QtWidgets.QTextEdit(self.groupbox_data)
-        self.textedit_description.setObjectName('textedit_description')
-        self.textedit_description.setReadOnly(True)
-        self.textedit_description.setMinimumSize(QtCore.QSize(256, 0))
-        self.textedit_description.setMaximumSize(QtCore.QSize(256, 16777215))
-        self.gridlayout_data.addWidget(self.textedit_description, 8, 0, 1, 2)   
-        self.button_thumbnail = QtWidgets.QPushButton(self.groupbox_data)
-        self.button_thumbnail.setObjectName('button_thumbnail')
-        self.button_thumbnail.setMinimumSize(QtCore.QSize(256, 180))
-        self.button_thumbnail.setMaximumSize(QtCore.QSize(256, 180))
-        self.gridlayout_data.addWidget(self.button_thumbnail, 9, 0, 1, 2)  
-                
-        
-        self.horizontallayout_create = QtWidgets.QHBoxLayout(self)
+        self.treewidget_assets.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.treewidget_assets.currentItemChanged.connect(self.current_asset_select)        
+        self.splitter.addWidget(self.comp_catalogue) 
+        self.horizontallayout_create = QtWidgets.QHBoxLayout()
         self.horizontallayout_create.setObjectName('horizontallayout_toolbar')
-        self.verticallayout_item.addLayout(self.horizontallayout_create)    
-        
+        self.verticallayout.addLayout(self.horizontallayout_create)    
         spaceritem = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontallayout_create.addItem(spaceritem)
-                
+        self.button_close = QtWidgets.QPushButton(self)
+        self.button_close.setObjectName('button_close')
+        self.button_close.setText('close')                
+        self.horizontallayout_create.addWidget(self.button_close)
+        self.button_close.clicked.connect(self.close)
         self.button_create = QtWidgets.QPushButton(self)
-        self.button_create.setObjectName("button_create")
-        self.button_create.setText("Create")
-        
+        self.button_create.setObjectName('button_create')
+        self.button_create.setText('create')
         self.horizontallayout_create.addWidget(self.button_create)
-
-
-
-
-
+        self.button_create.clicked.connect(self.create_castingsheet)
 
     def setup_icons (self):
         widgets = self.findChildren(QtWidgets.QAction)
         swidgets.set_icons(mainwindow=self, widgets=widgets)
-
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty      
     
     def set_default(self):
-        show_icon, valid = self.environ.get_environ_value('SHOW_ICON')
-        if not show_icon:
-            show_icon = os.path.join(resource.getIconPath(), 'show.png')
-        size = self.button_show.minimumSize()
-        swidgets.image_to_button(
-            self.button_show,
-            size.width(),
-            size.height(),
-            path=show_icon
-            )
+        self.setup_assets()
+        self.setup_shots()
+        castingsheet_path = self.get_castingsheet_path()
+        if os.path.isfile(self.get_castingsheet_path()):
+            self.treewidget_assets.hide()
+            self.comp_catalogue.hide()
 
     def setup_menu(self):
         self.menu = QtWidgets.QMenu(self)
-        self.menu.setObjectName('menu') 
-        
-        actions = ['reload', 'add', 'instance', 'remove', 'parent']
-        
+        self.menu.setObjectName('menu')         
+        actions = ['reload', 'add', 'instance', 'remove', 'clear', 'parent', 'edit', 'rename']
         for each in actions:        
             action = QtWidgets.QAction(self)
-            action.setObjectName('action_%s'%each)
+            action.setObjectName('action_%s' % each)
             action.setToolTip(each) 
             action.setText(each)        
             self.menu.addAction(action)      
             self.toolbar.addAction(action)
             action.triggered.connect(partial(self.menu_actions, each))
-            
-    def menu_actions(self, menu):
-        self.add_item(self.treewidget_shots)
-        
-        
     
-    def add_item(self, treewidget):
+    def setup_shots(self):        
+        castingsheet_path = self.get_castingsheet_path()
+        if not os.path.isfile(self.get_castingsheet_path()):
+            return
+        casting_data = resource.getInputData(castingsheet_path)
+        self.treewidget_shots.clear()
+        toplevels = sorted(casting_data.keys())
+        for toplevel in toplevels:
+            toplevel_item = swidgets.add_treewidget_item(
+                self.treewidget_shots, toplevel, icon='toplevel')
+            sublevels = sorted(casting_data[toplevel].keys())
+            for sublevel in sublevels:
+                sublevel_item = swidgets.add_treewidget_item(toplevel_item, sublevel, icon='sublevel') 
+                for asset in casting_data[toplevel][sublevel]:
+                    asset_item = swidgets.add_treewidget_item(sublevel_item, asset, icon='asset')
+                    asset_item.setStatusTip(0, asset)
             
+    def setup_assets(self):
+        self.treewidget_assets.clear()            
+        contents = self.spipe.get()
+        # print json.dumps(contents, indent=4)
+        captions = sorted(contents.keys())
+        valid_subfields = self.spipe.get_casting_subfields()
+        for caption in captions:
+            caption_item = swidgets.add_treewidget_item(
+                self.treewidget_assets, caption, icon=caption)
+            self.treewidget_assets.setItemExpanded(caption_item, 1)            
+            for subfield in valid_subfields:                
+                if subfield not in contents[caption]:
+                    continue
+                subfield_item = swidgets.add_treewidget_item(
+                    caption_item, subfield, icon=subfield)
+                self.treewidget_assets.setItemExpanded(subfield_item, 1)            
+                versions = common.set_version_order(contents[caption][subfield].keys())
+                for version in versions:
+                    cuttrent_tag = contents[caption][subfield][version]['tag']
+                    version_item = swidgets.add_treewidget_item(
+                        subfield_item, version, icon=cuttrent_tag, foreground=(192, 0, 0))                
+                    more_contents = self.spipe.get_more_data(caption, subfield, version)
+                    ver_contents = copy.deepcopy(contents[caption][subfield][version])
+                    ver_contents.update(more_contents)
+                    version_item.setStatusTip(0, str(ver_contents))
+                    # update root item icon with pipe tag(character, prop, etc)
+                    swidgets.update_treewidget_item_icon(caption_item, cuttrent_tag)
+    
+    def current_asset_select(self, *args):
+        if not args[0]:
+            return
+        contents = args[0].statusTip(0)
+        if not contents:
+            self.comp_catalogue.setup_default()
+            return
+        contents = ast.literal_eval(contents)
+        self.comp_catalogue.set_catalogue(**contents)
+    
+    def get_castingsheet_path(self):
+        show_path = self.environ.get_show_path() 
+        castingsheet_path = resource.getSpecificPreset(show_path, 'castingsheet')
+        #if not os.path.isfile(castingsheet_path):
+        #    return None
+        return castingsheet_path
+    
+    def menu_actions(self, menu):        
+        if menu == 'reload':
+            self.reload()        
+        if menu == 'add':
+            self.add_item(self.treewidget_shots)
+        if menu == 'instance':
+            self.add_instance(self.treewidget_shots)
+        if menu == 'remove':
+            self.remove_item(self.treewidget_shots)            
+        if menu == 'clear':
+            self.clear_item(self.treewidget_shots)               
+        if menu == 'parent':
+            self.parent_item()    
+        if menu == 'edit':
+            self.edit_item()
+        if menu == 'rename':
+            self.rename_item(self.treewidget_shots)
+                                                                
+    def reload(self):
+        self.set_default()
+        self.treewidget_shots.clear()
+    
+    def add_item(self, treewidget):            
         item_name, ok = QtWidgets.QInputDialog.getText(
-            self, 'Input', 'Enter the item name:', QtWidgets.QLineEdit.Normal)
+            self, 'input', 'enter the item name:', QtWidgets.QLineEdit.Normal)
+        if not ok:
+            print '\n#warnings abort the name'
+            return
+        parent_item = self.find_parent_item(treewidget)
+        if self.has_item_exists(parent_item, item_name):
+            QtWidgets.QMessageBox.critical(
+                self, 'critical', 'already found <%s>' % item_name, QtWidgets.QMessageBox.Ok)            
+            return
+        
+        icon = 'toplevel'
+        if isinstance(parent_item, QtWidgets.QTreeWidgetItem):
+            icon = 'sublevel'
+        
+        current_item = swidgets.add_treewidget_item(
+            parent_item, item_name, icon=icon, foreground=None)        
+        # current_item.setWhatsThis(0, 'child')
+        
+    def add_instance(self, treewidget):
+        if not treewidget.selectedItems():
+            QtWidgets.QMessageBox.warning(
+                self, 'warning', 'please select any item', QtWidgets.QMessageBox.Ok) 
+            return None
+        number_copies, ok = QtWidgets.QInputDialog.getInt(
+            self, 'input', 'number of copies:', QtWidgets.QLineEdit.Normal)
+        if not ok:
+            print '\n#warnings abort the rename'
+            return   
+        current_item = treewidget.selectedItems()[-1]
+
+        if current_item.parent():
+            parent_item = current_item.parent()
+        else:
+            parent_item = treewidget
+            
+        icon = 'toplevel'
+        if isinstance(parent_item, QtWidgets.QTreeWidgetItem):
+            icon = 'sublevel'            
+            
+        for index in range(number_copies):            
+            next_item_name = self.find_next_item_name(parent_item, current_item)
+            current_item = swidgets.add_treewidget_item(
+                parent_item, next_item_name, icon=icon, foreground=None)   
+
+    def remove_item(self, treewidget):
+        if not treewidget.selectedItems():
+            QtWidgets.QMessageBox.warning(
+                self, 'warning', 'please select any item', QtWidgets.QMessageBox.Ok) 
+            return None
+        items = [each.text(0) for each in treewidget.selectedItems()]
+        if len(items) > 10:
+            items = items[0:10] + ['etc ...']            
+        replay = QtWidgets.QMessageBox.question(
+            self,
+            'question',
+            'Are you sure, you want to remove \n%s' % ('\n'.join(items)),
+            QtWidgets.QMessageBox.Yes,
+            QtWidgets.QMessageBox.No
+            ) 
+        if replay == QtWidgets.QMessageBox.No:
+            print 'abort the remove item!...'
+            return
+        for item in treewidget.selectedItems():
+            item.removeChild(item)
+            treewidget.removeItemWidget(item, 0)                 
+    
+    def clear_item(self, treewidget): 
+        widget_item = treewidget.invisibleRootItem()
+        if not widget_item.childCount():
+            QtWidgets.QMessageBox.warning(
+                self, 'warning', 'not found any itmes to clear (already clean)', QtWidgets.QMessageBox.Ok) 
+            return None            
+                           
+        replay = QtWidgets.QMessageBox.question(
+            self,
+            'question',
+            'Are you sure, you want to remove all',
+            QtWidgets.QMessageBox.Yes,
+            QtWidgets.QMessageBox.No
+            ) 
+        if replay == QtWidgets.QMessageBox.No:
+            print 'abort the clear!...'
+            return        
+        treewidget.clear()
+    
+    def parent_item(self):
+        current_assets = self.find_children_items(self.treewidget_assets)
+        current_shots = self.find_children_items(self.treewidget_shots, tag=True)
+        if not current_assets:
+            QtWidgets.QMessageBox.critical(
+                self,
+                'critical',
+                'please select any item from assets',
+                QtWidgets.QMessageBox.Ok
+                )
+            return             
+        if not current_shots:
+            QtWidgets.QMessageBox.critical(
+                self,
+                'critical',
+                'please select any item from shots',
+                QtWidgets.QMessageBox.Ok
+                )
+            return        
+        
+        for current_shot in current_shots:
+            for current_asset in current_assets:
+                contents = ast.literal_eval(current_asset.statusTip(0))
+                location = '%s|%s|%s' % (
+                    contents['caption'],
+                    contents['subfield'],
+                    contents['version']
+                    )
+                current_item = swidgets.add_treewidget_item(
+                    current_shot, location, icon='asset', foreground=None)
+                current_item.setStatusTip(0, location)
+
+                
+    def edit_item(self):
+        self.treewidget_shots.show()
+        self.treewidget_assets.show()
+        self.comp_catalogue.show()
+        
+    def rename_item(self, treewidget):
+        if not treewidget.selectedItems():
+            QtWidgets.QMessageBox.warning(
+                self, 'warning', 'please select any item', QtWidgets.QMessageBox.Ok) 
+            return
+        current_item = treewidget.selectedItems()[-1]
+        if not current_item.childCount():
+            QtWidgets.QMessageBox.warning(
+                self, 'warning', 'not able to rename', QtWidgets.QMessageBox.Ok) 
+            return        
+        item_name, ok = QtWidgets.QInputDialog.getText(
+            self, 'input', 'enter the new name:', QtWidgets.QLineEdit.Normal)
         if not ok:
             print '\n#warnings abort the rename'
             return
-        
-        parent = treewidget
-        
-        if treewidget.selectedItems():
-            parent = treewidget.selectedItems()[-1]
-        
-        swidgets.add_treewidget_item(
-            parent, item_name, icon=None, foreground=None)
+        parent_item = self.treewidget_shots
+        if current_item.parent():
+            parent_item = current_item.parent()
+        if self.has_item_exists(parent_item, item_name):
+            QtWidgets.QMessageBox.critical(
+                self, 'critical', 'already found <%s>' % item_name, QtWidgets.QMessageBox.Ok)            
+            return        
+        current_item.setText(0, item_name)
 
-             
+    def has_item_exists(self, parent_item, item_name):
+        chidren = self.find_children(parent_item)        
+        if item_name in chidren:
+            return True
+        return False
         
-   
+    def find_parent_item(self, treewidget):        
+        if not treewidget.selectedItems():
+            return treewidget
+        current_item = treewidget.selectedItems()[-1]        
+        if not current_item.parent():
+            return current_item        
+        return current_item.parent()   
+    
+    def find_children(self, parent_item):     
+        if isinstance(parent_item, QtWidgets.QTreeWidget):
+            widget_item = parent_item.invisibleRootItem()
+        else:
+            widget_item = parent_item
+        children = []
+        for index in range (widget_item.childCount()):
+            child = widget_item.child(index)
+            children.append(child.text(0))
+        return children        
+    
+    def find_next_item_name(self, parent_item, current_item):
+        next_name = self.get_next_name(current_item.text(0))
+        stack = [next_name]
+        while stack:
+            current = stack.pop()        
+            if self.has_item_exists(parent_item, current):
+                next_name = self.get_next_name(current)                
+                stack.append(next_name)  
+                continue
+            return current        
+    
+    def get_next_name(self, current_name):
+        digits = map(int, re.findall(r'\d+', current_name))
+        if not digits:
+            return '%s1' % current_name
+        suffix = current_name.rsplit(str(digits[-1]), 1)
+        return '%s%s' % (''.join(suffix), digits[-1] + 1)       
+
+    def find_children_items(self, treewidget, tag=False):
+        selected_items = treewidget.selectedItems()
+        stack = selected_items
+        asset_items = set()
+        while stack:
+            current = stack.pop()
+            if current.childCount():
+                chidren = [current.child(index) for index in range (current.childCount())]
+                stack.extend(chidren)
+                continue
+            if not tag:
+                asset_items.add(current)
+                continue
+            if current.statusTip(0):
+                asset_items.add(current.parent())
+            else:
+                asset_items.add(current)
+        return asset_items
+    
+    def get_children_items(self, item):        
+        children = []        
+        for x in range(item.childCount()):
+            children.append(item.child(x))
+        return children
+    
+    def get_casting_data(self):
+        widget_item = self.treewidget_shots.invisibleRootItem()
+        casting_data = {}        
+        toplevels = self.get_children_items(widget_item) 
+        for toplevel in toplevels:
+            casting_data.setdefault(toplevel.text(0), {})
+            sublevels = self.get_children_items(toplevel) 
+            for sublevel in sublevels:
+                casting_data[toplevel.text(0)].setdefault(sublevel.text(0), [])
+                children = self.get_children_items(sublevel)
+                for child in children:    
+                    casting_data[toplevel.text(0)][sublevel.text(0)].append(child.text(0))
+        return casting_data
+    
+    def create_castingsheet(self):
+        casting_data = self.get_casting_data()
+        castingsheet_path = self.get_castingsheet_path()
+        description = 'casting data preset for shots'
+        key = 'casting'
+        output_path = common.create_presets(castingsheet_path, description, key, casting_data)
+        if not output_path:
+            QtWidgets.QMessageBox.critical(
+                self, 'critical', 'not able to create casting sheet', QtWidgets.QMessageBox.Ok)            
+        QtWidgets.QMessageBox.information(
+            self, 'Success', '%s\nDone!...' % output_path, QtWidgets.QMessageBox.Ok)
+        
         
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

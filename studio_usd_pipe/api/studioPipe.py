@@ -21,6 +21,25 @@ class Pipe(object): # pipe == asset or shot
         environ = studioEnviron.Environ(self.current_show)
         show_path, valid = environ.get_environ_value('SHOW_PATH')
         return show_path
+    
+    def get_composition_subfields(self):
+        composition_subfields = []
+        valid_subfields = ['model', 'uv', 'shader']
+        for subfield in self.pipe_inputs['subfield']['values']:            
+            if subfield not in valid_subfields:
+                continue            
+            composition_subfields.append(subfield)
+        return composition_subfields
+    
+    def get_casting_subfields(self):
+        casting_subfields = []
+        valid_subfields = ['puppet', 'composition']
+        for subfield in self.pipe_inputs['subfield']['values']:            
+            if subfield not in valid_subfields:
+                continue            
+            casting_subfields.append(subfield)
+        return casting_subfields    
+    
         
     def get(self):
         dbs = database.DataBase(self.current_show, self.current_pipe)   
@@ -85,9 +104,9 @@ class Pipe(object): # pipe == asset or shot
         type_data = self.get_specific_captions_key('tag', db_data=db_data)
         return type_data        
     
-    def get_version_data(self, caption, subfield, db_data=None):
+    def get_versions_data(self, caption, subfield, db_data=None):
         if not db_data:
-            db_data = self.get()        
+            db_data = self.get()
         subfield_data = self.get_subfields(caption, db_data=db_data)
         version_data = {}
         for k, v in subfield_data.items():    
@@ -96,10 +115,20 @@ class Pipe(object): # pipe == asset or shot
             version_data.update(v)        
         return version_data
     
+    def get_version_data(self, caption, subfield, version, db_data=None):
+        if not db_data:
+            db_data = self.get()        
+        versions_data = self.get_versions_data(caption, subfield, db_data=db_data)
+        if version not in versions_data:
+            return
+        final_data = self.get_more_data(caption, subfield, version)
+        final_data.update(versions_data[version])
+        return final_data
+    
     def get_versions(self, caption, subfield, db_data=None):
         if not db_data:
             db_data = self.get()        
-        version_data = self.get_version_data(caption, subfield, db_data=db_data)
+        version_data = self.get_versions_data(caption, subfield, db_data=db_data)
         versions = common.set_version_order(version_data.keys())
         return versions  
     
@@ -130,7 +159,7 @@ class Pipe(object): # pipe == asset or shot
         dependencies = ['None'] + dependencies
         return dependencies
          
-    def get_more_data(self, caption, version, subfield):
+    def get_more_data(self, caption, subfield, version):
         '''
             add manifest data as well
         '''
@@ -158,5 +187,23 @@ class Pipe(object): # pipe == asset or shot
         dbs = database.DataBase(self.current_show, self.current_pipe)   
         dbs.delete_table(table)
         if os.path.isdir(pipe_path):
-            shutil.rmtree(pipe_path)                
+            shutil.rmtree(pipe_path)
+            
+    def get_castingsheet_data(self):
+        castingsheet_path = resource.getSpecificPreset(self.show_path, 'castingsheet')
+        casting_data = {}
+        if not os.path.isfile(castingsheet_path):
+            return casting_data
+        casting_data = resource.getInputData(castingsheet_path)
+        return casting_data
+    
+    def get_castingsheet_captions(self):
+        casting_data = self.get_castingsheet_data()        
+        captions = []        
+        for toplevel, sublevels in casting_data.items():
+            for sublevel in sublevels:
+                captions.append('%s|%s'%(toplevel, sublevel))
+        captions = sorted(captions)
+        return captions                
+                             
         

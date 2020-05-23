@@ -348,9 +348,9 @@ class Maya(object):
         mfn_dag_node.setName(name)
         return mfn_dag_node   
         
-    def create_maya_ids(self, mobject, id_data):
+    def create_pipe_ids(self, mobject, id_data):
         attributes = common.sort_dictionary(id_data)
-        self.remove_maya_id(mobject, id_data)
+        self.remove_pipe_ids(mobject, id_data)
         data = {}
         hidden = {True: False, False: True} 
         for attribute in attributes:
@@ -368,14 +368,14 @@ class Maya(object):
             mfn_dependency_node.addAttribute(sample_mobject)
             mplug = mfn_dependency_node.findPlug(type_attribute.name())
             if not id_data[attribute]['value']:
-                data.setdefault(attribute, 'no value updated')                
-                continue
-            mplug.setString(id_data[attribute]['value'].encode())
+                data.setdefault(attribute, 'no value updated')
+            else:
+                mplug.setString(id_data[attribute]['value'].encode())
+                data.setdefault(attribute, id_data[attribute]['value'])
             mplug.setLocked(id_data[attribute]['locked'])
-            data.setdefault(attribute, id_data[attribute]['value'])
         return data
                 
-    def set_maya_ids(self, mobject, inputs):
+    def set_pipe_ids(self, mobject, inputs):
         dependency_node = OpenMaya.MFnDependencyNode(mobject)
         for attribute, value in inputs.items():
             if not dependency_node.hasAttribute(attribute):
@@ -387,18 +387,18 @@ class Maya(object):
             mplug.setString(value)
             mplug.setLocked(True)
 
-    def update_asset_ids(self, mobject, id_data=None):
+    def update_pipe_ids(self, mobject, id_data=None):
         if not id_data:
-            id_data = resource.getAsfsetIDData()        
-        removed_ids = self.removed_asset_ids(mobject, id_data=id_data)
+            id_data = resource.getPipeIDData()        
+        removed_ids = self.removed_pipe_ids(mobject, id_data=id_data)
         exists_attributes = set(id_data.keys()).difference(removed_ids)
         dependency_node = OpenMaya.MFnDependencyNode(mobject)
         for attribute in exists_attributes:
             mplug = dependency_node.findPlug(attribute)
             id_data[attribute]['value'] = mplug.asString()         
-        self.create_maya_ids(mobject, id_data)      
+        self.create_pipe_ids(mobject, id_data)      
             
-    def has_valid_maya_ids(self, mobject, inputs):
+    def has_valid_pipe_ids(self, mobject, inputs):
         data = []
         dependency_node = OpenMaya.MFnDependencyNode(mobject)        
         for attribute in inputs:            
@@ -407,11 +407,11 @@ class Maya(object):
             data.append(attribute)
         if data:
             return False
-        return True
+        return True    
 
-    def get_maya_id_data(self, mobject, id_data=None):
+    def get_pipe_id_data(self, mobject, id_data=None):
         if not id_data:
-            id_data = resource.getAssetIDData()
+            id_data = resource.getPipeIDData()
         data = {}
         dependency_node = OpenMaya.MFnDependencyNode(mobject)
         for attribute in id_data:
@@ -425,12 +425,14 @@ class Maya(object):
             data[attribute] = {
                 'order': order,
                 'value': id_value
-            }
-        return data
+            }        
+        if len(data)!=len(id_data):
+            return data, False
+        return data, True
 
-    def removed_asset_ids(self, mobject, id_data=None):
+    def removed_pipe_ids(self, mobject, id_data=None):
         if not id_data:
-            id_data = resource.getAssetIDData()
+            id_data = resource.getPipeIDData()
         removed_ids = []
         dependency_node = OpenMaya.MFnDependencyNode(mobject)
         for attribute in id_data:
@@ -439,7 +441,7 @@ class Maya(object):
             removed_ids.append(attribute)
         return removed_ids    
                         
-    def remove_maya_id(self, mobject, inputs):
+    def remove_pipe_ids(self, mobject, inputs):
         mfn_dependency = OpenMaya.MFnDependencyNode(mobject)
         for attribute in inputs:
             if not mfn_dependency.hasAttribute(attribute):
@@ -494,6 +496,7 @@ class Maya(object):
         self.unparent(child)
         mcommand_result = OpenMaya.MCommandResult()
         mel_command = 'parent \"%s\" \"%s\" ' % (child.fullPathName(), parent.fullPathName())
+        print mel_command
         OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
         results = []
         mcommand_result.getResult(results)
@@ -917,6 +920,10 @@ class Maya(object):
         if os.path.isfile(current_file):
             return current_file, file_type
         return None, None    
+    
+    def new_maya_scene(self):
+        mfile = OpenMaya.MFileIO()  
+        mfile.newFile(True)        
             
     def open_maya(self, maya_file, file_type=None):
         '''
@@ -932,7 +939,7 @@ class Maya(object):
         mfile = OpenMaya.MFileIO()
         mfile.importFile(maya_file, file_type, True, namespace, True)
 
-    def reference_maya(self, maya_file, deferred=True, locked=True, namespace=None):
+    def reference_maya(self, maya_file, deferred=False, locked=False, namespace=None):
         mfile = OpenMaya.MFileIO()        
         mfile.reference(maya_file, deferred, locked, namespace)        
         

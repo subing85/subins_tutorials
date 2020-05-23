@@ -14,7 +14,6 @@ from functools import partial
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.api import studioPull
 from studio_usd_pipe.api import studioPipe
@@ -25,7 +24,6 @@ from studio_usd_pipe.utils import maya_scene
 
 reload(studioPull)
 reload(maya_scene)
-
 reload(studioPipe)
 
 
@@ -40,19 +38,18 @@ class Window(QtWidgets.QMainWindow):
         self.width = 550
         self.height = 650
         self.toolbox = False
-        self.version, self.label = self.set_tool_context()         
         self.shows = studioShow.Show()
         self.current_show = self.shows.get_current_show()
         self.current_show = 'btm'  # to remove        
         self.environ = studioEnviron.Environ(self.current_show)
         self.spipe = studioPipe.Pipe(self.current_show, self.pipe) 
+        self.show_icon = self.environ.get_show_icon()
         self.setup_ui()
         self.setup_icons()
         self.setup_default()
         
     def setup_ui(self):
         self.setObjectName('mainwindow_asset_pull')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version)) 
         self.resize(self.width, self.height)        
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName('centralwidget')
@@ -61,20 +58,8 @@ class Window(QtWidgets.QMainWindow):
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)        
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
-        self.verticallayout.addWidget(self.groupbox)             
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None)    
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=self.show_icon)    
         self.groupbox_toolbar = QtWidgets.QGroupBox(self)
         self.groupbox_toolbar.setObjectName('groupbox_toolbar')
         self.groupbox_toolbar.setTitle('.')
@@ -199,28 +184,13 @@ class Window(QtWidgets.QMainWindow):
     def setup_icons(self):
         widgets = self.findChildren(QtWidgets.QAction)
         swidgets.set_icons(mainwindow=self, widgets=widgets)  
-         
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty                   
             
     def setup_default(self):
-        show_icon, valid = self.environ.get_environ_value('SHOW_ICON')
-        if not show_icon:
-            show_icon = os.path.join(resource.getIconPath(), 'show.png')
-        size = self.button_show.minimumSize()
-        swidgets.image_to_button(
-            self.button_show,
-            size.width(),
-            size.height(),
-            path=show_icon
-            )
         self.load_captions(input_data=None)
         swidgets.image_to_button(
             self.button_thumbnail,
             256,
-            180, 
+            180,
             path=os.path.join(resource.getIconPath(), 'unknown.png')
             )        
         
@@ -245,13 +215,13 @@ class Window(QtWidgets.QMainWindow):
         self.menu.exec_(widget.mapToGlobal(point))
         
     def setup_toolbox(self, subfield):
-        pull = studioPull.Pull(self.application)
+        pull = studioPull.Pull(application=self.application, subfield=subfield)
         modules = pull.get_creators()
         if not modules:
             QtWidgets.QMessageBox.critical(
                 self,
                 'critical',
-                'not found any %s creator bundles'%subfield,
+                'not found any %s creator bundles' % subfield,
                 QtWidgets.QMessageBox.Ok
                 )            
         self.menu = QtWidgets.QMenu(self)
@@ -292,7 +262,7 @@ class Window(QtWidgets.QMainWindow):
                     cuttrent_tag = contents[subfield][each]['tag']
                     version_item = swidgets.add_treewidget_item(
                         subfield_item, each, icon=cuttrent_tag)
-                    more_contents = self.spipe.get_more_data(caption, each, subfield)
+                    more_contents = self.spipe.get_more_data(caption, subfield, each)
                     ver_contents = copy.deepcopy(contents[subfield][each])
                     ver_contents.update(more_contents)
                     version_item.setStatusTip(0, str(ver_contents))
@@ -380,7 +350,7 @@ class Window(QtWidgets.QMainWindow):
             contents = ast.literal_eval(contents)
             print '\n#header: inputs'
             print json.dumps(contents, indent=4)            
-            pull = studioPull.Pull(self.application)
+            pull = studioPull.Pull(application=self.application)
             valid, message = pull.do_pull(module, **contents)
             valids.setdefault(valid, []).append(message)
         if False in valids:

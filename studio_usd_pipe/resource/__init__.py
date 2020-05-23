@@ -116,6 +116,11 @@ def getBrowsPath(): #**
     return getPackagePath()
 
 
+def getSpecificPreset(dirname, preset): #**
+    preset_path = os.path.join(dirname, 'presets', '%s.json'%preset)
+    return preset_path  
+
+
 def getModulePath():
     path = os.path.join(getPackagePath(), getPackageName(), 'module')
     return path
@@ -184,6 +189,10 @@ def getBinApplicationPath(show, application):
 
 
 
+def getPipeIDData(): #**
+    path = os.path.join(getInputPath(), 'pipeid.json')
+    data = getInputData(path)
+    return data
 
 
 
@@ -228,10 +237,6 @@ def getPluginData():
     return data
 
 
-def getAssetIDData():
-    path = os.path.join(getInputPath(), 'assetid.json')
-    data = getInputData(path)
-    return data
 
         
 def getWroldData():

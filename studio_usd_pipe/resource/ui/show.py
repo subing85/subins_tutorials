@@ -7,7 +7,6 @@ from PySide2 import QtWidgets
 from functools import partial
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.core import sheader
 from studio_usd_pipe.core import common
 from studio_usd_pipe.core import swidgets
 from studio_usd_pipe.api import studioShow
@@ -22,33 +21,19 @@ class Window(QtWidgets.QWidget):
         self.title = 'Show configure'
         self.width = 729
         self.height = 663
-        self.version, self.label = self.set_tool_context()
         self.shows = studioShow.Show()
         self.setup_ui()
         self.set_default()
 
     def setup_ui(self):
         self.setObjectName('widget_show')
-        self.setWindowTitle('{} ({} {})'.format(self.title, self.label, self.version))        
         self.resize(self.width, self.height)         
         self.verticallayout = QtWidgets.QVBoxLayout(self)
         self.verticallayout.setObjectName('verticallayout')
         self.verticallayout.setSpacing(10)
         self.verticallayout.setContentsMargins(5, 5, 5, 5)        
-        self.groupbox = QtWidgets.QGroupBox(self)
-        self.groupbox.setObjectName('groupbox_asset')
-        self.groupbox.setTitle('{} <{}>'.format(self.label, self.title))  
-        self.verticallayout.addWidget(self.groupbox)             
-        self.verticallayout_item = QtWidgets.QVBoxLayout(self.groupbox)
-        self.verticallayout_item.setObjectName('verticallayout_item')
-        self.verticallayout_item.setSpacing(10)
-        self.verticallayout_item.setContentsMargins(5, 5, 5, 5)                
-        self.horizontallayout = QtWidgets.QHBoxLayout()
-        self.horizontallayout.setContentsMargins(5, 5, 5, 5)
-        self.horizontallayout.setObjectName('horizontallayout')
-        self.verticallayout_item.addLayout(self.horizontallayout)
-        self.button_logo, self.button_show = swidgets.set_header(
-            self.horizontallayout, show_icon=None)
+        self.verticallayout_item, self.button_show = swidgets.set_header(
+            self, self.title, self.verticallayout, show_icon=None)
         self.toolbox = QtWidgets.QToolBox(self)
         self.toolbox.setObjectName("toolbox")
         self.verticallayout_item.addWidget(self.toolbox)
@@ -73,11 +58,6 @@ class Window(QtWidgets.QWidget):
         self.button_create.clicked.connect(self.create)
         spacer_item = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)                          
-        
-    def set_tool_context(self):
-        config = sheader.Header()
-        config.tool()
-        return config.version, config.pretty
     
     def set_default(self):
         inputs = self.shows.get_show_configure_data()

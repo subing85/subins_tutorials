@@ -32,7 +32,7 @@ class Push(object):
     
     def get_show_path(self):
         environ = studioEnviron.Environ(self.current_show)
-        show_path, valid = environ.get_environ_value('SHOW_PATH')
+        show_path = environ.get_show_path()
         return show_path
                   
     def get_publish_path(self, caption, subfield, version, temp=True, create=True):
@@ -82,25 +82,14 @@ class Push(object):
         dt_object = datetime.fromtimestamp(self.time_stamp)
         modified = dt_object.strftime('%Y:%d:%B-%I:%M:%S:%p') 
         inputs = {
-            'description': kwargs['description'],
-            'standalone': kwargs['standalone'],
-            'source': kwargs['source'],
-            'subfield': kwargs['subfield'],
-            'dependency': kwargs['dependency'],
-            'application': kwargs['application'],
-            'tag': kwargs['tag'],
-            'version': kwargs['version'],
-            'caption': kwargs['caption'],
-            'type': kwargs['type'],
-            'thumbnail': kwargs['thumbnail'],
             'user': getpass.getuser(),
             'modified': modified,
             'show_path': self.show_path,
             'location': publish_path,
             'show': self.current_show,
             'pipe': self.current_pipe,
-
             }
+        inputs.update(kwargs)
         return inputs
 
     def get_post_packed_data(self, search_for, replace_with):
@@ -250,13 +239,15 @@ class Push(object):
             return False, '\n'.join(messages)
         return True, 'success!..' 
     
-    def do_publish(self, repair=True, **kwargs):
+    def do_publish(self, repair=True, trail=False, **kwargs):
         valid, message = self.validate(repair=True, **kwargs)
         if not valid:
             return valid, message
         valid, message = self.extract(repair=False, **kwargs)
         if not valid:
-            return valid, message 
+            return valid, message
+        if trail:
+            return valid, message            
         valid, message = self.release()
         return valid, message        
     

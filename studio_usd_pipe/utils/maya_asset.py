@@ -81,7 +81,7 @@ def create_model():
         model_dag_node.setName(root)
         world_dependency_node.setName(world)
         # create asset id
-        id_data = resource.getAssetIDData()                   
+        id_data = resource.getPipeIDData()                   
         scurve.create_maya_ids(model_dag_node.object(), id_data)        
         # OpenMaya.MGlobal.selectByName(model_dag_node.fullPathName())
         OpenMaya.MGlobal.clearSelectionList()
@@ -89,20 +89,20 @@ def create_model():
         return True, [root], 're-generate hierarchy'
 
    
-def removed_asset_ids():
+def removed_pipe_ids():
     from maya import OpenMaya
     from studio_usd_pipe.api import studioMaya
     smaya = studioMaya.Maya()
     root = get_root()
     mobject = smaya.get_mobject(root)        
-    id_data = resource.getAssetIDData()
-    removed_ids = smaya.removed_asset_ids(mobject, id_data=id_data)
+    id_data = resource.getPipeIDData()
+    removed_ids = smaya.removed_pipe_ids(mobject, id_data=id_data)
     if not removed_ids:
         return True, [], 'asset ids are valid'
     return False, removed_ids, 'asset ids are invalid'
 
 
-def create_maya_ids(**kwargs):
+def create_pipe_ids(**kwargs):
     from studio_usd_pipe.api import studioMaya    
     reload(studioMaya)
     inputs = {    
@@ -118,39 +118,39 @@ def create_maya_ids(**kwargs):
         'sdescription': kwargs['description'],
         'suser': kwargs['user']
         }
-    id_data = resource.getAssetIDData()    
+    id_data = resource.getPipeIDData()    
     for k, v in inputs.items():
         id_data[k]['value'] = v    
     smaya = studioMaya.Maya()
     root = get_root()
     mobject = smaya.get_mobject(root) 
-    created_data = smaya.create_maya_ids(mobject, id_data)
+    created_data = smaya.create_pipe_ids(mobject, id_data)
     result = []    
     for k, v in created_data.items():
         result.append([k.encode(), v.encode()])
     return True, result
 
 
-def update_asset_ids(id_data=None):
+def update_pipe_ids(id_data=None):
     from maya import OpenMaya
     from studio_usd_pipe.api import studioMaya
     smaya = studioMaya.Maya()
     root = get_root()    
     mobject = smaya.get_mobject(root) 
     if not id_data:
-        id_data = resource.getAssetIDData()
-    smaya.update_asset_ids(mobject, id_data=id_data)
+        id_data = resource.getPipeIDData()
+    smaya.update_pipe_ids(mobject, id_data=id_data)
     return True, [id_data.keys()], 'updated with valid asset ids'
 
 
-def get_asset_ids():
+def get_pipe_ids():
     from studio_usd_pipe.api import studioMaya
     smaya = studioMaya.Maya()
     root = get_root()
     if not smaya.object_exists(root):
         return None
     mobject = smaya.get_mobject(root)
-    id_data = smaya.get_maya_id_data(mobject, id_data=None)
+    id_data, valid = smaya.get_pipe_id_data(mobject, id_data=None)
     return id_data
 
 
@@ -188,18 +188,21 @@ def create_model_usd(output_path):
     from studio_usd_pipe.api import studioUsd
     from studio_usd_pipe.api import studioModel
     from studio_usd_pipe.api import studioNurbscurve
+    reload(studioUsd)
     smodel = studioModel.Model()
     scurve = studioNurbscurve.Nurbscurve()
     root = get_root()    
     mobject = smodel.get_mobject(root)
     mesh_data = smodel.get_model_data(mobject)
     curve_data = scurve.get_curve_data(mobject)
-    asset_ids = smodel.get_maya_id_data(mobject, id_data=None)
+    pipe_ids, valid = smodel.get_pipe_id_data(mobject, id_data=None)
     final_data = {
         'mesh': mesh_data,
         'curve': curve_data,
-        'asset_id': asset_ids
-        }        
+        'asset_id': pipe_ids
+        } 
+    
+    print '\nroot', root       
     susd = studioUsd.Susd(path=output_path)                
     susd.create_model_usd(root, final_data)
     return output_path    
@@ -256,10 +259,10 @@ def create_uv_usd(output_path):
     root = get_root()
     mobject = smodel.get_mobject(root)    
     mesh_data = smodel.get_uv_data(mobject)
-    asset_ids = smodel.get_maya_id_data(mobject, id_data=None)
+    pipe_ids, valid = smodel.get_pipe_id_data(mobject, id_data=None)
     final_data = {
         'mesh': mesh_data,
-        'asset_id': asset_ids
+        'asset_id': pipe_ids
         }        
     susd = studioUsd.Susd(path=output_path)                
     susd.create_uv_usd(root, final_data)
@@ -393,10 +396,10 @@ def create_shader_usd(output_path):
     root = get_root()   
     mobject = sshader.get_mobject(root)
     surface_data = sshader.get_surface_data(mobject)
-    asset_ids = sshader.get_maya_id_data(mobject, id_data=None)
+    pipe_ids, valid = sshader.get_pipe_id_data(mobject, id_data=None)
     final_data = {
         'surface': surface_data,
-        'asset_id': asset_ids            
+        'asset_id': pipe_ids            
         }       
     susd = studioUsd.Susd(path=output_path)                
     susd.create_surface_usd(root, final_data)
@@ -430,17 +433,14 @@ def create_puppet_maya(output_path):
 
 
 
-def find_asset_usd_inputs(**kwargs):
+def create_asset_composition_usd(composition, output_usd_path):
+    from studio_usd_pipe.api import studioUsd
+    root = get_root()
+    define_prim_path = '/%s'%root
+    print 'output_usd_path', output_usd_path
+    susd = studioUsd.Susd(path=output_usd_path)   
+    susd.create_asset_composition(define_prim_path, composition, verbose=False)
+    return output_usd_path    
 
-    
-    subfileds = ['model']
-    pass
-        
 
-def create_asset_usd_composition():
-    pass
-
-        
-
-find_asset_usd_inputs()
 

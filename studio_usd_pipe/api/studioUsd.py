@@ -13,7 +13,6 @@ from pxr import Usd
 from pxr import Kind
 from pxr import UsdGeom
 from pxr import UsdShade
-from maya import OpenMaya
 
 from studio_usd_pipe.core import common
 reload(common)
@@ -23,6 +22,8 @@ class Susd(object):
     
     def __init__(self, path=None):
         self.usd_path = self.set_usd_path(path)
+        
+        print self.usd_path 
         self.up_axis = UsdGeom.Tokens.y
         
         
@@ -62,8 +63,9 @@ class Susd(object):
                 current_value = Gf.Vec3f(attribute_value)
         return current_type, current_value
         
-    def make_defalt_prim(self, stage, location, kind):
+    def make_defalt_prim(self, location, stage, kind):
         default_path = Sdf.Path('/{}'.format(location))
+        print 'default_path', default_path
         default_prim = stage.DefinePrim(default_path)
         stage.SetDefaultPrim(default_prim)
         UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.y)
@@ -288,7 +290,7 @@ class Susd(object):
                         print '\t', parameter, parameter_contents['type'], parameter_contents['value']
                         print '\t', current_type, current_value
                         print '\t', type(current_type)                
-                        raise Exception('function get_prameter_values need to update')
+                        # raise Exception('function get_prameter_values need to update')
                     # print '\t\t>>>>>', current_type, parameter_contents['value']
                     shader_define.CreateInput(parameter, current_type).Set(current_value)
         # shader connections
@@ -416,10 +418,11 @@ class Susd(object):
         stage = Usd.Stage.Open(self.usd_path)
         driver_prim = stage.DefinePrim(driver_path, driver_type)
         driven_prim = stage.DefinePrim(driven_path, driven_type)
-        variant_sets = driver_prim.GetVariantSets().AddVariantSet(driver)
         if parameter not in driven_prim.GetPropertyNames():
             return None
         driven_prim_attribute = driven_prim.GetAttribute(parameter)
+        driven_prim_attribute.Clear()        
+        variant_sets = driver_prim.GetVariantSets().AddVariantSet(driver)
         for k, v in values.items():
             variant_sets.AddVariant(k)
             variant_sets.SetVariantSelection(k)
@@ -434,7 +437,7 @@ class Susd(object):
     
     def create_asset_composition(self, define_prim_path, input_data, verbose=False):
         stage = self.make_satge()
-        location = Sdf.Path('/%s'%define_prim_path)
+        location = Sdf.Path(define_prim_path) # '/asset' or '/shot'
         prim = stage.DefinePrim(location, 'Xform')
         for index in input_data:
             for subfield, version_contents in input_data[index].items():
@@ -456,16 +459,14 @@ class Susd(object):
     
     def add_reference_variant(self, prim, parameter, contents):    
         prim_path = prim.GetPrimPath()
-        variant_sets = prim.GetVariantSet(parameter)
+        variant_sets = prim.GetVariantSets().AddVariantSet(parameter)        
         versions = common.set_version_order(contents.keys())
         for version in versions:
-            asset_path = contents[version]
-            version = version.replace('.', '-')
-            variant_sets.AddVariant(version)
-            variant_sets.SetVariantSelection(version)
+            current_version = version.replace('.', '-')
+            variant_sets.SetVariantSelection(current_version)
             with variant_sets.GetVariantEditContext():
                 referencs = prim.GetReferences()
-                referencs.AddReference(assetPath=asset_path, primPath=prim_path)        
+                referencs.AddReference(assetPath=contents[version], primPath=prim_path)        
         return True
 
         
