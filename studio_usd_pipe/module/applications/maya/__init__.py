@@ -30,7 +30,6 @@ def execute(mayapath, maya, script, **kwargs):
     mayapy = os.path.join(mayapath, 'bin/mayapy')
     popen = subprocess.Popen(
         [mayapy, '-s', script, maya, str(kwargs)], shell=False, stdout=subprocess.PIPE)
-    
     popen_result = popen.stdout.readlines()        
     communicate = popen.communicate()
     if not popen_result:

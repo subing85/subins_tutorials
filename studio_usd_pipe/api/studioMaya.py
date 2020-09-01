@@ -7,6 +7,7 @@ import tempfile
 
 from maya import OpenMaya
 from maya import OpenMayaUI
+from maya import OpenMayaAnim
 
 from studio_usd_pipe import resource
 from studio_usd_pipe.core import common
@@ -273,26 +274,48 @@ class Maya(object):
     
     def extract_null_transform(self, root_mobject=None):
         mit_dependency_nodes = OpenMaya.MItDependencyNodes(OpenMaya.MFn.kTransform)
+        if root_mobject:
+            mfn_dag_root_node = OpenMaya.MFnDagNode(root_mobject)
         dag_path_array = OpenMaya.MDagPathArray()
         while not mit_dependency_nodes.isDone():
             mobject = mit_dependency_nodes.item()   
             mfn_dag_node = OpenMaya.MFnDagNode(mobject)
             if root_mobject:
-                root = mfn_dag_node.fullPathName().split('|')[1]    
-                current_root_mobject = self.get_mobject(root)
-                if current_root_mobject != root_mobject:
+                root_name = mfn_dag_root_node.fullPathName()
+                node_name = mfn_dag_node.fullPathName()
+                if not node_name.startswith(root_name):
                     mit_dependency_nodes.next()
-                    continue        
+                    continue  
             dag_path = OpenMaya.MDagPath()
             mfn_dag_node.getPath(dag_path)
             shape_mobject = self.get_shape_node(dag_path)
             if shape_mobject:
                 mit_dependency_nodes.next()
-                continue            
+                continue
             dag_path_array.append(dag_path)            
             mit_dependency_nodes.next()
-        return dag_path_array 
+        return dag_path_array     
     
+    def extract_transform(self, root_mobject=None):
+        mit_dependency_nodes = OpenMaya.MItDependencyNodes(OpenMaya.MFn.kTransform)
+        if root_mobject:
+            mfn_dag_root_node = OpenMaya.MFnDagNode(root_mobject)
+        dag_path_array = OpenMaya.MDagPathArray()
+        while not mit_dependency_nodes.isDone():
+            mobject = mit_dependency_nodes.item()   
+            mfn_dag_node = OpenMaya.MFnDagNode(mobject)
+            if root_mobject:
+                root_name = mfn_dag_root_node.fullPathName()
+                node_name = mfn_dag_node.fullPathName()
+                if not node_name.startswith(root_name):
+                    mit_dependency_nodes.next()
+                    continue  
+            dag_path = OpenMaya.MDagPath()
+            mfn_dag_node.getPath(dag_path)
+            dag_path_array.append(dag_path)            
+            mit_dependency_nodes.next()
+        return dag_path_array    
+
     def extract_transform_primitive(self, mfn_type, shape=True, parent_mobject=None):
         dag_path_array = OpenMaya.MDagPathArray()
         seen = []
@@ -971,4 +994,31 @@ class Maya(object):
             data = resource.getPluginData()
             plugins = data['maya']
         for plugin in plugins:
-            self.load_plugin(plugin)           
+            self.load_plugin(plugin)
+
+    def get_frame_range(self):
+        maim_control = OpenMayaAnim.MAnimControl()        
+        min_time = maim_control.minTime()
+        max_time = maim_control.maxTime()
+        values = (
+            min_time.value(),
+            max_time.value(),
+        )
+        return values 
+    
+    
+    def get_maya_settings(self):  
+        mel_commands = {
+            'unit': 'currentUnit -q -linear -f;',
+            'angular': 'currentUnit -q -angle -f;',
+            'time': 'currentUnit -q -time -f',
+            'axis': 'upAxis -q -axis;' 
+            }        
+        maya_settings = {}        
+        for k, mel_command in mel_commands.items():
+            mcommand_result = OpenMaya.MCommandResult()    
+            OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, True)
+            maya_settings.setdefault(k, mcommand_result.stringResult())
+        return maya_settings
+                 
+                  

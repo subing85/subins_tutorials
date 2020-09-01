@@ -249,6 +249,8 @@ class Maya(object):
                 mobjects[index], OpenMaya.MFn.kSkinClusterFilter)
             if not skinclusters:
                 continue
+            if skinclusters.length()==0:
+                continue            
             joints = self.getSkinclusterJoints(skinclusters[0])
             if not joints:
                 continue

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>654</width>
+    <height>470</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridlayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_txmaker">
+     <property name="text">
+      <string>tx_maker</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineedit_txmaker"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="button_txmaker">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_source">
+     <property name="text">
+      <string>source</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="lineedit_source"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QPushButton" name="button_source">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QTreeWidget" name="treewidget">
+     <column>
+      <property name="text">
+       <string>index</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>path</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_out">
+     <property name="text">
+      <string>out</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="lineedit_out"/>
+   </item>
+   <item row="3" column="2">
+    <widget class="QPushButton" name="button_out">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="button_create">
+     <property name="text">
+      <string>create</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

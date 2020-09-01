@@ -361,8 +361,7 @@ class Window(QtWidgets.QWidget):
             id_data = maya_asset.get_pipe_ids()
             return id_data
         script_path = os.path.join(resource.getScriptPath(), 'maya/find_pipeids.py')
-        maya_path, valid = self.environ.get_specific_environ_value(
-            'show_applications', self.application, 'path')
+        maya_path = self.environ.get_show_appication_path(self.application)
         application_module_path = resource.getModuleApplicationsPath()    
         module = common.get_subprocess_code(application_module_path, self.application)
         id_data, message = module.execute(maya_path, self.source_maya, script_path)        

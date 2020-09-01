@@ -1,9 +1,11 @@
 import sys
 
 from studio_usd_pipe import resource
-from studio_usd_pipe.utils import maya_asset
+from studio_usd_pipe.utils import maya_scene
+
 from studio_usd_pipe.api import studioMaya
 reload(studioMaya)
+
 
 def get_pipe_ids(**kwargs):
     from maya import standalone
@@ -11,8 +13,8 @@ def get_pipe_ids(**kwargs):
     from maya import OpenMaya    
     maya_file = sys.argv[1]
     smaya = studioMaya.Maya()
-    smaya.open_maya(maya_file, None)    
-    data = maya_asset.get_pipe_ids()
+    smaya.open_maya(maya_file, None)
+    data = maya_scene.get_scene_pipe_ids()
     returncode(data)  
     standalone.uninitialize(name='python')
 

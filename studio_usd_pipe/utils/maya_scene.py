@@ -262,10 +262,30 @@ def update_pipe_ids(**kwargs):
         return False, mobject, 'found more than one shot nodes'
     valid, values = create_pipe_ids(mobject, **kwargs)
     if not valid:
-        return False, values, 'failed'
-    return True, values, 'success'
-    
-    
+        return False, values
+    return True, values
+
+
+def get_scene_pipe_ids():
+    from studio_usd_pipe import resource
+    from studio_usd_pipe.api import studioMaya
+    reload(studioMaya)
+    smaya = studioMaya.Maya()     
+    transforms = smaya.extract_null_transform()
+    pipe_ids = resource.getPipeIDData()
+    pipe_data = {} 
+    for index in range (transforms.length()):
+        pipe_id_data, valid = smaya.get_pipe_id_data(transforms[index].node(), pipe_ids)
+        if not valid:
+            continue
+        contents = {transforms[index].fullPathName(): pipe_id_data}
+        current_pipe = pipe_id_data['spipe']['value']
+        if current_pipe not in pipe_data:         
+            pipe_data.setdefault(current_pipe, {})
+        pipe_data[current_pipe].update(contents)
+    return pipe_data
+
+
 def find_shot_node(subfield):
     from studio_usd_pipe.api import studioMaya
     smaya = studioMaya.Maya()     
@@ -286,6 +306,76 @@ def find_shot_node(subfield):
     return True, shot_nodes[0].node()
 
 
-def create_stuio_animation(output_path):
-    pass
+def get_assets_from_scene():
+    scene_pipe_ids = get_scene_pipe_ids()
+    if 'assets' not in scene_pipe_ids:
+        return None
+    return scene_pipe_ids['assets']
+
+
+def create_stuio_animation(output_path=None):
+    from studio_usd_pipe.api import studioAnimation
+    reload(studioAnimation)
+    sanimation = studioAnimation.Animation()
+    scene_assets = get_assets_from_scene()
+    output_paths = []
+    for scene_asset, pipe_contents in scene_assets.items():
+        mobject = sanimation.get_mobject(scene_asset)
+        animation_data = sanimation.get_animation_data(mobject)
+        final_data = {
+            'animation': animation_data,
+            'pipe': pipe_contents['spipe']['value'],
+            'caption': pipe_contents['scaption']['value'],
+            'subfield': pipe_contents['ssubfield']['value']
+            }
+        animation_path = os.path.join(
+            output_path, '%s.animation'% pipe_contents['scaption']['value'])
+        with (open(animation_path, 'w')) as content:
+            content.write(json.dumps(final_data, indent=4))
+            output_paths.append(animation_path)
+    return output_paths
+
+
+def create_studio_shot(output_path=None):
+    from studio_usd_pipe.api import studioMaya
+    reload(studioMaya)
+    smaya = studioMaya.Maya()
+    scene_pipe_ids = get_scene_pipe_ids()
+    shot_data = {}
+    for node in scene_pipe_ids['shots']:
+        current_data = {
+            'subfield': scene_pipe_ids['shots'][node]['ssubfield']['value'],
+            'type': scene_pipe_ids['shots'][node]['stype']['value'],
+            'tag': scene_pipe_ids['shots'][node]['stag']['value'],
+            }
+        shot_data.update(current_data)
+    
+    asset_data = {}
+    for index, asset in enumerate(scene_pipe_ids['assets']):
+        current_data = {
+            'caption': scene_pipe_ids['assets'][asset]['scaption']['value'],
+            'subfield': scene_pipe_ids['assets'][asset]['ssubfield']['value'],
+            'version': scene_pipe_ids['assets'][asset]['sversion']['value'],
+            }
+        asset_data.setdefault(index, current_data)
+        
+    frame_range = smaya.get_frame_range()
+    maya_settings = smaya.get_maya_settings()
+    maya_data = {
+        'frame_range': frame_range,
+        }
+    maya_data.update(maya_settings)
+    final_data = {
+        'shot': shot_data,
+        'assets': asset_data,
+        'scene': maya_data
+        }    
+    print json.dumps(final_data, indent=4)
+    with (open(output_path, 'w')) as content:
+        content.write(json.dumps(final_data, indent=4))
+        return output_path
+
+    
+    
+          
     
