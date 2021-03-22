@@ -1,0 +1,11 @@
+{
+    "pipe": "asset", 
+    "data": {
+        "category": "prop", 
+        "lookdev": "0.1.0", 
+        "name": "motorcycle", 
+        "version": "0.0.0", 
+        "model": "0.0.0", 
+        "type": "puppet"
+    }
+}

@@ -1,0 +1,231 @@
+#usda 1.0
+(
+    defaultPrim = "root"
+    metersPerUnit = 0.01
+    upAxis = "Y"
+)
+
+def Xform "root" (
+    kind = "component"
+)
+{
+    def Scope "materials"
+    {
+        def Material "face_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/face_material/face_shader.outputs:out>
+
+            def Shader "face_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                float inputs:anisotropic = 1
+                string inputs:baseColor.connect = </root/materials/face_material/face_texture.outputs:resultRGB>
+                token outputs:out
+            }
+
+            def Shader "face_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/face.tx@
+                int inputs:filter = 4
+                color3f inputs:missingColor = (0.025332756, 0.0052639684, 0.025332868)
+                string outputs:resultRGB
+            }
+        }
+
+        def Material "body_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/body_material/body_shader.outputs:out>
+
+            def Shader "body_bumb_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/body_bumb.tx@
+                string outputs:resultRGB
+            }
+
+            def Shader "body_spec_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/body.tx@
+                int inputs:filter = 6
+                color3f outputs:resultRGB
+            }
+
+            def Shader "body_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/body.tx@
+                string outputs:resultRGB
+            }
+
+            def Shader "body_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                string inputs:baseColor.connect = </root/materials/body_material/body_texture.outputs:resultRGB>
+                string inputs:bumpNormal.connect = </root/materials/body_material/body_bumb_texture.outputs:resultRGB>
+                float inputs:clearcoatGloss = 3
+                color3f inputs:emitColor = (0.7025873, 0.51367867, 0.51367927)
+                color3f inputs:emitColor.connect = </root/materials/body_material/body_spec_texture.outputs:resultRGB>
+                float inputs:subsurface = 1.2
+                color3f inputs:subsurfaceColor = (0.23305145, 0.0068356213, 0.006835718)
+                token outputs:out
+            }
+        }
+
+        def Material "eye_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/eye_material/eye_shader.outputs:out>
+
+            def Shader "eye_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/eye.tx@
+                string outputs:resultRGB
+            }
+
+            def Shader "eye_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                string inputs:baseColor.connect = </root/materials/eye_material/eye_texture.outputs:resultRGB>
+                token outputs:out
+            }
+        }
+
+        def Material "belt_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/belt_material/belt_shader.outputs:out>
+
+            def Shader "belt_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                string inputs:baseColor.connect = </root/materials/belt_material/belt_texture.outputs:resultRGB>
+                token outputs:out
+            }
+
+            def Shader "belt_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/belt.tx@
+                string outputs:resultRGB
+            }
+        }
+
+        def Material "tongue_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/tongue_material/tongue_shader.outputs:out>
+
+            def Shader "tongue_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                string inputs:baseColor.connect = </root/materials/tongue_material/tongue_texture.outputs:resultRGB>
+                token outputs:out
+            }
+
+            def Shader "tongue_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/tongue.tx@
+                string outputs:resultRGB
+            }
+        }
+
+        def Material "teeth_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/teeth_material/teeth_shader.outputs:out>
+
+            def Shader "teeth_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/teeth.tx@
+                string outputs:resultRGB
+            }
+
+            def Shader "teeth_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                string inputs:baseColor.connect = </root/materials/teeth_material/teeth_texture.outputs:resultRGB>
+                token outputs:out
+            }
+        }
+
+        def Material "suite_material"
+        {
+            token outputs:ri:surface.connect = </root/materials/suite_material/suite_shader.outputs:out>
+
+            def Shader "suite_shader"
+            {
+                uniform token info:id = "PxrDisney"
+                string inputs:baseColor.connect = </root/materials/suite_material/suite_texture.outputs:resultRGB>
+                token outputs:out
+            }
+
+            def Shader "suite_texture"
+            {
+                uniform token info:id = "PxrTexture"
+                asset inputs:filename = @/venture/shows/katana_tutorials/asset/character/batman/lookdev/2.0.7/source_images/suite.tx@
+                string outputs:resultRGB
+            }
+        }
+    }
+
+    def Xform "world"
+    {
+        def Xform "character"
+        {
+            def Xform "batman"
+            {
+                def Xform "world"
+                {
+                    rel material:binding = </root/materials/eye_material>
+
+                    def Mesh "face_geo"
+                    {
+                        rel material:binding = </root/materials/face_material>
+                    }
+
+                    def Mesh "body_geo"
+                    {
+                        rel material:binding = </root/materials/body_material>
+                    }
+
+                    def Mesh "eye_geo"
+                    {
+                        rel material:binding = </root/materials/eye_material>
+                    }
+
+                    def Mesh "belt_geo"
+                    {
+                        rel material:binding = </root/materials/belt_material>
+                    }
+
+                    def Mesh "tounge_geo"
+                    {
+                        rel material:binding = </root/materials/tongue_material>
+                    }
+
+                    def Mesh "teeth_geo"
+                    {
+                        rel material:binding = </root/materials/teeth_material>
+                    }
+
+                    def Mesh "hand_geo"
+                    {
+                        rel material:binding = </root/materials/suite_material>
+                    }
+
+                    def Mesh "bat_logo_geo"
+                    {
+                        rel material:binding = </root/materials/suite_material>
+                    }
+
+                    def Mesh "boot_geo"
+                    {
+                        rel material:binding = </root/materials/suite_material>
+                    }
+                }
+            }
+        }
+    }
+}
+

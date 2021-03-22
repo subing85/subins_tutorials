@@ -1,0 +1,19 @@
+#usda 1.0
+
+def "root" (
+    prepend references = @/venture/shows/katana_tutorials/dumps/shader/batman/shader.usd@
+)
+{
+    def "world"
+    {
+        def "character"
+        {
+            def "batman" (
+                prepend references = @/venture/shows/katana_tutorials/dumps/shader/batman/model.usd@
+            )
+            {
+            }
+        }
+    }
+}
+
