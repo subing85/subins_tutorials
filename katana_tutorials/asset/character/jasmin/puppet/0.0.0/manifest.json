@@ -1,0 +1,11 @@
+{
+    "pipe": "asset", 
+    "data": {
+        "category": "character", 
+        "lookdev": "0.0.1", 
+        "name": "jasmin", 
+        "version": "0.0.0", 
+        "model": "0.0.0", 
+        "type": "puppet"
+    }
+}

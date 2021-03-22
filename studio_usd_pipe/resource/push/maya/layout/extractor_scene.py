@@ -1,6 +1,6 @@
 NAME = 'extracte layout scene'
-ORDER = 1
-VALID = True
+ORDER = 4
+VALID = False
 TYPE = 'extractor'
 KEY = 'layout_scene'
 OWNER = 'Subin Gopi'

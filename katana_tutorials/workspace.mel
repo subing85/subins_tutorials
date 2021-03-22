@@ -1,0 +1,5 @@
+//Maya 2018 Project Definition
+
+workspace -fr "templates" "assets";
+workspace -fr "particles" "particles";
+workspace -fr "alembicCache" "cache/alembic";

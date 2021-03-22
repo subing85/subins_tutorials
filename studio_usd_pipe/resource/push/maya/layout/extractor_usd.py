@@ -1,6 +1,6 @@
 NAME = 'extracte layout usd'
 ORDER = 3
-VALID = True
+VALID = False
 TYPE = 'extractor'
 KEY = 'layout_usd'
 OWNER = 'Subin Gopi'

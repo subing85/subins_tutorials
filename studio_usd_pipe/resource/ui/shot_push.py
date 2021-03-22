@@ -19,8 +19,11 @@ from studio_usd_pipe.api import studioShow
 from studio_usd_pipe.api import studioPush
 from studio_usd_pipe.api import studioPipe
 from studio_usd_pipe.api import studioEnviron
-from studio_usd_pipe.utils import maya_asset
+# from studio_usd_pipe.utils import maya_asset
+from studio_usd_pipe.utils import maya_scene
 reload(studioPush)
+reload(maya_scene)
+reload(studioEnviron)
 
 
 class Window(QtWidgets.QWidget):
@@ -225,7 +228,7 @@ class Window(QtWidgets.QWidget):
         spacer_item = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)        
         self.combobox_caption.editTextChanged.connect(self.set_current_caption)
-        self.combobox_subfield.currentIndexChanged.connect(self.set_current_version)
+        # self.combobox_subfield.currentIndexChanged.connect(self.set_current_version)
         self.combobox_version.currentIndexChanged.connect(self.set_current_version)
         self.button_publish.clicked.connect(self.do_publish)        
         self.button_cancel.clicked.connect(self.close)  
@@ -301,12 +304,7 @@ class Window(QtWidgets.QWidget):
         self.combobox_version.clear()
         self.combobox_latest_version.clear()
         self.combobox_next_version.clear()   
-
-    def get_mayapy(self):    
-        maya_path, valid = self.environ.get_environ_value('MAYA_PATH')
-        mayapy = resource.getMayapy(maya_path)
-        return mayapy                 
-                 
+           
     def setup_current_maya(self):
         if self.standalone:
             return
@@ -330,7 +328,7 @@ class Window(QtWidgets.QWidget):
     def set_current_maya(self, format):
         source_file = 'Current File: {}\nFile Type: {}'.format(self.source_maya, format)
         self.label_source.setText(source_file)
-        self.pipe_ids = self.get_asset_ids()
+        self.scene_pipe_ids = self.get_scene_pipe_ids()
         self.combobox_caption.setCurrentIndex(0) 
          
     def read_current_maya(self):
@@ -360,14 +358,13 @@ class Window(QtWidgets.QWidget):
             self.button_thumbnail, size.width(), size.height(), path=output_path)
         self.button_thumbnail.setToolTip(output_path)        
  
-    def get_asset_ids(self):
+    def get_scene_pipe_ids(self):
         if not self.standalone:
-            id_data = maya_asset.get_pipe_ids()
+            id_data = maya_scene.get_scene_pipe_ids()
             return id_data
-        script_path = os.path.join(resource.getScriptPath(), 'maya/find_pipeids.py')
-        maya_path, valid = self.environ.get_specific_environ_value(
-            'show_applications', self.application, 'path')
-        application_module_path = resource.getModuleApplicationsPath()    
+        script_path = os.path.join(resource.getScriptPath(), 'maya/find_sceneids.py')
+        maya_path = self.environ.get_show_appication_path(self.application)
+        application_module_path = resource.getModuleApplicationsPath() 
         module = common.get_subprocess_code(application_module_path, self.application)
         id_data, message = module.execute(maya_path, self.source_maya, script_path)        
         return id_data
@@ -414,8 +411,29 @@ class Window(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.Ok
                 )
             self.combobox_caption.setCurrentIndex(0)           
-            return     
+            return
+        self.set_current_subfiled()    
         self.set_current_version()
+    
+    def set_current_subfiled(self):        
+        if 'shots' not in self.scene_pipe_ids:
+            QtWidgets.QMessageBox.critical(
+                self,
+                'critical',
+                'invalid scene\n(not a shot scene)',
+                QtWidgets.QMessageBox.Ok)            
+            return
+        if len(self.scene_pipe_ids['shots'])>1:
+            QtWidgets.QMessageBox.critical(
+                self,
+                'critical',
+                'invalid scene\n(found more than one shot in the scene)',
+                QtWidgets.QMessageBox.Ok)            
+            return
+        node = self.scene_pipe_ids['shots'].keys()[0]        
+        current_subfield = self.scene_pipe_ids['shots'][node]['ssubfield']['value']
+        self.combobox_subfield.setCurrentText(current_subfield)
+        self.combobox_subfield.setDisabled(True)
      
     def set_current_version(self):
         caption = self.combobox_caption.currentText()
@@ -485,7 +503,7 @@ class Window(QtWidgets.QWidget):
         if self.standalone:
             valid, message = push.do_standalone_publish(repair=True, **input_data)
         else:
-            valid, message = push.do_publish(repair=True, **input_data)
+            valid, message = push.do_publish(repair=True, trail=True, **input_data)
         if not valid:
             QtWidgets.QMessageBox.critical(
                 self, 'critical', message, QtWidgets.QMessageBox.Ok)
@@ -495,7 +513,32 @@ class Window(QtWidgets.QWidget):
         QtWidgets.QMessageBox.information(
             self, 'Success', 'Done!...', QtWidgets.QMessageBox.Ok)
          
-  
+        '''
+        input_data =  {
+            "application": "maya", 
+            "description": "ssssssssssssss", 
+            "show": "btm", 
+            "subfield": "layout", 
+            "standalone": false, 
+            "modified": "2020:23:May-07:45:41:AM", 
+            "pipe": "shots", 
+            "caption": "sequence_101|shot_1001", 
+            "show_path": "/venture/shows/batman", 
+            "tag": "shot_1001", 
+            "user": "sid", 
+            "version": "2.0.0", 
+            "location": "/venture/shows/batman/shots/sequence_101|shot_1001/layout/2.0.0", 
+            "dependency": "None", 
+            "type": "sequence_101", 
+            "thumbnail": "/usr/tmp/studio_pipe_temp_2020_23_May_Saturday_07_43_59_AM.png", 
+            "source": "/venture/shows/batman/tmp/scene_01.ma"
+        }
+        from studio_usd_pipe.api import studioPush
+        push = studioPush.Push('btm', 'shots')
+        valid, message = push.do_publish(repair=True, trail=True, **input_data)         
+        '''
+        
+        
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window(parent=None, standalone=True, application='maya')

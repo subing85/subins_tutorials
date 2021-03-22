@@ -1,0 +1,169 @@
+<katana release="2.6v4" version="2.6.2.000001">
+  <node name="__SAVE_exportedNodes" type="Group">
+    <node baseType="RenderOutputDefine" edited="true" name="RenderOutputDefine" selected="true" type="RenderOutputDefine" viewed="true" x="320.000000" y="-240.000000">
+      <port name="input" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="RenderOutputDefine">
+        <string_parameter name="CEL" value=""/>
+        <string_parameter name="outputName" value="primary"/>
+        <group_parameter name="args">
+          <string_parameter name="__fixedCEL" value="/root"/>
+          <string_parameter name="__lastLocationType" value="file"/>
+          <string_parameter name="__lastRendererAndOutputType" value="prman:color"/>
+          <group_parameter name="renderSettings">
+            <number_parameter name="__groupInherit" value="0"/>
+            <string_parameter name="__hints" persistant="false" value="{&apos;groupInherit&apos;: &apos;False&apos;, &apos;hideTitle&apos;: &apos;True&apos;, &apos;open&apos;: &apos;True&apos;, &apos;name&apos;: &apos;renderSettings&apos;}"/>
+            <group_parameter name="outputs">
+              <number_parameter name="__groupInherit" value="0"/>
+              <string_parameter name="__hints" persistant="false" value="{&apos;groupInherit&apos;: &apos;False&apos;, &apos;hideTitle&apos;: &apos;True&apos;, &apos;open&apos;: &apos;True&apos;, &apos;name&apos;: &apos;outputs&apos;}"/>
+              <group_parameter name="outputName">
+                <number_parameter name="__groupInherit" value="0"/>
+                <string_parameter name="__hints" persistant="false" value="{&apos;groupInherit&apos;: &apos;False&apos;, &apos;hideTitle&apos;: &apos;True&apos;, &apos;open&apos;: &apos;True&apos;, &apos;name&apos;: &apos;outputName&apos;}"/>
+                <group_parameter name="type">
+                  <number_parameter name="enable" value="1"/>
+                  <string_parameter name="value" value="color"/>
+                  <string_parameter name="default" value=""/>
+                  <string_parameter name="type" value="StringAttr"/>
+                  <string_parameter name="__hints" persistant="false" value="{&apos;default&apos;: &apos;&apos;, &apos;widget&apos;: &apos;popup&apos;, &apos;name&apos;: &apos;type&apos;}"/>
+                </group_parameter>
+                <group_parameter name="includedByDefault">
+                  <number_parameter name="enable" value="1"/>
+                  <string_parameter name="value" value="Yes"/>
+                  <string_parameter name="default" value="Yes"/>
+                  <string_parameter name="type" value="StringAttr"/>
+                  <string_parameter name="__hints" persistant="false" value="{&apos;widget&apos;: &apos;boolean&apos;, &apos;name&apos;: &apos;includedByDefault&apos;, &apos;default&apos;: &apos;Yes&apos;, &apos;conditionalVisOp&apos;: &apos;notEqualTo&apos;, &apos;conditionalVisPath&apos;: &apos;../type&apos;, &apos;conditionalVisValue&apos;: &apos;none&apos;}"/>
+                </group_parameter>
+                <group_parameter name="forceLegacyChannelNames">
+                  <number_parameter name="enable" value="1"/>
+                  <string_parameter name="value" value="Yes"/>
+                  <string_parameter name="default" value="Yes"/>
+                  <string_parameter name="type" value="StringAttr"/>
+                  <string_parameter name="__hints" persistant="false" value="{&apos;widget&apos;: &apos;boolean&apos;, &apos;name&apos;: &apos;forceLegacyChannelNames&apos;, &apos;default&apos;: &apos;Yes&apos;, &apos;conditionalVisOp&apos;: &apos;in&apos;, &apos;conditionalVisPath&apos;: &apos;../type&apos;, &apos;conditionalVisValue&apos;: &apos;color|raw|shadow|deep&apos;}"/>
+                </group_parameter>
+                <group_parameter name="rendererSettings">
+                  <group_parameter name="colorSpace">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="linear"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="fileExtension">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="exr"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="channel">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="rgba"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="convertSettings">
+                    <group_parameter name="exrCompression">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="Scanline ZIP"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="exrBitDepth">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="16"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="exrOptimize">
+                      <number_parameter name="enable" value="0"/>
+                      <number_parameter name="value" value="1"/>
+                      <string_parameter name="type" value="IntAttr"/>
+                    </group_parameter>
+                    <group_parameter name="exrType">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="Scanline"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="pngBitDepth">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="16"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="rlaBitDepth">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="16"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="tifBitDepth">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="16"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="tifCompression">
+                      <number_parameter name="enable" value="0"/>
+                      <string_parameter name="value" value="LZW"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="jpgQuality">
+                      <number_parameter name="enable" value="0"/>
+                      <number_parameter name="value" value="100"/>
+                      <string_parameter name="type" value="FloatAttr"/>
+                    </group_parameter>
+                  </group_parameter>
+                  <group_parameter name="clampOutput">
+                    <number_parameter name="enable" value="1"/>
+                    <number_parameter name="value" value="0"/>
+                    <string_parameter name="type" value="IntAttr"/>
+                  </group_parameter>
+                  <group_parameter name="colorConvert">
+                    <number_parameter name="enable" value="1"/>
+                    <number_parameter name="value" value="1"/>
+                    <string_parameter name="type" value="IntAttr"/>
+                  </group_parameter>
+                  <group_parameter name="computeStats">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="None"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="tempRenderLocation">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value=""/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="cameraName">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value=""/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="__unused"/>
+                </group_parameter>
+                <group_parameter name="mergeOutputs">
+                  <number_parameter name="enable" value="0"/>
+                  <string_parameter name="value" value=""/>
+                  <string_parameter name="default" value=""/>
+                  <string_parameter name="type" value="StringAttr"/>
+                  <string_parameter name="__hints" persistant="false" value="{&apos;widget&apos;: &apos;nonexclusiveCheckboxPopup&apos;, &apos;name&apos;: &apos;mergeOutputs&apos;, &apos;default&apos;: &apos;&apos;, &apos;emptyLabel&apos;: &apos;default: none&apos;, &apos;conditionalVisOp&apos;: &apos;equalTo&apos;, &apos;conditionalVisPath&apos;: &apos;../type&apos;, &apos;conditionalVisValue&apos;: &apos;merge&apos;}"/>
+                </group_parameter>
+                <group_parameter name="locationType">
+                  <number_parameter name="enable" value="1"/>
+                  <string_parameter name="value" value="file"/>
+                  <string_parameter name="default" value="local"/>
+                  <string_parameter name="type" value="StringAttr"/>
+                  <string_parameter name="__hints" persistant="false" value="{&apos;widget&apos;: &apos;popup&apos;, &apos;name&apos;: &apos;locationType&apos;, &apos;default&apos;: &apos;local&apos;, &apos;conditionalVisOp&apos;: &apos;notEqualTo&apos;, &apos;conditionalVisPath&apos;: &apos;../type&apos;, &apos;conditionalVisValue&apos;: &apos;none&apos;}"/>
+                </group_parameter>
+                <group_parameter name="locationSettings">
+                  <group_parameter name="renderLocation">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value=""/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="__unused"/>
+                </group_parameter>
+                <group_parameter name="showMe">
+                  <number_parameter name="enable" value="0"/>
+                  <number_parameter name="value" value="0"/>
+                  <number_parameter name="default" value="0"/>
+                  <string_parameter name="type" value="IntAttr"/>
+                  <string_parameter name="__hints" persistant="false" value="{&apos;default&apos;: &apos;0&apos;, &apos;int&apos;: &apos;True&apos;, &apos;widget&apos;: &apos;null&apos;, &apos;name&apos;: &apos;showMe&apos;}"/>
+                </group_parameter>
+              </group_parameter>
+            </group_parameter>
+          </group_parameter>
+        </group_parameter>
+      </group_parameter>
+    </node>
+  </node>
+</katana>

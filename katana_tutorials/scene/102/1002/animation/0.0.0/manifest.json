@@ -1,0 +1,54 @@
+{
+    "pipe": "scene", 
+    "data": {
+        "puppets": {
+            "batman": {
+                "category": "character", 
+                "lookdev": "0.0.1", 
+                "name": "batman", 
+                "version": "0.0.2", 
+                "model": "0.0.0", 
+                "type": "puppet"
+            }, 
+            "southcity": {
+                "category": "set", 
+                "lookdev": "0.1.0", 
+                "name": "southcity", 
+                "version": "0.0.1", 
+                "model": "0.0.0", 
+                "type": "puppet"
+            }, 
+            "lookthrough": {
+                "category": "camera", 
+                "lookdev": "0.0.0", 
+                "name": "lookthrough", 
+                "version": "0.0.0", 
+                "model": "0.0.0", 
+                "type": "puppet"
+            }, 
+            "jasmin": {
+                "category": "character", 
+                "lookdev": "0.0.1", 
+                "name": "jasmin", 
+                "version": "0.1.0", 
+                "model": "0.0.0", 
+                "type": "puppet"
+            }, 
+            "motorcycle": {
+                "category": "prop", 
+                "lookdev": "0.1.0", 
+                "name": "motorcycle", 
+                "version": "0.0.0", 
+                "model": "0.0.0", 
+                "type": "puppet"
+            }
+        }, 
+        "frame_range": [
+            1001, 
+            1025
+        ], 
+        "version": "0.0.0", 
+        "scene": "animation", 
+        "sequence": "102"
+    }
+}

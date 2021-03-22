@@ -18,7 +18,11 @@ class Environ(object):
     
     def get_show_icon(self):
         show_icon, valid = self.get_environ_value('SHOW_ICON')
-        return show_icon                 
+        return show_icon 
+    
+    def get_show_appication_path(self, application):
+        path, valid = self.get_specific_environ_value('show_applications', application, 'path')
+        return path            
         
     def get_environ_value(self, environ):
         if environ in os.environ:

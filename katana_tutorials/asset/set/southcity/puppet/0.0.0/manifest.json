@@ -1,0 +1,11 @@
+{
+    "pipe": "asset", 
+    "data": {
+        "category": "set", 
+        "lookdev": "0.1.0", 
+        "name": "southcity", 
+        "version": "0.0.0", 
+        "model": "0.0.0", 
+        "type": "puppet"
+    }
+}

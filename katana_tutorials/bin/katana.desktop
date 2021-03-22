@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Katana
+Comment="Katana Python Tutorial"
+Exec=/venture/shows/katana_tutorials/bin/katana.sh
+Icon=/venture/shows/katana_tutorials/icons/katana2.6v4.png
+Categories=Application
+Version=katana2.6v4
+Type=Application
+Terminal=1
+ 

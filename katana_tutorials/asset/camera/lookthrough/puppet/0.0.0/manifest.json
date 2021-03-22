@@ -1,0 +1,11 @@
+{
+    "pipe": "asset", 
+    "data": {
+        "category": "camera", 
+        "lookdev": "0.0.0", 
+        "name": "lookthrough", 
+        "version": "0.0.0", 
+        "model": "0.0.0", 
+        "type": "puppet"
+    }
+}

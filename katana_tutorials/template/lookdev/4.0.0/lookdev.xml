@@ -1,0 +1,2294 @@
+<katana release="2.6v4" version="2.6.2.000001">
+  <node name="__SAVE_exportedNodes" type="Group">
+    <node baseType="SuperTool" name="GafferThree2" ns_basicDisplay="1.000000" ns_iconName="" selected="true" type="GafferThree" x="255.999996" y="-432.000014">
+      <port name="in" source="material_stack2.out" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="GafferThree2">
+        <number_parameter name="apiVersion" value="1"/>
+        <number_parameter name="version" value="10"/>
+        <string_parameter name="rootLocation" value="/root/world/lgt/gaffer"/>
+        <number_parameter name="showIncomingScene" value="0"/>
+        <number_parameter name="syncSelection" value="0"/>
+        <string_parameter expression="@Merge_packages2" name="node_packageMerge"/>
+        <string_parameter expression="@rootPackage2" name="node_rootPackage"/>
+        <string_parameter expression="@preMergeView2" name="node_preMergeView"/>
+        <string_parameter expression="@Merge_incoming2" name="node_incomingMerge"/>
+        <string_parameter expression="@_GafferTagAdopted2" name="node_tagAdopted"/>
+        <string_parameter expression="@PostMergeStack2" name="node_postMergeStack"/>
+        <string_parameter expression="@EditPackageStack2" name="node_editPackageStack"/>
+        <string_parameter expression="@postMergeViewAllUpstream2" name="node_postMergeViewAllUpstream"/>
+        <string_parameter expression="@VariableSet_gafferState_ui2" name="node_postMergeView"/>
+      </group_parameter>
+      <node baseType="Merge" name="Merge_packages2" type="Merge" x="0.000000" y="-75.000000">
+        <port name="i0" source="rootPackage2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="Merge_packages2">
+          <string_parameter name="showAdvancedOptions" value="No"/>
+          <group_parameter name="advanced">
+            <string_parameter name="sumBounds" value="No"/>
+            <string_parameter name="preserveWorldSpaceXform" value="No"/>
+            <stringarray_parameter name="preserveInheritedAttributes" size="0" tupleSize="1"/>
+            <group_parameter name="preferredInputAttributes">
+              <stringarray_parameter name="name" size="0" tupleSize="1"/>
+              <numberarray_parameter name="index" size="0" tupleSize="1"/>
+            </group_parameter>
+            <string_parameter name="preferRightmostInputWithAttribute" value=""/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Group" name="rootPackage2" type="Group" x="0" y="0">
+        <port name="out" type="out"/>
+        <group_parameter name="rootPackage2">
+          <group_parameter name="__gaffer">
+            <string_parameter name="packageType" value="RootPackage"/>
+            <string_parameter expression="=^/rootLocation" name="location"/>
+          </group_parameter>
+          <string_parameter expression="@LocationCreate2" name="node_create"/>
+          <string_parameter expression="@Merge7" name="node_merge"/>
+        </group_parameter>
+        <node baseType="LocationCreate" name="LocationCreate2" type="LocationCreate" x="0" y="0">
+          <port name="out" type="out"/>
+          <group_parameter name="LocationCreate2">
+            <string_parameter name="type" value="group"/>
+            <stringarray_parameter name="locations" size="1" tupleSize="1">
+              <string_parameter expression="=^/__gaffer.location" name="i0"/>
+            </stringarray_parameter>
+            <group_parameter name="attrs"/>
+          </group_parameter>
+        </node>
+        <node baseType="Merge" name="Merge7" type="Merge" x="0.000000" y="-50.000000">
+          <port name="i0" source="LocationCreate2.out" type="in"/>
+          <port name="out" returns="out" type="out"/>
+          <group_parameter name="Merge7">
+            <string_parameter name="showAdvancedOptions" value="No"/>
+            <group_parameter name="advanced">
+              <string_parameter name="sumBounds" value="No"/>
+              <string_parameter name="preserveWorldSpaceXform" value="No"/>
+              <stringarray_parameter name="preserveInheritedAttributes" size="0" tupleSize="1"/>
+              <group_parameter name="preferredInputAttributes">
+                <stringarray_parameter name="name" size="0" tupleSize="1"/>
+                <numberarray_parameter name="index" size="0" tupleSize="1"/>
+              </group_parameter>
+              <string_parameter name="preferRightmostInputWithAttribute" value=""/>
+            </group_parameter>
+          </group_parameter>
+        </node>
+      </node>
+      <node baseType="VariableSet" name="preMergeView2" ns_basicDisplay="1.000000" type="VariableSet" x="325.000000" y="-120.000000">
+        <port name="in" source="Merge8.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="preMergeView2">
+          <string_parameter name="variableName" value="gafferState"/>
+          <string_parameter name="variableValue" value="ui"/>
+        </group_parameter>
+      </node>
+      <node baseType="Merge" name="Merge_incoming2" type="Merge" x="0.000000" y="-300.000000">
+        <port name="i0" source="Dot12.output" type="in"/>
+        <port name="i1" source="Merge_packages2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="Merge_incoming2">
+          <string_parameter name="showAdvancedOptions" value="Yes"/>
+          <group_parameter name="advanced">
+            <string_parameter name="sumBounds" value="No"/>
+            <string_parameter name="preserveWorldSpaceXform" value="No"/>
+            <stringarray_parameter name="preserveInheritedAttributes" size="0" tupleSize="1"/>
+            <group_parameter name="preferredInputAttributes">
+              <stringarray_parameter name="name" size="0" tupleSize="1"/>
+              <numberarray_parameter name="index" size="0" tupleSize="1"/>
+            </group_parameter>
+            <string_parameter name="preferRightmostInputWithAttribute" value="__gafferPackage"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Dot" name="Dot11" type="Dot" x="-200.000000" y="300.000000">
+        <port name="input" source="GafferThree2.in" type="in"/>
+        <port name="output" type="out"/>
+        <group_parameter name="Dot11"/>
+      </node>
+      <node baseType="VariableDelete" name="VariableDelete2" type="VariableDelete" x="-200.000000" y="250.000000">
+        <port name="in" source="Dot11.output" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="VariableDelete2">
+          <string_parameter name="variableName" value="gafferState"/>
+        </group_parameter>
+      </node>
+      <node baseType="_GafferTagAdopted" name="_GafferTagAdopted2" nodetypeversion="1" type="_GafferTagAdopted" x="-200.000000" y="200.000000">
+        <port name="in" source="VariableDelete2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="_GafferTagAdopted2">
+          <string_parameter expression="@GafferThree2" name="gafferName"/>
+          <group_parameter name="packages"/>
+        </group_parameter>
+      </node>
+      <node baseType="Isolate" name="incomingIsolateForUI2" type="Isolate" x="-100.000000" y="150.000000">
+        <port name="input" source="_GafferTagAdopted2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="incomingIsolateForUI2">
+          <stringarray_parameter name="isolateLocations" size="1" tupleSize="1">
+            <string_parameter expression="=^/rootLocation" name="i0"/>
+          </stringarray_parameter>
+          <string_parameter name="isolateFrom" value="/root"/>
+        </group_parameter>
+      </node>
+      <node baseType="VariableSwitch" name="VariableSwitch4" type="VariableSwitch" x="-200.000000" y="90.000000">
+        <port name="cook" source="_GafferTagAdopted2.out" type="in"/>
+        <port name="ui" source="incomingIsolateForUI2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="VariableSwitch4">
+          <string_parameter name="variableName" value="gafferState"/>
+          <group_parameter name="patterns">
+            <string_parameter name="cook" value="cook"/>
+            <string_parameter name="ui" value="ui"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Dot" name="Dot12" type="Dot" x="-200.000000" y="-200.000000">
+        <port name="input" source="VariableSwitch4.out" type="in"/>
+        <port name="output" type="out"/>
+        <group_parameter name="Dot12"/>
+      </node>
+      <node baseType="GroupStack" name="PostMergeStack2" type="GroupStack" x="-150.000000" y="-350.000000">
+        <port name="in" source="Merge_incoming2.out" type="in"/>
+        <port name="out" source="PostMergeStack2.in" type="out"/>
+        <group_parameter name="PostMergeStack2">
+          <group_parameter name="__stackInfo">
+            <string_parameter name="__childType" value=""/>
+            <string_parameter name="__getDisplayNameExpression" value=""/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="VariableSwitch" name="VariableSwitch5" type="VariableSwitch" x="0.000000" y="-420.000000">
+        <port name="cook" source="PostMergeStack2.out" type="in"/>
+        <port name="ui" source="Merge_incoming2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="VariableSwitch5">
+          <string_parameter name="variableName" value="gafferState"/>
+          <group_parameter name="patterns">
+            <string_parameter name="cook" value="cook"/>
+            <string_parameter name="ui" value="ui"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="GroupStack" name="EditPackageStack2" type="GroupStack" x="0.000000" y="-460.000000">
+        <port name="in" source="VariableSwitch5.out" type="in"/>
+        <port name="out" source="EditPackageStack2.in" type="out"/>
+        <group_parameter name="EditPackageStack2">
+          <group_parameter name="__stackInfo">
+            <string_parameter name="__childType" value="&lt;multi&gt;"/>
+            <string_parameter name="__getDisplayNameExpression" value=""/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="OpScript" name="OpScriptStripNotAdopted2" type="OpScript" x="-250.000000" y="-550.000000">
+        <port name="i0" source="EditPackageStack2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="OpScriptStripNotAdopted2">
+          <string_parameter expression="&apos;((%(rootLocation)s)) + ((%(rootLocation)s//*))&apos; % {&apos;rootLocation&apos;: getParam(&apos;OpScriptStripNotAdopted2.user.gafferRootLocation&apos;)}" name="CEL"/>
+          <string_parameter name="location" value="/root/world/location"/>
+          <group_parameter name="script">
+            <string_parameter name="lua" value="-- Determines whether or not the given child of the given location&#0010;-- should be deleted. This is done by checking for the existence of&#0010;-- a __gafferPackage attribute (either on the child, or on any of its&#0010;-- descendants) - if the attribute exists, then the child should not be&#0010;-- deleted, if it doesn&apos;t exist (and doesn&apos;t exist on any of its&#0010;-- descendants) then it should be deleted. This attribute is added to&#0010;-- all locally created packages, as well as all adopted packages, so&#0010;-- the end result is that all packages that are neither locally created&#0010;-- nor adopted will be marked for deletion.&#0010;function shouldDelete(currentLocation, childName)&#0010;    local childLocation = currentLocation .. &quot;/&quot; .. childName&#0010;&#0010;    -- Check for the existence of the __gafferPackage attribute on this&#0010;    -- child location.&#0010;    local packageAttr = Interface.GetAttr(&quot;__gafferPackage&quot;,&#0010;                                          childLocation)&#0010;    if nil ~= packageAttr then&#0010;        -- The attribute exists, so don&apos;t delete this child location.&#0010;        return false&#0010;    end&#0010;&#0010;    -- Otherwise, recurse over the children&#0010;    local potentialChildren =&#0010;        Interface.GetPotentialChildren(childLocation):getNearestSample(0.0)&#0010;    for i=1, #potentialChildren do&#0010;        if not shouldDelete(childLocation, potentialChildren[i]) then&#0010;            -- One or more of the children of this location should not&#0010;            -- be deleted, so don&apos;t delete this location either.&#0010;            return false&#0010;        end&#0010;    end&#0010;&#0010;    -- Default to deleting the location.&#0010;    return true&#0010;end&#0010;&#0010;-- Loop over all potential children at the current cook location and&#0010;-- use shouldDelete() to determine whether or not to delete them.&#0010;local potentialChildren = Interface.GetPotentialChildren():getNearestSample(0.0)&#0010;for i=1, #potentialChildren do&#0010;    local childName = potentialChildren[i]&#0010;    if shouldDelete(Interface.GetOutputLocationPath(), childName) then&#0010;        Interface.DeleteChild(childName)&#0010;    end&#0010;end"/>
+          </group_parameter>
+          <string_parameter name="executionMode" value="immediate"/>
+          <string_parameter name="applyWhere" value="at locations matching CEL"/>
+          <string_parameter name="applyWhen" value="during op resolve"/>
+          <string_parameter name="modifierNameMode" value="node name"/>
+          <string_parameter name="modifierName" value="modifier"/>
+          <string_parameter name="resolveIds" value=""/>
+          <number_parameter name="recursiveEnable" value="0"/>
+          <string_parameter name="disableAt" value=""/>
+          <string_parameter name="inputBehavior" value="by index"/>
+          <group_parameter name="user">
+            <string_parameter expression="=^/rootLocation" name="gafferRootLocation"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Dot" name="postMergeViewAllUpstream2" type="Dot" x="-200.000000" y="-600.000000">
+        <port name="input" source="EditPackageStack2.out" type="in"/>
+        <port name="output" type="out"/>
+        <group_parameter name="postMergeViewAllUpstream2"/>
+      </node>
+      <node baseType="Switch" name="StripNotAdoptedSwitch2" type="Switch" x="-250.000000" y="-700.000000">
+        <port name="strip" source="OpScriptStripNotAdopted2.out" type="in"/>
+        <port name="nostrip" source="postMergeViewAllUpstream2.output" type="in"/>
+        <port name="output" type="out"/>
+        <group_parameter name="StripNotAdoptedSwitch2">
+          <number_parameter expression="=^/showIncomingScene" isexpression="true" name="in"/>
+        </group_parameter>
+      </node>
+      <node baseType="OpScript" name="OpScriptMarkNotInInput2" type="OpScript" x="-250.000000" y="-750.000000">
+        <port name="i0" source="StripNotAdoptedSwitch2.output" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="OpScriptMarkNotInInput2">
+          <string_parameter expression="&apos;((%s//*))&apos; % getParam(&apos;OpScriptMarkNotInInput2.user.gafferRootLocation&apos;)" name="CEL"/>
+          <string_parameter name="location" value="/root/world/location"/>
+          <group_parameter name="script">
+            <string_parameter name="lua" value="-- Sets an &quot;info.gaffer.notInInput&quot; attribute on the cooked location&#0010;-- if it represents a Gaffer edit package without a corresponding&#0010;-- Gaffer creation package in the incoming scene.&#0010;&#0010;local packageAttr = Interface.GetAttr(&quot;__gafferPackage&quot;)&#0010;local packageClass = Interface.GetAttr(&quot;info.gaffer.packageClass&quot;)&#0010;&#0010;if nil == packageClass and nil ~= packageAttr then&#0010;    Interface.SetAttr(&quot;type&quot;, StringAttribute(&quot;warning&quot;))&#0010;    Interface.SetAttr(&quot;warningMessage&quot;, StringAttribute(&#0010;        &quot;Package adopted but not present in input scene.&quot;))&#0010;    Interface.SetAttr(&quot;info.gaffer.notInInput&quot;, IntAttribute(1))&#0010;end"/>
+          </group_parameter>
+          <string_parameter name="executionMode" value="immediate"/>
+          <string_parameter name="applyWhere" value="at locations matching CEL"/>
+          <string_parameter name="applyWhen" value="during op resolve"/>
+          <string_parameter name="modifierNameMode" value="node name"/>
+          <string_parameter name="modifierName" value="modifier"/>
+          <string_parameter name="resolveIds" value=""/>
+          <number_parameter name="recursiveEnable" value="0"/>
+          <string_parameter name="disableAt" value=""/>
+          <string_parameter name="inputBehavior" value="by index"/>
+          <group_parameter name="user">
+            <string_parameter expression="=^/rootLocation" name="gafferRootLocation"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="VariableSet" name="VariableSet_gafferState_ui2" type="VariableSet" x="-250.000000" y="-800.000000">
+        <port name="in" source="OpScriptMarkNotInInput2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="VariableSet_gafferState_ui2">
+          <string_parameter name="variableName" value="gafferState"/>
+          <string_parameter name="variableValue" value="ui"/>
+        </group_parameter>
+      </node>
+      <node baseType="OpScript" name="OpScriptStripNotInInput2" type="OpScript" x="0.000000" y="-650.000000">
+        <port name="i0" source="EditPackageStack2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="OpScriptStripNotInInput2">
+          <string_parameter expression="&apos;((%s//*))&apos; % getParam(&apos;OpScriptMarkNotInInput2.user.gafferRootLocation&apos;)" name="CEL"/>
+          <string_parameter name="location" value="/root/world/location"/>
+          <group_parameter name="script">
+            <string_parameter name="lua" value="-- Deletes the cooked location if it represents a Gaffer edit&#0010;-- package without a corresponding Gaffer creation package in the&#0010;-- incoming scene.&#0010;&#0010;local packageAttr = Interface.GetAttr(&quot;__gafferPackage&quot;)&#0010;local packageClass = Interface.GetAttr(&quot;info.gaffer.packageClass&quot;)&#0010;&#0010;if nil == packageClass and nil ~= packageAttr then&#0010;    Interface.DeleteSelf()&#0010;end"/>
+          </group_parameter>
+          <string_parameter name="executionMode" value="immediate"/>
+          <string_parameter name="applyWhere" value="at locations matching CEL"/>
+          <string_parameter name="applyWhen" value="during op resolve"/>
+          <string_parameter name="modifierNameMode" value="node name"/>
+          <string_parameter name="modifierName" value="modifier"/>
+          <string_parameter name="resolveIds" value=""/>
+          <number_parameter name="recursiveEnable" value="0"/>
+          <string_parameter name="disableAt" value=""/>
+          <string_parameter name="inputBehavior" value="by index"/>
+          <group_parameter name="user">
+            <string_parameter expression="=^/rootLocation" name="gafferRootLocation"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="GenericOp" name="StripTracking2" type="GenericOp" x="0.000000" y="-700.000000">
+        <port name="i0" source="OpScriptStripNotInInput2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="StripTracking2">
+          <string_parameter name="opType" value="GafferStripTrackingAttrs"/>
+          <group_parameter name="opArgs">
+            <string_parameter expression="=^/rootLocation" name="rootLocation"/>
+            <string_parameter expression="@GafferThree2" name="gafferName"/>
+          </group_parameter>
+          <number_parameter name="addSystemOpArgs" value="0"/>
+          <string_parameter name="executionMode" value="immediate"/>
+          <string_parameter name="applyWhere" value="at all locations"/>
+          <string_parameter name="applyWhen" value="during op resolve"/>
+          <string_parameter name="CEL" value=""/>
+          <string_parameter name="location" value="/root/world/location"/>
+          <string_parameter expression="@StripTracking2" name="name"/>
+          <number_parameter name="recursiveEnable" value="0"/>
+          <string_parameter name="disableAt" value=""/>
+          <string_parameter name="resolveIds" value=""/>
+          <string_parameter name="inputBehavior" value="by index"/>
+        </group_parameter>
+      </node>
+      <node baseType="GenericOp" name="AdvertiseSuperTool2" type="GenericOp" x="0.000000" y="-750.000000">
+        <port name="i0" source="StripTracking2.out" type="in"/>
+        <port name="out" returns="out" type="out"/>
+        <group_parameter name="AdvertiseSuperTool2">
+          <string_parameter name="opType" value="AttributeExtend"/>
+          <group_parameter name="opArgs">
+            <string_parameter name="CEL" value="/root/world"/>
+            <string_parameter expression="@GafferThree2" name="attrValue"/>
+            <number_parameter name="groupInherit" value="0"/>
+            <string_parameter name="__type__groupInherit" value="IntAttr"/>
+            <string_parameter name="attrName" value="globals.itemLists.gaffers"/>
+          </group_parameter>
+          <number_parameter name="addSystemOpArgs" value="0"/>
+          <string_parameter name="executionMode" value="immediate"/>
+          <string_parameter name="applyWhere" value="at all locations"/>
+          <string_parameter name="applyWhen" value="during op resolve"/>
+          <string_parameter name="CEL" value=""/>
+          <string_parameter name="location" value="/root/world/location"/>
+          <string_parameter expression="@AdvertiseSuperTool2" name="name"/>
+          <number_parameter name="recursiveEnable" value="0"/>
+          <string_parameter name="disableAt" value=""/>
+          <string_parameter name="resolveIds" value=""/>
+          <string_parameter name="inputBehavior" value="by index"/>
+        </group_parameter>
+      </node>
+      <node baseType="Merge" name="Merge8" type="Merge" x="175.000000" y="-120.000000">
+        <port name="i0" source="Merge_packages2.out" type="in"/>
+        <port name="i1" source="PruneForMute2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="Merge8">
+          <string_parameter name="showAdvancedOptions" value="No"/>
+          <group_parameter name="advanced">
+            <string_parameter name="sumBounds" value="No"/>
+            <string_parameter name="preserveWorldSpaceXform" value="No"/>
+            <stringarray_parameter name="preserveInheritedAttributes" size="0" tupleSize="1"/>
+            <group_parameter name="preferredInputAttributes">
+              <stringarray_parameter name="name" size="0" tupleSize="1"/>
+              <numberarray_parameter name="index" size="0" tupleSize="1"/>
+            </group_parameter>
+            <string_parameter name="preferRightmostInputWithAttribute" value=""/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Isolate" name="IsolateForMute2" type="Isolate" x="200.000000" y="200.000000">
+        <port name="input" source="_GafferTagAdopted2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="IsolateForMute2">
+          <stringarray_parameter name="isolateLocations" size="1" tupleSize="1">
+            <string_parameter name="i0" value="/root/world"/>
+          </stringarray_parameter>
+          <string_parameter name="isolateFrom" value="/root/world/geo"/>
+        </group_parameter>
+      </node>
+      <node baseType="Prune" name="PruneForMute2" type="Prune" x="200.000000" y="170.000000">
+        <port name="A" source="IsolateForMute2.out" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="PruneForMute2">
+          <string_parameter name="cel" value="/root/world//*"/>
+        </group_parameter>
+      </node>
+    </node>
+    <node baseType="PrmanGlobalStatements" name="PrmanGlobalStatements2" nodetypeversion="7" selected="true" type="PrmanGlobalStatements" x="255.999969" y="-511.999991">
+      <port name="in" source="GafferThree2.out" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="PrmanGlobalStatements2">
+        <string_parameter name="parameterLayout" value="Simple"/>
+        <string_parameter name="quality" value="default"/>
+        <group_parameter name="prmanGlobalStatements">
+          <group_parameter name="micropolygonlength">
+            <number_parameter name="enable" value="0"/>
+            <number_parameter name="value" value="1"/>
+            <number_parameter name="default" value="1"/>
+            <string_parameter name="type" value="FloatAttr"/>
+          </group_parameter>
+          <group_parameter name="pixelVariance">
+            <number_parameter name="enable" value="0"/>
+            <number_parameter name="value" value="0.005"/>
+            <number_parameter name="default" value="0.005"/>
+            <string_parameter name="type" value="FloatAttr"/>
+          </group_parameter>
+          <group_parameter name="camera">
+            <group_parameter name="projection">
+              <group_parameter name="projectionType">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="default"/>
+                <string_parameter name="default" value="default"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="hsweep">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="360"/>
+                <number_parameter name="default" value="360"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="vsweep">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="180"/>
+                <number_parameter name="default" value="180"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="minor">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0.25"/>
+                <number_parameter name="default" value="0.25"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="projectionModifier">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="none"/>
+                <string_parameter name="default" value="none"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="angle">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="90"/>
+                <number_parameter name="default" value="90"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="depthOfField">
+              <group_parameter name="fStopInfinite">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="fStop">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="22"/>
+                <number_parameter name="default" value="22"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="focalLen">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="44"/>
+                <number_parameter name="default" value="44"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="focalDist">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="7"/>
+                <number_parameter name="default" value="7"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="shutterOpening">
+              <group_parameter name="useConstantRate">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="shutteropening_const">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="1"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="1"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="shutteropening_curve">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="10" tupleSize="10">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="1"/>
+                  <number_parameter name="i2" value="0"/>
+                  <number_parameter name="i3" value="1"/>
+                  <number_parameter name="i4" value="0"/>
+                  <number_parameter name="i5" value="1"/>
+                  <number_parameter name="i6" value="1"/>
+                  <number_parameter name="i7" value="1"/>
+                  <number_parameter name="i8" value="1"/>
+                  <number_parameter name="i9" value="1"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="10" tupleSize="10">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="1"/>
+                  <number_parameter name="i2" value="0"/>
+                  <number_parameter name="i3" value="1"/>
+                  <number_parameter name="i4" value="0"/>
+                  <number_parameter name="i5" value="1"/>
+                  <number_parameter name="i6" value="1"/>
+                  <number_parameter name="i7" value="1"/>
+                  <number_parameter name="i8" value="1"/>
+                  <number_parameter name="i9" value="1"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="motionBlur">
+              <group_parameter name="fov">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="backgroundColor">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="3" tupleSize="1">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+              </numberarray_parameter>
+              <numberarray_parameter name="default" size="3" tupleSize="1">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="frameBeginCameraPath">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="integrator">
+            <group_parameter name="integrator">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="PxrPathTracer"/>
+              <string_parameter name="default" value="PxrPathTracer"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="customIntegratorPath">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="PxrVCM">
+              <group_parameter name="mergePaths">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="connectPaths">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numLightSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numBxdfSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="maxPathLength">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10"/>
+                <number_parameter name="default" value="10"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="rouletteDepth">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="4"/>
+                <number_parameter name="default" value="4"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="rouletteThreshold">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0.2"/>
+                <number_parameter name="default" value="0.2"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="clampDepth">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="2"/>
+                <number_parameter name="default" value="2"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="clampLuminance">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10"/>
+                <number_parameter name="default" value="10"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="mergeRadius">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="5"/>
+                <number_parameter name="default" value="5"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="timeRadius">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="specularCurvatureFilter">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="PxrPathTracer">
+              <group_parameter name="maxPathLength">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10"/>
+                <number_parameter name="default" value="10"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="maxContinuationLength">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="-1"/>
+                <number_parameter name="default" value="-1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="sampleMode">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="bxdf"/>
+                <string_parameter name="default" value="bxdf"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="numLightSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numBxdfSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numIndirectSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numDiffuseSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numSpecularSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numSubsurfaceSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numRefractionSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="rouletteDepth">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="4"/>
+                <number_parameter name="default" value="4"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="rouletteThreshold">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0.2"/>
+                <number_parameter name="default" value="0.2"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="clampDepth">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="2"/>
+                <number_parameter name="default" value="2"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="clampLuminance">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10"/>
+                <number_parameter name="default" value="10"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="allowCaustics">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="accumOpacity">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="imagePlaneSubset">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="rman__imageplane"/>
+                <string_parameter name="default" value="rman__imageplane"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="PxrVisualizer">
+              <group_parameter name="style">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="shaded"/>
+                <string_parameter name="default" value="shaded"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="wireframe">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="normalCheck">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="matCap">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="wireframeColor">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="3" tupleSize="1">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="0"/>
+                  <number_parameter name="i2" value="0"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="3" tupleSize="1">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="0"/>
+                  <number_parameter name="i2" value="0"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="wireframeOpacity">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0.5"/>
+                <number_parameter name="default" value="0.5"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="wireframeWidth">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="PxrDirectLighting">
+              <group_parameter name="numLightSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="4"/>
+                <number_parameter name="default" value="4"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="numBxdfSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="4"/>
+                <number_parameter name="default" value="4"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="PxrDebugShadingContext">
+              <group_parameter name="viewchannel">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="Nn"/>
+                <string_parameter name="default" value="Nn"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="PxrValidateBxdf">
+              <group_parameter name="numSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="4"/>
+                <number_parameter name="default" value="4"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="PxrOcclusion">
+              <group_parameter name="numSamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="4"/>
+                <number_parameter name="default" value="4"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="distribution">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="cosineSpread">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="falloff">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="maxDistance">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="useAlbedo">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="hider">
+            <group_parameter name="hider">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="raytrace"/>
+              <string_parameter name="default" value="raytrace"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="raytrace">
+              <group_parameter name="minsamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="-1"/>
+                <number_parameter name="default" value="-1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="maxsamples">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="darkfalloff">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0.025"/>
+                <number_parameter name="default" value="0.025"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="incremental">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="pixelfiltermode">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="weighted"/>
+                <string_parameter name="default" value="weighted"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="aperture">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="4" tupleSize="4">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="0"/>
+                  <number_parameter name="i2" value="1"/>
+                  <number_parameter name="i3" value="0"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="4" tupleSize="4">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="0"/>
+                  <number_parameter name="i2" value="1"/>
+                  <number_parameter name="i3" value="0"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="dofaspect">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="samplemotion">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="extrememotiondof">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="adaptall">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="bake">
+              <group_parameter name="pixelSamples">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="2"/>
+                  <number_parameter name="i1" value="2"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="2"/>
+                  <number_parameter name="i1" value="2"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="options">
+            <group_parameter name="limits">
+              <group_parameter name="bucketsize">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="16"/>
+                  <number_parameter name="i1" value="16"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="16"/>
+                  <number_parameter name="i1" value="16"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="texturememory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="2097152"/>
+                <number_parameter name="default" value="2097152"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="threads">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="zthreshold">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="3" tupleSize="1">
+                  <number_parameter name="i0" value="0.996"/>
+                  <number_parameter name="i1" value="0.996"/>
+                  <number_parameter name="i2" value="0.996"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="3" tupleSize="1">
+                  <number_parameter name="i0" value="0.996"/>
+                  <number_parameter name="i1" value="0.996"/>
+                  <number_parameter name="i2" value="0.996"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="othreshold">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="3" tupleSize="1">
+                  <number_parameter name="i0" value="0.996"/>
+                  <number_parameter name="i1" value="0.996"/>
+                  <number_parameter name="i2" value="0.996"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="3" tupleSize="1">
+                  <number_parameter name="i0" value="0.996"/>
+                  <number_parameter name="i1" value="0.996"/>
+                  <number_parameter name="i2" value="0.996"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="deepshadowerror">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0.01"/>
+                <number_parameter name="default" value="0.01"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="geocachememory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="2097152"/>
+                <number_parameter name="default" value="2097152"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="brickmemory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10240"/>
+                <number_parameter name="default" value="10240"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="opacitycachememory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1024000"/>
+                <number_parameter name="default" value="1024000"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="octreememory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10240"/>
+                <number_parameter name="default" value="10240"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="pointmemory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="10240"/>
+                <number_parameter name="default" value="10240"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="rendermemory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="ptexturememory">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1048576"/>
+                <number_parameter name="default" value="1048576"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="ptexturemaxfiles">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="128"/>
+                <number_parameter name="default" value="128"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="checkpoint">
+              <group_parameter name="interval">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="0"/>
+                <string_parameter name="default" value="0"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="exitat">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="0"/>
+                <string_parameter name="default" value="0"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="keepfiles">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="command">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="bucket">
+              <group_parameter name="order">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="horizontal"/>
+                <string_parameter name="default" value="horizontal"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="orderorigin">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="0"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="0"/>
+                  <number_parameter name="i1" value="0"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="statistics">
+              <group_parameter name="endofframe">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="filename">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value="stdout"/>
+                <string_parameter name="default" value="stdout"/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="xmlfilename">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="stylesheet">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="shaderprofile">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="displace_ratios">
+                <number_parameter name="enable" value="0"/>
+                <numberarray_parameter name="value" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="0.1"/>
+                  <number_parameter name="i1" value="1"/>
+                </numberarray_parameter>
+                <numberarray_parameter name="default" size="2" tupleSize="2">
+                  <number_parameter name="i0" value="0.1"/>
+                  <number_parameter name="i1" value="1"/>
+                </numberarray_parameter>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="maxdispwarnings">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="100"/>
+                <number_parameter name="default" value="100"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="shutter">
+              <group_parameter name="clampmotion">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="offset">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="polygon">
+              <group_parameter name="nonplanar">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="curve">
+              <group_parameter name="orienttotransform">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="-1"/>
+                <number_parameter name="default" value="-1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="stochasticshadows">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="dice">
+              <group_parameter name="maxhairlength">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="-1"/>
+                <number_parameter name="default" value="-1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="pretessellate">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+              <group_parameter name="offscreenmultiplier">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="hair">
+              <group_parameter name="minwidth">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="0"/>
+                <number_parameter name="default" value="0"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+              <group_parameter name="spatialgrouping">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="IntAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="searchpath">
+              <group_parameter name="shader">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="texture">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="display">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="archive">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="procedural">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="resource">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="rifilter">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="rixplugin">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+              <group_parameter name="dirmap">
+                <number_parameter name="enable" value="0"/>
+                <string_parameter name="value" value=""/>
+                <string_parameter name="default" value=""/>
+                <string_parameter name="type" value="StringAttr"/>
+              </group_parameter>
+            </group_parameter>
+            <group_parameter name="user">
+              <group_parameter name="sceneUnits">
+                <number_parameter name="enable" value="0"/>
+                <number_parameter name="value" value="1"/>
+                <number_parameter name="default" value="1"/>
+                <string_parameter name="type" value="FloatAttr"/>
+              </group_parameter>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="pixelFilter">
+            <group_parameter name="filterFunc">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="gaussian"/>
+              <string_parameter name="default" value="gaussian"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="width">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="2"/>
+              <number_parameter name="default" value="2"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="height">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="2"/>
+              <number_parameter name="default" value="2"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="geometry">
+            <group_parameter name="flip_t">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="none"/>
+              <string_parameter name="default" value="none"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="rerender">
+            <group_parameter name="lodrange">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="2" tupleSize="2">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="4"/>
+              </numberarray_parameter>
+              <numberarray_parameter name="default" size="2" tupleSize="2">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="4"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="progressive">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <number_parameter name="default" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="quantize">
+            <group_parameter name="rgba">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="0"/>
+              </numberarray_parameter>
+              <numberarray_parameter name="default" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="z">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="0"/>
+              </numberarray_parameter>
+              <numberarray_parameter name="default" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="commandArguments">
+            <group_parameter name="progress">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <number_parameter name="default" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="loglevel">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <number_parameter name="default" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="logfile">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="recover">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <number_parameter name="default" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="numThreadModeProcs">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <number_parameter name="default" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="capturePath">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="riFilters">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="woff">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="plugin">
+            <group_parameter name="multiThreaded">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <number_parameter name="default" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="instanceSourceMode">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="immediate"/>
+              <string_parameter name="default" value="immediate"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="exportTaggedMaterials">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <number_parameter name="default" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+          </group_parameter>
+          <group_parameter name="ribInclude">
+            <number_parameter name="enable" value="0"/>
+            <string_parameter name="value" value=""/>
+            <string_parameter name="default" value=""/>
+            <string_parameter name="type" value="StringAttr"/>
+          </group_parameter>
+          <group_parameter name="ribIncludeLocation">
+            <number_parameter name="enable" value="0"/>
+            <string_parameter name="value" value="After FrameBegin; Before Display"/>
+            <string_parameter name="default" value="After FrameBegin; Before Display"/>
+            <string_parameter name="type" value="StringAttr"/>
+          </group_parameter>
+          <group_parameter name="errorHandler">
+            <number_parameter name="enable" value="0"/>
+            <string_parameter name="value" value="print"/>
+            <string_parameter name="default" value="print"/>
+            <string_parameter name="type" value="StringAttr"/>
+          </group_parameter>
+          <group_parameter name="renderDisplay">
+            <number_parameter name="enable" value="0"/>
+            <string_parameter name="value" value="Monitor"/>
+            <string_parameter name="default" value="Monitor"/>
+            <string_parameter name="type" value="StringAttr"/>
+          </group_parameter>
+          <group_parameter name="__unused"/>
+        </group_parameter>
+      </group_parameter>
+    </node>
+    <node baseType="Merge" name="Merge9" selected="true" type="Merge" x="255.999967" y="-240.000001">
+      <port name="i0" source="Dot18.output" type="in"/>
+      <port name="i1" source="Dot19.output" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="Merge9">
+        <string_parameter name="showAdvancedOptions" value="No"/>
+        <group_parameter name="advanced">
+          <string_parameter name="sumBounds" value="No"/>
+          <string_parameter name="preserveWorldSpaceXform" value="No"/>
+          <stringarray_parameter name="preserveInheritedAttributes" size="0" tupleSize="1"/>
+          <group_parameter name="preferredInputAttributes">
+            <stringarray_parameter name="name" size="0" tupleSize="1"/>
+            <numberarray_parameter name="index" size="0" tupleSize="1"/>
+          </group_parameter>
+          <string_parameter name="preferRightmostInputWithAttribute" value=""/>
+        </group_parameter>
+      </group_parameter>
+    </node>
+    <node baseType="GroupStack" eyepointx="42.750000" eyepointy="-24.000000" eyepointz="10000.000000" name="material_stack2" selected="true" type="GroupStack" viewscalex="2.000000" viewscaley="2.000000" viewscalez="1.000000" x="255.999965" y="-336.000023">
+      <port name="in" source="Merge9.out" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="material_stack2">
+        <group_parameter name="__stackInfo">
+          <string_parameter name="__childType" value="MaterialAssign"/>
+          <string_parameter name="__getDisplayNameExpression" value=""/>
+        </group_parameter>
+      </group_parameter>
+      <node baseType="GenericAssign" name="MaterialAssign2" type="MaterialAssign" x="0" y="0">
+        <port name="input" source="material_stack2.in" type="in"/>
+        <port name="out" returns="out" type="out"/>
+        <group_parameter name="MaterialAssign2">
+          <string_parameter name="CEL" value=""/>
+          <string_parameter name="location" value=""/>
+          <group_parameter name="args">
+            <group_parameter name="materialAssign">
+              <number_parameter name="enable" value="1"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+          </group_parameter>
+        </group_parameter>
+      </node>
+    </node>
+    <node baseType="Dot" name="Dot13" selected="true" type="Dot" x="255.999961" y="-751.999986">
+      <port name="input" source="studio_lookdev_render2.output" type="in"/>
+      <port name="output" type="out"/>
+      <group_parameter name="Dot13"/>
+    </node>
+    <node baseType="Dot" name="Dot14" selected="true" type="Dot" x="-32.000035" y="-176.000004">
+      <port name="input" source="studio_lookdev_asset1.out" type="in"/>
+      <port name="output" type="out"/>
+      <group_parameter name="Dot14"/>
+    </node>
+    <node baseType="Dot" name="Dot15" selected="true" type="Dot" x="447.999967" y="-176.000005">
+      <port name="input" source="shader_group2.o0" type="in"/>
+      <port name="output" type="out"/>
+      <group_parameter name="Dot15"/>
+    </node>
+    <node baseType="Dot" name="Dot18" selected="true" type="Dot" x="224.000000" y="-175.999998">
+      <port name="input" source="Dot14.output" type="in"/>
+      <port name="output" type="out"/>
+      <group_parameter name="Dot18"/>
+    </node>
+    <node baseType="Dot" name="Dot19" selected="true" type="Dot" x="287.999969" y="-176.000003">
+      <port name="input" source="Dot15.output" type="in"/>
+      <port name="output" type="out"/>
+      <group_parameter name="Dot19"/>
+    </node>
+    <node baseType="Group" name="studio_lookdev_asset1" selected="true" type="Group" x="-32.000002" y="-16.000000">
+      <port name="out" type="out"/>
+      <group_parameter name="studio_lookdev_asset1">
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="node_type" value="studio_lookdev_asset"/>
+        <string_parameter hints="{&apos;widget&apos;: &apos;fileInput&apos;}" name="show_path" value="/venture/shows/katana_tutorials"/>
+        <string_parameter name="model_name" value=""/>
+        <string_parameter hints="{&apos;widget&apos;: &apos;popup&apos;, &apos;options&apos;: [&apos;character&apos;, &apos;prop&apos;, &apos;set&apos;, &apos;camera&apos;]}" name="model_category" value="character"/>
+        <string_parameter name="model_version" value=""/>
+        <string_parameter name="camera_name" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="camera_category" value="camera"/>
+        <string_parameter name="camera_version" value=""/>
+        <string_parameter hints="{&apos;widget&apos;: &apos;scriptButton&apos;, &apos;buttonText&apos;: &apos;create_or_update&apos;, &apos;scriptText&apos;: &apos;from resources.studio_nodes.lookdev_asset_node import node\nreload(node)\nnode.create_button_action(parameter)&apos;}" name="create_or_update" value="create_or_update"/>
+      </group_parameter>
+    </node>
+    <node baseType="LookFileBake" name="studio_lookdev_bake2" selected="true" type="LookFileBake" x="-0.000033" y="-400.000007">
+      <port name="orig" source="Dot14.output" type="in"/>
+      <port name="default" source="material_stack2.out" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="studio_lookdev_bake2">
+        <stringarray_parameter name="rootLocations" size="1" tupleSize="1">
+          <string_parameter name="i0" value="/root/world"/>
+        </stringarray_parameter>
+        <group_parameter name="passes"/>
+        <string_parameter name="saveTo" value=""/>
+        <string_parameter name="comment" value=""/>
+        <group_parameter name="options">
+          <string_parameter name="outputFormat" value="as archive"/>
+          <string_parameter name="includeGlobalAttributes" value="No"/>
+          <string_parameter name="alwaysIncludeSelectedMaterialTrees" value="No"/>
+          <stringarray_parameter name="selectedMaterialTreeRootLocations" size="1" tupleSize="1">
+            <string_parameter name="i0" value="/root/materials/geo"/>
+          </stringarray_parameter>
+        </group_parameter>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="node_type" value="studio_lookdev_bake"/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="show_path" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="name" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="category" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="type" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="version" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="model" value=""/>
+        <string_parameter hints="{&apos;readOnly&apos;: &apos;True&apos;}" name="lookdev" value=""/>
+      </group_parameter>
+    </node>
+    <node baseType="SuperTool" name="studio_lookdev_render2" ns_basicDisplay="1.000000" ns_iconName="" selected="true" type="studio_lookdev_render" x="255.999962" y="-672.000026">
+      <port name="input" source="RenderSettings2.out" type="in"/>
+      <port name="output" type="out"/>
+      <group_parameter name="studio_lookdev_render2">
+        <group_parameter name="studio_pipe">
+          <string_parameter hints="{&apos;widget&apos;: &apos;scriptButton&apos;, &apos;buttonText&apos;: &apos;reload&apos;, &apos;help&apos;: &apos;\n                search the lookdev asset node from the current scene.\n                &apos;, &apos;scriptText&apos;: &apos;from resources.SuperTools.lookdev_render_node.v1 import ScriptActions\nScriptActions.reload_lookdev(parameter.getNode())&apos;}" name="reload" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;popup&apos;, &apos;options&apos;: &apos;None&apos;, &apos;help&apos;: &apos;\n                specify the studio lookdev asset node from the current scene.(output of reload)\n                &apos;}" name="asset_node" value="None"/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;scriptButton&apos;, &apos;buttonText&apos;: &apos;load&apos;, &apos;help&apos;: &apos;\n                collect the current scene date and update all the inputs.\n                &apos;, &apos;scriptText&apos;: &apos;from resources.SuperTools.lookdev_render_node.v1 import ScriptActions\nScriptActions.load_lookdev(parameter.getNode())&apos;}" name="load" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;fileInput&apos;, &apos;readOnly&apos;: True}" name="show_path" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;&apos;, &apos;readOnly&apos;: True, &apos;help&apos;: &apos;\n                specify the lookdev name.\n                &apos;}" name="name" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;popup&apos;, &apos;help&apos;: &apos;\n                specify the lookdev category such as character, prop or set.\n                &apos;, &apos;readOnly&apos;: True, &apos;options&apos;: [&apos;character&apos;, &apos;prop&apos;, &apos;set&apos;, &apos;camera&apos;]}" name="category" value="character"/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;&apos;, &apos;readOnly&apos;: True, &apos;help&apos;: &apos;\n                auto generate the lookdev type (should be lookdev)\nuser permission disabled.\n                &apos;}" name="type" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;scriptButton&apos;, &apos;buttonText&apos;: &apos;version&apos;, &apos;help&apos;: &apos;\n                specify the lookdev strict version, each click change strict versions (0,1,2,3) for example  MAJOR0, MINOR, PATCH.\n                &apos;, &apos;scriptText&apos;: &apos;from resources.SuperTools.lookdev_render_node.v1 import ScriptActions\nScriptActions.version_lookdev(parameter.getNode())&apos;}" name="version" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;&apos;, &apos;readOnly&apos;: True, &apos;help&apos;: &apos;\n                auto generate the lookdev latest version based on strict version\nuser permission disabled.\n                &apos;}" name="latest_version" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;&apos;, &apos;readOnly&apos;: True, &apos;help&apos;: &apos;\n                auto generate the lookdev next publish version based on strict and latest version\nuser permission disabled.\n                &apos;}" name="next_version" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;&apos;, &apos;readOnly&apos;: True, &apos;help&apos;: &apos;\n                auto generate the lookdev model version (should be lookdev)\nuser permission disabled.\n                &apos;}" name="model" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;&apos;, &apos;readOnly&apos;: True, &apos;help&apos;: &apos;\n                auto generate the lookdev version (should be same as version)\nuser permission disabled.\n\n                &apos;}" name="lookdev" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;popup&apos;, &apos;options&apos;: [&apos;previewRender&apos;, &apos;liveRender&apos;, &apos;diskRender&apos;, &apos;batchRender&apos;], &apos;help&apos;: &apos;\n                specify the render type.\n                &apos;}" name="render_mode" value="previewRender"/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;checkBox&apos;}" name="current_frame" value="Yes"/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;popup&apos;, &apos;options&apos;: [&apos;linear&apos;, &apos;sRGB&apos;], &apos;help&apos;: &apos;\n                specify the render color space.\n                &apos;}" name="color_space" value="linear"/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;popup&apos;, &apos;options&apos;: [&apos;exr&apos;, &apos;png&apos;, &apos;tif&apos;, &apos;jpg&apos;], &apos;help&apos;: &apos;\n                specify the render file extension.\n                &apos;}" name="file_extension" value="exr"/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;scenegraphLocation&apos;, &apos;help&apos;: &apos;\n                specify the render file location.\n                &apos;}" name="render_camera" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;fileInput&apos;, &apos;help&apos;: &apos;\n                specify the render file location.\n                &apos;}" name="render_location" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;scriptButton&apos;, &apos;buttonText&apos;: &apos;render&apos;, &apos;help&apos;: &apos;\n                to render based on above render_mode.\n                &apos;, &apos;scriptText&apos;: &apos;from resources.SuperTools.lookdev_render_node.v1 import ScriptActions\nScriptActions.render_lookdev(parameter.getNode())&apos;}" name="render" value=""/>
+          <string_parameter hints="{&apos;widget&apos;: &apos;scriptButton&apos;, &apos;buttonText&apos;: &apos;publish&apos;, &apos;help&apos;: &apos;\n                to publish your lookdev file.\n                &apos;, &apos;scriptText&apos;: &apos;from resources.SuperTools.lookdev_render_node.v1 import ScriptActions\nScriptActions.publish_lookdev(parameter.getNode())&apos;}" name="publish" value=""/>
+        </group_parameter>
+      </group_parameter>
+      <node baseType="Dot" name="Dot20" type="Dot" x="100.000000" y="0.000000">
+        <port name="input" source="studio_lookdev_render2.input" type="in"/>
+        <port name="output" type="out"/>
+        <group_parameter name="Dot20"/>
+      </node>
+      <node baseType="RenderOutputDefine" name="RenderOutputDefine2" type="RenderOutputDefine" x="0.000000" y="-100.000000">
+        <port name="input" source="Dot20.output" type="in"/>
+        <port name="out" type="out"/>
+        <group_parameter name="RenderOutputDefine2">
+          <string_parameter name="CEL" value=""/>
+          <string_parameter name="outputName" value="primary"/>
+          <group_parameter name="args">
+            <string_parameter name="__fixedCEL" value="/root"/>
+            <string_parameter name="__lastLocationType" value="file"/>
+            <string_parameter name="__lastRendererAndOutputType" value="prman:color"/>
+            <group_parameter name="renderSettings">
+              <number_parameter name="__groupInherit" value="0"/>
+              <group_parameter name="outputs">
+                <number_parameter name="__groupInherit" value="0"/>
+                <group_parameter name="outputName">
+                  <number_parameter name="__groupInherit" value="0"/>
+                  <group_parameter name="type">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="color"/>
+                    <string_parameter name="default" value=""/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="includedByDefault">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="Yes"/>
+                    <string_parameter name="default" value="Yes"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="forceLegacyChannelNames">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="Yes"/>
+                    <string_parameter name="default" value="Yes"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="rendererSettings">
+                    <group_parameter name="colorSpace">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter expression="self.getNode().getParent().getParameter(&apos;studio_pipe.color_space&apos;).getValue(1.0)" name="value"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="fileExtension">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter expression="self.getNode().getParent().getParameter(&apos;studio_pipe.file_extension&apos;).getValue(1.0)" name="value"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="channel">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter name="value" value="rgba"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="convertSettings">
+                      <group_parameter name="exrCompression">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="Scanline ZIP"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="exrBitDepth">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="16"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="exrOptimize">
+                        <number_parameter name="enable" value="0"/>
+                        <number_parameter name="value" value="1"/>
+                        <string_parameter name="type" value="IntAttr"/>
+                      </group_parameter>
+                      <group_parameter name="exrType">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="Scanline"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="pngBitDepth">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="16"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="rlaBitDepth">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="16"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="tifBitDepth">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="16"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="tifCompression">
+                        <number_parameter name="enable" value="0"/>
+                        <string_parameter name="value" value="LZW"/>
+                        <string_parameter name="type" value="StringAttr"/>
+                      </group_parameter>
+                      <group_parameter name="jpgQuality">
+                        <number_parameter name="enable" value="0"/>
+                        <number_parameter name="value" value="100"/>
+                        <string_parameter name="type" value="FloatAttr"/>
+                      </group_parameter>
+                    </group_parameter>
+                    <group_parameter name="clampOutput">
+                      <number_parameter name="enable" value="1"/>
+                      <number_parameter name="value" value="0"/>
+                      <string_parameter name="type" value="IntAttr"/>
+                    </group_parameter>
+                    <group_parameter name="colorConvert">
+                      <number_parameter name="enable" value="1"/>
+                      <number_parameter name="value" value="1"/>
+                      <string_parameter name="type" value="IntAttr"/>
+                    </group_parameter>
+                    <group_parameter name="computeStats">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter name="value" value="None"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="tempRenderLocation">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter name="value" value=""/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="cameraName">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter expression="self.getNode().getParent().getParameter(&apos;studio_pipe.render_camera&apos;).getValue(1.0)" name="value"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="__unused"/>
+                  </group_parameter>
+                  <group_parameter name="mergeOutputs">
+                    <number_parameter name="enable" value="0"/>
+                    <string_parameter name="value" value=""/>
+                    <string_parameter name="default" value=""/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="locationType">
+                    <number_parameter name="enable" value="1"/>
+                    <string_parameter name="value" value="file"/>
+                    <string_parameter name="default" value="local"/>
+                    <string_parameter name="type" value="StringAttr"/>
+                  </group_parameter>
+                  <group_parameter name="locationSettings">
+                    <group_parameter name="renderLocation">
+                      <number_parameter name="enable" value="1"/>
+                      <string_parameter expression="self.getNode().getParent().getParameter(&apos;studio_pipe.render_location&apos;).getValue(1.0)" name="value"/>
+                      <string_parameter name="type" value="StringAttr"/>
+                    </group_parameter>
+                    <group_parameter name="__unused"/>
+                  </group_parameter>
+                  <group_parameter name="showMe">
+                    <number_parameter name="enable" value="0"/>
+                    <number_parameter name="value" value="0"/>
+                    <number_parameter name="default" value="0"/>
+                    <string_parameter name="type" value="IntAttr"/>
+                  </group_parameter>
+                </group_parameter>
+              </group_parameter>
+            </group_parameter>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Render" name="Render2" ns_badgeText="1" type="Render" x="0.000000" y="-200.000000">
+        <port name="input" source="RenderOutputDefine2.out" type="in"/>
+        <port name="primary" type="out"/>
+        <group_parameter name="Render2">
+          <string_parameter name="passName" value="Render"/>
+          <number_parameter name="lock" value="0"/>
+          <group_parameter name="outputs">
+            <stringarray_parameter name="locations" size="1" tupleSize="1">
+              <string_parameter name="i0" value=""/>
+            </stringarray_parameter>
+            <stringarray_parameter name="localFiles" size="1" tupleSize="1">
+              <string_parameter name="i0" value=""/>
+            </stringarray_parameter>
+            <numberarray_parameter name="enabledFlags" size="1" tupleSize="1">
+              <number_parameter name="i0" value="1"/>
+            </numberarray_parameter>
+            <stringarray_parameter name="labels" size="1" tupleSize="1">
+              <string_parameter name="i0" value="&lt;b&gt;primary&lt;/b&gt; (color)"/>
+            </stringarray_parameter>
+            <stringarray_parameter name="types" size="1" tupleSize="1">
+              <string_parameter name="i0" value="color"/>
+            </stringarray_parameter>
+            <group_parameter name="included">
+              <string_parameter name="primary" value="Explicit:Yes"/>
+            </group_parameter>
+            <stringarray_parameter name="allOutputNames" size="1" tupleSize="1">
+              <string_parameter name="i0" value="primary"/>
+            </stringarray_parameter>
+          </group_parameter>
+          <group_parameter name="farmSettings">
+            <string_parameter name="setActiveFrameRange" value="No"/>
+            <group_parameter name="activeFrameRange">
+              <number_parameter name="start" value="1"/>
+              <number_parameter name="end" value="1"/>
+            </group_parameter>
+            <string_parameter name="dependAll" value="No"/>
+            <string_parameter name="farmFileName" value=""/>
+            <string_parameter name="renderInternalDependencies" value="No"/>
+            <string_parameter name="excludeFromFarmOutputGeneration" value="No"/>
+            <string_parameter name="forceFarmOutputGeneration" value="No"/>
+          </group_parameter>
+        </group_parameter>
+      </node>
+      <node baseType="Dot" name="Dot21" type="Dot" x="100.000000" y="-300.000000">
+        <port name="input" source="Dot20.output" type="in"/>
+        <port name="output" returns="output" type="out"/>
+        <group_parameter name="Dot21"/>
+      </node>
+    </node>
+    <node baseType="RenderSettingsBaseType" name="RenderSettings2" selected="true" type="RenderSettings" x="255.999969" y="-592.000032">
+      <port name="input" source="PrmanGlobalStatements2.out" type="in"/>
+      <port name="out" type="out"/>
+      <group_parameter name="RenderSettings2">
+        <string_parameter name="CEL" value="/root"/>
+        <string_parameter name="location" value=""/>
+        <group_parameter name="args">
+          <string_parameter name="__fixedCEL" value="/root"/>
+          <group_parameter name="renderSettings">
+            <number_parameter name="__groupInherit" value="0"/>
+            <group_parameter name="cameraName">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="/root/world/cam/camera"/>
+              <string_parameter name="default" value="/root/world/cam/camera"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="renderer">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="default" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="resolution">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="square_512"/>
+              <string_parameter name="default" value="square_512"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="overscan">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="0"/>
+              </numberarray_parameter>
+              <numberarray_parameter name="default" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="adjustScreenWindow">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="No adjustment"/>
+              <string_parameter name="default" value="No adjustment"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="maxTimeSamples">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <number_parameter name="default" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="shutterOpen">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <number_parameter name="default" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="shutterClose">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <number_parameter name="default" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="cropWindow">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="1"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="1"/>
+              </numberarray_parameter>
+              <numberarray_parameter name="default" size="4" tupleSize="4">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="1"/>
+                <number_parameter name="i2" value="0"/>
+                <number_parameter name="i3" value="1"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="interactiveOutputs">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value="primary"/>
+              <string_parameter name="default" value="primary"/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+          </group_parameter>
+        </group_parameter>
+        <string_parameter name="adjustScreenWindowWhen" value="deferred"/>
+      </group_parameter>
+    </node>
+    <node baseType="Group" name="shader_group2" ns_bubbleZoom="0.000000" selected="true" type="Group" x="447.999998" y="0.000000">
+      <port name="o0" type="out"/>
+      <group_parameter name="shader_group2"/>
+      <node baseType="NetworkMaterial" name="default_material2" type="NetworkMaterial" x="0.000000" y="-100.000000">
+        <port name="prmanBxdf" source="default_shader2.out" type="in">
+          <tags>
+            <tag name="bxdf"/>
+          </tags>
+        </port>
+        <port name="out" returns="o0" type="out"/>
+        <group_parameter name="default_material2">
+          <string_parameter name="name" value="default_material"/>
+          <string_parameter name="namespace" value=""/>
+          <string_parameter name="addTerminal" value=""/>
+          <stringarray_parameter name="publicInterfaceOrder" size="0" tupleSize="1"/>
+        </group_parameter>
+      </node>
+      <node baseType="PrmanShadingNode" name="default_shader2" type="PrmanShadingNode" x="0.000000" y="-50.000000">
+        <port name="baseColor" source="default_texture2.resultRGB" type="in">
+          <tags>
+            <tag name="color"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Base Color"/>
+          </metadata>
+        </port>
+        <port name="emitColor" type="in">
+          <tags>
+            <tag name="color"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Emit Color"/>
+          </metadata>
+        </port>
+        <port name="subsurface" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Subsurface"/>
+          </metadata>
+        </port>
+        <port name="subsurfaceColor" type="in">
+          <tags>
+            <tag name="color"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Subsurface Color"/>
+          </metadata>
+        </port>
+        <port name="metallic" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Metallic"/>
+          </metadata>
+        </port>
+        <port name="specular" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Specular"/>
+          </metadata>
+        </port>
+        <port name="specularTint" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Specular Tint"/>
+          </metadata>
+        </port>
+        <port name="roughness" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Roughness"/>
+          </metadata>
+        </port>
+        <port name="anisotropic" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Anisotropic"/>
+          </metadata>
+        </port>
+        <port name="sheen" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Sheen"/>
+          </metadata>
+        </port>
+        <port name="sheenTint" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Sheen Tint"/>
+          </metadata>
+        </port>
+        <port name="clearcoat" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Clear Coat"/>
+          </metadata>
+        </port>
+        <port name="clearcoatGloss" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Clearcoat Gloss"/>
+          </metadata>
+        </port>
+        <port name="bumpNormal" type="in">
+          <tags>
+            <tag name="normal"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Bump Normal"/>
+          </metadata>
+        </port>
+        <port name="presence" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Presence"/>
+          </metadata>
+        </port>
+        <port name="inputAOV" type="in">
+          <tags>
+            <tag name="int"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Input AOV"/>
+          </metadata>
+        </port>
+        <port name="out" type="out">
+          <tags>
+            <tag name="bxdf"/>
+          </tags>
+        </port>
+        <group_parameter name="default_shader2">
+          <string_parameter name="name" value="default_shader"/>
+          <string_parameter name="nodeType" value="PxrDisney"/>
+          <string_parameter name="__lastValue" value="z7bxxsk4efcy2thjpk4hdwyvsmag6yqpga2eewnfc3m5g2ent36mFalse"/>
+          <string_parameter name="__showHiddenParams" value="False"/>
+          <group_parameter name="parameters">
+            <group_parameter name="baseColor">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="3" tupleSize="3">
+                <number_parameter name="i0" value="0.2"/>
+                <number_parameter name="i1" value="0.5"/>
+                <number_parameter name="i2" value="0.8"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="emitColor">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="3" tupleSize="3">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="subsurface">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="subsurfaceColor">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="3" tupleSize="3">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="metallic">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="specular">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0.5"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="specularTint">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="roughness">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0.25"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="anisotropic">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="sheen">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="sheenTint">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0.5"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="clearcoat">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="clearcoatGloss">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="bumpNormal">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="3" tupleSize="3">
+                <number_parameter name="i0" value="0"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="0"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="presence">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="inputAOV">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="__unused"/>
+          </group_parameter>
+          <group_parameter name="publicInterface">
+            <string_parameter name="namePrefix" value=""/>
+            <string_parameter name="pagePrefix" value=""/>
+            <string_parameter name="nameRegExFind" value=""/>
+            <string_parameter name="nameRegExReplace" value=""/>
+            <string_parameter name="pageRegExFind" value=""/>
+            <string_parameter name="pageRegExReplace" value=""/>
+          </group_parameter>
+          <string_parameter name="forceRefresh" value=""/>
+        </group_parameter>
+      </node>
+      <node baseType="PrmanShadingNode" name="default_texture2" type="PrmanShadingNode" x="0" y="0">
+        <port name="blur" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Blur"/>
+          </metadata>
+        </port>
+        <port name="missingColor" type="in">
+          <tags>
+            <tag name="color"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Missing Color"/>
+          </metadata>
+        </port>
+        <port name="missingAlpha" type="in">
+          <tags>
+            <tag name="float"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Missing Alpha"/>
+          </metadata>
+        </port>
+        <port name="manifold" type="in">
+          <tags>
+            <tag name="manifold"/>
+            <tag name="struct"/>
+          </tags>
+          <metadata>
+            <entry key="label" value="Manifold"/>
+          </metadata>
+        </port>
+        <port name="resultRGB" type="out">
+          <tags>
+            <tag name="color"/>
+            <tag name="normal"/>
+            <tag name="point"/>
+            <tag name="vector"/>
+          </tags>
+        </port>
+        <port name="resultR" type="out">
+          <tags>
+            <tag name="float"/>
+          </tags>
+        </port>
+        <port name="resultG" type="out">
+          <tags>
+            <tag name="float"/>
+          </tags>
+        </port>
+        <port name="resultB" type="out">
+          <tags>
+            <tag name="float"/>
+          </tags>
+        </port>
+        <port name="resultA" type="out">
+          <tags>
+            <tag name="float"/>
+          </tags>
+        </port>
+        <group_parameter name="default_texture2">
+          <string_parameter name="name" value="default_texture"/>
+          <string_parameter name="nodeType" value="PxrTexture"/>
+          <string_parameter name="__lastValue" value="ojgusd4dy4v5m4rtj4taux7mbevm3txwursd3unxf34dnbfp24beFalse"/>
+          <string_parameter name="__showHiddenParams" value="False"/>
+          <group_parameter name="parameters">
+            <group_parameter name="filename">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="firstChannel">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="atlasStyle">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="invertT">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="filter">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="blur">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="lerp">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="missingColor">
+              <number_parameter name="enable" value="0"/>
+              <numberarray_parameter name="value" size="3" tupleSize="3">
+                <number_parameter name="i0" value="1"/>
+                <number_parameter name="i1" value="0"/>
+                <number_parameter name="i2" value="1"/>
+              </numberarray_parameter>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="missingAlpha">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="1"/>
+              <string_parameter name="type" value="FloatAttr"/>
+            </group_parameter>
+            <group_parameter name="linearize">
+              <number_parameter name="enable" value="0"/>
+              <number_parameter name="value" value="0"/>
+              <string_parameter name="type" value="IntAttr"/>
+            </group_parameter>
+            <group_parameter name="manifold">
+              <number_parameter name="enable" value="0"/>
+              <string_parameter name="value" value=""/>
+              <string_parameter name="type" value="StringAttr"/>
+            </group_parameter>
+            <group_parameter name="__unused"/>
+          </group_parameter>
+          <group_parameter name="publicInterface">
+            <string_parameter name="namePrefix" value=""/>
+            <string_parameter name="pagePrefix" value=""/>
+            <string_parameter name="nameRegExFind" value=""/>
+            <string_parameter name="nameRegExReplace" value=""/>
+            <string_parameter name="pageRegExFind" value=""/>
+            <string_parameter name="pageRegExReplace" value=""/>
+          </group_parameter>
+          <string_parameter name="forceRefresh" value=""/>
+        </group_parameter>
+      </node>
+    </node>
+  </node>
+</katana>

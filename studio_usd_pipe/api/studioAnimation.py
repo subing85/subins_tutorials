@@ -1,13 +1,31 @@
+import os
+import tempfile
+
 from maya import OpenMaya
 from maya import OpenMayaAnim
 
+from studio_usd_pipe import resource
+from studio_usd_pipe.core import common
 from studio_usd_pipe.api import studioMaya
+reload(studioMaya)
 
 
 class Animation(studioMaya.Maya):
     
     def __init__(self):
-        super(Animation, self).__init__()  
+        super(Animation, self).__init__()
+        
+        
+    def get_animation_data(self, mobject):
+        transform_nodes = self.extract_transform(root_mobject=mobject)
+        data = {}
+        for x in range(transform_nodes.length()):
+            model_data = self.get_kanimation(transform_nodes[x].node())
+            if not model_data:
+                continue
+            model_data['order'] = x
+            data.setdefault(transform_nodes[x].fullPathName(), model_data)            
+        return data
 
     def get_kanimation(self, mobject) :
         '''
@@ -188,3 +206,27 @@ class Animation(studioMaya.Maya):
             mfn_anim_curve.setOutTangentType(index, values['out_tangent_type'][index])               
             mfn_anim_curve.setIsBreakdown(index, values['breakdown'][index])
 
+    def create_kalembic(self, node, frame_range=[1001, 1001], attributes=None, output_path=None):
+        self.set_bounding_box()
+        if not frame_range:
+            frame_range = self.get_frame_range()
+        if not attributes:
+            attributes = resource.getPipeIDData()
+        attributes = ' -attr ' + ' -attr '.join(attributes.keys())
+        if not output_path:
+            output_path = os.path.join(tempfile.gettempdir(),'temp_%s.abc' % common.get_dynamic_name())
+        format = 'ogawa'
+        output_path = '%s.abc' % (os.path.splitext(output_path)[0])
+        mel_command = 'AbcExport -j \"-frameRange %s %s %s -uvWrite -dataFormat %s -root %s -file %s";' % (
+            frame_range[0], frame_range[1],
+            attributes,
+            format,
+            node,
+            output_path
+            )
+        # example AbcExport -j "-frameRange 1 120 -attr spipe -attr scaption -uvWrite -dataFormat ogawa -root |pCube1 -file /venture/box.abc";
+        OpenMaya.MGlobal.executeCommand(mel_command, False, True)
+        return output_path
+    
+
+    

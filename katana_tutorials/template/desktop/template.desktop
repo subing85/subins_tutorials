@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=""
+Comment=""
+Exec=".sh"
+Icon=".png"
+Categories=Application
+Version=""
+Type=Application
+Terminal=1
+ 

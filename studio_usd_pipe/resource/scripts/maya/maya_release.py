@@ -25,10 +25,7 @@ def release(**kwargs):
     reapir = inputs['reapir']
         
     from studio_usd_pipe.api import studioPush
-
-    publish = studioPush.Publish(current_show, current_pipe, current_application)
-    
-    
+    publish = studioPush.Push(current_show, current_pipe)
     valid, message = publish.validate(repair=reapir, **inputs)    
     if not valid:
         returncode([valid, message])

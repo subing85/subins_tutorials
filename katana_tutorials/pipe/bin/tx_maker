@@ -1,0 +1,30 @@
+#!/bin/bash
+
+BIN_PATH=$(dirname "$0")
+
+PACKAGE_PATH=`python $BIN_PATH"/__init__.py"`
+
+KEY=" "
+read -a strarr <<< "$PACKAGE_PATH"
+
+SHOW_PATH=${strarr[0]}
+PIPE_PATH=${strarr[1]}
+
+export PYTHONPATH=$PYTHONPATH:$PIPE_PATH
+export SHOW_PATH=$SHOW_PATH
+export PIPE_PATH=$PIPE_PATH
+
+echo "---------------------------------------"
+echo "katana python tutorials configure"
+echo "PIPE_PATH: " $PIPE_PATH
+echo "SHOW_PATH: " $SHOW_PATH
+
+echo ""
+echo "Tool Info:"
+echo "Studio TX Maker 0.0.0"
+echo "0.0.0 Release"
+echo "www.subins-toolkits.comm"
+echo "subing85@gmail.com"
+echo "---------------------------------------"
+
+python $PIPE_PATH"/tools/tx_maker/__init__.py"
