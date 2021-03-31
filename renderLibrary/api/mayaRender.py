@@ -5,6 +5,9 @@ from maya import OpenMaya
 from renderLibrary import resources
 from renderLibrary.api import mayaNode
 
+print 'Helloooooooooooooooooooooooooooo'
+
+
 
 class Connect(mayaNode.Connect):
     
