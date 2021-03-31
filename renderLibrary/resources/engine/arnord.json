@@ -1,0 +1,21 @@
+{
+    "author": "Subin. Gopi (subing85@gmail.com)",
+    "user": "sid",     
+    "modified date": "2021:March:30:Tuesday-10:40:40:PM", 
+    "#copyright": "(c) 2021, Subin Gopi All rights reserved.", 
+    "warning": "# WARNING! All changes made in this file will be lost!", 
+    "comments": "Arnord Render Engine Configure", 
+    "tag": "null", 
+    "type": "configure", 
+    "valid": true,
+	"data": {
+		"defaultRenderOptions": {
+			"name": "defaultArnoldRenderOptions",
+			"type": "aiOptions",
+			"key": "aovs"
+			}
+		
+		}
+	
+	}
+	

@@ -1,12 +1,12 @@
-NAME = 'Extract Shader'
-ORDER = 2
-ENABLE = False
+NAME = 'Extract Light'
+ORDER = 3
+ENABLE = True
 TYPE = 'publish'
 OWNER = 'Subin Gopi'
-COMMENTS = 'extract shader from the geometries'
+COMMENTS = 'extract light from the layer'
 VERSION = '0.0.0'
-MODIFIED = '2021:March:24:Wednesday-10:34:28:AM'
-ACTION = 'renderLibrary.resources.publish.shader'
+MODIFIED = '2021:March:25:Thursday-01:26:58:PM'
+ACTION = 'renderLibrary.resources.publish.light'
 
 
 def execute(context, **kwargs):
@@ -23,27 +23,23 @@ def execute(context, **kwargs):
         message = 'not found any selection'
         return False, message        
     
-    layer = context.get('layer')    
-    root_node = studioMaya.getRootNode(nodes[-1])
+    layer = context.get('layer')
     
-    # get geometries hierarchy    
-    _shaders, _nodes = studioMaya.getShaders(layer, root_node)
-    # get override data
-    _overrides = studioMaya.getOverrides(layer, _nodes)    
-    
-    # get render memeber
-    _members = studioMaya.getRenderMembers(layer, _nodes)
+    _lights = studioMaya.getLights(layer)
+    _transform = studioMaya.getNodesTransform(_lights.keys())
+    _attributes = studioMaya.getNodesAttributes(_lights)
+    _overrides = studioMaya.getOverrides(layer, _lights)
     
     output_path = context.get('path')
-   
-    output_data = {
-        'shader': _shaders,
-        'nodes': _nodes,
-        'overrides': _overrides,
-        'members': _members
-        }
-    
        
+    output_data = {
+        'lights': _lights,
+        'transform': _transform,
+        'attributes': _attributes,
+        'overrides': _overrides,
+        
+        }
+           
     kwrags = {
         'name': context.get('name'),
         'type': context.get('type'),
@@ -54,10 +50,6 @@ def execute(context, **kwargs):
         'time_stamp': context.get('time_stamp')
         }
 
-    
-    result, results = export.studio_shader(
-        output_path, output_data, format='mayaAscii', preserved=False, **kwrags)
-    
+    result = export.studio_light(output_path, output_data, **kwrags)
 
-    return True, 'success!...', result, results
-     
+    return True, 'success!...', result, None   
