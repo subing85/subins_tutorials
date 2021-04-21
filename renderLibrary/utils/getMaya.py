@@ -1,68 +1,35 @@
 import os
 import math
+
 from maya import OpenMaya
 
-from renderLibrary.api import mayaNode
+from renderLibrary.api import mayaRender
+
+MR = mayaRender.Connect()
 
 
-def getRenderSteup():
+
+def layer(render_layer):
     
-    '''
-    :description
-        get the current render steup whether Legacy or New Render Setup
-        1 =  (new) Render Setup is active
-        0 = Legacy Render Layers is active  
-    :example
-    from renderLibrary.utils import studioMaya
-    studioMaya.getRenderSteup()
-            
-    '''
-    mcommand_result = OpenMaya.MCommandResult()
-    command = 'optionVar -q \"renderSetupEnable\";'
-    OpenMaya.MGlobal.executeCommand(command, mcommand_result, False, False)
-    mscript_util = OpenMaya.MScriptUtil()
-    index_ptr = mscript_util.asIntPtr()
-    mcommand_result.getResult(index_ptr)    
-    _value = mscript_util.getInt(index_ptr)
+    # engine = MR.currentRenderEngine
     
-    setups = {
-        0: 'Legacy Render Layers',
-        1: 'Render Setup'
-        }
-    OpenMaya.MGlobal.displayInfo('current render: %s' % setups.get(_value))
-    return _value 
+    
+    
+    
+    
+    pass
 
 
-def getRenderEngine():
-    mcommand_result = OpenMaya.MCommandResult()
-    command = 'getAttr \"defaultRenderGlobals.currentRenderer\"',
-    OpenMaya.MGlobal.executeCommand(command, mcommand_result, False, False)
-    render_engine = mcommand_result.stringResult() 
-    OpenMaya.MGlobal.displayInfo('current render engine: %s' % render_engine)
-    return render_engine
 
 
-def selectLayer(layer):
-    mcommand_result = OpenMaya.MCommandResult()
-    command = 'editRenderLayerGlobals -currentRenderLayer %s;' % layer
-    OpenMaya.MGlobal.executeCommand(command, mcommand_result, False, False)
 
-
-def getSelectedNodes():
-    selected = OpenMaya.MSelectionList()
-    OpenMaya.MGlobal.getActiveSelectionList(selected)
-    nodes = []
-    selected.getSelectionStrings(nodes)
-    return nodes
-
-
-def getRootNode(node):
+def rootNode(node):
     mn = mayaNode.Connect()
     root_node = mn.getRootNode(node)
     return root_node
 
     
-def getGeometries(layer, root_node):
+def geometries(layer, root_node):
     selectLayer(layer)
     mn = mayaNode.Connect()    
     mesh_hierarchy = mn.getMeshHierarchy(root_node)
@@ -119,7 +86,7 @@ def getGeometries(layer, root_node):
     return _geometries
 
 
-def getShaders(layer, root_node):
+def shaders(layer, root_node):
     selectLayer(layer)
     mn = mayaNode.Connect()    
     mesh_hierarchy = mn.getMeshHierarchy(root_node)
@@ -175,12 +142,12 @@ def getShaders(layer, root_node):
     return _shaders, _nodes
 
 
-def getLights(layer):
+def lights(layer):
     selectLayer(layer)
     
     mn = mayaNode.Connect()    
     members = mn.getRenderMembers(layer)
-    node_types = getNodeTypes('light')
+    node_types = mn.nodeTypes('light')
     
     _lights = {}
     
@@ -191,7 +158,7 @@ def getLights(layer):
         if dagpath.childCount():
             dagpath.extendToShape()  
                   
-        node_type = getNodeType(dagpath.fullPathName())
+        node_type = mn.nodeType(dagpath.fullPathName())
         
         if node_type not in node_types:
             continue
@@ -208,11 +175,10 @@ def getLights(layer):
         }
         _lights.setdefault(_dagpath.fullPathName(), contents)
                 
-                
     return  _lights       
     
   
-def getOverrides(layer, includes):
+def overrides(layer, includes):
     '''
     :example
         from renderLibrary.utils import studioMaya
@@ -237,11 +203,10 @@ def getOverrides(layer, includes):
         if not overrides:
             continue
         _overrides.setdefault(node, overrides)
-    
     return _overrides
 
 
-def getRenderMembers(layer, includes):
+def renderMembers(layer, includes):
     '''
     :example
         from renderLibrary.utils import studioMaya
@@ -270,15 +235,15 @@ def getRenderMembers(layer, includes):
     return _members
 
 
-def getNodesTransform(nodes):
+def nodesTransform(nodes):
     _transform = {}
     for node in nodes:
-        _values = getTransformValues(node)
+        _values = transformValues(node)
         _transform.setdefault(node, _values)
     return _transform
         
 
-def getTransformValues(node):
+def transformValues(node):
     mn = mayaNode.Connect()
     dagpath = mn.getDagPath(node)
     # get world sapce translate value
@@ -317,7 +282,28 @@ def getTransformValues(node):
     return _transform
 
 
-def getNodesAttributes(nodes):
+def renderLayer(layer):
+    selectLayer(layer)    
+    mr = mayaRender.Connect()    
+    layer_attributes = mr.getLayerAttributes(layer)
+    return layer_attributes    
+
+
+def aovs(layer):
+    selectLayer(layer)    
+    mr = mayaRender.Connect()
+    aovs = mr.getAovs(overrides=True, layer=layer)
+    return aovs
+
+
+def renderGlobals(layer):
+    selectLayer(layer)    
+    mr = mayaRender.Connect()
+    render_globals = mr.getRenderGlobals()
+    return render_globals    
+
+
+def nodesAttributes(nodes):
     
     if isinstance(nodes, dict):       
         _nodes = []
@@ -332,12 +318,12 @@ def getNodesAttributes(nodes):
     node_attributes = {}
     
     for node in _nodes:
-        attributes = getAttributeValue(node)
+        attributes = attributeValue(node)
         node_attributes.setdefault(node, attributes)
     return node_attributes
 
 
-def getAttributeValue(node):    
+def attributeValue(node):    
     mn = mayaNode.Connect()
     attributes = mn.getAttributes(node)
     return attributes
@@ -368,19 +354,5 @@ def exportSelection(nodes, path, **kwargs):
     OpenMaya.MGlobal.clearSelectionList()
     
     
-def getNodeTypes(typed):
-    mcommand_result = OpenMaya.MCommandResult()
-    command = 'listNodeTypes \"%s\";' % typed
-    OpenMaya.MGlobal.executeCommand(command, mcommand_result, False, False)
-    nodes = []
-    mcommand_result.getResult(nodes)
-    return nodes
 
-
-def getNodeType(node):
-    mcommand_result = OpenMaya.MCommandResult()
-    mel_command = 'nodeType \"%s\"' % node
-    OpenMaya.MGlobal.executeCommand(mel_command, mcommand_result, False, False)
-    node_type = mcommand_result.stringResult()
-    return node_type
              

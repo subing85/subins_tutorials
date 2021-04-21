@@ -14,25 +14,25 @@ def execute(context, **kwargs):
     
     from maya import OpenMaya
         
-    from renderLibrary.core import export
-    from renderLibrary.utils import studioMaya    
+    from renderLibrary.core import _export
+    from renderLibrary.utils import getMaya    
     
-    nodes = [context.get('node')] or studioMaya.getSelectedNodes()
+    nodes = [context.get('node')] or getMaya.selectedNodes()
         
     if not nodes:
         message = 'not found any selection'
         return False, message        
     
     layer = context.get('layer')    
-    root_node = studioMaya.getRootNode(nodes[-1])
+    root_node = getMaya.rootNode(nodes[-1])
     
     # get geometries hierarchy    
-    _shaders, _nodes = studioMaya.getShaders(layer, root_node)
+    _shaders, _nodes = getMaya.shaders(layer, root_node)
     # get override data
-    _overrides = studioMaya.getOverrides(layer, _nodes)    
+    _overrides = getMaya.overrides(layer, _nodes)    
     
     # get render memeber
-    _members = studioMaya.getRenderMembers(layer, _nodes)
+    _members = getMaya.renderMembers(layer, _nodes)
     
     output_path = context.get('path')
    
@@ -42,7 +42,6 @@ def execute(context, **kwargs):
         'overrides': _overrides,
         'members': _members
         }
-    
        
     kwrags = {
         'name': context.get('name'),
@@ -51,13 +50,12 @@ def execute(context, **kwargs):
         'action': context.get('action'),
         'comments': context.get('comments'),
         'enable': context.get('enable'),
+        'tag': 'shader',        
         'time_stamp': context.get('time_stamp')
         }
-
     
-    result, results = export.studio_shader(
+    result, results = _export.studio_shader(
         output_path, output_data, format='mayaAscii', preserved=False, **kwrags)
-    
 
     return True, 'success!...', result, results
      

@@ -51,7 +51,8 @@ for currentObject in selectList :
         
         # 3. Find the Attribute - Animation curve is connected
         currentPlug = mfnDependencyNode.findPlug(attriName, 1)
-        if currentPlug.connectedTo(1, 0) :        
+        if currentPlug.connectedTo(1, 0):
+                    
             connectedList = currentPlug.connectedTo(1, 0)
             
             # Find the connected node type

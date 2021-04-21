@@ -1,0 +1,53 @@
+{
+	"author": "Subin. Gopi (subing85@gmail.com)",
+	"user": "sid",
+	"modified date": "2021:March:30:Tuesday-10:40:40:PM",
+	"#copyright": "(c) 2021, Subin Gopi All rights reserved.",
+	"warning": "# WARNING! All changes made in this file will be lost!",
+	"comments": "Arnord Render Engine Configure",
+	"tag": "null",
+	"type": "configure",
+	"enable": true,
+	"data": {
+		"defaultRenderOptions": {
+			"name": "defaultArnoldRenderOptions",
+			"type": "aiOptions",
+			"key": "aovs"
+		},
+		"renderGlobals": [
+			"defaultArnoldDisplayDriver",
+			"defaultArnoldDriver",
+			"defaultArnoldFilter",
+			"defaultArnoldRenderOptions",
+			"defaultRenderGlobals",
+			"defaultResolution"
+		],
+		"aovDependencies": [
+			"_aiAOVDriver",
+			"_aiAOVFilter",
+			"_aiOptions",
+			"_renderLayer"
+		],
+		"aovTypes": {
+			"int": 1,
+			"vector2": 9,
+			"float": 4,
+			"rgb": 5,
+			"vector": 7,
+			"bool": 3,
+			"rgba": 6,
+			"uint": 2,
+			"pointer": 11
+		},
+		"aovFiltersByName": {
+			"Z": "closest",
+			"motion_vector": "closest",
+			"P": "closest",
+			"N": "closest",
+			"Pref": "closest",
+			"ID": "closest",
+			"AA_inv_density": "heatmap",
+			"volume_Z": "closest"
+			}
+	}
+}

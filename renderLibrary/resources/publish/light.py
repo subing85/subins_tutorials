@@ -1,6 +1,6 @@
 NAME = 'Extract Light'
 ORDER = 3
-ENABLE = True
+ENABLE = False
 TYPE = 'publish'
 OWNER = 'Subin Gopi'
 COMMENTS = 'extract light from the layer'
@@ -14,10 +14,10 @@ def execute(context, **kwargs):
     
     from maya import OpenMaya
         
-    from renderLibrary.core import export
-    from renderLibrary.utils import studioMaya    
+    from renderLibrary.core import _export
+    from renderLibrary.utils import getMaya    
     
-    nodes = [context.get('node')] or studioMaya.getSelectedNodes()
+    nodes = [context.get('node')] or getMaya.selectedNodes()
         
     if not nodes:
         message = 'not found any selection'
@@ -25,10 +25,10 @@ def execute(context, **kwargs):
     
     layer = context.get('layer')
     
-    _lights = studioMaya.getLights(layer)
-    _transform = studioMaya.getNodesTransform(_lights.keys())
-    _attributes = studioMaya.getNodesAttributes(_lights)
-    _overrides = studioMaya.getOverrides(layer, _lights)
+    _lights = getMaya.lights(layer)
+    _transform = getMaya.nodesTransform(_lights.keys())
+    _attributes = getMaya.nodesAttributes(_lights)
+    _overrides = getMaya.overrides(layer, _lights)
     
     output_path = context.get('path')
        
@@ -47,9 +47,10 @@ def execute(context, **kwargs):
         'action': context.get('action'),
         'comments': context.get('comments'),
         'enable': context.get('enable'),
+        'tag': 'light',         
         'time_stamp': context.get('time_stamp')
         }
 
-    result = export.studio_light(output_path, output_data, **kwrags)
+    result = _export.studio_light(output_path, output_data, **kwrags)
 
     return True, 'success!...', result, None   

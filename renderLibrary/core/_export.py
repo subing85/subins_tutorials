@@ -5,7 +5,7 @@ import getpass
 
 from datetime import datetime
 
-from renderLibrary.utils import studioMaya 
+from renderLibrary.utils import getMaya 
 
 
 def studio_json(path, data, **kwargs):
@@ -24,7 +24,7 @@ def studio_json(path, data, **kwargs):
         'warning': '# WARNING! All changes made in this file will be lost!',
         'type': kwargs.get('type'),
         'tag': kwargs.get('tag'),
-        'valid': kwargs.get('valid'),
+        'enable': kwargs.get('enable'),
         'user': getpass.getuser(),
         'action': kwargs.get('action'),
         'order': kwargs.get('order'),
@@ -55,9 +55,9 @@ def studio_shader(dirname, data, **kwargs):
     output_paths = [] 
     # export shader maya file
     for node, contents in data['shader'].items():
-        studioMaya.addStudioAttribute(node, contents)
+        getMaya.addStudioAttribute(node, contents)
         shader_path = os.path.join(output_path, '%s.ma' % node)
-        studioMaya.exportSelection([node], shader_path, format='mayaAscii')
+        getMaya.exportSelection([node], shader_path, format='mayaAscii')
         os.utime(shader_path, (time_stamp, time_stamp))   
         data['shader'][node]['relative_path'] = 'shader/%s' % '%s.ma' % node
         data['shader'][node]['path'] = shader_path
@@ -72,7 +72,18 @@ def studio_shader(dirname, data, **kwargs):
 def studio_light(dirname, data, **kwargs):    
     output_path = os.path.join(dirname, 'light.json')
     studio_json(output_path, data, **kwargs)
-    return output_path   
-    
-        
+    return output_path
+
+
+def studio_layer(dirname, data, **kwargs):
+    output_path = os.path.join(dirname, 'layer.json')
+    studio_json(output_path, data, **kwargs)
+    return output_path    
+
+
+def studio_render(dirname, data, **kwargs):
+    output_path = os.path.join(dirname, 'render.json')
+    studio_json(output_path, data, **kwargs)
+    return output_path  
+
 

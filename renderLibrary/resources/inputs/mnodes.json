@@ -7,7 +7,7 @@
     "comments": "Maya nodes configure", 
     "tag": "null", 
     "type": "publish", 
-    "valid": true,
+    "enable": true,
 	"data": {
 		"default_nodes": [
 			"defaultLightSet", 

@@ -9,39 +9,37 @@ MODIFIED = '2021:March:19:Friday-11:26:53:PM'
 ACTION = 'renderLibrary.resources.publish.geometry'
 
 
-def execute(context, **kwargs):     
-    import os  
-      
-    from maya import OpenMaya
+def execute(context, **kwargs): 
         
-    from renderLibrary.core import export
-    from renderLibrary.utils import studioMaya
-  
-    nodes = studioMaya.getSelectedNodes()
+    from renderLibrary.core import _export
+    from renderLibrary.api import mayaRender
 
-    if not nodes:
+    layer = context.get('layer')
+    
+    mr = mayaRender.Connect()
+    
+    if not mr.selectedNodes:
         message = 'not found any selection'
         return False, message
-    
-    layer = context.get('layer')    
-    root_node = studioMaya.getRootNode(nodes[-1])
-    
-    # get geometries hierarchy    
-    _geometries = studioMaya.getGeometries(layer, root_node)
-    # get override data
-    _overrides = studioMaya.getOverrides(layer, _geometries)    
-    
-    # get render memeber
-    _members = studioMaya.getRenderMembers(layer, _geometries)  
-
-    output_path = context.get('path')
         
+    mr.selectLayer(layer)
+    
+    _root = mr.getRootNode(mr.selectedNodes[-1])  # get root node
+    _members = mr.getGeometryMembers(layer, hierarchy=_root)  # geometry memebrs
+    _overrides = mr.getOverrides(layer, _members, shape=True)  # get override data
+    
+    output_path = context.get('path')
+         
     output_data = {
-        'geometries': _geometries,
-        'overrides': _overrides,
-        'members': _members
+        'root': _root.fullPathName(),
+        'members': _members,
+        'overrides': _overrides        
         }
         
+    
+    from pprint import pprint
+    pprint(_overrides)
+             
     kwrags = {
         'name': context.get('name'),
         'type': context.get('type'),
@@ -49,13 +47,14 @@ def execute(context, **kwargs):
         'action': context.get('action'),
         'comments': context.get('comments'),
         'enable': context.get('enable'),
+        'tag': 'geometry',
         'time_stamp': context.get('time_stamp')
         }  
-            
-    result = export.studio_geometry(output_path, output_data, **kwrags)
-    
+             
+    result = _export.studio_geometry(output_path, output_data, **kwrags)
+     
     # pass to next level
-    context['node'] = nodes[-1]
-    
+    context['root'] = _root.fullPathName()
+     
     return True, 'success!...', result, None
 

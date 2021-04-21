@@ -29,8 +29,9 @@ def getInputData(typed):
 def getEngineData(engine):
     enginepath = getEnginePath()  
     path = os.path.join(enginepath, '%s.json' % engine)
-    
-    print path, '\n'
+    print path
+    if not os.path.isfile(path):
+        return None
     engine_data = getData(path)
     return engine_data
     
@@ -40,7 +41,7 @@ def getData(path):
         raise IOError('not found path <{}>'.format(path))
     with (open(path, 'r')) as open_data:
         data = json.load(open_data)
-        if not data.get('valid'):
+        if not data.get('enable'):
             return None
         return data['data']        
     

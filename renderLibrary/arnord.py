@@ -387,11 +387,14 @@ class AOVInterface(object):
             aovType = getAOVTypeMap().get(aovName, 'rgba')
         if not isinstance(aovType, int):
             aovType = dict(TYPES)[aovType]
+            
         aovNode = cmds.createNode('aiAOV', name='aiAOV_' + aovName, skipSelect=True)
         out = '{}.outputs[0]'.format(aovNode)
 
         cmds.connectAttr('defaultArnoldDriver.message', '{}.driver'.format(out))
         filter = defaultFiltersByName.get(aovName, None)
+        
+        
         if filter:
             node = cmds.createNode('aiAOVFilter', skipSelect=True)
             cmds.setAttr('{}.aiTranslator'.format(node), filter, type="string")
@@ -400,6 +403,8 @@ class AOVInterface(object):
             hooks.setupFilter(filter, aovName)
         else:
             filterAttr = 'defaultArnoldFilter.message'
+            
+            
         cmds.connectAttr(filterAttr, '{}.filter'.format(out))
 
         cmds.setAttr('{}.name'.format(aovNode), aovName, type="string")
